@@ -10,6 +10,8 @@ import Image from "next/image"
 import PortfolioPublic from "./PortfolioPublic";
 import Questionnaire from "./QuestionCard";
 import AudienceCard from "./AudienceCard";
+import Link from 'next/link';
+
 
 
 const useAnimatedNumber = (target) => {
@@ -411,16 +413,16 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         <PortfolioPublic />
 
         {/* social links */}
-        <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex items-center">
+        <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex items-center justify-center ">
   {/* Visible only on lg screens */}
   <span className="hidden lg:inline ml-6 font-apfel-grotezk-regular">My social media</span>
 
-  <span className="hidden lg:flex items-center w-[500%]">
+  <span className="hidden lg:flex items-center w-[500%] lg:justify-center 7xl:w-[1200px]">
     <span className="border-b-[0.5px] border-gray-400 mx-2 w-full"></span>
   </span>
 
   {/* Icons (visible on all screen sizes, justified between for mobile) */}
-  <span className="flex w-full max-w-[300px] justify-between mx-auto lg:ml-2 gap-2 lg:max-w-none lg:justify-start">
+  <span className="flex w-full max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-start">
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/images/insta.svg"
@@ -459,7 +461,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
 
        
-<div className="w-full mt-4 mx-0 px-0 lg:max-w-[1900px]">
+<div className="w-full mt-4 mx-0 px-0 lg:max-w-[1600px] 4xl:mx-auto">
   <Questionnaire
     name={
       formData?.firstName
@@ -472,7 +474,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
       
 
-        <div className="w-full mx-0 px-0 lg:max-w-[1300px]">
+        <div className="w-full mx-0 px-0 lg:max-w-[1400px]  4xl:mx-auto">
         <AudienceCard />
         </div>
 

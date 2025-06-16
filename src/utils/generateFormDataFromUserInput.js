@@ -45,6 +45,48 @@ This entry will appear on a public-facing press kit viewed by brand managers, ag
 - Keep event names and titles natural and memorable — avoid robotic or placeholder-y phrasing like “latest drop” or “new product launch” without a specific angle
 - While answering all questions ensure to use sentence case and correct grammar
 
+🧠 INSTRUCTIONS:
+
+Use the variable is_brand_collaboration to decide which fields to extract and display.
+
+- If is_brand_collaboration = true:
+  → Extract and display all fields, including:
+    - company_name
+    - company_location
+    - event_name
+    - event_type
+
+- If is_brand_collaboration = false:
+  → Skip the following fields entirely:
+    - company_name
+    - company_location
+    - event_name
+    - event_type
+  → Do NOT include them in the JSON at all
+
+In both cases:
+- Extract a clear, polished title and description
+- Include up to 3 relevant industries
+- Use considerations only for fields that need review (e.g. missing specificity or location)
+
+—
+{
+  "title": "string",
+  "description": "string",
+  "industries": ["string", "string", "string"],
+
+  // These fields only if is_brand_collaboration is true:
+  "company_name": "string",
+  "company_location": "string",
+  "event_type": "string",
+  "event_name": "string",
+
+  "considerations": {
+    // Key-value pairs only for fields present that need clarification
+  }
+}
+
+
 🤖 BRANDS VS NON-BRAND PROJECTS:
 
 Before generating the output, determine if the user's input describes a **brand collaboration**.

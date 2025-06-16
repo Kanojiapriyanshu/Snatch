@@ -305,7 +305,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                     )}
 
                     {(post.post.companyName || post.post.companyLocation || post.post.eventTypes?.length > 0) && (
-                      <div className="text-gray-500 text-sm space-y-1">
+                      <div className="text-graphite text-sm space-y-1">
                         {(post.post.companyName || post.post.companyLocation) && (
                           <p>
                             {post.post.companyName && (
@@ -343,7 +343,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
               )}
 
               {post.media.source === "instagram" && insights && (
-                <div className="mt-5 flex justify-around text-black w-full">
+                <div className="mt-5 flex justify-around text-graphite  w-full">
                   {[
                     { label: "Views", key: "impressions" },
                     { label: "Likes", key: "likes" },
@@ -351,10 +351,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
                     { label: "Comments", key: "comments" },
                   ].map(({ label, key }) => (
                     <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
-                      <div className="text-[19px] leading-none font-qimano text-[#212121]">
+                      <div className="text-[19px] leading-none font-qimano text-graphite">
                         {insights?.[key] ?? 0}
                       </div>
-                      <div className="text-[12px] text-graphite font-apfel-grotezk-regular mt-1">
+                      <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
                         {label}
                       </div>
                     </div>
@@ -538,7 +538,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                 )}
               </div>
               <div className="border-l border-[#cbcbcb] pl-2">
-                <div className="text-gray-500 text-sm space-y-1 font-apfel-grotezk-regular">
+                <div className="text-graphite text-sm space-y-1 font-apfel-grotezk-regular">
                   <p>
                     <span className="text-graphite font-medium">{companyName || 'Name of company'}</span> {companyLocation && `• ${companyLocation}`}
                   </p>
