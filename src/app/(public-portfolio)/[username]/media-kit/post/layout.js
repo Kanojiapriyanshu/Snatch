@@ -1,71 +1,72 @@
-//app/public-portfolio/[username]/post/layout.js
+// app/public-portfolio/[username]/post/layout.js
+
 import React from "react";
 import PostCard from "@/components/public-portfolio/PostCard";
 import Link from "next/link";
 import Image from "next/image";
 import { PostsProvider } from "@/context/PostContext";
+
 export default async function PostLayout({ children, params }) {
-    const { username } = params;
-    let userPosts = [];
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") || "http://localhost:3000";
-    try {
-      const res = await fetch(
-        `${baseUrl}/api/public-portfolio/posts?username=${username}`,
-        { cache: "no-store" }
-      );
-      const data = await res.json();
-  
-      if (data.success && data.instagram && data.uploaded) {
-        userPosts = [
-          ...data.instagram.map((item) => {
-            if (item.name === "CAROUSEL_ALBUM" && item.children?.length > 0) {
-              return {
-                mediaType: "CAROUSEL_ALBUM",
-                children: item.children.map((child) => ({
-                  mediaType: child.media_type,
-                  mediaUrl: child.media_url,
-                  mediaId: child.id,
-                })),
-                mediaId: item.mediaId,
-                title: item.name,
-              };
-            }
-  
+  const { username } = params;
+  let userPosts = [];
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") || "http://localhost:3000";
+
+  try {
+    const res = await fetch(
+      `${baseUrl}/api/public-portfolio/posts?username=${username}`,
+      { cache: "no-store" }
+    );
+    const data = await res.json();
+
+    if (data.success && data.instagram && data.uploaded) {
+      userPosts = [
+        ...data.instagram.map((item) => {
+          if (item.name === "CAROUSEL_ALBUM" && item.children?.length > 0) {
             return {
-              mediaType: item.name || item.fileName,
-              mediaUrl: item.mediaLink || item.fileUrl,
+              mediaType: "CAROUSEL_ALBUM",
+              children: item.children.map((child) => ({
+                mediaType: child.media_type,
+                mediaUrl: child.media_url,
+                mediaId: child.id,
+              })),
               mediaId: item.mediaId,
               title: item.name,
             };
-          }),
-          ...data.uploaded.map((item) => ({
-            mediaType: item.mediaType || item.fileName,
-            mediaUrl: item.mediaUrl || item.fileUrl,
+          }
+
+          return {
+            mediaType: item.name || item.fileName,
+            mediaUrl: item.mediaLink || item.fileUrl,
             mediaId: item.mediaId,
             title: item.name,
-          })),
-        ];
-      }
-    } catch (error) {
-      console.error("Failed to load user posts:", error);
+          };
+        }),
+        ...data.uploaded.map((item) => ({
+          mediaType: item.mediaType || item.fileName,
+          mediaUrl: item.mediaUrl || item.fileUrl,
+          mediaId: item.mediaId,
+          title: item.name,
+        })),
+      ];
     }
-  
-    return (
-      <div>
-        {/* Specific post */}
-        {/* {children} */}
-        <div className="posts-container">
-          {/* Use a Context Provider instead of cloneElement */}
-          <PostsProvider value={{ allPosts: userPosts, username }}>
-            {children}
-          </PostsProvider>
-        </div>
+  } catch (error) {
+    console.error("Failed to load user posts:", error);
+  }
 
+  return (
+    <div className="w-full bg-[#F2F2F2] flex flex-col items-center justify-start lg:justify-center">
+      <PostsProvider value={{ allPosts: userPosts, username }}>
+        <div className="posts-container">{children}</div>
 
         {/* More posts */}
-        <div className="max-w-5xl  mx-auto mt-12 px-16">
-          <h3 className="text-lg font-apfel-grotesk-mittel font-medium mb-4">More from @{username}</h3>
-          <div className="flex gap-4 overflow-x-auto pb-2">
+        <div className="mx-auto mt-4 px-4 mb-20 w-full lg:w-[864px] lg:px-0">
+          <h3 className="text-xl font-qimano text-[#212121] mb-5 lg:pl-[px]">
+            More from @{username}
+          </h3>
+
+          <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 justify-center items-center lg:justify-start lg:items-start ">
+
             {userPosts.length > 0 ? (
               userPosts.map((post, index) => (
                 <Link
@@ -82,7 +83,7 @@ export default async function PostLayout({ children, params }) {
                         className="object-cover rounded-md"
                       />
                     </div>
-                  ) : post.mediaType.includes("VIDEO") || post.mediaType.endsWith(".mp4") ? (
+                  ) : post.mediaType?.includes("VIDEO") || post.mediaUrl?.endsWith(".mp4") ? (
                     <video
                       muted
                       playsInline
@@ -105,6 +106,7 @@ export default async function PostLayout({ children, params }) {
             )}
           </div>
         </div>
-      </div>
-    );
-  }
+      </PostsProvider>
+    </div>
+  );
+}

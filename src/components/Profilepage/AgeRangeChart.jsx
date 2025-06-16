@@ -50,11 +50,11 @@ const AgeRangeChart = ({ apiEndpoint }) => {
   }, [selectedGender]);
 
   if (loading) {
-    return <p className="text-center text-gray-600 font-apfel-grotesk-regular">Loading...</p>;
+    return <p className="text-center text-gray-600 font-apfel-grotezk-regular">Loading...</p>;
   }
 
   return (
-    <div className="w-full max-w-[360px] mx-auto px-3 font-apfel-grotesk-regular">
+    <div className="w-full max-w-[360px] mx-auto px-3 font-apfel-grotezk-regular">
       {/* Gender Buttons */}
       <div className="flex justify-center gap-2 mb-12 sm:mb-14">
         {['all', 'men', 'women'].map((gender) => (
@@ -85,7 +85,7 @@ const AgeRangeChart = ({ apiEndpoint }) => {
                   style={{ width: `${parseFloat(percentage)}%` }}
                 />
               </div>
-              <span className="text-xs sm:text-sm text-[#0037EB] w-[30px] sm:w-[38px] font-apfel-grotesk-semibold text-right">
+              <span className="text-xs sm:text-sm text-[#0037EB] w-[30px] sm:w-[38px] font-apfel-grotezk-regular text-right">
                 {parseFloat(percentage).toFixed(1)}%
               </span>
             </div>

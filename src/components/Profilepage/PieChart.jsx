@@ -91,7 +91,7 @@ const DoughnutChart = ({ apiEndpoint }) => {
           </div>
 
           {/* Gender Legend */}
-          <div className="mt-6 flex justify-between w-full max-w-[240px] text-sm font-apfel-grotesk-regular">
+          <div className="mt-6 flex justify-between w-full max-w-[240px] text-sm font-apfel-grotezk-regular">
             {/* Male */}
             <div className="flex flex-col items-center gap-1 ml-8">
               <div className="flex items-center gap-2">

@@ -62,7 +62,7 @@ export default async function PostLayout({ children, params }) {
 
 
         {/* More posts */}
-        <div className="max-w-5xl  mx-auto mt-12 px-4">
+        <div className="max-w-5xl  mx-auto mt-4 px-4 lg:px-16 mb-12 items-start">
           <h3 className="text-lg font-apfel-grotesk-mittel font-medium mb-4">More from @{username}</h3>
           <div className="flex gap-4 overflow-x-auto pb-2">
             {userPosts.length > 0 ? (
