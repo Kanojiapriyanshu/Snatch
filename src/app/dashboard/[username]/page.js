@@ -9,9 +9,14 @@ import { useQuery } from "@tanstack/react-query";
 
 const DashboardPage = () => {
   const [selectedLocationType, setSelectedLocationType] = useState("country");
+<<<<<<< Updated upstream
   const [isInstagramLinked, setIsInstagramLinked] = useState(true);
   const [hasMinFollowers, setHasMinFollowers] = useState(true);
   const [totalRequests, setTotalRequests] = useState(0); 
+=======
+  const [isInstagramLinked, setIsInstagramLinked] = useState(true); // default true to avoid flash
+  const [totalRequests, setTotalRequests] = useState(0); // state to hold total
+>>>>>>> Stashed changes
   const pathname = usePathname();
   const username = pathname.split("/").pop();
 
@@ -39,12 +44,34 @@ const DashboardPage = () => {
     staleTime: 1000 * 60 * 5,
   });
 
+<<<<<<< Updated upstream
+=======
+  // // Instagram connection check
+  // useEffect(() => {
+  //   const checkInstagramConnection = async () => {
+  //     try {
+  //       const response = await fetch("/api/auth/check-instagram-connection");
+  //       const data = await response.json();
+  //       setIsInstagramLinked(data.connected);
+  //     } catch (error) {
+  //       console.error("Error checking Instagram connection:", error);
+  //       setIsInstagramLinked(false);
+  //     }
+  //   };
+
+  //   if (username) {
+  //     checkInstagramConnection();
+  //   }
+  // }, [username]);
+
+>>>>>>> Stashed changes
   useEffect(() => {
     const fetchInfluencerData = async () => {
       try {
         // 1. Check if Instagram is linked
         const instagramResponse = await fetch("/api/auth/check-instagram-connection");
         const instagramData = await instagramResponse.json();
+<<<<<<< Updated upstream
         
         setIsInstagramLinked(instagramData.connected);
         
@@ -60,13 +87,23 @@ const DashboardPage = () => {
         const requestsData = await requestsResponse.json();
         if (requestsData.totalRequests !== undefined) {
           setTotalRequests(requestsData.totalRequests);
+=======
+        setIsInstagramLinked(instagramData.connected);
+  
+        // 2. Fetch total collaboration requests
+        const requestsResponse = await fetch(`/api/influencer-requests?username=${username}`);
+        const requestsData = await requestsResponse.json();
+  
+        if (requestsData.totalRequests !== undefined) {
+          setTotalRequests(requestsData.totalRequests); // assuming you defined setTotalRequests
+>>>>>>> Stashed changes
         }
       } catch (error) {
         console.error("Error fetching influencer data:", error);
         setIsInstagramLinked(false);
       }
     };
-
+  
     if (username) {
       fetchInfluencerData();
     }
@@ -115,6 +152,7 @@ const DashboardPage = () => {
   }
 
   return (
+<<<<<<< Updated upstream
     <div className="mt-2 relative p-3">
       {/* Blur wrapper when conditions are not met */}
       <div className={`${(!isInstagramLinked || !hasMinFollowers) ? "blur-sm pointer-events-none select-none" : ""}`}>
@@ -128,6 +166,22 @@ const DashboardPage = () => {
             className="flex-auto"
           />
         </div>
+=======
+    <div className="mt-2 relative flex flex-col p-3">
+      {/* Top Analytics Cards */}
+      <div className="mb-[500px] flex gap-3">
+        <DashboardCardwrapper
+          count={analytics.totalVisitors}
+          label={"Profile Visits"}
+        />
+        <DashboardCardwrapper count={totalRequests || 0} label={"Request Received"} />
+        <DashboardCardwrapper
+          count={Number(analytics?.totalAvgTimeSpent)?.toFixed(1) || "0.0"}
+          label={"Avg Time Spent (Mins)"}
+          className="flex-auto"
+        />
+      </div>
+>>>>>>> Stashed changes
 
         {/* Location Analytics */}
         <div className="absolute top-[23%] w-full">

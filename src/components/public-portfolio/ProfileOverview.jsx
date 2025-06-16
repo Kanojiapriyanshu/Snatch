@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react"
+<<<<<<< Updated upstream
 import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useSpring } from "framer-motion"
+=======
+import { motion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
+>>>>>>> Stashed changes
 import { useRouter, usePathname } from "next/navigation"
 import { FormProvider } from "@/app/onboarding/context";
 import { useFetchPortfolio, useInstagramData, useCheckScreenSize } from "@/utils/public-portfolio/portfolio";
@@ -11,6 +15,20 @@ import PortfolioPublic from "./PortfolioPublic";
 import Questionnaire from "./QuestionCard";
 import AudienceCard from "./AudienceCard";
 
+<<<<<<< Updated upstream
+=======
+const ProfileOverview = ({ownerId}) => {
+  const [isMounted, setIsMounted] = useState(false)
+  const { scrollYProgress } = useScroll()
+  const scrollY = useTransform(scrollYProgress, [0, 1], [0, 1000])
+  const containerRef = useRef(null)
+  const pressKitRef = useRef(null)
+  const formData = useFetchPortfolio(ownerId);
+  const { data, loading, error } = useInstagramData();
+  const router = useRouter()
+  const pathname = usePathname(); // e.g., "/public-portfolio/snatchsocial"
+
+>>>>>>> Stashed changes
 
 const useAnimatedNumber = (target) => {
   const motionValue = useMotionValue(0);
@@ -101,6 +119,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   
   // Update the handleRequest function to handle both admin and public cases
   const handleRequest = () => {
+<<<<<<< Updated upstream
   if (isAdminView) {
   // For admin view - copy portfolio link
   const parts = pathname.split("/");
@@ -123,6 +142,12 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   };
 
   
+=======
+    const parts = pathname.split("/");
+    const influencerUsername = parts[2]; // assuming route is /public-portfolio/[username]
+    router.push(`/request-popup?username=${influencerUsername}`);
+  };
+>>>>>>> Stashed changes
 
   return (
     <div className="flex flex-col w-full p-1 rounded-xl " ref={containerRef}>
@@ -193,10 +218,14 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
           {/*1 Left Side - Pricing and Services */}
           <div className="w-[370px] pt-20 ml-10 hidden lg:block">
             <div className="flex gap-3  items-center mb-4">
+<<<<<<< Updated upstream
               <h2 className="font-qimano text-3xl font-medium">
   <span className="font-md">₹</span> {formatNumber(lower)} - <span className="font-thin">₹</span> {formatNumber(upper)}
 </h2>
 
+=======
+              <h2 className=" font-medium font-qimano text-3xl">{priceRange}</h2>
+>>>>>>> Stashed changes
               <p className=" text-gray-500 font-apfel-grotezk-regular text-lg ">Value per content piece</p>
             </div>
 
@@ -323,6 +352,39 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         </motion.div>
       </div>
     </motion.div>
+<<<<<<< Updated upstream
+=======
+    {/* left section price and comp (mobile) */}
+    <div className="w-[340px] pt-20 ml-10 block lg:hidden">
+            <div className="flex gap-3  items-center mb-4">
+              <h2 className=" font-medium font-qimano text-3xl">{priceRange}</h2>
+              <p className=" text-gray-500 font-apfel-grotezk-regular text-lg ">Value per content piece</p>
+            </div>
+
+            <div className=" border-b-[1px] -mt-4 bg-lime-yellow ">
+
+            </div>
+
+            {/* Services */}
+           
+            <div className="flex flex-wrap text-sm mt-2">
+            {formData?.compensation?.length > 0 ? (
+              formData.compensation.map((item, index) => (
+                <div key={index} className="inline-flex items-center font-qimano text-xl">
+                  <span className="px-1">{item}</span>
+                  {index !== formData.compensation.length - 1 && (
+                    <span className="text-white px-1">|</span> 
+                  )}
+                </div>
+              ))
+            ) : (
+              // Fallback - Display "Compensation" when no data exists
+              <div className="flex items-center justify-center">
+                <span>Compensation</span>
+              </div>
+            )}
+          </div>
+>>>>>>> Stashed changes
 
 
 <div className="w-full max-w-sm px-4 pt-20 mx-auto block lg:hidden overflow-x-hidden">
