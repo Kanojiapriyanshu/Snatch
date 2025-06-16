@@ -81,11 +81,11 @@ const PortfolioPublic = () => {
   };
 
   return (
-    <div className="w-full mx-auto max-w-[600px] lg:max-w-[1600px] p-2 sm:p-4">
+    <div className="w-full mx-auto max-w-[600px] lg:max-w-[1600px] p-0 sm:p-4">
       {projects.length > 0 ? (
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-2 lg:gap-8">
+        <div className="grid grid-cols-3 gap-[1px] sm:grid-cols-4 sm:gap-2 lg:gap-8">
           {projects.map((project, index) => (
-           <div key={index} className="relative w-full aspect-square p-[6px] sm:p-2">
+           <div key={index} className="relative w-full aspect-square p-0 sm:p-2">
 
               <Link
                 href={`/${username}/media-kit/post/?postId=${project.mediaId}`}
@@ -169,9 +169,9 @@ const PortfolioPublic = () => {
                     />
                   )}
 
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
-                    <span className="text-yellow-300 text-center text-base sm:text-lg text-Apfel-Grotezk">
+                  {/* Overlay - Moved outside the conditional rendering */}
+                  <div className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30">
+                    <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
                       Post Info & Insights ↗
                     </span>
                   </div>

@@ -149,7 +149,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
             }
       }
     >
-      <div className="container mx-auto mt- px-4 py-8 flex flex-col items-center">
+      <div className={isMobile ? "w-full py-8 flex flex-col items-center" : "container mx-auto mt- px-4 py-8 flex flex-col items-center"}>
         {/* Name and Location */}
         <motion.h1
           className="flex items-center gap-2 font-qimano text-6xl lg:text-[74.12px]"
@@ -187,7 +187,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-6 relative lg:mt-10 flex justify-center overflow-visible">
+      <div className={isMobile ? "w-full relative lg:mt-10 flex justify-center overflow-visible" : "container mx-auto px-6 relative lg:mt-10 flex justify-center overflow-visible"}>
         <motion.div className="flex flex-col-reverse lg:flex-row justify-between w-80 lg:w-[1600px] lg:relative z-10 overflow-visible" style={{ opacity: isMobile? "1": contentOpacity }}>
 
           {/*1 Left Side - Pricing and Services */}
@@ -261,7 +261,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
 
             {/* CTA Button */}
-            <button className="bg-lime-yellow text-graphite font-outline text-semibold py-2 px-4 rounded mt-6 w-[328px] max-w-[328px] font-apfel-grotezk-regular" onClick={handleRequest}>
+            <button className="bg-lime-yellow text-graphite font-outline  py-2 px-4 rounded mt-6 w-[328px] max-w-[328px] font-apfel-grotezk-regular" onClick={handleRequest}>
               {isAdminView ? "Copy Portfolio Link" : "Send request"}
             </button>
           </div>
@@ -384,7 +384,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
   {/* CTA Button */}
   <button
-    className="bg-lime-yellow text-graphite font-semibold py-2 px-4 rounded mt-6 w-full font-apfel-grotezk-regular"
+    className="bg-lime-yellow text-graphite  py-2 px-4 rounded mt-6 w-full font-apfel-grotezk-regular"
     onClick={handleRequest}
   >
     {isAdminView ? "Copy Portfolio Link" : "Send request"}
@@ -402,8 +402,8 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       }}
       ref={pressKitRef}
     >
-      <div className="container mx-auto">
-        <h2 className="text-5xl lg:text-7xl font-qimano text-[#0044FF] text-center  lg:mt-8 text-electric-blue">
+      <div className={isMobile ? "w-full" : "container mx-auto"}>
+        <h2 className=" ml-32 text-5xl lg:text-7xl font-qimano  text-[#0044FF] text-center lg:ml-96  lg:mt-8 text-electric-blue">
           Press Kit
         </h2>
 
@@ -413,7 +413,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         {/* social links */}
         <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex items-center">
   {/* Visible only on lg screens */}
-  <span className="hidden lg:inline ml-6">My social media</span>
+  <span className="hidden lg:inline ml-6 font-apfel-grotezk-regular">My social media</span>
 
   <span className="hidden lg:flex items-center w-[500%]">
     <span className="border-b-[0.5px] border-gray-400 mx-2 w-full"></span>
@@ -425,32 +425,32 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       <Image
         src="/assets/images/insta.svg"
         alt="Instagram"
-        width={30}
-        height={25}
+        width={38}
+        height={33}
       />
     </span>
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/images/X.svg"
         alt="X"
-        width={30}
-        height={20}
+        width={38}
+        height={33}
       />
     </span>
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/icons/facebook.svg"
         alt="Facebook"
-        width={30}
-        height={20}
+        width={38}
+        height={33}
       />
     </span>
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/icons/linkedin.svg"
         alt="LinkedIn"
-        width={30}
-        height={20}
+        width={38}
+        height={33}
       />
     </span>
   </span>
@@ -459,15 +459,20 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
 
        
-        <div className=" w-full mt-4 mx-auto lg:max-w-[1900px] max-w-[500px]">
-        <Questionnaire name={formData?.firstName
-          ? formData.firstName.charAt(0).toUpperCase() + formData.firstName.slice(1)
-            : ""}/>
-        </div>
+<div className="w-full mt-4 mx-0 px-0 lg:max-w-[1900px]">
+  <Questionnaire
+    name={
+      formData?.firstName
+        ? formData.firstName.charAt(0).toUpperCase() + formData.firstName.slice(1)
+        : ""
+    }
+  />
+</div>
+
 
       
 
-        <div className="w-full mx-auto lg:max-w-[1300px] max-w-[500px] ">
+        <div className="w-full mx-0 px-0 lg:max-w-[1300px]">
         <AudienceCard />
         </div>
 

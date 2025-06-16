@@ -60,18 +60,18 @@ const Questionnaire = ({ name }) => {
 
   return (
     <div className={clsx(
-      "relative pb-10 ml-4",
+      "relative pb-10",
       "lg:mt-10 lg:ml-10",
       "flex flex-col"
     )}>
-      <h3 className=" text-[45px] lg:text-6xl text-2xl font-qimano text-electric-blue mb-4">About {name}</h3>
+      <h3 className=" text-[45px] text-center lg:text-7xl lg:text-left text-2xl font-qimano text-electric-blue mb-4">About {name}</h3>
 
       {/* Mobile view: horizontal scroll with snap and partial next card visibility */}
-      <div className="lg:hidden relative flex-grow flex justify-center items-center">
+      <div className="lg:hidden relative flex-grow flex">
         {allCards.length > 0 && (
           <div
             ref={mobileScrollRef}
-            className="flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory w-full"
+            className="flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory w-full pl-[4vw]"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             onScroll={() => setScrollResetTrigger(prev => prev + 1)}
           >
@@ -80,8 +80,7 @@ const Questionnaire = ({ name }) => {
                 key={card.key}
                 className="flex-shrink-0 snap-center"
                 style={{
-                  width: '85vw',
-                  marginRight: (index < allCards.length - 1) ? '5vw' : '0',
+                  marginRight: (index < allCards.length - 1) ? '3vw' : '0',
                   marginLeft: (index === 0) ? '5vw' : '0'
                 }}
               >
@@ -191,7 +190,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
     <div
       className={clsx(
         "relative flex border rounded-3xl overflow-hidden cursor-pointer shrink-0 transition-transform duration-300",
-        isMobile ? "w-[65vw] h-[450px]" : "w-[360px] h-[500px] mr-3",
+        isMobile ? "w-[75vw] h-[490px]" : "w-[360px] h-[580px] mr-3",
         isMobile && touched ? "-translate-y-4" : ""
       )}
       onMouseEnter={() => !isMobile && setHovered(true)}
@@ -217,10 +216,10 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
 
       <div
         className={clsx(
-          `absolute left-0 bottom-0 w-full flex flex-col items-center justify-center transition-all duration-300 rounded-t-xl`,
+          `absolute left-0 bottom-0 w-full flex flex-col p-5 items-center justify-center transition-all duration-300 rounded-t-xl`,
           cardType.bg,
           cardType.text,
-          isMobile ? (isRevealed ? "h-[100%]" : "h-[50%]") : (hovered ? "h-[100%]" : "h-[50%]")
+          isMobile ? (isRevealed ? "h-[100%]" : "h-[50%]") : (hovered ? "h-[100%]" : "h-[45%]")
         )}
       >
         <Image
@@ -230,14 +229,14 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
           width={10}
           className="w-20 h-17 mt-1"
         />
-        <p className={clsx("text-center lg:text-xl font-qimano", cardType.text)}>
+        <p className={clsx("text-center text-xl p-5 lg:text-2xl font-qimano mb-4", cardType.text)}>
           {question}
         </p>
 
         {(isMobile ? isRevealed : hovered) && (
           <p
             className={clsx(
-              "text-xs lg:text-xl text-center font-apfel-grotezk-regular mt-4",
+              "text-[16px] lg:text-[16px] text-center font-apfel-grotezk-regular mt-4",
               cardType.text
             )}
           >
@@ -245,7 +244,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
           </p>
         )}
 
-        <p className="mt-2 font-apfel-grotezk-regular text-xs text-center">
+        <p className="mb-6 font-apfel-grotezk-regular text-xs text-center">
           {cardType.bg === "bg-lime-yellow"
             ? "About"
             : cardType.bg === "bg-graphite"

@@ -69,7 +69,7 @@ const Audience = () => {
         {/* AI Generated Insights */}
         {insights ? (
           <div className="mx-auto mb-6">
-            <div className="text-gray-700 whitespace-pre-line">{insights}</div>
+            <div className="text-gray-700 whitespace-pre-line font-apfel-grotezk-regular">{insights}</div>
           </div>
         ) : (
           <div className="mx-auto space-y-2 mb-6">
