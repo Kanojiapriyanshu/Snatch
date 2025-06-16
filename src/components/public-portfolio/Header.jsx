@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { useCheckScreenSize } from "@/utils/public-portfolio/portfolio";
 import { useRouter, usePathname } from "next/navigation";
-<<<<<<< Updated upstream
 
 const Header = ({ formData, data, headerOpacity, isAdminView }) => {
   const router = useRouter();
@@ -29,20 +28,6 @@ const Header = ({ formData, data, headerOpacity, isAdminView }) => {
       const influencerUsername = parts[1];
       router.push(`/request-popup?username=${influencerUsername}`);
     }
-=======
-const Header = ({ formData, data, headerOpacity }) => {
-  const router = useRouter();
-  const pathname = usePathname(); 
-  const isMobile = useCheckScreenSize(); // Detect mobile screen
-  
-  // Hide the header on mobile
-  if (isMobile) return null;
-
-  const handleRequest = () => {
-    const parts = pathname.split("/");
-    const influencerUsername = parts[2]; // assuming route is /public-portfolio/[username]
-    router.push(`/request-popup?username=${influencerUsername}`);
->>>>>>> Stashed changes
   };
 
   return (
@@ -55,13 +40,8 @@ const Header = ({ formData, data, headerOpacity }) => {
 >
 
       <div className="container mx-auto flex items-center justify-between">
-<<<<<<< Updated upstream
         <motion.button className="bg-lime-yellow text-graphite font-outline py-2 px-6 w-[300px] max-w-[300px] rounded font-apfel-grotezk-regular" onClick={handleRequest}>
           {isAdminViewRoute ? "Copy Portfolio link" : "Send Request"}
-=======
-        <motion.button className="bg-lime-yellow text-graphite font-semibold py-2 px-6 w-[300px] max-w-[300px] rounded font-apfel-grotezk-regular" onClick={handleRequest}>
-          Send request
->>>>>>> Stashed changes
         </motion.button>
 
         <div className="flex items-center">

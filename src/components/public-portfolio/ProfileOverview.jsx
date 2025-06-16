@@ -1,11 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react"
-<<<<<<< Updated upstream
 import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useSpring } from "framer-motion"
-=======
-import { motion, useScroll, useTransform, useMotionTemplate } from "framer-motion"
->>>>>>> Stashed changes
 import { useRouter, usePathname } from "next/navigation"
 import { FormProvider } from "@/app/onboarding/context";
 import { useFetchPortfolio, useInstagramData, useCheckScreenSize } from "@/utils/public-portfolio/portfolio";
@@ -14,23 +10,7 @@ import Image from "next/image"
 import PortfolioPublic from "./PortfolioPublic";
 import Questionnaire from "./QuestionCard";
 import AudienceCard from "./AudienceCard";
-import Link from 'next/link';
 
-
-<<<<<<< Updated upstream
-=======
-const ProfileOverview = ({ownerId}) => {
-  const [isMounted, setIsMounted] = useState(false)
-  const { scrollYProgress } = useScroll()
-  const scrollY = useTransform(scrollYProgress, [0, 1], [0, 1000])
-  const containerRef = useRef(null)
-  const pressKitRef = useRef(null)
-  const formData = useFetchPortfolio(ownerId);
-  const { data, loading, error } = useInstagramData();
-  const router = useRouter()
-  const pathname = usePathname(); // e.g., "/public-portfolio/snatchsocial"
-
->>>>>>> Stashed changes
 
 const useAnimatedNumber = (target) => {
   const motionValue = useMotionValue(0);
@@ -121,7 +101,6 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   
   // Update the handleRequest function to handle both admin and public cases
   const handleRequest = () => {
-<<<<<<< Updated upstream
   if (isAdminView) {
   // For admin view - copy portfolio link
   const parts = pathname.split("/");
@@ -144,12 +123,6 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   };
 
   
-=======
-    const parts = pathname.split("/");
-    const influencerUsername = parts[2]; // assuming route is /public-portfolio/[username]
-    router.push(`/request-popup?username=${influencerUsername}`);
-  };
->>>>>>> Stashed changes
 
   return (
     <div className="flex flex-col w-full p-1 rounded-xl " ref={containerRef}>
@@ -176,7 +149,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
             }
       }
     >
-      <div className={isMobile ? "w-full py-8 flex flex-col items-center" : "container mx-auto mt- px-4 py-8 flex flex-col items-center"}>
+      <div className="container mx-auto mt- px-4 py-8 flex flex-col items-center">
         {/* Name and Location */}
         <motion.h1
           className="flex items-center gap-2 font-qimano text-6xl lg:text-[74.12px]"
@@ -214,20 +187,16 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         </motion.div>
       </div>
 
-      <div className={isMobile ? "w-full relative lg:mt-10 flex justify-center overflow-visible" : "container mx-auto px-6 relative lg:mt-10 flex justify-center overflow-visible"}>
+      <div className="container mx-auto px-6 relative lg:mt-10 flex justify-center overflow-visible">
         <motion.div className="flex flex-col-reverse lg:flex-row justify-between w-80 lg:w-[1600px] lg:relative z-10 overflow-visible" style={{ opacity: isMobile? "1": contentOpacity }}>
 
           {/*1 Left Side - Pricing and Services */}
           <div className="w-[370px] pt-20 ml-10 hidden lg:block">
             <div className="flex gap-3  items-center mb-4">
-<<<<<<< Updated upstream
               <h2 className="font-qimano text-3xl font-medium">
   <span className="font-md">₹</span> {formatNumber(lower)} - <span className="font-thin">₹</span> {formatNumber(upper)}
 </h2>
 
-=======
-              <h2 className=" font-medium font-qimano text-3xl">{priceRange}</h2>
->>>>>>> Stashed changes
               <p className=" text-gray-500 font-apfel-grotezk-regular text-lg ">Value per content piece</p>
             </div>
 
@@ -287,12 +256,8 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   )}
 </div>
 
-
-
-
-
             {/* CTA Button */}
-            <button className="bg-lime-yellow text-graphite font-outline  py-2 px-4 rounded mt-6 w-[328px] max-w-[328px] font-apfel-grotezk-regular" onClick={handleRequest}>
+            <button className="bg-lime-yellow text-graphite font-outline text-semibold py-2 px-4 rounded mt-6 w-[328px] max-w-[328px] font-apfel-grotezk-regular" onClick={handleRequest}>
               {isAdminView ? "Copy Portfolio Link" : "Send request"}
             </button>
           </div>
@@ -354,39 +319,6 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         </motion.div>
       </div>
     </motion.div>
-<<<<<<< Updated upstream
-=======
-    {/* left section price and comp (mobile) */}
-    <div className="w-[340px] pt-20 ml-10 block lg:hidden">
-            <div className="flex gap-3  items-center mb-4">
-              <h2 className=" font-medium font-qimano text-3xl">{priceRange}</h2>
-              <p className=" text-gray-500 font-apfel-grotezk-regular text-lg ">Value per content piece</p>
-            </div>
-
-            <div className=" border-b-[1px] -mt-4 bg-lime-yellow ">
-
-            </div>
-
-            {/* Services */}
-           
-            <div className="flex flex-wrap text-sm mt-2">
-            {formData?.compensation?.length > 0 ? (
-              formData.compensation.map((item, index) => (
-                <div key={index} className="inline-flex items-center font-qimano text-xl">
-                  <span className="px-1">{item}</span>
-                  {index !== formData.compensation.length - 1 && (
-                    <span className="text-white px-1">|</span> 
-                  )}
-                </div>
-              ))
-            ) : (
-              // Fallback - Display "Compensation" when no data exists
-              <div className="flex items-center justify-center">
-                <span>Compensation</span>
-              </div>
-            )}
-          </div>
->>>>>>> Stashed changes
 
 
 <div className="w-full max-w-sm px-4 pt-20 mx-auto block lg:hidden overflow-x-hidden">
@@ -448,7 +380,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
   {/* CTA Button */}
   <button
-    className="bg-lime-yellow text-graphite  py-2 px-4 rounded mt-6 w-full font-apfel-grotezk-regular"
+    className="bg-lime-yellow text-graphite font-semibold py-2 px-4 rounded mt-6 w-full font-apfel-grotezk-regular"
     onClick={handleRequest}
   >
     {isAdminView ? "Copy Portfolio Link" : "Send request"}
@@ -466,8 +398,8 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       }}
       ref={pressKitRef}
     >
-      <div className={isMobile ? "w-full" : "container mx-auto"}>
-        <h2 className=" ml-32 text-5xl lg:text-7xl font-qimano  text-[#0044FF] text-center lg:ml-96  lg:mt-8 text-electric-blue">
+      <div className="container mx-auto">
+        <h2 className="text-5xl lg:text-7xl font-qimano text-[#0044FF] text-center  lg:mt-8 text-electric-blue">
           Press Kit
         </h2>
 
@@ -475,46 +407,46 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         <PortfolioPublic />
 
         {/* social links */}
-        <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex items-center justify-center ">
+        <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex justify-center items-center ">
   {/* Visible only on lg screens */}
-  <span className="hidden lg:inline ml-6 font-apfel-grotezk-regular">My social media</span>
+  <span className="hidden lg:inline ml-6">My social media</span>
 
-  <span className="hidden lg:flex items-center w-[500%] lg:justify-center 7xl:w-[1200px]">
+  <span className="hidden lg:flex justify-center items-center w-[500%] lg:w-[1200px]">
     <span className="border-b-[0.5px] border-gray-400 mx-2 w-full"></span>
   </span>
 
   {/* Icons (visible on all screen sizes, justified between for mobile) */}
-  <span className="flex w-full max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-start">
+  <span className="flex max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-center">
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/images/insta.svg"
         alt="Instagram"
-        width={38}
-        height={33}
+        width={30}
+        height={25}
       />
     </span>
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/images/X.svg"
         alt="X"
-        width={38}
-        height={33}
+        width={30}
+        height={20}
       />
     </span>
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/icons/facebook.svg"
         alt="Facebook"
-        width={38}
-        height={33}
+        width={30}
+        height={20}
       />
     </span>
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/icons/linkedin.svg"
         alt="LinkedIn"
-        width={38}
-        height={33}
+        width={30}
+        height={20}
       />
     </span>
   </span>
@@ -523,20 +455,15 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
 
        
-<div className="w-full mt-4 mx-0 px-0 lg:max-w-[1600px] 4xl:mx-auto">
-  <Questionnaire
-    name={
-      formData?.firstName
-        ? formData.firstName.charAt(0).toUpperCase() + formData.firstName.slice(1)
-        : ""
-    }
-  />
-</div>
-
+        <div className=" w-full mt-4 mx-auto lg:max-w-[1600px] max-w-[500px]">
+        <Questionnaire name={formData?.firstName
+          ? formData.firstName.charAt(0).toUpperCase() + formData.firstName.slice(1)
+            : ""}/>
+        </div>
 
       
 
-        <div className="w-full mx-0 px-0 lg:max-w-[1400px]  4xl:mx-auto">
+        <div className="w-full mx-auto lg:max-w-[1300px] max-w-[500px] ">
         <AudienceCard />
         </div>
 
