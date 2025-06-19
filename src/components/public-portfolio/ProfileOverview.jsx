@@ -10,6 +10,7 @@ import Image from "next/image"
 import PortfolioPublic from "./PortfolioPublic";
 import Questionnaire from "./QuestionCard";
 import AudienceCard from "./AudienceCard";
+import SocialLinks from "./SocialLinks";
 
 
 const useAnimatedNumber = (target) => {
@@ -409,14 +410,14 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         {/* social links */}
         <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex justify-center items-center ">
   {/* Visible only on lg screens */}
-  <span className="hidden lg:inline ml-6">My social media</span>
+  <span className="hidden lg:inline ml-6 font-apfel-grotezk-regular">My social media</span>
 
   <span className="hidden lg:flex justify-center items-center w-[500%] lg:w-[1200px]">
     <span className="border-b-[0.5px] border-gray-400 mx-2 w-full"></span>
   </span>
 
   {/* Icons (visible on all screen sizes, justified between for mobile) */}
-  <span className="flex max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-center">
+  {/* <span className="flex max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-center">
     <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
       <Image
         src="/assets/images/insta.svg"
@@ -449,7 +450,8 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         height={20}
       />
     </span>
-  </span>
+  </span> */}
+  <SocialLinks />
 </div>
 
 

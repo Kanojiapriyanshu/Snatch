@@ -10,7 +10,6 @@ import Uploadsvg from "@/components/svg/Uploadsvg";
 import SvgComponent from "@/components/svg/Instagramsvg";
 
  function PreviewContent() {
-  const [activeTab, setActiveTab] = useState("instagram");
   const {
     selectionState,
     handleFileUpload,
@@ -18,13 +17,14 @@ import SvgComponent from "@/components/svg/Instagramsvg";
     isBrandCollaboration,
     setIsBrandCollaboration
   } = useSelectedProjects();
- // const [activeImageId, setActiveImageId] = useState(null);
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const [isHydrated, setIsHydrated] = useState(false);
   const [insights, setInsights] = useState([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeImageId = searchParams.get("activeImageId");
+  const initialTab = searchParams.get("tab") || "instagram";
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   //const isBrandCollaboration = searchParams.get('isBrandCollaboration');

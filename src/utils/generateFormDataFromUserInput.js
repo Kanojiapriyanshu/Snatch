@@ -45,9 +45,12 @@ This entry will appear on a public-facing press kit viewed by brand managers, ag
 - Keep event names and titles natural and memorable — avoid robotic or placeholder-y phrasing like “latest drop” or “new product launch” without a specific angle
 - While answering all questions ensure to use sentence case and correct grammar
 
+
 🧠 INSTRUCTIONS:
 
 Use the variable is_brand_collaboration to decide which fields to extract and display.
+Decide whether this project is a brand collaboration based on the user's input.
+If it involves a brand, company, product promotion, sponsorship, paid partnership, or campaign — set:
 
 - If is_brand_collaboration = true:
   → Extract and display all fields, including:
@@ -55,8 +58,9 @@ Use the variable is_brand_collaboration to decide which fields to extract and di
     - company_location
     - event_name
     - event_type
-
-- If is_brand_collaboration = false:
+    
+If it is a personal, editorial, community-led, or non-commercial project — set:
+- is_brand_collaboration = false:
   → Skip the following fields entirely:
     - company_name
     - company_location
@@ -68,6 +72,9 @@ In both cases:
 - Extract a clear, polished title and description
 - Include up to 3 relevant industries
 - Use considerations only for fields that need review (e.g. missing specificity or location)
+
+This boolean will also be used to control the UI toggle for "Is this a brand collaboration?" — set it to match your best judgment.
+Always include is_brand_collaboration in the final JSON output.
 
 —
 {
@@ -110,6 +117,7 @@ Always include the considerations block only for the fields that are present in 
 📦 OUTPUT FORMAT (JSON):
 
 {
+  "is_brand_collaboration": true // or false
   "title":  "string — sentence-case headline showing the creator’s impact (max 10 words)",
   "description": "string — sentence-case summary of the creator’s role and value (min 20 words and max 25 words)",
   "industries": ["string", "string"],
@@ -189,5 +197,12 @@ Only include keys inside considerations that actually need user review. You may 
     throw new Error(`AI generation failed: ${error.message}`);
   }
 };
+
+
+
+// "is_brand_collaboration": true // or false
+// n your code, when the AI response is received:
+// If is_brand_collaboration === true → toggle switch ON (blue ✅ as shown)
+// If false → toggle switch OFF
 
 

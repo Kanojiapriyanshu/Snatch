@@ -124,8 +124,15 @@ useEffect(() => {
   const existingFormData = formDataArray.find(
     (item) => item.key === activeImageId.toString()
   );
+
   
   if (existingFormData) {
+        const savedBrandCollabState = existingFormData.isBrandCollaboration !== undefined 
+      ? existingFormData.isBrandCollaboration 
+      : true;
+
+    setIsBrandCollaboration(savedBrandCollabState); // Update toggle state
+    
     // If form data exists, load it and ensure all required fields are present
     setCurrentFormData({
       ...existingFormData,
@@ -142,9 +149,7 @@ useEffect(() => {
       industries: existingFormData.industries || [],
       titleName: existingFormData.titleName || "",
       isDraft: existingFormData.isDraft !== undefined ? existingFormData.isDraft : true,
-      isBrandCollaboration: existingFormData.isBrandCollaboration !== undefined 
-        ? existingFormData.isBrandCollaboration 
-        : true,
+        isBrandCollaboration: savedBrandCollabState,
     });
     console.log("Loaded existing form data:", existingFormData);
   } else {
@@ -168,12 +173,34 @@ useEffect(() => {
   }
 }, [activeImageId, selectionState?.formData]);
 
-// Add this effect to sync isBrandCollaboration with currentFormData 20 april
+// Add this useEffect to your component
 useEffect(() => {
-  if (currentFormData?.isBrandCollaboration !== undefined) {
-    setIsBrandCollaboration(currentFormData.isBrandCollaboration);
+  if (activeTab === "uploaded" && activeImageId) {
+    // Ensure uploaded files form data is properly initialized
+    const existingData = selectionState.formData.find(
+      (item) => item.key === activeImageId.toString()
+    );
+    
+    if (!existingData) {
+      // Initialize form data for uploaded files
+      const initialData = {
+        key: activeImageId.toString(),
+        titleName: "",
+        description: "",
+        industries: [],
+        isBrandCollaboration: isBrandCollaboration,
+        ...(isBrandCollaboration ? {
+          companyName: "",
+          companyLocation: "",
+          eventName: "",
+          eventTypes: [],
+        } : {})
+      };
+      
+      updateFormDataForMedia(activeImageId.toString(), initialData);
+    }
   }
-}, [currentFormData]);
+}, [activeTab, activeImageId]);
 
 if (!isHydrated) {
     return null;
@@ -292,26 +319,43 @@ const handleToggle = () => {
 
   const handlePreviewClick = () => {
     router.push(
-      `/manage-projects/preview/?activeImageId=${activeImageId}`
+      `/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`
     );
   };
+ 
+const isFormComplete = () => {
+  if (!activeImageId) return false;
 
-   const isFormComplete = () => {
-    if (!activeImageId) return false; 
-  
-    // Find the correct form data using the activeImageId
-    const formData = selectionState.formData.find((item) => item.key === activeImageId) || {};
-  
-    // Check if all required fields are filled
-    const areRequiredFieldsFilled = requiredFields.every((field) => {
-      const value = formData[field];
-      return value && (Array.isArray(value) ? value.length > 0 : value.trim() !== ""); // Handle arrays and strings
-    });
-  
-    return areRequiredFieldsFilled;
-  };
-  
+  console.log("Checking form completion for activeImageId:", activeImageId);
+  console.log("Current form data:", currentFormData);
+  console.log("Selection state form data:", selectionState.formData);
 
+  // Get the form data either from current form data or selection state
+  const formData = currentFormData.key === activeImageId.toString() 
+    ? currentFormData 
+    : selectionState.formData.find((item) => item.key === activeImageId.toString());
+
+  if (!formData) {
+    console.log("No form data found for activeImageId:", activeImageId);
+    return false;
+  }
+
+  // Check if all required fields are filled
+  const fieldsToCheck = [...requiredFields];
+  if (formData.isBrandCollaboration) {
+    fieldsToCheck.push("companyName", "companyLocation");
+  }
+
+  const areRequiredFieldsFilled = fieldsToCheck.every((field) => {
+    const value = formData[field];
+    const isValid = value && (Array.isArray(value) ? value.length > 0 : value.trim() !== "");
+    console.log(`Field ${field}: ${isValid ? 'valid' : 'invalid'} - Value:`, value);
+    return isValid;
+  });
+
+  console.log("Form completion result:", areRequiredFieldsFilled);
+  return areRequiredFieldsFilled;
+};
 
   const handleBackClick = () => {
    router.push("/manage-projects/pick-projects");
