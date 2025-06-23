@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { fetchInstagramMedia } from "@/utils/fetchInstagramMedia";
 import { getMediaFromDatabase } from "@/utils/getMediaFromDatabase";
-import Slider from "react-slick"; 
 import MediaDisplay from "@/components/MediaDisplay";
 import { useSelectedProjects } from "../context";
 import { useRouter } from "next/navigation";

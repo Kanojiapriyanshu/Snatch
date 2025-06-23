@@ -1,45 +1,43 @@
-//  const FormInput = ({...props }) => (
-//     <div className="w-full">
-  
-//       <input
-//         {...props}
-//         className="w-full bg-transparent rounded-md border border-gray-300  py-[10px] px-5 text-graphite outline-none transition focus:border-electric-blue active:border-electric-blue active:text-electric-blue focus:text-electric-blue disabled:cursor-default disabled:bg-gray-2"
-//       />
-//     </div>
-//   );
-
-//   export default FormInput
-
 import React, { useState } from 'react';
 
-const FormInput = ({ ...props }) => {
-  const [isFilled, setIsFilled] = useState(false);
+const FormInput = ({ consideration, value, ...props }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const isFilled = value && value.trim().length > 0;
 
-  const handleFocus = () => setIsFocused(true);
+  const isMissingInfo = consideration && !isFilled;
+  const hasClarification = consideration && isFilled;
 
-  const handleBlur = (e) => {
-    setIsFocused(false);
-    setIsFilled(e.target.value.trim().length > 0); // Check if the field is filled
-  };
+  let borderColor = 'border-gray-300';
+  let considerationTextColor = '';
+
+  if (isMissingInfo) {
+    borderColor = 'border-red-500';
+    considerationTextColor = 'text-red-500';
+  } else if (hasClarification) {
+    borderColor = isFocused ? 'border-electric-blue' : 'border-yellow-400'; // 👈 Yellow if not focused, blue if focused
+    considerationTextColor = 'text-yellow-500';
+  } else {
+    borderColor = isFocused ? 'border-electric-blue' : 'border-gray-300';
+  }
 
   return (
     <div className="w-full">
       <input
         {...props}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
+        value={value}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         className={`w-full bg-transparent rounded-md border py-[10px] px-5 outline-none transition 
-          ${isFilled ? 'border-light-grey text-black' : isFocused ? 'border-electric-blue text-electric-blue' : 'border-gray-300'}
+          ${borderColor}
           disabled:cursor-default disabled:bg-gray-2`}
-          
       />
+      {consideration && (
+        <p className={`mt-1 text-sm ${considerationTextColor}`}>
+          {consideration}
+        </p>
+      )}
     </div>
   );
 };
 
 export default FormInput;
-
-
-
-  

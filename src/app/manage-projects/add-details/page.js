@@ -15,6 +15,7 @@ import ProjectCustomFileInput from "@/components/ProjectCustomFileInput";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
 import {generateFormDataFromUserInput} from "@/utils/generateFormDataFromUserInput";
+import { cleanAIResponse } from "@/utils/aiResponseClear";
 
 export default function AddDetails() {
   const {
@@ -51,11 +52,19 @@ export default function AddDetails() {
   
   const [isBrandCollaboration, setIsBrandCollaboration] = useState(true);
   const [isPortrait, setIsPortrait] = useState(false);
-  const [userInput, setUserInput] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [showBrandPopup, setShowBrandPopup] = useState(false)
+  const [popupAnimating, setPopupAnimating] = useState(false);
+  // ...existing code...
+const [popupStep, setPopupStep] = useState(1);
+const [popupUserInput, setPopupUserInput] = useState('');
+const [popupGenerating, setPopupGenerating] = useState(false);
+const [showToast, setShowToast] = useState(false);
+const [hasConsiderations, setHasConsiderations] = useState(false);
 
-// Add this helper function before the return statement
+// ...existing code...
+
+  // Add this helper function before the return statement
 const checkOrientation = (width, height) => {
   return height > width;
 };
@@ -124,15 +133,14 @@ useEffect(() => {
   const existingFormData = formDataArray.find(
     (item) => item.key === activeImageId.toString()
   );
-
-  
-  if (existingFormData) {
+   
+    if (existingFormData) {
         const savedBrandCollabState = existingFormData.isBrandCollaboration !== undefined 
       ? existingFormData.isBrandCollaboration 
       : true;
 
     setIsBrandCollaboration(savedBrandCollabState); // Update toggle state
-    
+      
     // If form data exists, load it and ensure all required fields are present
     setCurrentFormData({
       ...existingFormData,
@@ -150,6 +158,7 @@ useEffect(() => {
       titleName: existingFormData.titleName || "",
       isDraft: existingFormData.isDraft !== undefined ? existingFormData.isDraft : true,
         isBrandCollaboration: savedBrandCollabState,
+        
     });
     console.log("Loaded existing form data:", existingFormData);
   } else {
@@ -173,7 +182,40 @@ useEffect(() => {
   }
 }, [activeImageId, selectionState?.formData]);
 
-// Add this useEffect to your component
+
+const areFormFieldsEmpty = (formData) => {
+  if (!formData) return true;
+  // Always start with the base required fields
+  const fieldsToCheck = ["titleName", "description", "industries"];
+  // Only add company fields if this project is a brand collab
+  if (formData.isBrandCollaboration) {
+    fieldsToCheck.push("companyName", "companyLocation");
+  }
+  return fieldsToCheck.some((field) => {
+    const value = formData[field];
+    return !value || (Array.isArray(value) ? value.length === 0 : value.trim() === "");
+  });
+};
+
+// ...existing code...
+useEffect(() => {
+  if (!activeProject) return;
+  const formData = selectionState.formData.find((item) => item.key === activeProject.mediaId?.toString());
+  if (areFormFieldsEmpty(formData)) {
+    setTimeout(() => {
+      setShowBrandPopup(true);
+      setPopupStep(1); // Reset to first step
+      setPopupAnimating(true);
+      setTimeout(() => setPopupAnimating(false), 1000);
+    }, 1000);
+  } else {
+    setShowBrandPopup(false);
+  }
+}, [activeProject?.mediaId]);
+// ...existing code...
+
+
+// Add this useEffect to your component fr uplaoded files form data
 useEffect(() => {
   if (activeTab === "uploaded" && activeImageId) {
     // Ensure uploaded files form data is properly initialized
@@ -202,9 +244,10 @@ useEffect(() => {
   }
 }, [activeTab, activeImageId]);
 
+
 if (!isHydrated) {
     return null;
-  }
+}
 
 
 
@@ -381,55 +424,7 @@ const isFormComplete = () => {
     ...project,
     status: getProjectStatus(project),
   }));
-  
 
-const handleUserInput = async () => {
-  if (!userInput.trim()) return;
-  
-  setIsGenerating(true);
-  try {
-    const result = await generateFormDataFromUserInput(userInput, isBrandCollaboration);
-    console.log('AI Response:', result); // Add this debug log
-    
-    if (!result) {
-      throw new Error('No data received from AI');
-    }
-
-    // Update form data with AI generated content
-    setCurrentFormData(prev => {
-      const updatedData = {
-        ...prev,
-        titleName: result.title || prev.titleName,
-        description: result.description || prev.description,
-        industries: result.industries || prev.industries,
-        ...(isBrandCollaboration ? {
-          companyName: result.company_name === 'needs_confirmation' ? '' : result.company_name,
-          companyLocation: result.company_location === 'needs_confirmation' ? '' : result.company_location,
-          eventName: result.event_name === 'needs_confirmation' ? '' : result.event_name,
-          eventTypes: result.event_type ? [result.event_type] : prev.eventTypes,
-        } : {})
-      };
-
-      // Update backend
-      if (activeImageId) {
-        updateFormDataForMedia(activeImageId.toString(), updatedData);
-      }
-
-      return updatedData;
-    });
-
-    // Clear input after successful generation
-    setUserInput('');
-    
-  } catch (err) {
-    console.error("AI form generation error:", err); // Add detailed error logging
-    alert(`Failed to generate form data: ${err.message}`);
-  } finally {
-    setIsGenerating(false);
-  }
-};
-
-// Add these navigation functions near your other handlers
 const handlePrevious = () => {
   const currentIndex = projects.findIndex(project => project.mediaId === activeImageId);
   const newIndex = currentIndex > 0 ? currentIndex - 1 : projects.length - 1;
@@ -454,7 +449,7 @@ const handleNext = () => {
 
 
   const handleProfileClick = () => {
-    router.push("/onboarding/step-1");
+    router.push("/profile");
   };
 
   const handleNextClick = () => {
@@ -469,19 +464,187 @@ const handleNext = () => {
    router.push("/settings")
   }
 
+// ...existing code...
+const handleBrandPopupChoice = (isBrand) => {
+  setIsBrandCollaboration(isBrand);
+  // Update form data for this project
+  if (activeImageId) {
+    const updatedEntry = {
+      ...currentFormData,
+      key: activeImageId.toString(),
+      isBrandCollaboration: isBrand,
+      ...(isBrand ? {
+        companyName: currentFormData.companyName || "",
+        companyLocation: currentFormData.companyLocation || "",
+        eventName: currentFormData.eventName || "",
+        eventTypes: currentFormData.eventTypes || [],
+      } : {})
+    };
+    updateFormDataForMedia(activeImageId.toString(), updatedEntry);
+    setCurrentFormData(updatedEntry);
+  }
+  // Animate to step 2
+  setPopupAnimating(true);
+  setTimeout(() => {
+    setPopupStep(2);
+    setPopupAnimating(false);
+  }, 400); // Animation duration
+};
+
+const handlePopupGenerate = async () => {
+  if (!popupUserInput.trim()) return;
+  setPopupGenerating(true);
+  try {
+    const result = await generateFormDataFromUserInput(popupUserInput, isBrandCollaboration);
+    const cleanedResult = cleanAIResponse(result);
+    if (!cleanedResult) throw new Error('No data received from AI');
+    const updatedData = {
+      ...currentFormData,
+      titleName: cleanedResult.title || currentFormData.titleName,
+      description: cleanedResult.description || currentFormData.description,
+      industries: cleanedResult.industries || currentFormData.industries,
+      considerations: cleanedResult.considerations || {}, // <-- ADD THIS LINE
+      ...(isBrandCollaboration ? {
+        companyName: cleanedResult.companyName === 'needs_confirmation' ? '' : cleanedResult.companyName,
+        companyLocation: cleanedResult.companyLocation === 'needs_confirmation' ? '' : cleanedResult.companyLocation,
+        eventName: cleanedResult.eventName === 'needs_confirmation' ? '' : cleanedResult.eventName,
+        eventTypes: cleanedResult.eventTypes ? [cleanedResult.eventTypes] : currentFormData.eventTypes,
+      } : {})
+    };
+    if (activeImageId) {
+      updateFormDataForMedia(activeImageId.toString(), updatedData);
+    }
+    setCurrentFormData(updatedData);
+    setShowBrandPopup(false);
+    setPopupUserInput('');
+    setPopupStep(1);
+    // Check for considerations
+    if (cleanedResult.considerations && Object.keys(cleanedResult.considerations).length > 0) {
+      setHasConsiderations(true);
+    } else {
+      setHasConsiderations(false);
+    }
+    setShowToast(true);
+    // auto-hide after 5 sec:
+    setTimeout(() => {
+      setShowToast(false);
+    }, 5000);
+  } catch (err) {
+    alert(`Failed to generate form data: ${err.message}`);
+  } finally {
+    setPopupGenerating(false);
+  }
+};
+
   return (
-    <div className="flex flex-col items-start space-x-8 h-[77vh] w-full overflow-x-hidden overflow-y-hidden">
-      <div className="flex flex-col mx-auto items-start">
-        <p className="text-2xl text-black font-qimano">
+    <div className=" flex flex-col items-start space-x-8 h-[77vh] w-full overflow-x-hidden overflow-y-hidden">
+   <div className="relative w-full h-full flex flex-col items-center top-3 justify-center">
+{showBrandPopup && (
+  <div
+    className="fixed top-0 left-0 z-50 h-full"
+    style={{
+      width: "35vw",
+      minWidth: 320,
+      maxWidth: 800,
+      pointerEvents: "auto",
+    }}
+  >
+    <div
+      className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center transition-all duration-500`}
+      style={{
+        borderTopRightRadius: 32,
+        borderBottomRightRadius: 32,
+        boxShadow: "2px 0 24px rgba(0,0,0,0.08)",
+        transition: "transform 0.5s cubic-bezier(.4,0,.2,1)",
+      }}
+    >
+     <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
+      {popupStep === 1 ? (
+        <>
+          <div className="flex justify-center mb-6">
+            <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
+          </div>
+
+          <h2 className="text-2xl text-electric-blue font-qimano mb-2 text-blue-600 text-center">
+            Was this a brand post or a personal one?
+          </h2>
+          <p className="text-center text-gray-600 mb-8 font-apfel-grotezk-regular">
+            Let us know if this post was in collaboration with a brand or something you shared independently.
+            We&rsquo;ll tailor the details accordingly.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            <button
+              className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue  hover:bg-electric-blue hover:text-white transition"
+              onClick={() => handleBrandPopupChoice(true)}
+            >
+              It is a brand post
+            </button>
+            <button
+              className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
+              onClick={() => handleBrandPopupChoice(false)}
+            >
+              It is a personal post
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+         <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
+          <h2 className="text-2xl font-qimano text-electric-blue mb-6 mt-7 text-center">
+            Tell us about the post, we&rsquo;ll do the rest!
+          </h2>
+          <textarea
+            className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg min-h-[100px] mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
+            placeholder="Describe your project or brand collaboration..."
+            value={popupUserInput}
+            onChange={(e) => setPopupUserInput(e.target.value)}
+          />
+      
+      <div className="flex gap-5">
+  {/* Skip AI & enter manually */}
+  <button
+    className={`px-4 py-2 rounded-lg border-2 bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-md font-apfel-grotezk-regular transition`}
+    onClick={() => setShowBrandPopup(false)}
+    disabled={popupGenerating}
+  >
+    Skip AI & enter manually
+  </button>
+
+  {/* Generate my project */}
+  <button
+    className={`px-4 py-2 rounded-lg ${
+      popupGenerating
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
+    } text-md font-apfel-grotezk-regular transition cursor-pointer`}
+    onClick={handlePopupGenerate}
+    disabled={popupGenerating || !popupUserInput.trim()}
+  >
+    {popupGenerating ? "Generating..." : "Generate my project details"}
+  </button>
+</div>
+  
+        </>
+      )}
+    </div>
+    </div>
+  </div>
+)}
+
+       <div className="absolute left-1/2 top-1/2 transform -translate-y-1/2 w-full -translate-x-1/2 flex flex-col items-center mx-auto justify-center text-center mt-3  mb-10 "> 
+         <p className="text-2xl text-black font-qimano">
           Pick content that you wish to highlight in your profile kit
         </p>
         <p className="mx-auto text-graphite font-apfel-grotezk-regular">
           Fill in details for at least 4 projects
         </p>
-      </div>
+       </div>
+       </div>
+       
+    
 
-
-     <div className="flex justify-center 7xl:min-w-[93%] mx-auto">
+     <div className="flex justify-center 7xl:min-w-[93%] mx-auto mt-10">
 
      <div className="flex flex-row font-apfel-grotezk-regular mt-8">
         <div className="w-[278px] bg-white text-black p-3 rounded-lg">
@@ -731,6 +894,13 @@ const handleNext = () => {
   </div>
 </div>
 
+<button className="group flex items-center justify-between gap-2 px-6 py-2  text-electric-blue bg-white rounded-lg font-qimano text-lg hover:bg-blue-50 transition-all duration-200" onClick={() => setShowBrandPopup(true)}>
+  <span className="flex items-center gap-2">
+    <Image src="/assets/images/aiLogo.svg" alt="ai logo" className="w-6 h-10" width={20} height={20} />
+    <span>Talk about your work like a pro, AI&rsquo;s got your back!</span>
+  </span>
+  <span className="text-xl transition-transform duration-200 group-hover:translate-x-1">→</span>
+</button>
 
 <div className="border-b  border-light-grey"></div>
 
@@ -753,6 +923,8 @@ const handleNext = () => {
             name="titleName"
             value={currentFormData?.titleName || selectionState?.formData[activeProject?.mediaId]?.titleName || ""}
             onChange={(e) => handleInputChange(e, activeImageId)}
+             consideration={currentFormData.considerations?.title}
+            considerationType={currentFormData.considerations?.title_type}
           />
 
           <TitleWithCounter
@@ -760,6 +932,8 @@ const handleNext = () => {
             label={"Add description"}
             value={currentFormData?.description || selectionState?.formData[activeProject?.mediaId]?.description || ""}
             onChange={(e) => handleInputChange(e, activeImageId)}
+            consideration={currentFormData.considerations?.description}
+            considerationType={currentFormData.considerations?.description_type}
           />
 
           {isBrandCollaboration && (
@@ -774,12 +948,16 @@ const handleNext = () => {
                   name="companyName"
                   value={currentFormData?.companyName || selectionState?.formData[activeProject?.mediaId]?.companyName || ""}
                   onChange={(e) => handleInputChange(e, activeImageId)}
+                  consideration={currentFormData.considerations?.companyName}
+                  considerationType={currentFormData.considerations?.companyName_type}
                 />
                 <FormInput
                   placeholder="Enter location of company"
                   name="companyLocation"
                   value={currentFormData?.companyLocation || selectionState?.formData[activeProject?.mediaId]?.companyLocation || ""}
                   onChange={(e) => handleInputChange(e, activeImageId)}
+                  consideration={currentFormData.considerations?.companyLocation}
+                  considerationType={currentFormData.considerations?.companyLocation_type}
                 />
               </div>
 
@@ -809,6 +987,8 @@ const handleNext = () => {
                   name="eventName"
                   value={currentFormData?.eventName || selectionState?.formData[activeProject?.mediaId]?.eventName || ""}
                   onChange={(e) => handleInputChange(e, activeImageId)}
+                    consideration={currentFormData.considerations?.eventName}
+  considerationType={currentFormData.considerations?.eventName_type}
                 />
 
                 <NormalMultiSelect
@@ -824,6 +1004,7 @@ const handleNext = () => {
                   onAddValue={(value) => handleAddValue("eventTypes", value, activeImageId)}
                   onRemoveValue={(value) => handleRemoveValue("eventTypes", value, activeImageId)}
                 />
+                
 
                 <div className="bg-transparent h-20"></div>
               
@@ -831,29 +1012,15 @@ const handleNext = () => {
             </>
           )}
 
-          {/* AI Form Generation Section - New Code Block */}
-          <div className="flex flex-col gap-4 bg-white p-4 rounded-lg">
-  <p className="text-graphite font-apfel-grotezk-mittel">Test AI Form Generation</p>
-  
-  <textarea
-    className="w-full text-graphite p-2 border border-light-grey rounded-lg min-h-[100px]"
-    placeholder="Describe your project or brand collaboration..."
-    value={userInput}
-    onChange={(e) => setUserInput(e.target.value)}
-  />
-  
-  <button
-    className={`px-4 py-2 rounded-lg ${
-      isGenerating 
-        ? 'bg-gray-300 text-gray-500' 
-        : 'bg-electric-blue text-white hover:bg-blue-700'
-    }`}
-    onClick={handleUserInput}
-    disabled={isGenerating || !userInput.trim()}
-  >
-    {isGenerating ? 'Generating...' : 'Generate Form Data'}
-  </button>
-</div>
+{showToast && (
+  <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-[#0037EB]/60 text-white px-6 py-3 rounded-md shadow-md font-apfel-grotezk-regular z-50 transition-all duration-500">
+    {hasConsiderations
+      ? "Most details are filled! Some sections are missing due to missing info, please review!"
+      : "Project details added! Give it a quick look before moving on."}
+  </div>
+)}
+
+ 
 
 <div className="border-b border-light-grey"></div>
 
@@ -928,7 +1095,7 @@ const handleNext = () => {
         onClick={handlePreviewClick}
         disabled={!isFormComplete()} // Disable if form is incomplete
       >
-        See preview
+       preview
       </button>
     </div>
   </div>

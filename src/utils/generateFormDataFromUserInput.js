@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const generateFormDataFromUserInput = async (userInput, isBrandCollaboration) => {
+  console.log("AI USER INPUT FUNCTION GETTING", userInput, isBrandCollaboration);
   if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
     throw new Error("Gemini API key is not configured");
   }
@@ -17,13 +18,16 @@ You are an AI assistant that helps creators write polished, press kit–ready en
 🎯 PURPOSE:
 This entry will appear on a public-facing press kit viewed by brand managers, agencies, and marketers. The goal is to showcase the creator's role, creativity, and credibility in a way that feels confident, polished, and real.
 
+The brand collaboration is this:
+is_brand_collaboration = ${isBrandCollaboration}
+
 ---
 
 🗣️ TONE & STYLE:
 - Professional but fresh — confident, punchy, and editorial
 - Write in third person but avoid saying “the creator” — instead, imply the role naturally (e.g. "Created content...", "Led a session...", not "The creator did...")
 - Hook the reader: titles should be active, specific, and creator-led — not brand-first
-- Use sentence case — capitalize only proper nouns and names
+- Use sentence case — use proper punctuation and grammar
 - Avoid robotic or generic phrases like “collaborated with” or “boosted visibility”
 - Avoid duplicating the same highlight in both title and description
 - Descriptions should feel like mini case studies: what the creator did, how, and why it mattered
@@ -40,13 +44,11 @@ This entry will appear on a public-facing press kit viewed by brand managers, ag
   - What the company is known for (e.g. dating → relationships, not tech)
   - What the creator did (not marketing or digital marketing) (e.g. content creation in beauty → Beauty)
   - The context/theme of the event (e.g. a mental health livestream → Wellness)
-- Do not default to “Digital Marketing” or “Marketing” unless explicitly clear
+- Do not default to “Digital Marketing”, "E-commerce" or “Marketing” unless explicitly clear
 - Prioritize clarity and insight: always include what the creator did, where, and their role
 - Keep event names and titles natural and memorable — avoid robotic or placeholder-y phrasing like “latest drop” or “new product launch” without a specific angle
 - While answering all questions ensure to use sentence case and correct grammar
-
-
-🧠 INSTRUCTIONS:
+- If any field value starts with “considerations:”, remove the prefix 
 
 Use the variable is_brand_collaboration to decide which fields to extract and display.
 Decide whether this project is a brand collaboration based on the user's input.
@@ -68,49 +70,10 @@ If it is a personal, editorial, community-led, or non-commercial project — set
     - event_type
   → Do NOT include them in the JSON at all
 
-In both cases:
-- Extract a clear, polished title and description
-- Include up to 3 relevant industries
-- Use considerations only for fields that need review (e.g. missing specificity or location)
 
 This boolean will also be used to control the UI toggle for "Is this a brand collaboration?" — set it to match your best judgment.
 Always include is_brand_collaboration in the final JSON output.
 
-—
-{
-  "title": "string",
-  "description": "string",
-  "industries": ["string", "string", "string"],
-
-  // These fields only if is_brand_collaboration is true:
-  "company_name": "string",
-  "company_location": "string",
-  "event_type": "string",
-  "event_name": "string",
-
-  "considerations": {
-    // Key-value pairs only for fields present that need clarification
-  }
-}
-
-
-🤖 BRANDS VS NON-BRAND PROJECTS:
-
-Before generating the output, determine if the user's input describes a **brand collaboration**.
-
-- If it **is a brand collaboration**:
-  → Proceed to extract all standard fields (including company name, company location, event name, and event type)
-
-- If it is **not a brand collaboration** (e.g. personal project, performance, showcase, editorial, or community event):
-  → Skip these below mentioned fields entirely:
-    - company_name
-    - company_location
-    - event_name
-    - event_type
-
-  → Output the rest as usual (title, description, industries), and do **not** include those skipped keys in the final JSON
-
-Always include the considerations block only for the fields that are present in the output and need review.
 
 ---
 
@@ -119,20 +82,22 @@ Always include the considerations block only for the fields that are present in 
 {
   "is_brand_collaboration": true // or false
   "title":  "string — sentence-case headline showing the creator’s impact (max 10 words)",
-  "description": "string — sentence-case summary of the creator’s role and value (min 20 words and max 25 words)",
-  "industries": ["string", "string"],
+  "description": "string — Capitalize the first letter of each sentence and use sentence-case and proper grammar and punctuation to give a summary of the creator’s role and value (min 20 words and max 25 words)",
+  "industries": ["string", "string"], - Do not default to “Digital Marketing”, "E-commerce", "Social Media" or “Marketing” unless explicitly clear
 
   // Include these ONLY if it's a brand collaboration otherwise:
-  "company_name": "string",
-  "company_location": "string",
-  "event_type": "string",
-  "event_name": "string",
+  "companyName": "string",
+  "companyLocation": "string",
+  "eventTypes": "string",
+  "eventName": "string" - use title case, 
 
-  "considerations": {
+   // When unsure about any field, add the following considerations. Do not mention "considerations" prefix - only add the actual questions
+   // If a field is missing, vague, or unclear, leave its value empty ("") and add a clarifying message in the considerations object for that field. Do not put clarifying questions or suggestions as the value of the field itself. Only for eventName as per the userinput given by user also have a name decided.
+  considerations: {
     "title": "Could this headline highlight the creator's skill or result more clearly?",
     "description": "Does the description show what was done and why it mattered?",
-    "event_name": "Could you name the campaign, drop, or event more specifically?",
-    "company_location": "Which city did this happen in?",
+    "eventName": "Could you name the campaign, drop, or event more specifically?",
+    "companyLocation": "Which city did this happen in?",
     "industries": "Are these the most relevant tags based on what you did?"
   }
 }
