@@ -1,32 +1,80 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FormProvider } from "../onboarding/context";
 import DashboardPreview from "@/components/DashboardPreview";
-import {useAuth} from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import StatsCard from "@/components/StatsCard";
-
 
 export default function OnboardingLayout({ children }) {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const router = useRouter();
-  const {isSignedIn, isLoaded, userId} = useAuth();
+  const { isSignedIn, isLoaded, userId } = useAuth();
+  const [filledCount, setFilledCount] = useState(0);
+  const [portfolioComplete, setPortfolioComplete] = useState(false);
+  const [aboutComplete, setAboutComplete] = useState(false);
+  const [audienceComplete, setAudienceComplete] = useState(false);
 
-  if(!isLoaded){
-  return <div className="flex justify-center items-center text-2xl h-screen">Loading...</div>
+  // Portfolio
+  useEffect(() => {
+    async function fetchPortfolio() {
+      try {
+        const res = await fetch("/api/projects/filled-count");
+        const data = await res.json();
+        setPortfolioComplete(data.filledCount >= 4);
+        setFilledCount(data.filledCount);
+      } catch {
+        setPortfolioComplete(false);
+      }
+    }
+    fetchPortfolio();
+  }, [userId]);
+
+  // About
+  useEffect(() => {
+    async function fetchAbout() {
+      try {
+        const res = await fetch("/api/projects/aboutCompletion");
+        const data = await res.json();
+        setAboutComplete(!!data.complete);
+      } catch {
+        setAboutComplete(false);
+      }
+    }
+    fetchAbout();
+  }, [userId]);
+
+  // Audience (Instagram connection)
+  useEffect(() => {
+    async function fetchAudience() {
+      try {
+        const res = await fetch("/api/auth/check-instagram-connection");
+        const data = await res.json();
+        setAudienceComplete(!!data.connected);
+      } catch {
+        setAudienceComplete(false);
+      }
+    }
+    fetchAudience();
+  }, [userId]);
+
+  const allComplete = portfolioComplete && aboutComplete && audienceComplete;
+
+  const isRed = filledCount < 4;
+
+  if (!isLoaded) {
+    return <div className="flex justify-center items-center text-2xl h-screen">Loading...</div>;
   }
 
-  if(!isSignedIn){
-   router.push("/signup");
-   return null;
+  if (!isSignedIn) {
+    router.push("/signup");
+    return null;
   }
   const handleHamburgerClick = () => {
     setIsMenuVisible((prev) => !prev); // Toggle menu visibility
   };
-
 
   const handleProfileClick = () => {
     router.push("/onboarding/step-1");
@@ -38,18 +86,18 @@ export default function OnboardingLayout({ children }) {
 
   const handleDashboardClick = () => {
     router.push("/dashboard");
-  }
+  };
 
   const handleSettingClick = () => {
-   router.push("/settings")
-  }
+    router.push("/settings");
+  };
 
   const handlePortfolioClick = () => {
     if (!userId) {
       console.error("No userId found, user not signed in!");
       return;
     }
-  
+
     const storedFormData = localStorage.getItem(`formData_${userId}`);
     if (storedFormData) {
       const parsedData = JSON.parse(storedFormData);
@@ -67,8 +115,7 @@ export default function OnboardingLayout({ children }) {
       console.error("No formData found in localStorage!");
     }
   };
-  
-  
+
   return (
     <FormProvider>
       <div className="flex h-screen bg-white">
@@ -86,11 +133,12 @@ export default function OnboardingLayout({ children }) {
             <DashboardPreview />
             <StatsCard />
           </div>
-
         </div>
 
         {/* Toolbar */}
-        <div className="fixed top-[85%] left-[50%] translate-x-[-50%] w-[500px] h-[74px] flex justify-center items-center gap-3 border-2 bg-white border-light-grey rounded-md z-20 p-5 font-apfel-grotezk-regular">
+        <div className={`fixed top-[85%] left-[50%] translate-x-[-50%] ${
+            isRed ? "w-[420px]" : "w-[600px]"
+          } h-[74px] flex justify-center items-center gap-3 border-2 bg-white border-light-grey rounded-md z-20 p-5 font-apfel-grotezk-regular`}>
           {/* Hamburger Button */}
           <button
             onClick={handleHamburgerClick}
@@ -138,7 +186,9 @@ export default function OnboardingLayout({ children }) {
           )}
 
           {/* Other Buttons */}
-          <div className="w-[299px] h-[56px] gap-2 bg-gray-100 flex justify-between items-center rounded-md p-2">
+          <div className={`${
+              isRed ? "w-[499px]" : "w-[499px]"
+            } h-[56px] gap-2 bg-gray-100 flex justify-between items-center rounded-md p-2`}>
             <button
               onClick={handleProfileClick}
               className="px-2 py-2 bg-transparent text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
@@ -147,19 +197,31 @@ export default function OnboardingLayout({ children }) {
             </button>
 
             <button
+              className={`px-2 py-2 border rounded-md font-medium transition
+              ${isRed
+                ? "bg-white text-[#EB3B00] border-[#EB3B00]"
+                : "bg-transparent text-electric-blue border-electric-blue hover:bg-electric-blue hover:text-white"}
+            `}
               onClick={handleNextClick}
-              className="px-2 py-2 bg-transparent text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
             >
               Manage Projects
             </button>
 
-            <button
-              onClick={handlePortfolioClick}
-              className="px-2 py-2 bg-electric-blue text-white border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
-            >
-              <Image src="/assets/images/share.svg" alt="share" width={20} height={20} />
-            </button>
-            
+        {/* Show Create Portfolio button ONLY if filledCount >= 4 */}
+            {!isRed && (
+              <button
+                onClick={handlePortfolioClick}
+                className={`px-2 flex items-center justify-center py-2 border rounded-md text-center font-medium transition
+                ${allComplete
+                  ? "bg-electric-blue text-white border-electric-blue hover:bg-electric-blue hover:text-white cursor-pointer"
+                  : "bg-[#0037EB]/50 text-smoke  cursor-not-allowed"
+                }`}
+                disabled={!allComplete}
+              >
+                <Image src="/assets/images/share.svg" alt="share" width={20} height={20} />
+                <span className="text-white">Create Portfolio</span>
+              </button>
+            )}
           </div>
 
           <button

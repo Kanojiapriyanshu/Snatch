@@ -34,8 +34,11 @@ const ProfileOverview = ({ ownerId, isAdminView }) => {
   const scrollY = useTransform(scrollYProgress, [0, 1], [0, 1000]);
   const containerRef = useRef(null);
   const pressKitRef = useRef(null);
-  const formData = useFetchPortfolio(ownerId);
-  const { data, loading, error } = useInstagramData(); // Instagram data
+  //const formData = useFetchPortfolio(ownerId);
+  const { data: formData } = useFetchPortfolio(ownerId);
+  const { data } = useInstagramData();
+
+ // const { data, loading, error } = useInstagramData(); // Instagram data
   const router = useRouter()
   const pathname = usePathname(); // e.g., "/public-portfolio/snatchsocial"
   
@@ -416,41 +419,6 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
     <span className="border-b-[0.5px] border-gray-400 mx-2 w-full"></span>
   </span>
 
-  {/* Icons (visible on all screen sizes, justified between for mobile) */}
-  {/* <span className="flex max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-center">
-    <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
-      <Image
-        src="/assets/images/insta.svg"
-        alt="Instagram"
-        width={30}
-        height={25}
-      />
-    </span>
-    <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
-      <Image
-        src="/assets/images/X.svg"
-        alt="X"
-        width={30}
-        height={20}
-      />
-    </span>
-    <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
-      <Image
-        src="/assets/icons/facebook.svg"
-        alt="Facebook"
-        width={30}
-        height={20}
-      />
-    </span>
-    <span className="bg-gray-100 rounded flex items-center justify-center w-10 h-10">
-      <Image
-        src="/assets/icons/linkedin.svg"
-        alt="LinkedIn"
-        width={30}
-        height={20}
-      />
-    </span>
-  </span> */}
   <SocialLinks />
 </div>
 

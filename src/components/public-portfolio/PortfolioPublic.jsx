@@ -1,71 +1,67 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 const PortfolioPublic = () => {
-  const [projects, setProjects] = useState([]);
   const [carouselIndexes, setCarouselIndexes] = useState({});
-  const [username, setUsername] = useState("");
   const pathname = usePathname();
-  const isAdminView = pathname.includes('/adminview');
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const pathnameParts = window.location.pathname.split("/");
-        const username = pathnameParts[1];
-        setUsername(username)
-        // const username = pathnameParts[pathnameParts.length - 2];
-        // setUsername(username);
+  const isAdminView = pathname.includes("/adminview");
 
-        const url = `/api/public-portfolio/posts?username=${username}`;
-        const response = await fetch(url);
-        const data = await response.json();
+  // Extract username
+  const pathnameParts = pathname.split("/");
+  const username = pathnameParts[1] || "";
 
-        if (data.success && data.instagram && data.uploaded) {
-          const processedProjects = [
-            ...data.instagram.map((item) => {
-              if (item.name === "CAROUSEL_ALBUM" && item.children?.length > 0) {
-                return {
-                  mediaType: "CAROUSEL_ALBUM",
-                  children: item.children.map((child) => ({
-                    mediaType: child.media_type,
-                    mediaUrl: child.media_url,
-                    mediaId: child.id,
-                  })),
-                  mediaId: item.mediaId,
-                  title: item.name,
-                };
-              }
+  // ✅ Use React Query instead of manual fetch
+  const { data: projects = [], isLoading, isError, error } = useQuery({
+    queryKey: ["publicProjects", username],
+    queryFn: async () => {
+      const url = `/api/public-portfolio/posts?username=${username}`;
+      const response = await fetch(url);
+      const data = await response.json();
 
-              return {
-                mediaType: item.name || item.fileName,
-                mediaUrl: item.mediaLink || item.fileUrl,
-                mediaId: item.mediaId,
-                title: item.name,
-              };
-            }),
-            ...data.uploaded.map((item) => ({
-              mediaType: item.mediaType || item.fileName,
-              mediaUrl: item.mediaUrl || item.fileUrl,
+      if (!data.success) {
+        throw new Error(data.error || "Failed to fetch public projects");
+      }
+
+      // Process projects same as before:
+      return [
+        ...data.instagram.map((item) => {
+          if (item.name === "CAROUSEL_ALBUM" && item.children?.length > 0) {
+            return {
+              mediaType: "CAROUSEL_ALBUM",
+              children: item.children.map((child) => ({
+                mediaType: child.media_type,
+                mediaUrl: child.media_url,
+                mediaId: child.id,
+              })),
               mediaId: item.mediaId,
               title: item.name,
-            })),
-          ];
+            };
+          }
+          return {
+            mediaType: item.name || item.fileName,
+            mediaUrl: item.mediaLink || item.fileUrl,
+            mediaId: item.mediaId,
+            title: item.name,
+          };
+        }),
+        ...data.uploaded.map((item) => ({
+          mediaType: item.mediaType || item.fileName,
+          mediaUrl: item.mediaUrl || item.fileUrl,
+          mediaId: item.mediaId,
+          title: item.name,
+        })),
+      ];
+    },
+    enabled: !!username,
+    staleTime: 1000 * 60 * 5,
+  });
 
-          setProjects(processedProjects);
-        } else {
-          console.error("Error in posts:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching public posts:", error);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
+  // Carousel slide handler — unchanged
   const handleSlide = (e, mediaId, direction, totalSlides) => {
     e.stopPropagation();
     setCarouselIndexes((prev) => {
@@ -80,13 +76,22 @@ const PortfolioPublic = () => {
     });
   };
 
+  // ✅ Loading and error states
+  if (isLoading) {
+    return <p className="text-center text-gray-500 font-qimano">Finding your projects...</p>;
+  }
+
+  if (isError) {
+    return <p className="text-center text-red-500">Error: {error.message}</p>;
+  }
+
+  // ✅ Render same as before
   return (
     <div className="w-full mx-auto max-w-[600px] lg:max-w-[1600px] p-0 sm:p-4">
       {projects.length > 0 ? (
         <div className="grid grid-cols-3 gap-[1px] sm:grid-cols-4 sm:gap-2 lg:gap-8">
           {projects.map((project, index) => (
-           <div key={index} className="relative w-full aspect-square p-0 sm:p-2">
-
+            <div key={index} className="relative w-full aspect-square p-0 sm:p-2">
               <Link
                 href={`/${username}/media-kit/post/?postId=${project.mediaId}`}
                 className="block w-full h-full"
@@ -169,7 +174,6 @@ const PortfolioPublic = () => {
                     />
                   )}
 
-                  {/* Overlay - Moved outside the conditional rendering */}
                   <div className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30">
                     <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
                       Post Info & Insights ↗
@@ -181,9 +185,7 @@ const PortfolioPublic = () => {
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500 font-qimano">
-          Finding your projects...
-        </p>
+        <p className="text-center text-gray-500 font-qimano">No projects found.</p>
       )}
     </div>
   );

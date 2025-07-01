@@ -113,17 +113,13 @@ const About = () => {
     updateSectionState(sectionKey, updatedQuestions);
   };
 
-  const handleRemoveQuestion = (questionId, sectionKey) => {
-    let updatedQuestions;
-    if (sectionKey === "about") {
-      updatedQuestions = aboutQuestions.filter((q) => q._id !== questionId);
-      setAboutQuestions(updatedQuestions);
-    } else if (sectionKey === "audience") {
-      updatedQuestions = audienceQuestions.filter((q) => q._id !== questionId);
-      setAudienceQuestions(updatedQuestions);
-    } else {
-      updatedQuestions = brandQuestions.filter((q) => q._id !== questionId);
-      setBrandQuestions(updatedQuestions);
+  const handleRemoveQuestion = async (questionId, sectionKey) => {
+    try {
+      await removeQuestion(questionId, sectionKey, updateSectionState);
+      // No need to manually filter local state, as removeQuestion fetches and updates state.
+    } catch (error) {
+      console.error("Failed to remove question:", error);
+      alert("Failed to remove question. Please try again.");
     }
   };
 
@@ -136,11 +132,18 @@ const About = () => {
   
 
   return (
-    <div className="w-full flex justify-center">
-      <div className="w-full max-w-5xl p-6 overflow-y-auto flex flex-col gap-3" style={{ maxHeight: 'calc(85vh - 96px)', scrollbarWidth: 'none',        // Firefox
+    <div className="w-full h-screen overflow-y-auto"  style={{ maxHeight: 'calc(135vh - 96px)', scrollbarWidth: 'none',       
     msOverflowStyle: 'none'}}>
-      {/* Accordion 1 – About You */}
-      <Accordion title="About You*" isOpen={openIndex === 0} onToggle={() => toggleAccordion(0)}>
+      <div className="w-full max-w-5xl mx-auto p-6 overflow-y-auto flex flex-col gap-3" style={{ maxHeight: 'calc(135vh - 96px)', scrollbarWidth: 'none',       
+    msOverflowStyle: 'none'}}>
+      <h3 className="text-lg font-qimano max-w-md text-center mx-auto">This section helps brands understand your perspective, your 
+        <span> story, and the audience behind you.</span>
+      </h3>
+      <p className="text-sm font-apfel-grotezk-regular mx-auto text-gray-500 mb-5">*Share at least one answer in each category!</p>
+
+      <div className="flex flex-col gap-3 h-screen overflow-y-auto">
+         {/* Accordion 1 – About You */}
+      <Accordion title="About* / What makes you, you?" isOpen={openIndex === 0} onToggle={() => toggleAccordion(0)}>
         <div className="text-gray-600 w-full overflow-y-auto h-[270px]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {aboutQuestions.map((item, index) => (
             <div key={index} className="mb-4 p-2 rounded-md" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -179,20 +182,40 @@ const About = () => {
               </div>
 
               {index > 0 && (
-  <button
-    onClick={() => handleRemoveQuestion(item._id, "about")}
-    className="flex items-center text-electric-blue text-sm mt-2"
-  >
-    <Image
-      src="/assets/icons/settings/Cross.svg"
-      width={16}
-      height={16}
-      alt="Remove icon"
-      className="mr-2" // Added more space between image and text
-    />
-    Remove question
-  </button>
-)}
+      item._id ? (
+        <button
+          onClick={() => handleRemoveQuestion(item._id, "about")}
+          className="flex items-center text-electric-blue text-sm mt-2"
+        >
+          <Image
+            src="/assets/icons/settings/Cross.svg"
+            width={16}
+            height={16}
+            alt="Remove icon"
+            className="mr-2"
+          />
+          Remove question
+        </button>
+      ) : (
+        <button
+          onClick={() => {
+            // Remove from local state if not saved in DB
+            const updated = aboutQuestions.filter((_, i) => i !== index);
+            setAboutQuestions(updated);
+          }}
+          className="flex items-center text-electric-blue text-sm mt-2"
+        >
+          <Image
+            src="/assets/icons/settings/Cross.svg"
+            width={16}
+            height={16}
+            alt="Remove icon"
+            className="mr-2"
+          />
+          Remove question
+        </button>
+      )
+    )}
 
             </div>
           ))}
@@ -206,7 +229,7 @@ const About = () => {
       </Accordion>
 
       {/* Accordion 2 – About Audience */}
-      <Accordion title="About Audience*" isOpen={openIndex === 1} onToggle={() => toggleAccordion(1)}>
+      <Accordion title="Audience* / What keeps your community interested?" isOpen={openIndex === 1} onToggle={() => toggleAccordion(1)}>
         <div className="text-gray-600 w-full overflow-y-auto h-[270px]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {audienceQuestions.map((item, index) => (
             <div key={index} className="mb-4 p-2 rounded-md">
@@ -243,20 +266,40 @@ const About = () => {
               </div>
 
               {index > 0 && (
-  <button
-    onClick={() => handleRemoveQuestion(item._id, "audience")}
-    className="flex items-center text-electric-blue text-sm mt-2"
-  >
-    <Image
-      src="/assets/icons/settings/Cross.svg"
-      width={16}
-      height={16}
-      alt="Remove icon"
-      className="mr-2" // Added more space between image and text
-    />
-    Remove question
-  </button>
-)}
+      item._id ? (
+        <button
+          onClick={() => handleRemoveQuestion(item._id, "audience")}
+          className="flex items-center text-electric-blue text-sm mt-2"
+        >
+          <Image
+            src="/assets/icons/settings/Cross.svg"
+            width={16}
+            height={16}
+            alt="Remove icon"
+            className="mr-2"
+          />
+          Remove question
+        </button>
+      ) : (
+        <button
+          onClick={() => {
+            // Remove from local state if not saved in DB
+            const updated = audienceQuestions.filter((_, i) => i !== index);
+            setAudienceQuestions(updated);
+          }}
+          className="flex items-center text-electric-blue text-sm mt-2"
+        >
+          <Image
+            src="/assets/icons/settings/Cross.svg"
+            width={16}
+            height={16}
+            alt="Remove icon"
+            className="mr-2"
+          />
+          Remove question
+        </button>
+      )
+    )}
 
             </div>
           ))}
@@ -270,7 +313,7 @@ const About = () => {
       </Accordion>
 
       {/* Accordion 3 – Brand Connection */}
-      <Accordion title="Brand Connection*" isOpen={openIndex === 2} onToggle={() => toggleAccordion(2)}>
+      <Accordion title="Parternships* / What makes a brand the right fit? " isOpen={openIndex === 2} onToggle={() => toggleAccordion(2)}>
         <div className="text-gray-600 w-full overflow-y-auto h-[270px]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {brandQuestions.map((item, index) => (
             <div key={index} className="mb-4 p-2 rounded-md">
@@ -307,20 +350,40 @@ const About = () => {
               </div>
 
               {index > 0 && (
-  <button
-    onClick={() => handleRemoveQuestion(item._id, "brand")}
-    className="flex items-center text-electric-blue text-sm mt-2"
-  >
-    <Image
-      src="/assets/icons/settings/cross.svg"
-      width={16}
-      height={16}
-      alt="Remove icon"
-      className="mr-2" // Added more space between image and text
-    />
-    Remove question
-  </button>
-)}
+      item._id ? (
+        <button
+          onClick={() => handleRemoveQuestion(item._id, "brand")}
+          className="flex items-center text-electric-blue text-sm mt-2"
+        >
+          <Image
+            src="/assets/icons/settings/cross.svg"
+            width={16}
+            height={16}
+            alt="Remove icon"
+            className="mr-2"
+          />
+          Remove question
+        </button>
+      ) : (
+        <button
+          onClick={() => {
+            // Remove from local state if not saved in DB
+            const updated = brandQuestions.filter((_, i) => i !== index);
+            setBrandQuestions(updated);
+          }}
+          className="flex items-center text-electric-blue text-sm mt-2"
+        >
+          <Image
+            src="/assets/icons/settings/cross.svg"
+            width={16}
+            height={16}
+            alt="Remove icon"
+            className="mr-2"
+          />
+          Remove question
+        </button>
+      )
+    )}
 
             </div>
           ))}
@@ -332,6 +395,9 @@ const About = () => {
           </div>
         </div>
       </Accordion>
+
+      </div>
+    
     </div>
     </div>
   );

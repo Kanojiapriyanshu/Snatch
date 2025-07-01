@@ -61,6 +61,7 @@ const [popupUserInput, setPopupUserInput] = useState('');
 const [popupGenerating, setPopupGenerating] = useState(false);
 const [showToast, setShowToast] = useState(false);
 const [hasConsiderations, setHasConsiderations] = useState(false);
+const [showMinProjectsPopup, setShowMinProjectsPopup] = useState(false);
 
 // ...existing code...
 
@@ -83,6 +84,32 @@ const checkOrientation = (width, height) => {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
+
+  const isProjectFilled = (formData) => {
+  if (!formData) return false;
+  const baseFields = ["titleName", "description", "industries"];
+  const companyFields = ["companyName", "companyLocation"];
+  const fieldsToCheck = [...baseFields];
+  if (formData.isBrandCollaboration) fieldsToCheck.push(...companyFields);
+  return fieldsToCheck.every((field) => {
+    const value = formData[field];
+    return value && (Array.isArray(value) ? value.length > 0 : value.trim() !== "");
+  });
+};
+
+// Count filled projects (Instagram + Uploaded)
+const filledProjectsCount = (() => {
+  const allProjects = [
+    ...(selectionState.instagramSelected || []),
+    ...(selectionState.uploadedFiles || []),
+  ];
+  return allProjects.filter((project) => {
+    const formData = Array.isArray(selectionState.formData)
+      ? selectionState.formData.find((item) => item.key === project.mediaId?.toString())
+      : null;
+    return isProjectFilled(formData);
+  }).length;
+})();
 
   // Extracting projects logic here
   const projects =
@@ -361,9 +388,16 @@ const handleToggle = () => {
 
 
   const handlePreviewClick = () => {
-    router.push(
-      `/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`
-    );
+    if (isHydrated && filledProjectsCount < 4) {
+    setShowMinProjectsPopup(true);
+    const timer = setTimeout(() => {
+      setShowMinProjectsPopup(false);
+      router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
+    }, 2000);
+    return () => clearTimeout(timer);
+  } else {
+    router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
+  }
   };
  
 const isFormComplete = () => {
@@ -539,6 +573,53 @@ const handlePopupGenerate = async () => {
   return (
     <div className=" flex flex-col items-start space-x-8 h-[77vh] w-full overflow-x-hidden overflow-y-hidden">
    <div className="relative w-full h-full flex flex-col items-center top-3 justify-center">
+{showMinProjectsPopup && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+    <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
+      
+      {/* Close Icon */}
+      <button
+        className="absolute top-4 right-4 text-gray-500 hover:text-black"
+        onClick={() => setShowMinProjectsPopup(false)}
+        aria-label="Close"
+      >
+        ✕
+      </button>
+
+      {/* Title */}
+      <h2 className="text-xl sm:text-2xl font-[Georgia] text-black mb-4 text-left font-qimano">Disclaimer</h2>
+
+      <hr className="border-gray-200 mb-4" />
+
+      {/* Message */}
+      <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
+        You need at least <strong>4 projects</strong> to create your portfolio. Until then, previews will look incomplete. Your progress will be saved, but your profile won’t be shareable just yet.
+      </p>
+
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row justify-center gap-4 font-apfel-grotezk-regular">
+        <button
+          onClick={() => setShowMinProjectsPopup(false)}
+          className="border border-electric-blue text-electric-blue px-6 py-2 rounded-xl hover:bg-blue-50 transition"
+        >
+          Keep Editing
+        </button>
+        <button
+          onClick={() => {
+    setShowMinProjectsPopup(true);
+    setTimeout(() => {
+      setShowMinProjectsPopup(false);
+      router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
+    }, 2000);}}
+          className="bg-electric-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+        >
+          Save and Continue
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 {showBrandPopup && (
   <div
     className="fixed top-0 left-0 z-50 h-full"

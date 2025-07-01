@@ -32,12 +32,19 @@ import SvgComponent from "@/components/svg/Instagramsvg";
   const requiredFields = ["titleName", "description", "industries"];
   // Add these near the top of PreviewContent function
   const [isPortrait, setIsPortrait] = useState(false);
-
+  const [popupMessage, setPopupMessage] = useState("");
   const checkOrientation = (width, height) => {
     return height > width;
   };
 
   const handleSubmit = () => {
+      if (filledProjectsCount < 4) {
+    setPopupMessage(
+      "Your portfolio needs at least 4 project details to be created. Don’t worry, your progress is saved, and you can come back anytime to finish."
+    );
+  } else {
+    setPopupMessage(""); // Use default message in Popup
+  }
     setIsModalOpen(true);
 
   };
@@ -66,7 +73,13 @@ import SvgComponent from "@/components/svg/Instagramsvg";
     
         console.log("Project and formdata set draft false succesfully! check admin to see database as well!");
         alert("Project saved successfully!");
+        if (filledProjectsCount < 4) {
+          //comes for a sec with query then goes to /profile/:username
+          router.push("/profile?incompleteProjects=1");
+        }
+        else {
         router.push("/profile");
+        }
       } catch (error) {
         console.error("Error deleting formData:", error);
         throw error;
@@ -126,20 +139,20 @@ console.log("preview activeimageid", activeProject,  activeImageId);
 
     // Fetch insights whenever the active project changes
  // Modify the existing useEffect for insights
-useEffect(() => {
-  const fetchInsights = async () => {
-    // Only fetch insights for Instagram content
-    if (activeProject && activeTab === "instagram") {
-      const response = await fetchMediaInsights(activeProject.mediaId);
-      setInsights(response?.insights?.data || []);
-    } else {
-      // Clear insights for uploaded files
-      setInsights([]);
-    }
-  };
+    useEffect(() => {
+      const fetchInsights = async () => {
+        // Only fetch insights for Instagram content
+        if (activeProject && activeTab === "instagram") {
+          const response = await fetchMediaInsights(activeProject.mediaId);
+          setInsights(response?.insights?.data || []);
+        } else {
+          // Clear insights for uploaded files
+          setInsights([]);
+        }
+      };
 
-  fetchInsights();
-}, [activeProject, activeTab]);
+      fetchInsights();
+    }, [activeProject, activeTab]);
 
   if (!isHydrated) {
     return null;
@@ -187,7 +200,32 @@ const handleNext = () => {
   }
 };
 
+// Helper to check if a project is "filled"
+const isProjectFilled = (formData) => {
+  if (!formData) return false;
+  const baseFields = ["titleName", "description", "industries"];
+  const companyFields = ["companyName", "companyLocation"];
+  const fieldsToCheck = [...baseFields];
+  if (formData.isBrandCollaboration) fieldsToCheck.push(...companyFields);
+  return fieldsToCheck.every((field) => {
+    const value = formData[field];
+    return value && (Array.isArray(value) ? value.length > 0 : value.trim() !== "");
+  });
+};
 
+// Count filled projects (Instagram + Uploaded)
+const filledProjectsCount = (() => {
+  const allProjects = [
+    ...(selectionState.instagramSelected || []),
+    ...(selectionState.uploadedFiles || []),
+  ];
+  return allProjects.filter((project) => {
+    const formData = Array.isArray(selectionState.formData)
+      ? selectionState.formData.find((item) => String(item.key) === String(project.mediaId))
+      : null;
+    return isProjectFilled(formData);
+  }).length;
+})();
 
   return (
     <div className={`flex flex-col items-start h-[77vh] w-full space-x-8 overflow-x-hidden overflow-y-auto ${isModalOpen ? 'bg-transparent pointer-events-none' : 'bg-transparent'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -400,27 +438,22 @@ const handleNext = () => {
            </div>
 
            <div className="w-full h-full mt-5">
+            <p className="text-2xl text-graphite font-qimano">
+              {(() => {
+                // Find the form data for the active project
+                const formData = Array.isArray(selectionState?.formData)
+                  ? selectionState.formData.find(item => String(item.key) === String(activeImageId))
+                  : null;
 
-            {/* <p className="text-2xl text-graphite font-qimano">{Array.isArray(selectionState?.formData) 
-    ? selectionState.formData.find(item => item.key === activeProject?.mediaId)?.titleName || "Title of the project"
-    : "Loading..."}</p> */}
+                // If we have form data, show the title
+                if (formData?.titleName) {
+                  return formData.titleName;
+                }
 
-<p className="text-2xl text-graphite font-qimano">
-  {(() => {
-    // Find the form data for the active project
-    const formData = Array.isArray(selectionState?.formData)
-      ? selectionState.formData.find(item => String(item.key) === String(activeImageId))
-      : null;
-
-    // If we have form data, show the title
-    if (formData?.titleName) {
-      return formData.titleName;
-    }
-
-    // If no form data or no title, show placeholder
-    return "Title of the project";
-  })()}
-</p>
+                // If no form data or no title, show placeholder
+                return "Title of the project";
+              })()}
+            </p>
 
             <div className="flex gap-1 flex-wrap max-w-xl mr-10">
 
@@ -456,7 +489,7 @@ const handleNext = () => {
         
   <div className="pointer-events-auto">
       {isModalOpen && (
-        <Popup onClose={handleCloseModal} onContinueEditing={handleCloseModal} onNextStep={handleNextStep} />
+        <Popup onClose={handleCloseModal} onContinueEditing={handleCloseModal} onNextStep={handleNextStep}  message={popupMessage} />
       )}
   </div> 
 
@@ -572,9 +605,9 @@ const handleNext = () => {
           </div>
         </div>
 
-            <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 h-[67px] bg-white rounded-lg w-[530px] border-t border-gray-300 py-2 mb-2">
+            <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 h-[67px] bg-white rounded-lg w-[630px] border-t border-gray-300 py-2 mb-2">
   <div className="flex gap-2 justify-center items-center mx-auto">
-    <div className="flex gap-2 w-[480px] h-[50px] justify-center bg-gray-100 rounded-lg p-2">
+    <div className="flex gap-2 w-[580px] h-[50px] justify-center bg-gray-100 rounded-lg p-2">
       <button 
         className="w-[72px] px-4 py-1 border-electric-blue border-2 text-electric-blue rounded hover:bg-electric-blue hover:text-white transition-colors" 
         onClick={handleBackClick}
@@ -604,7 +637,7 @@ const handleNext = () => {
         className="px-5 py-1 bg-electric-blue text-white rounded hover:bg-blue-700 transition-colors pointer-events-auto"
         onClick={handleSubmit}
       >
-        Save
+        Complete Project Details
       </button>
     </div>
   </div>
@@ -627,16 +660,3 @@ export default function Preview() {
   );
 }
 
-
-// .ai-style-change-1 {
-//     *& {
-//         width: 250px;
-//         aspect-ratio: 4 / 6;
-//         background-color: black;
-//         display: flex
-// ;
-//         justify-content: center;
-//         align-items: center;
-//         overflow: hidden;
-//     }
-// }

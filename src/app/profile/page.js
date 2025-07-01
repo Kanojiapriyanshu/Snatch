@@ -8,7 +8,6 @@ import { useFormContext } from "../onboarding/context";
 export default function DashboardRedirect() {
   const router = useRouter();
   const { formData } = useFormContext();
-
   useEffect(() => {
     if (formData?.username) {
       router.push(`/profile/${formData.username}`);

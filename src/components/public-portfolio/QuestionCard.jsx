@@ -4,35 +4,34 @@ import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { clsx } from "clsx";
 import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 const Questionnaire = ({ name }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const parts = pathname.split("/").filter(Boolean);
+  const username = parts[0];
 
-  // Define desktopScrollRef for desktop scrollable area and mobileScrollRef for mobile scrollable area
+
+  // ✅ Use React Query instead of useEffect + useState
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["questionnaire", username],
+    queryFn: async () => {
+      const response = await fetch(`/api/public-portfolio/questions?username=${username}`);
+      const result = await response.json();
+      if (!result?.questionnaires) throw new Error("No questionnaires found");
+      return result.questionnaires;
+    },
+    staleTime: 1000 * 60 * 5, // cache for 5 min
+  });
+
+
+  // Refs and scroll state
   const desktopScrollRef = useRef(null);
   const mobileScrollRef = useRef(null);
   const [scrollResetTrigger, setScrollResetTrigger] = useState(0);
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const parts = pathname.split("/").filter(Boolean);
-        const username = parts[0];
-        const url = `/api/public-portfolio/questions?username=${username}`;
-        const response = await fetch(url);
-        const result = await response.json();
-        setData(result.questionnaires || []);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching:", error);
-      }
-    };
 
-    fetchQuestions();
-  }, []);
-
-  const allCards = data.flatMap((item) =>
+  // Build flat cards safely
+  const allCards = (data || []).flatMap((item) =>
     item.sections.flatMap((section) =>
       section.questions.map((q, i) => ({
         question: q.question,
@@ -44,9 +43,13 @@ const Questionnaire = ({ name }) => {
     )
   );
 
-  if (loading) return <div>Loading...</div>;
 
-  // Function to scroll for desktop view
+  // Loading & error states
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Failed to load questions.</div>;
+
+
+  // Desktop scroll
   const scrollDesktop = (direction) => {
     const container = desktopScrollRef.current;
     if (container) {
@@ -57,6 +60,7 @@ const Questionnaire = ({ name }) => {
       });
     }
   };
+
 
   return (
     <div className={clsx(

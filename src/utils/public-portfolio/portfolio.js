@@ -1,6 +1,6 @@
 // utils/helpers.js
 import { useState, useEffect } from "react";
-
+import { useQuery } from "@tanstack/react-query";
 
 const extractUsernameFromPath = (pathname) => {
   // Remove leading and trailing slashes and split
@@ -10,120 +10,89 @@ const extractUsernameFromPath = (pathname) => {
   // For public view URL: ['snatchsocial', 'media-kit']
 
   // Always return the first segment as it's the username in both cases
-  return parts[0] || null;
+  return parts[0] || null;``                      
 };
 
-
-
-// Update useFetchPortfolio
 export const useFetchPortfolio = (ownerId) => {
-  const [formData, setFormData] = useState(null);
+  return useQuery({
+    queryKey: ["portfolio", ownerId],
+    queryFn: async () => {
+      const pathname = window.location.pathname;
+      const username = extractUsernameFromPath(pathname);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const username = extractUsernameFromPath(window.location.pathname);
+      const url = ownerId
+        ? `/api/public-portfolio/userinfo?userId=${ownerId}`
+        : `/api/public-portfolio/userinfo?username=${username}`;
 
-        const url = ownerId
-          ? `/api/public-portfolio/userinfo?userId=${ownerId}`
-          : `/api/public-portfolio/userinfo?username=${username}`;
+      const response = await fetch(url);
+      const result = await response.json();
 
-        const response = await fetch(url);
-        const result = await response.json();
-
-        if (result.success) {
-          setFormData(result.data);
-        } else {
-          console.error("Error fetching data:", result.error);
-        }
-      } catch (error) {
-        console.error("Error fetching portfolio:", error);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to fetch portfolio");
       }
-    };
 
-    fetchData();
-  }, [ownerId]);
-
-  return formData;
+      return result.data;
+    },
+    enabled: typeof window !== "undefined", // avoid SSR issues
+    staleTime: 1000 * 60 * 5,
+  });
 };
 
-// Update useFetchPublicPosts
+
 export const useFetchPublicPosts = (ownerId) => {
-  const [posts, setPosts] = useState({ instagram: [], uploaded: [] });
+  return useQuery({
+    queryKey: ["publicPosts", ownerId],
+    queryFn: async () => {
+      const pathname = window.location.pathname;
+      const username = extractUsernameFromPath(pathname);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const pathname = window.location.pathname;  
-        const username = extractUsernameFromPath(pathname);
+      const url = ownerId
+        ? `/api/public-portfolio/posts?userId=${ownerId}`
+        : `/api/public-portfolio/posts?username=${username}`;
 
-        const url = ownerId
-          ? `/api/public-portfolio/posts?userId=${ownerId}`
-          : `/api/public-portfolio/posts?username=${username}`;
+      const response = await fetch(url);
+      const result = await response.json();
 
-        const response = await fetch(url);
-        const result = await response.json();
-
-        if (result.success) {
-          setPosts({
-            instagram: result.instagram || [],
-            uploaded: result.uploaded || [],
-          });
-        } else {
-          console.error("Error fetching posts:", result.error);
-        }
-      } catch (error) {
-        console.error("Error fetching public posts:", error);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to fetch posts");
       }
-    };
 
-    fetchPosts();
-  }, [ownerId]);
-
-  return posts;
+      return {
+        instagram: result.instagram || [],
+        uploaded: result.uploaded || [],
+      };
+    },
+    enabled: typeof window !== "undefined",
+    staleTime: 1000 * 60 * 5,
+  });
 };
 
-// Update useInstagramData
 export const useInstagramData = () => {
-  const [data, setData] = useState({ followers: 0, posts: 0, reach: 0 });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  return useQuery({
+    queryKey: ["instagramData"],
+    queryFn: async () => {
+      const username = extractUsernameFromPath(window.location.pathname);
+      if (!username) throw new Error("Username not found in URL");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const username = extractUsernameFromPath(window.location.pathname);
+      const response = await fetch(
+        `/api/public-portfolio/instagram-stats?username=${encodeURIComponent(username)}`
+      );
 
-        if (!username) {
-          throw new Error("Username not found in URL");
-        }
-
-        const response = await fetch(
-          `/api/public-portfolio/instagram-stats?username=${encodeURIComponent(username)}`
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to fetch Instagram data.");
-        }
-
-        const result = await response.json();
-        setData({
-          followers: result.followers_count || 0,
-          posts: result.media_count || 0,
-          reach: result.reach || 0,
-        });
-      } catch (err) {
-        setError(err.message || "An unexpected error occurred");
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch Instagram data");
       }
-    };
 
-    fetchData();
-  }, []);
-
-  return { data, loading, error };
+      const result = await response.json();
+      return {
+        followers: result.followers_count || 0,
+        posts: result.media_count || 0,
+        reach: result.reach || 0,
+      };
+    },
+    enabled: typeof window !== "undefined",
+    staleTime: 1000 * 60 * 5,
+  });
 };
 
 export const useCheckScreenSize = () => {
