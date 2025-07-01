@@ -6,7 +6,7 @@ import QuestionCounter from "./QuestionCounter";
 import Image from "next/image";
 import { saveQuestionsToDB, fetchProfileData, removeQuestion } from "@/utils/postQuestions";
 
-const About = () => {
+const About = ({ onComplete }) => {
   const [aboutQuestions, setAboutQuestions] = useState([{ question: "", answer: "", coverImage: null, coverImageName: null }]);
   const [audienceQuestions, setAudienceQuestions] = useState([{ question: "", answer: "", coverImage: null, coverImageName: null }]);
   const [brandQuestions, setBrandQuestions] = useState([{ question: "", answer: "", coverImage: null, coverImageName: null }]);
@@ -129,7 +129,19 @@ const About = () => {
     updateSectionState(sectionKey, newQuestions);
   };
 
-  
+  // Check completion: at least one non-empty answer in each section
+  useEffect(() => {
+    const aboutDone = aboutQuestions.some(q => q.answer && q.answer.trim().length > 0);
+    const audienceDone = audienceQuestions.some(q => q.answer && q.answer.trim().length > 0);
+    const brandDone = brandQuestions.some(q => q.answer && q.answer.trim().length > 0);
+
+    // If all three have at least one answer, About is "complete"
+    if (aboutDone && audienceDone && brandDone) {
+      onComplete?.(true);
+    } else {
+      onComplete?.(false);
+    }
+  }, [aboutQuestions, audienceQuestions, brandQuestions, onComplete]);
 
   return (
     <div className="w-full h-screen overflow-y-auto"  style={{ maxHeight: 'calc(135vh - 96px)', scrollbarWidth: 'none',       

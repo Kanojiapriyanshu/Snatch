@@ -220,7 +220,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType }) => {
                   alt={file.fileName || "Uploaded File"}
                   width={200}
                   height={200}
-                  className="object-cover w-full h-full"
+                  className="bg-cover w-full h-full"
                 />
               ) : file.fileUrl.match(/\.(mp4|webm|ogg|mov)$/i) ? (
                 <video

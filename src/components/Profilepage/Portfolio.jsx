@@ -154,7 +154,7 @@ const Portfolio = () => {
                         height={32}
                         src={project.mediaUrl}
                         alt={`Project ${index + 1}`}
-                        className="w-[165px] h-[170px] object-cover rounded-md"
+                        className="w-[165px] h-[170px] bg-cover rounded-md"
                       />
                     )}
                   </div>
