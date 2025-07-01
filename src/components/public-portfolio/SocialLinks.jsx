@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useFormContext } from "@/app/onboarding/context";
 
 const socialIcons = {
-  instagram: "/assets/images/insta.svg",
+  instagram: "/assets/images/Insta.svg",
   facebook: "/assets/icons/facebook.svg",
   twitter: "/assets/images/X.svg",
   youtube: "/assets/icons/social/youtube.svg",

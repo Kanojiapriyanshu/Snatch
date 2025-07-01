@@ -279,7 +279,7 @@ const renderUploadTab = () => (
           <span className="font-apfel-grotezk-regular text-sm text-light-grey px-3">Only png, jpg, and .mp4 files <span className="mx-auto ml-10 font-apfel-grotezk-mittel">of max limit 5mb</span></span>
           <span className="mt-2 text-dark-grey text-2xl">
             <Image
-              src="/assets/images/Upload-folder.svg"
+              src="/assets/images/upload-folder.svg"
               alt="Upload Icon"
               width={44}
               height={44}

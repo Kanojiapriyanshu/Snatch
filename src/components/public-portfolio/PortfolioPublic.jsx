@@ -170,7 +170,7 @@ const PortfolioPublic = () => {
                       src={project.mediaUrl}
                       alt={`Project ${index + 1}`}
                       fill
-                      className="object-cover"
+                      className="bg-cover"
                     />
                   )}
 
