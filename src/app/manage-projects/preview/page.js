@@ -33,6 +33,7 @@ import SvgComponent from "@/components/svg/Instagramsvg";
   // Add these near the top of PreviewContent function
   const [isPortrait, setIsPortrait] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
   const checkOrientation = (width, height) => {
     return height > width;
   };
@@ -226,6 +227,27 @@ const filledProjectsCount = (() => {
     return isProjectFilled(formData);
   }).length;
 })();
+
+const handleHamburgerClick = () => {
+    setIsMenuVisible((prev) => !prev); // Toggle menu visibility
+  };
+
+
+  const handleProfileClick = () => {
+    router.push("/profile");
+  };
+
+  const handleNextClick = () => {
+    router.push("/manage-projects/pick-projects");
+  };
+
+  const handleDashboardClick = () => {
+    router.push("/dashboard");
+  }
+
+  const handleSettingClick = () => {
+   router.push("/settings")
+  }
 
   return (
     <div className={`flex flex-col items-start h-[77vh] w-full space-x-8 overflow-x-hidden overflow-y-auto ${isModalOpen ? 'bg-transparent pointer-events-none' : 'bg-transparent'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -605,36 +627,86 @@ const filledProjectsCount = (() => {
           </div>
         </div>
 
-            <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 h-[67px] bg-white rounded-lg w-[630px] border-t border-gray-300 py-2 mb-2">
-  <div className="flex gap-2 justify-center items-center mx-auto">
-    <div className="flex gap-2 w-[580px] h-[50px] justify-center bg-gray-100 rounded-lg p-2">
-      <button 
-        className="w-[72px] px-4 py-1 border-electric-blue border-2 text-electric-blue rounded hover:bg-electric-blue hover:text-white transition-colors" 
-        onClick={handleBackClick}
-      >
-        Back
+<div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 h-[67px] bg-white rounded-lg w-[630px] border-t border-gray-300 px-4 py-2 shadow-md z-50">
+  <div className="flex items-center justify-between w-full h-full">
+    {/* Logo + Hamburger */}
+    <div className="flex items-center gap-3">
+      {/* SNATCH Logo */}
+      <button onClick={handleNextClick}>
+        <Image
+          src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+          alt="snatchlogo"
+          width={80}
+          height={24}
+          className="mx-auto w-20 h-5"
+        />
       </button>
 
-      <div className="flex gap-2">
+      {/* Hamburger */}
+      <div className="relative">
         <button
-          className="px-2 py-1  text-electric-blue rounded hover:opacity-80  transition-colors underline underline-offset-4"
-          onClick={handlePrevious}
-          disabled={projects.length <= 1}
+          onClick={handleHamburgerClick}
+          className="w-[44px] h-[44px] bg-gray-100 rounded-md flex items-center justify-center"
         >
-          ← Previous Project
+          <Image
+            src="/assets/icons/onboarding/Hamburger.svg"
+            alt="hamburger"
+            width={20}
+            height={20}
+          />
         </button>
-        
-        <button
-          className="px-2 py-1  text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
-          onClick={handleNext}
-          disabled={projects.length <= 1}
-        >
-          Next Project →
-        </button>
+
+        {/* Dropdown */}
+        {isMenuVisible && (
+          <div className="absolute bottom-[60px] left-0 w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+            <ul className="flex flex-col p-3 gap-2">
+              <li
+                onClick={handleDashboardClick}
+                className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+              >
+                Dashboard
+              </li>
+              <li
+                onClick={handleSettingClick}
+                className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+              >
+                Settings
+              </li>
+              <li
+                onClick={handleProfileClick}
+                className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+              >
+                Profile
+              </li>
+            </ul>
+          </div>
+        )}
       </div>
+    </div>
+
+    {/* Center Navigation: Previous/Next Project */}
+    <div className="flex items-center gap-3 ">
+      <button
+        className="text-electric-blue underline underline-offset-4 hover:opacity-80 transition-colors text-md"
+        onClick={handlePrevious}
+        disabled={projects.length <= 1}
+      >
+        ← Previous Project
+      </button>
 
       <button
-        className="px-5 py-1 bg-electric-blue text-white rounded hover:bg-blue-700 transition-colors pointer-events-auto"
+        className="text-electric-blue underline underline-offset-4 hover:opacity-80 transition-colors text-md"
+        onClick={handleNext}
+        disabled={projects.length <= 1}
+      >
+        Next Project →
+      </button>
+    </div>
+
+    {/* Right Buttons: Previous Step + See Previews */}
+    <div className="flex items-center gap-3">
+      <button
+        className="px-5 py-1.5 bg-electric-blue text-white rounded-lg text-md hover:bg-blue-700 transition-colors"
         onClick={handleSubmit}
       >
         Complete Project Details

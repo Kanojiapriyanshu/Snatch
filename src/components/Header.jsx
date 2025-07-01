@@ -36,7 +36,7 @@ const Header = () => {
             <div className="flex flex-col items-center px-10">
               {/* SVG Icon */}
 <div
-  className={`w-5 h-5 transition-all duration-300 mr-4 ${
+  className={`w-5 h-5 transition-all duration-300 mr-2 ${
     pathname === step.id ? "text-lime-yellow" : "text-white"
   }`}
 >

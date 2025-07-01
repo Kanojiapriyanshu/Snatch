@@ -22,6 +22,7 @@ export default function PickProjects() {
     removeInstagramSelection, 
     removeFile
   } = useSelectedProjects();
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   
   useEffect(() => {
@@ -103,6 +104,27 @@ export default function PickProjects() {
     const handleBackClick = () => {
      router.push("/profile")  
     }
+
+ const handleHamburgerClick = () => {
+    setIsMenuVisible((prev) => !prev); // Toggle menu visibility
+  };
+
+
+  const handleProfileClick = () => {
+    router.push("/profile");
+  };
+
+  const handleNextClick = () => {
+    router.push("/manage-projects/pick-projects");
+  };
+
+  const handleDashboardClick = () => {
+    router.push("/dashboard");
+  }
+
+  const handleSettingClick = () => {
+   router.push("/settings")
+  }
 
 const renderInstagramTab = () => (
   <div className="flex justify-center gap-10 mt-5">  
@@ -355,23 +377,73 @@ return (
       {/* {renderInstagramTab()} */}
       {selectedTab === "instagram" ? renderInstagramTab() : renderUploadTab()}
 
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg border-t border-gray-300 py-1 px-4 mb-2">
+      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg border-t border-gray-300 py-1 px-4 mb-2 font-apfel-grotezk-regular">
   <div className="flex gap-2 justify-center mx-auto">
-    <div className="flex gap-2 px-3 py-1.5 justify-center bg-gray-100 rounded-md">
-      <button className=" px-4 py-1.5 border-electric-blue border-2 text-electric-blue rounded hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
-        Back
+    <div className="flex gap-2 px-3 py-1.5 justify-center rounded-md">
+
+
+          <button onClick={handleNextClick} className="w-[90px] h-[37px]  text-electric-blue text-2xl font-semibold text-center">
+              <Image 
+                src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+                width={40}
+                height={40}
+                alt="snatchlogo"
+                className="mx-auto w-20 h-5"
+              />
+          </button>
+
+             <button
+                        onClick={handleHamburgerClick}
+                        className="w-[50px] h-[37px] bg-gray-100 text-electric-blue border  rounded-md mx-auto font-medium hover:bg-transparent relative"
+                      >
+                        <Image
+                          className="mx-auto w-8"
+                          src="/assets/icons/onboarding/Hamburger.svg"
+                          alt="hamburger"
+                          width={20}
+                          height={20}
+                        />
+            </button>
+
+            {/* Dropdown Menu */}
+              {isMenuVisible && (
+                <div className="absolute top-[-260%] left-[-29px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+                  <ul className="flex flex-col p-3 gap-2">
+                    <li
+                      onClick={handleDashboardClick}
+                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                    >
+                      Dashboard
+                    </li>
+                    <li
+                      onClick={handleSettingClick}
+                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                    >
+                      Settings
+                    </li>
+                    <li
+                      onClick={handleProfileClick}
+                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                    >
+                      Profile
+                    </li>
+                  </ul>
+                </div>
+              )}
+    
+    <button className=" px-4 py-1.5 ml-4 border-electric-blue border-2 text-electric-blue rounded hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
+         ← Back
       </button>
       <button
-        // className={'px-4 py-1.7 bg-electric-blue border-2 text-white rounded-md  transition-colors'}
-
         className={`px-4 py-1.7 border-2 rounded-md transition-colors 
           ${isDisabled ? "bg-[#6C7FA5] text-light-grey cursor-not-allowed" : "bg-electric-blue text-white"}
         `}
         onClick={handleProjectClick}
         disabled={isDisabled}
       >
-        Add Details
+        Add Details →
       </button>
+
     </div>
   </div>
 </div>

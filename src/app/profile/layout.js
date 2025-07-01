@@ -139,6 +139,18 @@ export default function OnboardingLayout({ children }) {
         <div className={`fixed top-[85%] left-[50%] translate-x-[-50%] ${
             isRed ? "w-[420px]" : "w-[600px]"
           } h-[74px] flex justify-center items-center gap-3 border-2 bg-white border-light-grey rounded-md z-20 p-5 font-apfel-grotezk-regular`}>
+          <button
+            onClick={handleNextClick}
+            className="w-[100px] h-[50px]  text-electric-blue text-2xl font-semibold   text-center"
+          >
+              <Image 
+                src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+                width={40}
+                height={40}
+                alt="snatchlogo"
+                className="mx-auto w-20 h-5"
+              />
+          </button>
           {/* Hamburger Button */}
           <button
             onClick={handleHamburgerClick}
@@ -187,7 +199,7 @@ export default function OnboardingLayout({ children }) {
 
           {/* Other Buttons */}
           <div className={`${
-              isRed ? "w-[499px]" : "w-[499px]"
+              isRed ? "w-[370px]" : "w-[499px]"
             } h-[56px] gap-2 bg-gray-100 flex justify-between items-center rounded-md p-2`}>
             <button
               onClick={handleProfileClick}
@@ -219,17 +231,11 @@ export default function OnboardingLayout({ children }) {
                 disabled={!allComplete}
               >
                 <Image src="/assets/images/share.svg" alt="share" width={20} height={20} />
-                <span className="text-white">Create Portfolio</span>
+                <span className="text-white ml-1">Create Portfolio</span>
               </button>
             )}
           </div>
 
-          <button
-            onClick={handleNextClick}
-            className="w-[90px] h-[50px] bg-gray-100 text-electric-blue text-2xl font-semibold border  text-center"
-          >
-            Snatch
-          </button>
         </div>
 
         {/* Right side: Form */}

@@ -1105,13 +1105,19 @@ const handlePopupGenerate = async () => {
 
 <div className="border-b border-light-grey"></div>
 
-<div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg border-t border-gray-300 py-1 px-4 mb-2">
+<div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg border-t border-gray-300 py-1 px-4 mb-2 font-apfel-grotezk-regular">
   <div className="flex gap-2 justify-center mx-auto">
-    <div className="flex gap-2 px-3 py-1.5 justify-center bg-gray-100 rounded-md">
-        <button onClick={handleNextClick} className="w-[90px] h-[37px] bg-gray-100 text-electric-blue text-2xl font-semibold    text-center">
-           Snatch
+    <div className="flex gap-2 px-3 py-1.5 justify-center  rounded-md">
+        <button onClick={handleNextClick} className="w-[90px] h-[37px]  text-electric-blue text-2xl font-semibold    text-center">
+             <Image 
+              src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+              width={40}
+              height={40}
+              alt="snatchlogo"
+              className="mx-auto w-20 h-5"
+            />
           </button>
-       <button
+               <button
                   onClick={handleHamburgerClick}
                   className="w-[50px] h-[37px] bg-gray-100 text-electric-blue border  rounded-md mx-auto font-medium hover:bg-transparent relative"
                 >
@@ -1126,7 +1132,7 @@ const handlePopupGenerate = async () => {
       
                 {/* Dropdown Menu */}
                 {isMenuVisible && (
-                  <div className="absolute top-[-260%] left-[-29px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50">
+                  <div className="absolute top-[-260%] left-[-29px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
                     <ul className="flex flex-col p-3 gap-2">
                       <li
                         onClick={handleDashboardClick}

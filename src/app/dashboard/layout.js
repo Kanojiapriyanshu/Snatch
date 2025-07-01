@@ -47,13 +47,21 @@ export default function OnboardingLayout({ children }) {
         </div>
 
         <div className="absolute top-[87%] left-[37%]  w-[450px] h-[79px] flex justify-center items-center gap-3  bg-white font-apfel-grotezk-regular rounded-xl shadow-md z-50">
+                  <button
+              onClick={handleNextClick}
+              className="w-[100px] h-[50px]  text-electric-blue text-2xl font-semibold   text-center"
+            >
+                <Image 
+                  src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+                  width={40}
+                  height={40}
+                  alt="snatchlogo"
+                  className="mx-auto w-20 h-5"
+                />
+         </button>
           <button onClick={handleProfileClick} className="w-[80px] h-[50px] bg-gray-100 text-electric-blue  rounded-md text-center font-medium hover:bg-electric-blue hover:text-white">
             Profile
           </button>
- 
-          {/* <button onClick={handleNextClick} className="w-[80px] h-[50px] bg-gray-100 text-electric-blue  rounded-md text-center font-medium hover:bg-electric-blue hover:text-white">
-            Explore
-          </button> */}
 
           <button onClick={handleNextClick} className="w-[90px] h-[50px] bg-gray-100 text-electric-blue  rounded-md text-center font-medium hover:bg-electric-blue hover:text-white">
             Dashboard
@@ -63,9 +71,6 @@ export default function OnboardingLayout({ children }) {
            Settings
           </button>
 
-          <button onClick={handleNextClick} className="w-[90px] h-[50px] bg-gray-100 text-electric-blue text-2xl font-semibold    text-center">
-           Snatch
-          </button>
         </div>
 
         {/* Right side: Form */}

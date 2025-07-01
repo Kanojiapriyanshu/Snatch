@@ -37,7 +37,7 @@ export default function Menu() {
       {/* Dropdown Menu */}
       {open && (
         <div className="absolute bottom-[78px] bg-white shadow-lg rounded-lg p-8 w-[217px] z-50">
-          <ul className="space-y-2 text-[#0044FF] font-medium font-apfel-grotezk-regular">
+          <ul className="space-y-2 text-electric-blue font-medium font-apfel-grotezk-regular">
             <li><Link href="/dashboard">Dashboard</Link></li>
             <li><Link href="/settings">Settings</Link></li>
             <li><Link href="/explore">Explore</Link></li>
