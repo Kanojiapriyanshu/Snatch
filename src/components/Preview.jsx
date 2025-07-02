@@ -123,7 +123,7 @@ const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
 
       </div>
   
-      <div className="flex flex-wrap mx-auto  gap-9 px-10 text-dark-grey mt-[20px] max-w-[500px] font-apfel-grotezk-regular text-md">
+      <div className="flex flex-nowrap mx-auto  gap-9 px-10 text-dark-grey mt-[20px] max-w-[500px] font-apfel-grotezk-regular text-md">
       <Image 
         width={24}
         height={20}

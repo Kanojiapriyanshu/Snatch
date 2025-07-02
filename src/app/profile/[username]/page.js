@@ -144,7 +144,7 @@ const Profile = () => {
 
       <div
         className={`flex flex-grow justify-center mt-20 h-full bg-white ${
-          activeTab === "audience" ? "w-[800px]" : "w-[90%]"
+          activeTab === "audience" ? "w-[700px] 3xl:w-[800px]" : "w-[90%]"
         } ${activeTab === "audience" ? "overflow-none" : ""}`}
       >
         {renderTabContent()}

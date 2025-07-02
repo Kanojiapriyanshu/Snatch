@@ -36,7 +36,7 @@ function formatNumber(value) {
 const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
     
     return (
-      <div className="h-auto max-h-auto ">
+      <div className="h-[400px]  3xl:h-auto max-h-auto w-96 3xl:w-full ">
 
           <div className="flex gap-0 justify-center items-center flex-wrap max-w-[380px]  mx-auto">
                 {(formData.industry && formData.industry.length > 0
@@ -88,7 +88,7 @@ const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
       </div>
 
   
-      <div className="flex flex-wrap mx-auto gap-5 px-10 text-dark-grey mt-[40px] max-w-[500px] font-apfel-grotezk-regular">
+      <div className="flex mx-auto gap-5 px-10 text-dark-grey mt-[40px] max-w-[500px] font-apfel-grotezk-regular">
 
         <Image 
         width={24}
@@ -96,8 +96,8 @@ const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
         src="/assets/icons/onboarding/Language.svg"
         className="  "
         alt="languages"/>
-
-          <h5 className="text-electric-blue -ml-1 font-apfel-grotezk-mittel text-md">Languages</h5>
+         <h5 className="text-electric-blue -ml-1 font-apfel-grotezk-mittel text-md">Languages</h5>
+ 
           <div className="flex flex-wrap items-center gap-0 w-56 max-w-60">
       {formData.languages && formData.languages.length > 0 ? (
         formData.languages.map((item, index) => (
@@ -118,11 +118,11 @@ const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
     ) : (
       <span>What Languages do you know?</span>
     )}
-  </div>
+          </div>
 
       </div>
   
-      <div className="flex flex-wrap mx-auto  gap-9 px-10 text-dark-grey mt-[20px] max-w-[500px] font-apfel-grotezk-regular text-md">
+      <div className="flex mx-auto  gap-9 px-10 text-dark-grey mt-[20px] max-w-[500px] font-apfel-grotezk-regular text-md">
       <Image 
         width={24}
         height={20}
@@ -152,8 +152,8 @@ const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
         
       </div>
   
-      <div className="text-dark-grey px-10 flex flex-col justify-center items-center mt-12">
-       <h3 className="text-3xl font-qimano text-graphite">
+      <div className="text-dark-grey px-10 flex flex-col justify-center items-center mt-2 3xl:mt-12">
+       <h3 className="3xl:text-3xl text-2xl font-qimano text-graphite">
         {/* ₹ {formatNumber(formData.story)} - ₹ {formatNumber(formData.reels)} */}
         {priceRange}
       </h3>

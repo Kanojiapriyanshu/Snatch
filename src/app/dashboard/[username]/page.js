@@ -119,7 +119,7 @@ const DashboardPage = () => {
       {/* Blur wrapper when conditions are not met */}
       <div className={`${(!isInstagramLinked || !hasMinFollowers) ? "blur-sm pointer-events-none select-none" : ""}`}>
         {/* Top Analytics Cards */}
-        <div className="mb-[500px] flex gap-3">
+        <div className="mb-[430px] 3xl:mb-[500px] flex gap-3">
           <DashboardCardwrapper count={analytics.totalVisitors} label="Profile Visits" />
           <DashboardCardwrapper count={totalRequests} label="Request Received" />
           <DashboardCardwrapper 
@@ -138,7 +138,7 @@ const DashboardPage = () => {
           />
 
           {/* Creator Circle Section */}
-          <div className="mt-4 w-[98%] mr-5 mx-auto bg-white rounded-xl shadow relative font-qimano overflow-hidden px-6 py-12">
+          <div className="mt-1 3xl:mt-4 w-full max-w-[98%] mr-5 mx-auto bg-white rounded-xl shadow relative font-qimano overflow-hidden  px-4 md:px-8 xl:px-16 py-[clamp(20px,calc(8px+5vh+1vw),100px)] min-h-[250px] xl:min-h-[100px] 2xl:min-h-[200px] 5xl:min-h-[500px]">
             <div
               className="absolute top-3 -left-14 w-96 z-30"
               style={{ transform: "rotate(-25deg)" }}
@@ -151,8 +151,8 @@ const DashboardPage = () => {
             <div className="flex flex-col md:flex-row items-center justify-between gap-8 mt-10">
               {/* Left Text */}
               <div className="md:w-[50%] w-full text-center">
-                <h2 className="text-3xl text-gray-800">Explore the Creator Circle</h2>
-                <p className="mt-4 text-base text-center font-apfel-grotezk-regular text-gray-700 leading-relaxed">
+                <h2 className="text-2xl 3xl:text-3xl text-gray-800">Explore the Creator Circle</h2>
+                <p className="mt-4 text-sm 3xl:text-base text-center font-apfel-grotezk-regular text-gray-700 leading-relaxed min-w-80 3xl:min-w-0">
                   Get inspired by fellow influencers on the platform. Browse profiles,
                   see how they’re showcasing themselves, and discover fresh ways to shine.
                 </p>

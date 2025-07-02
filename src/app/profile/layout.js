@@ -120,7 +120,7 @@ export default function OnboardingLayout({ children }) {
     <FormProvider>
       <div className="flex h-screen bg-white">
         {/* Left side: Image with Preview */}
-        <div className="w-[45vw] overflow-hidden relative flex items-center justify-center bg-white h-[100vh] ">
+        <div className="w-[900px] 3xl:w-[45vw] overflow-hidden relative flex items-center justify-center bg-white h-[100vh] ">
           <Image
             src="/assets/images/signup_background.png"
             alt="Background Image"
@@ -240,7 +240,7 @@ export default function OnboardingLayout({ children }) {
 
         {/* Right side: Form */}
         <div className="w-[900px] flex flex-col flex-grow justify-center items-center bg-white">
-          <div className="w-[100vw] max-w-3xl">{children}</div>
+          <div className="w-[100vw] 3xl:max-w-3xl max-w-2xl ">{children}</div>
         </div>
       </div>
     </FormProvider>

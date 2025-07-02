@@ -39,7 +39,7 @@ export default function OnboardingLayout({ children }) {
             priority
           />
 
-          <div className="relative mb-20 z-10 2xl:p-4 py-2 bg-white bg-opacity-90 rounded-lg shadow-lg grid grid-rows-1">
+          <div className="relative mb-20 z-10 p-1 bg-white 2xl:p-4 py-2  bg-opacity-90 rounded-lg shadow-lg grid grid-rows-1">
             <DashboardPreview />
             <StatsCard />
           </div>
