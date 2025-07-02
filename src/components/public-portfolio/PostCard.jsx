@@ -112,9 +112,9 @@ export default function PostCard({ post, postId, username, allPosts }) {
     <div className="w-full flex flex-col items-center justify-start mt-10">
       {/* Cross icon: fixed for desktop, absolute/scrollable for mobile */}
       <button
-        className="z-50 bg-[#F2F2F2] rounded-full shadow-lg border border-gray-200 items-center justify-center flex
+        className="z-50  items-center justify-center flex
           absolute right-2 top-2 w-7 h-7 min-w-[28px] min-h-[28px]
-          md:fixed md:right-4 md:top-4 md:w-10 md:h-10 md:min-w-[40px] md:min-h-[40px]"
+          md:fixed md:right-60 md:top-9 md:w-14 md:h-14 md:min-w-[40px] md:min-h-[30px]"
         onClick={() => router.push(`/${username}/media-kit`)}
         aria-label="Go to Portfolio"
       >
@@ -123,246 +123,241 @@ export default function PostCard({ post, postId, username, allPosts }) {
           alt="Go to Portfolio"
           width={20}
           height={20}
-          className="w-full h-full object-contain md:w-6 md:h-6"
+          className="w-full h-full object-contain md:w-8 md:h-9"
         />
       </button>
-      {/* Desktop navigation (fixed, outside card) */}
-      <button
-        onClick={() => handleNavigation("prev")}
-        className="hidden md:flex fixed left-8 top-1/2 -translate-y-1/2 z-50 bg-white rounded-full shadow-lg p-2 border border-gray-200 hover:bg-gray-50 transition-all duration-200"
-        aria-label="Previous"
-      >
-        <div className="w-14 h-14 flex items-center justify-center">
-          <Image
-            src="/assets/images/Lefthand.svg"
-            alt="Previous"
-            width={56}
-            height={56}
-            className="w-full h-full object-contain"
-          />
-        </div>
-      </button>
-      <button
-        onClick={() => handleNavigation("next")}
-        className="hidden md:flex fixed right-8 top-1/2 -translate-y-1/2 z-50 bg-white rounded-full shadow-lg p-2 border border-gray-200 hover:bg-gray-50 transition-all duration-200"
-        aria-label="Next"
-      >
-        <div className="w-14 h-14 flex items-center justify-center">
-          <Image
-            src="/assets/images/Righthand.svg"
-            alt="Next"
-            width={56}
-            height={56}
-            className="w-full h-full object-contain"
-          />
-        </div>
-      </button>
-
-      {/* Combined Desktop Content Wrapper */}
-      <div className="hidden md:flex flex-col items-center">
-        {/* Desktop layout: main post card */}
-        <div className="w-[864px] h-[430px] p-2 bg-[#FFFFFF] rounded-lg">
-          <div className="flex gap-5">
-            {/* Media Section */}
-            <div className="w-[300px] h-full pl-5 pt-5">
-              <div className={`w-[250px] ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} overflow-hidden rounded-lg flex items-center`}>
-                {(() => {
-                  if (!post) {
-                    return <p className="text-graphite flex justify-center items-center h-[50vh]">No post selected</p>;
-                  }
-                  if (post.media?.type === "IMAGE") {
-                    return (
-                      <div className="relative w-[300px]">
-                        <Image
-                          src={post.media.files[0].url}
-                          alt={post.media.files[0].name || 'Image'}
-                          width={300}
-                          height={1200}
-                          className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} bg-cover rounded-lg`}
-                          onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                            setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-                          }}
-                        />
-                      </div>
-                    );
-                  } else if (post.media?.type === "VIDEO") {
-                    return (
-                      <div className="relative p-0 w-[300px]">
-                        <video
-                          src={post.media.files[0].url}
-                          controls
-                          width={300}
-                          height={1200}
-                          className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
-                          onLoadedMetadata={(e) => {
-                            setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
-                          }}
-                        />
-                      </div>
-                    );
-                  } else if (post.media?.type === "CAROUSEL" && post.media.files?.length > 0) {
-                    return (
-                      <div className="relative w-full">
-                        <div className="w-full overflow-hidden rounded-lg">
-                          {post.media.files.map((file, index) => (
-                            <div
-                              key={index}
-                              className={`transition-opacity duration-500 w-full ${carouselIndex === index ? "opacity-100" : "opacity-0 absolute inset-0"}`}
-                            >
-                              {file.type === "IMAGE" ? (
-                                <Image
-                                  src={file.url}
-                                  alt={`Carousel image ${index + 1}`}
-                                  width={300}
-                                  height={1200}
-                                  className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
-                                  onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                                    setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-                                  }}
-                                />
-                              ) : file.type === "VIDEO" ? (
-                                <video
-                                  controls
-                                  className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
-                                  onLoadedMetadata={(e) => {
-                                    setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
-                                  }}
-                                >
-                                  <source src={file.url} type="video/mp4" />
-                                </video>
-                              ) : null}
-                            </div>
-                          ))}
+      {/* Main overlay background for large devices */}
+      <div className="hidden md:flex fixed inset-0 w-full h-full bg-black/2 z-10 pointer-events-none" aria-hidden="true"></div>
+      {/* Desktop content wrapper with navigation arrows close to card */}
+      <div className="hidden md:flex flex-col items-center justify-center w-full relative z-20">
+        <div className="flex items-center justify-center w-full relative" style={{ minHeight: '430px', overflowY: 'visible' }}>
+          {/* Left Arrow - close to card */}
+          <button
+            onClick={() => handleNavigation('prev')}
+            className="absolute left-1/8 -translate-x-[490px] top-1/2 -translate-y-1/2 z-30"
+            aria-label="Previous"
+            style={{ minWidth: 56, minHeight: 56 }}
+          >
+            <div className="w-17 h-17 flex items-center justify-center">
+              <Image
+                src="/assets/images/Lefthand.svg"
+                alt="Previous"
+                width={56}
+                height={56}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </button>
+          {/* Card (unchanged) */}
+          <div className="w-[864px] h-[450px] p-2 bg-[#FFFFFF] rounded-lg mx-auto">
+            <div className="flex gap-5 items-center mt-2">
+              {/* Media Section */}
+              <div className="w-[300px] h-full pl-5 pt-5">
+                <div className={`w-[250px] ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} overflow-hidden rounded-lg flex items-center`}>
+                  {(() => {
+                    if (!post) {
+                      return <p className="text-graphite flex justify-center items-center h-[50vh]">No post selected</p>;
+                    }
+                    if (post.media?.type === "IMAGE") {
+                      return (
+                        <div className="relative w-[300px]">
+                          <Image
+                            src={post.media.files[0].url}
+                            alt={post.media.files[0].name || 'Image'}
+                            width={300}
+                            height={1200}
+                            className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} bg-cover rounded-lg`}
+                            onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+                              setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
+                            }}
+                          />
                         </div>
-                        {/* Navigation buttons for carousel */}
-                        <div className="absolute inset-0 flex items-center justify-between px-2">
-                          <button
-                            className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                            onClick={() => setCarouselIndex(carouselIndex === 0 ? post.media.files.length - 1 : carouselIndex - 1)}
-                            aria-label="Previous carousel item"
-                          >
-                            ❮
-                          </button>
-                          <button
-                            className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                            onClick={() => setCarouselIndex(carouselIndex === post.media.files.length - 1 ? 0 : carouselIndex + 1)}
-                            aria-label="Next carousel item"
-                          >
-                            ❯
-                          </button>
+                      );
+                    } else if (post.media?.type === "VIDEO") {
+                      return (
+                        <div className="relative p-0 w-[300px]">
+                          <video
+                            src={post.media.files[0].url}
+                            controls
+                            width={300}
+                            height={1200}
+                            className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
+                            onLoadedMetadata={(e) => {
+                              setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
+                            }}
+                          />
                         </div>
-                        
-                        {post.media.files.length > 1 && ( /* Re-adding dot indicators for desktop carousel */
-                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-                            {post.media.files.map((_, dotIndex) => (
-                              <span
-                                key={dotIndex}
-                                className={`block w-2 h-2 rounded-full ${carouselIndex === dotIndex ? 'bg-white' : 'bg-gray-400'}`}
-                              ></span>
+                      );
+                    } else if (post.media?.type === "CAROUSEL" && post.media.files?.length > 0) {
+                      return (
+                        <div className="relative w-full">
+                          <div className="w-full overflow-hidden rounded-lg">
+                            {post.media.files.map((file, index) => (
+                              <div
+                                key={index}
+                                className={`transition-opacity duration-500 w-full ${carouselIndex === index ? "opacity-100" : "opacity-0 absolute inset-0"}`}
+                              >
+                                {file.type === "IMAGE" ? (
+                                  <Image
+                                    src={file.url}
+                                    alt={`Carousel image ${index + 1}`}
+                                    width={300}
+                                    height={1200}
+                                    className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                                    onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+                                      setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
+                                    }}
+                                  />
+                                ) : file.type === "VIDEO" ? (
+                                  <video
+                                    controls
+                                    className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                                    onLoadedMetadata={(e) => {
+                                      setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
+                                    }}
+                                  >
+                                    <source src={file.url} type="video/mp4" />
+                                  </video>
+                                ) : null}
+                              </div>
                             ))}
                           </div>
-                        )}
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
-              </div>
-            </div>
-
-            {/* Details Section */}
-            <div className="w-full h-full mt-5">
-              <p className="text-2xl text-graphite font-qimano">{post.post?.titleName || 'Title of the project'}</p>
-              <div className="flex gap-1 flex-wrap max-w-xl mr-10">
-                {post.post?.industries?.length > 0 ? (
-                  post.post.industries.map((industry, index) => (
-                    <span
-                      key={index}
-                      className="bg-[#0037EB]/5 text-graphite my-2 inline-block rounded border border-transparent py-1 px-2.5 text-xs font-medium"
-                    >
-                      {industry}
-                    </span>
-                  ))
-                ) : (
-                  <span>Industry</span>
-                )}
+                          {/* Navigation buttons for carousel */}
+                          <div className="absolute inset-0 flex items-center justify-between px-2">
+                            <button
+                              className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                              onClick={() => setCarouselIndex(carouselIndex === 0 ? post.media.files.length - 1 : carouselIndex - 1)}
+                              aria-label="Previous carousel item"
+                            >
+                              ❮
+                            </button>
+                            <button
+                              className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                              onClick={() => setCarouselIndex(carouselIndex === post.media.files.length - 1 ? 0 : carouselIndex + 1)}
+                              aria-label="Next carousel item"
+                            >
+                              ❯
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
               </div>
 
-              <div className="w-full border-b-[0.5px] border-gray-300 mt-2"></div>
+              {/* Details Section */}
+              <div className="w-full h-full pl-5 pr-5 mt-5">
+                <p className="text-2xl text-graphite font-qimano">{post.post?.titleName || 'Title of the project'}</p>
+                <div className="flex gap-1 flex-wrap max-w-xl mr-10">
+                  {post.post?.industries?.length > 0 ? (
+                    post.post.industries.map((industry, index) => (
+                      <span
+                        key={index}
+                        className="bg-[#0037EB]/5 text-graphite my-2 font-apfel-grotezk-regular inline-block rounded border border-transparent py-1 px-2.5 text-xs font-medium"
+                      >
+                        {industry}
+                      </span>
+                    ))
+                  ) : (
+                    <span>Industry</span>
+                  )}
+                </div>
 
-              <div className={`flex items-center space-x-2 ${post.post?.isBrandCollaboration ? 'mt-[2rem]' : 'mt-[0]'}`}>
-                {post.post?.isBrandCollaboration && (
-                  <div className="brand-collaboration-section flex gap-3">
-                    <Image
-                      src={post.post.companyLogo || "/assets/images/logo.svg"}
-                      width={50}
-                      height={50}
-                      alt={post.post.companyLogo ? "Company Logo" : "Default Logo"}
-                      className="h-12 w-12 bg-cover rounded-full"
-                    />
-                    {(post.post.companyName || post.post.companyLocation || post.post.eventTypes?.length > 0) && (
-                      <div className="h-12 border-l border-gray-400"></div>
-                    )}
+                <div className="w-full border-b-[0.5px] border-gray-300 mt-2"></div>
 
-                    {(post.post.companyName || post.post.companyLocation || post.post.eventTypes?.length > 0) && (
-                      <div className="text-graphite text-sm space-y-1">
-                        {(post.post.companyName || post.post.companyLocation) && (
-                          <p>
-                            {post.post.companyName && (
-                              <> <span className="text-graphite">{post.post.companyName}</span></>
-                            )}
-                            {post.post.companyLocation && (
-                              <> • {post.post.companyLocation}</>
-                            )}
-                          </p>
-                        )}
+                <div className={`flex items-center space-x-2 ${post.post?.isBrandCollaboration ? 'mt-[2rem]' : 'mt-[0]'}`}>
+                  {post.post?.isBrandCollaboration && (
+                    <div className="brand-collaboration-section flex gap-3">
+                      <Image
+                        src={post.post.companyLogo || "/assets/images/logo.svg"}
+                        width={50}
+                        height={50}
+                        alt={post.post.companyLogo ? "Company Logo" : "Default Logo"}
+                        className="h-12 w-12 bg-cover rounded-full"
+                      />
+                      {(post.post.companyName || post.post.companyLocation || post.post.eventTypes?.length > 0) && (
+                        <div className="h-12 border-l border-gray-400"></div>
+                      )}
 
-                        <div className="flex gap-2">
-                          {post.post.eventTypes?.length > 0 && (
-                            <p className="">
-                              {post.post.eventTypes.map((eventType, index) => (
-                                <span key={index} className="px-1 -ml-2 text-sm">
-                                  {index > 0 ? " | " : " • "}{eventType}
-                                </span>
-                              ))}
+                      {(post.post.companyName || post.post.companyLocation || post.post.eventTypes?.length > 0) && (
+                        <div className="text-graphite font-apfel-grotezk-regular text-sm space-y-1">
+                          {(post.post.companyName || post.post.companyLocation) && (
+                            <p>
+                              {post.post.companyName && (
+                                <> <span className="text-graphite">{post.post.companyName}</span></>
+                              )}
+                              {post.post.companyLocation && (
+                                <> • {post.post.companyLocation}</>
+                              )}
                             </p>
                           )}
+
+                          <div className="flex gap-2">
+                            {post.post.eventTypes?.length > 0 && (
+                              <p className="">
+                                {post.post.eventTypes.map((eventType, index) => (
+                                  <span key={index} className="px-1 -ml-2 text-sm">
+                                    {index > 0 ? " | " : " • "}{eventType}
+                                  </span>
+                                ))}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <p className={`${post.post?.isBrandCollaboration ? 'text-graphite font-apfel-grotezk-regular mr-3 mt-5' : 'text-graphite font-apfel-grotezk-regular mr-3 mt-6'}`}>
+                  {post.post?.description || 'Description of the project'}
+                </p>
+
+                {post.media.source === "instagram" && (
+                  <div className={`w-full border-b-[0.5px] border-gray-300 ${post.post?.isBrandCollaboration ? 'mt-8' : 'mt-36'}`}></div>
+                )}
+
+                {post.media.source === "instagram" && insights && (
+                  <div className="mt-5 flex justify-between text-graphite  w-full">
+                    {[
+                      { label: "Views", key: "impressions" },
+                      { label: "Likes", key: "likes" },
+                      { label: "Shares", key: "shares" },
+                      { label: "Comments", key: "comments" },
+                    ].map(({ label, key }) => (
+                      <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
+                        <div className="text-[22px] leading-none font-qimano text-graphite">
+                          {insights?.[key] ?? 0}
+                        </div>
+                        <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
+                          {label}
                         </div>
                       </div>
-                    )}
+                    ))}
                   </div>
                 )}
               </div>
-
-              <p className={`${post.post?.isBrandCollaboration ? 'text-graphite font-apfel-grotezk-regular mr-3 mt-5' : 'text-graphite font-apfel-grotezk-regular mr-3 mt-6'}`}>
-                {post.post?.description || 'Description of the project'}
-              </p>
-
-              {post.media.source === "instagram" && (
-                <div className={`w-full border-b-[0.5px] border-gray-300 ${post.post?.isBrandCollaboration ? 'mt-8' : 'mt-36'}`}></div>
-              )}
-
-              {post.media.source === "instagram" && insights && (
-                <div className="mt-5 flex justify-around text-graphite  w-full">
-                  {[
-                    { label: "Views", key: "impressions" },
-                    { label: "Likes", key: "likes" },
-                    { label: "Shares", key: "shares" },
-                    { label: "Comments", key: "comments" },
-                  ].map(({ label, key }) => (
-                    <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
-                      <div className="text-[19px] leading-none font-qimano text-graphite">
-                        {insights?.[key] ?? 0}
-                      </div>
-                      <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
-                        {label}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
+          {/* Right Arrow - close to card */}
+          <button
+            onClick={() => handleNavigation('next')}
+            className="absolute left-1/8 translate-x-[490px] top-1/2 -translate-y-1/2 z-30"
+            aria-label="Next"
+            style={{ minWidth: 56, minHeight: 56 }}
+          >
+            <div className="w-17 h-17 flex items-center justify-center">
+              <Image
+                src="/assets/images/Righthand.svg"
+                alt="Next"
+                width={56}
+                height={56}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </button>
         </div>
       </div>
       
@@ -388,11 +383,12 @@ export default function PostCard({ post, postId, username, allPosts }) {
           </button>
         </div>
         {/* Main Content for Mobile */}
-        <div className="flex-grow flex flex-col w-full px-4 pt-4 pb-2 mt-[60px] overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[60px] overflow-y-auto rounded-lg bg-white" style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* Media Section (mobile) */}
-          <div className=" relative w-full flex-shrink-0 flex items-center justify-center lg:bg-white p-2 rounded-lg shadow-md">
+          <div className="relative w-full flex-shrink-0 flex items-center justify-center rounded-lg">
             <div className="relative w-full rounded-lg overflow-hidden flex items-center justify-center">
               {post.media?.type === "CAROUSEL" && post.media.files?.length > 0 ? (
+                
                 <div className="relative w-full">
                   <div className="w-full overflow-hidden rounded-lg">
                     {post.media.files.map((file, index) => (
@@ -405,7 +401,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                             src={file.url}
                             alt={`Carousel image ${index + 1}`}
                             width={300}
-                            height={1200}
+                            height={400}
                             className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
                             onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                               setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
@@ -444,47 +440,29 @@ export default function PostCard({ post, postId, username, allPosts }) {
                       <path d="M9 6L15 12L9 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </button>
-                  
-                  {post.media.files.length > 1 && (
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-                      {post.media.files.map((_, dotIndex) => (
-                        <span
-                          key={dotIndex}
-                          className={`block w-2 h-2 rounded-full ${carouselIndex === dotIndex ? 'bg-white' : 'bg-gray-400'}`}
-                        ></span>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ) : post.media?.type === "VIDEO" ? (
-                <>
-                  <video
-                    controls
-                    className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
-                    onLoadedMetadata={(e) => {
-                      setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
-                    }}
-                  >
-                    <source src={post.media.files[0].url} type="video/mp4" />
-                  </video>
-                  
-                </>
+                <video
+                  controls
+                  className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                  onLoadedMetadata={(e) => {
+                    setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
+                  }}
+                >
+                  <source src={post.media.files[0].url} type="video/mp4" />
+                </video>
               ) : post.media?.type === "IMAGE" ? (
-                <>
-                  <Image
-                    src={post.media.files[0].url}
-                    alt="Post media"
-                    width={300}
-                    height={1200}
-                    className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
-                    onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                      setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-                    }}
-                  />
-                 
-                </>
-              ) : (null)}
-
+                <Image
+                  src={post.media.files[0].url}
+                  alt="Post media"
+                  width={300}
+                  height={400}
+                  className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                  onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+                    setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
+                  }}
+                />
+              ) : null}
               {/* Play Icon and Views Overlay */}
               {insights?.impressions != null && (
                 <div className="absolute left-3 bottom-3 flex items-center gap-2 bg-black/60 rounded-lg px-2 py-1">
@@ -494,14 +472,35 @@ export default function PostCard({ post, postId, username, allPosts }) {
               )}
             </div>
           </div>
+          {/* Engagement Metrics Section (moved just below media for mobile) */}
+          <div className="w-full">
+            <div className="w-full h-px bg-[#e5e5e5] mb-4"></div>
+            <div className="mt-2 flex justify-between text-black w-full px-1">
+              {[
+                { label: "Views", key: "impressions" },
+                { label: "Likes", key: "likes" },
+                { label: "Shares", key: "shares" },
+                { label: "Comments", key: "comments" },
+              ].map(({ label, key }) => (
+                <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
+                  <div className="text-[19px] leading-none font-qimano text-[#212121]">
+                    {insights?.[key] ?? 0}
+                  </div>
+                  <div className="text-[12px] text-graphite font-apfel-grotezk-regular mt-1">
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
           {/* Title */}
-          <div className="flex items-start justify-between mt-2 mb-1 px-2 relative">
-            <h2 className="text-[1.1rem] font-qimano text-[#212121] leading-tight max-w-[85%] min-h-[32px] flex items-center break-words whitespace-normal">
+          <div className="flex items-start justify-between mt-4 mb-1 px-1 relative">
+            <h2 className="text-lg font-qimano text-[#212121] leading-tight max-w-[85%] min-h-[32px] flex items-center break-words whitespace-normal">
               {title}
             </h2>
           </div>
           {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-2 mt-1 min-h-[24px] items-center px-2">
+          <div className="flex flex-wrap gap-2 mb-2 mt-1 min-h-[24px] items-center px-1">
             {industries.length > 0 ? (
               industries.map((tag, idx) => (
                 <span
@@ -517,7 +516,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
           </div>
           {/* Company Info */}
           {hasCompanyInfo ? (
-            <div className="flex items-center gap-3 mb-2 min-h-[36px] px-2">
+            <div className="flex items-center gap-3 mb-2 min-h-[36px] px-1">
               <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs">
                 {companyLogo ? (
                   <Image
@@ -558,31 +557,27 @@ export default function PostCard({ post, postId, username, allPosts }) {
             <div className="min-h-[36px] mb-2"></div>
           )}
           {/* Description */}
-          <p className="text-graphite font-apfel-grotezk-regular mt-3 mb-2 text-[0.85rem] leading-snug max-w-[98%] min-h-[28px] flex items-center break-words whitespace-normal">
+          <p className="text-graphite font-apfel-grotezk-regular mt-3 mb-2 text-[0.95rem] leading-snug max-w-[98%] min-h-[28px] flex items-center break-words whitespace-normal px-1">
             {description}
           </p>
-          {/* Engagement Metrics Section (only once, after description) */}
-          <div className="w-full">
-            <div className="w-full h-px bg-[#e5e5e5] mb-4"></div>
-            <div className="mt-5 flex justify-around text-black w-full">
-              {[
-                { label: "Views", key: "impressions" },
-                { label: "Likes", key: "likes" },
-                { label: "Shares", key: "shares" },
-                { label: "Comments", key: "comments" },
-              ].map(({ label, key }) => (
-                <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
-                  <div className="text-[19px] leading-none font-qimano text-[#212121]">
-                    {insights?.[key] ?? 0}
-                  </div>
-                  <div className="text-[12px] text-graphite font-apfel-grotezk-regular mt-1">
-                    {label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
+        {/* Sticky Prev/Next Navigation for Mobile */}
+        {allPosts && allPosts.length > 1 && (
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex justify-between items-center px-6 py-3 md:hidden">
+            <button
+              className="flex-1 mr-2 py-2 rounded-lg bg-gray-100 text-graphite font-medium text-base"
+              onClick={() => handleNavigation('prev')}
+            >
+              Prev
+            </button>
+            <button
+              className="flex-1 ml-2 py-2 rounded-lg bg-[#0037EB] text-white font-medium text-base"
+              onClick={() => handleNavigation('next')}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
       
     </div>

@@ -55,58 +55,67 @@ export default async function PostLayout({ children, params }) {
   }
 
   return (
-    <div className="w-full bg-[#F2F2F2] flex flex-col items-center justify-start lg:justify-center">
-      <PostsProvider value={{ allPosts: userPosts, username }}>
-        <div className="posts-container">{children}</div>
-
-        {/* More posts */}
-        <div className="mx-auto mt-4 px-4 mb-20 w-full lg:w-[864px] lg:px-0">
-          <h3 className="text-xl font-qimano text-[#212121] mb-5 lg:pl-[px]">
-            More from @{username}
-          </h3>
-
-          <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 justify-center items-center lg:justify-start lg:items-start ">
-
-            {userPosts.length > 0 ? (
-              userPosts.map((post, index) => (
-                <Link
-                  key={index}
-                  href={`/${username}/media-kit/post/?postId=${post.mediaId}`}
-                  className="block"
-                >
-                  {post.mediaType === "CAROUSEL_ALBUM" && post.children ? (
-                    <div className="relative w-[120px] h-[120px] lg:w-[90px] lg:h-[90px] group">
-                      <Image
-                        src={post.children[0].mediaUrl}
-                        alt={`Project ${index}`}
-                        fill
-                        className="object-cover rounded-md"
-                      />
-                    </div>
-                  ) : post.mediaType?.includes("VIDEO") || post.mediaUrl?.endsWith(".mp4") ? (
-                    <video
-                      muted
-                      playsInline
-                      className="w-[120px] h-[120px] lg:w-[90px] lg:h-[90px] object-cover rounded-md"
-                      src={post.mediaUrl}
-                    />
-                  ) : (
-                    <Image
-                      width={180}
-                      height={180}
-                      src={post.mediaUrl}
-                      alt={`Project ${index}`}
-                      className="w-[120px] h-[120px] lg:w-[90px] lg:h-[90px] object-cover rounded-md"
-                    />
-                  )}
-                </Link>
-              ))
-            ) : (
-              <p>No other posts available.</p>
-            )}
+    <div className="w-full min-h-screen bg-[#D9D9D9] flex flex-col items-center justify-center">
+      <div className="hidden md:flex w-full max-w-[1100px] max-h-[660px] bg-[#F2F2F2] rounded-2xl shadow-lg flex-col items-center justify-center mx-auto my-2 p-0">
+        <PostsProvider value={{ allPosts: userPosts, username }}>
+          <div className="posts-container">{children}</div>
+          {/* More posts - hidden on mobile, visible on desktop only */}
+          <div className="hidden md:block">
+            <div className="mx-auto mt-3 px-4 mb-10 w-full lg:w-[864px] lg:px-0 lg:group">
+              <h3 className="text-xl font-qimano text-[#212121] mt-10 lg:pl-[px]">
+                More from @{username}
+              </h3>
+              <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 justify-center items-center lg:justify-start lg:items-start w-full lg:group">
+                {userPosts.length > 0 ? (
+                  userPosts.map((post, index) => (
+                    <Link
+                      key={index}
+                      href={`/${username}/media-kit/post/?postId=${post.mediaId}`}
+                      className="block lg:relative"
+                    >
+                      <div className="transition-opacity duration-200 ease-in-out lg:opacity-60 lg:group-hover:opacity-10 lg:hover:opacity-100 lg:rounded-md">
+                        {post.mediaType === "CAROUSEL_ALBUM" && post.children ? (
+                          <div className="relative w-[120px] h-[120px] lg:w-[70px] lg:h-[70px] group">
+                            <Image
+                              src={post.children[0].mediaUrl}
+                              alt={`Project ${index}`}
+                              fill
+                              className="object-cover rounded-md"
+                            />
+                          </div>
+                        ) : post.mediaType?.includes("VIDEO") || post.mediaUrl?.endsWith(".mp4") ? (
+                          <video
+                            muted
+                            playsInline
+                            className="w-[120px] h-[120px] lg:w-[70px] lg:h-[70px] object-cover rounded-md"
+                            src={post.mediaUrl}
+                          />
+                        ) : (
+                          <Image
+                            width={180}
+                            height={180}
+                            src={post.mediaUrl}
+                            alt={`Project ${index}`}
+                            className="w-[120px] h-[120px] lg:w-[70px] lg:h-[70px] object-cover rounded-md"
+                          />
+                        )}
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p>No other posts available.</p>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </PostsProvider>
+        </PostsProvider>
+      </div>
+      {/* Mobile layout: keep as before */}
+      <div className="md:hidden w-full bg-[#F2F2F2] flex flex-col items-center justify-start lg:justify-center">
+        <PostsProvider value={{ allPosts: userPosts, username }}>
+          <div className="posts-container">{children}</div>
+        </PostsProvider>
+      </div>
     </div>
   );
 }

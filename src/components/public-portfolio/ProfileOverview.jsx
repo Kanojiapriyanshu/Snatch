@@ -196,22 +196,22 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
           {/*1 Left Side - Pricing and Services */}
           <div className="w-[370px] pt-20 ml-10 hidden lg:block">
-            <div className="flex gap-3  items-center mb-4">
+            <div className="flex gap-3  items-center mb-3">
               <h2 className="font-qimano text-3xl font-medium">
   <span className="font-md">₹</span> {formatNumber(lower)} - <span className="font-thin">₹</span> {formatNumber(upper)}
 </h2>
 
-              <p className=" text-gray-500 font-apfel-grotezk-regular text-lg ">Value per content piece</p>
+              <p className=" text-gray-500 font-apfel-grotezk-regular text-lg  ">Value per content piece</p>
             </div>
 
-            <div className="border-b-[2px] border-[#F7EA5F] ">
+            <div className="border-b-[0.3px] border-r-2 border-[#F7EA5F] ">
 
             </div>
 
            
           {/* Services */}
 {/* Services */}
-<div className="flex flex-wrap text-sm mt-2 gap-3">
+<div className="flex flex-wrap text-sm mt-4 gap-3">
   {formData?.compensation?.length > 0 ? (
     formData.compensation.map((item, index) => (
       <div
@@ -224,7 +224,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         </span>
 
         {/* Info icon and tooltip trigger zone */}
-        <div className="relative group ml-1">
+        <div className="relative group ml-1 mb-2">
           <img
             src="/assets/icons/i.svg"
             alt="info"
@@ -249,7 +249,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
         {/* Separator */}
         {index !== formData.compensation.length - 1 && (
-          <span className="text-white px-2">|</span>
+          <span className="text-gray-600 ml-[0.8rem] px-[0.5px] mr-[0.1rem] rounded-sm">|</span>
         )}
       </div>
     ))
@@ -261,13 +261,13 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 </div>
 
             {/* CTA Button */}
-            <button className="bg-lime-yellow text-graphite font-outline text-semibold py-2 px-4 rounded mt-6 w-[328px] max-w-[328px] font-apfel-grotezk-regular" onClick={handleRequest}>
+            <button className="bg-lime-yellow text-graphite font-outline text-semibold py-2 px-4 rounded mt-6 w-[370px] max-w-[370px] font-apfel-grotezk-regular" onClick={handleRequest}>
               {isAdminView ? "Copy Portfolio Link" : "Send request"}
             </button>
           </div>
 
           {/*2 Center - Profile Image desktop */}
-          <motion.div
+<motion.div
   className="block relative left-[24%] mt-5 lg:mt-0 lg:left-1/3 transform -translate-x-1/3 -translate-y-3/4 top-[100%] lg:-top-5 lg:right-10 rounded-xl overflow-visible z-20"
   style={{
     scale: isMobile ? "0" : profileImageScale,
@@ -282,20 +282,17 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       {/* heart icon */}
     </div>
 
-    {/* ↓ Updated this part ↓ */}
-    <div className="absolute lg:translate-x-1/2 lg:translate-y-10 rounded-xl w-64 h-80 overflow-visible">
+    <div className="absolute lg:translate-x-1/2 lg:translate-y-10 rounded-xl w-64 h-2/3 overflow-visible">
       <Image
         src={formData?.profilePicture || "/assets/images/profile_defaultOnborad.svg"}
         alt={`${formData?.firstName} ${formData?.lastName}`}
-        width={276}
-        height={320}
-        className="object-cover lg:w-80 lg:h-76 w-56 h-80 relative z-[9999] rounded-xl right-4"
+        width={320} // ← increased from 276
+        height={360} // ← increased from 320
+        className="object-cover lg:w-[320px] lg:h-[355px] w-66 h-80 relative z-[9999] rounded-xl right-6"
       />
     </div>
   </div>
 </motion.div>
-
-
          {/* 3 Right Side - Stats */}
          <div className="w-full lg:w-1/2 flex flex-row lg:flex-col items-center lg:items-end justify-center lg:justify-normal mr-0 lg:mr-10 gap-6 pt-4 z-20">
   <div className="text-center lg:text-end">
@@ -325,66 +322,34 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
     </motion.div>
 
 
-<div className="w-full max-w-sm px-4 pt-20 mx-auto block lg:hidden overflow-x-hidden">
+<div className="w-full max-w-sm px-4 pt-0 mx-auto block lg:hidden overflow-x-hidden ">
   {/* Pricing */}
-  <div className="flex flex-wrap gap-3 items-center mb-4">
-    <h2 className="font-medium font-qimano text-2xl sm:text-3xl">{priceRange}</h2>
-    <p className="text-gray-500 font-apfel-grotezk-regular text-base sm:text-lg">
-      Value per content piece
-    </p>
+  <div className="flex flex-col items-center w-full mb-2">
+    <div className="flex items-baseline gap-2">
+      <span className="font-qimano text-[28px] font-normal text-black leading-tight">Rs 5k - 25k</span>
+      <span className="text-gray-500 text-[16px] font-apfel-grotezk-regular font-normal ml-1">Value per content piece</span>
+    </div>
   </div>
-
   {/* Divider */}
-  <div className="border-b-[1px] bg-lime-yellow w-full mb-2" />
-
-  <div className="flex flex-wrap text-sm mt-2 gap-x-3 gap-y-2">
-  {formData?.compensation?.length > 0 ? (
-    formData.compensation.map((item, index) => (
-      <div
-        key={index}
-        className="inline-flex items-center font-qimano text-sm sm:text-base md:text-lg relative group"
-      >
-        {/* Compensation Item */}
-        <span className="px-1">{item}</span>
-
-        <img
-    src="/assets/icons/i.svg"
-    alt="info"
-    className="w-4 h-4 ml-1 cursor-pointer transition duration-300 group-hover:brightness-0 group-hover:invert"
-    style={{ filter: "brightness(0)" }}
-  />
-
-  {/* Tooltip */}
-  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-lime-yellow text-black text-xs sm:text-sm px-3 py-2 rounded-md shadow-md max-w-[200px] w-max whitespace-normal text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-    {item === "Sponsorships"
-      ? "Influencers are paid a fixed amount for each piece of content they create."
-      : item === "Gifting"
-      ? "Compensating with products or services instead of money."
-      : item === "Affiliate"
-      ? "Earn a commission per sale through a unique link."
-      : item === "Hosted"
-      ? "Influencers attend events or trips to promote the brand."
-      : item === "Collaboration"
-      ? "Co-creating a product with the brand."
-      : "More info coming soon."}
-  </span>
-
-        {/* Separator */}
-        {index !== formData.compensation.length - 1 && (
-          <span className="text-white px-2 hidden sm:inline">|</span>
-        )}
-      </div>
-    ))
-  ): (
-      <div className="flex items-center justify-center w-full">
-        <span>Compensation</span>
-      </div>
-    )}
+  <div className="border-b-[1.5px] border-[#C7D2FE] w-full my-2" />
+  {/* Services: 2 rows, 3 per row, with info icon and | separator */}
+  <div className="flex flex-col items-center w-full text-black font-qimano text-[20px] gap-1 mb-2">
+    <div className="flex flex-row items-center justify-center w-full gap-2 whitespace-nowrap">
+      <span className="inline-flex items-center">Gifting <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
+      <span className="mx-1">|</span>
+      <span className="inline-flex items-center">Sponsorships <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
+      <span className="mx-1">|</span>
+      <span className="inline-flex items-center">Hosted <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
+    </div>
+    <div className="flex flex-row items-center justify-center w-full gap-2 whitespace-nowrap">
+      <span className="inline-flex items-center">Affiliate <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
+      <span className="mx-1">|</span>
+      <span className="inline-flex items-center">Collaboration <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
+    </div>
   </div>
-
   {/* CTA Button */}
   <button
-    className="bg-lime-yellow text-graphite font-semibold py-2 px-4 rounded mt-6 w-full font-apfel-grotezk-regular"
+    className="w-full bg-[#F7EA5F] text-black font-apfel-grotezk-regular text-[22px] font-normal py-3 rounded mt-4 mb-2 text-center"
     onClick={handleRequest}
   >
     {isAdminView ? "Copy Portfolio Link" : "Send request"}
@@ -419,7 +384,41 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
     <span className="border-b-[0.5px] border-gray-400 mx-2 w-full"></span>
   </span>
 
-  <SocialLinks />
+  {/* Icons (visible on all screen sizes, justified between for mobile) */}
+  <span className="flex max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-center">
+    <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
+      <Image
+        src="/assets/images/insta.svg"
+        alt="Instagram"
+        width={30}
+        height={25}
+      />
+    </span>
+    <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
+      <Image
+        src="/assets/images/X.svg"
+        alt="X"
+        width={30}
+        height={20}
+      />
+    </span>
+    <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
+      <Image
+        src="/assets/icons/facebook.svg"
+        alt="Facebook"
+        width={30}
+        height={20}
+      />
+    </span>
+    <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
+      <Image
+        src="/assets/icons/linkedin.svg"
+        alt="LinkedIn"
+        width={30}
+        height={20}
+      />
+    </span>
+  </span>
 </div>
 
 

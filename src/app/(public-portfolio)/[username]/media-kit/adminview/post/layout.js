@@ -50,58 +50,68 @@ export default async function PostLayout({ children, params }) {
     }
   
     return (
-      <div>
-        {/* Specific post */}
-        {/* {children} */}
-        <div className="posts-container">
-          {/* Use a Context Provider instead of cloneElement */}
-          <PostsProvider value={{ allPosts: userPosts, username }}>
-            {children}
-          </PostsProvider>
-        </div>
-
-
-        {/* More posts */}
-        <div className="max-w-5xl  mx-auto mt-4 px-4 lg:px-16 mb-12 items-start">
-          <h3 className="text-lg font-apfel-grotesk-mittel font-medium mb-4">More from @{username}</h3>
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            {userPosts.length > 0 ? (
-              userPosts.map((post, index) => (
-                <Link
-                  key={index}
-                  href={`/${username}/media-kit/post/?postId=${post.mediaId}`}
-                  className="block"
-                >
-                  {post.mediaType === "CAROUSEL_ALBUM" && post.children ? (
-                    <div className="relative w-[120px] h-[120px] lg:w-[180px] lg:h-[180px] group">
-                      <Image
-                        src={post.children[0].mediaUrl}
-                        alt={`Project ${index}`}
-                        fill
-                        className="object-cover rounded-md"
-                      />
+      <div className="w-full min-h-screen bg-[#D9D9D9] flex flex-col items-center justify-center">
+        <div className="hidden md:flex w-full max-w-[1100px] bg-white rounded-2xl shadow-lg flex-col items-center justify-center mx-auto my-10 p-0">
+          {/* Specific post */}
+          {/* {children} */}
+          <div className="posts-container">
+            {/* Use a Context Provider instead of cloneElement */}
+            <PostsProvider value={{ allPosts: userPosts, username }}>
+              {children}
+            </PostsProvider>
+          </div>
+          {/* More posts */}
+          <div className="max-w-5xl  mx-auto mt-4 px-4 lg:px-16 mb-12 items-start">
+            <h3 className="text-lg font-apfel-grotesk-mittel font-medium mb-4">More from @{username}</h3>
+            <div className="flex gap-4 overflow-x-auto pb-2 group">
+              {userPosts.length > 0 ? (
+                userPosts.map((post, index) => (
+                  <Link
+                    key={index}
+                    href={`/${username}/media-kit/post/?postId=${post.mediaId}`}
+                    className="block lg:relative group/post"
+                  >
+                    <div className="lg:transition-all lg:duration-200 lg:ease-in-out lg:opacity-60 lg:group-hover:opacity-60 lg:group/post:hover:opacity-100 lg:group/post:hover:scale-105 lg:group/post:hover:z-10 lg:group/post:hover:shadow-xl lg:rounded-md">
+                      {post.mediaType === "CAROUSEL_ALBUM" && post.children ? (
+                        <div className="relative w-[120px] h-[120px] lg:w-[180px] lg:h-[180px] group">
+                          <Image
+                            src={post.children[0].mediaUrl}
+                            alt={`Project ${index}`}
+                            fill
+                            className="object-cover rounded-md"
+                          />
+                        </div>
+                      ) : post.mediaType.includes("VIDEO") || post.mediaType.endsWith(".mp4") ? (
+                        <video
+                          muted
+                          playsInline
+                          className="w-[120px] h-[120px] lg:w-[180px] lg:h-[180px] object-cover rounded-md"
+                          src={post.mediaUrl}
+                        />
+                      ) : (
+                        <Image
+                          width={180}
+                          height={180}
+                          src={post.mediaUrl}
+                          alt={`Project ${index}`}
+                          className="w-[120px] h-[120px] lg:w-[180px] lg:h-[180px] object-cover rounded-md"
+                        />
+                      )}
                     </div>
-                  ) : post.mediaType.includes("VIDEO") || post.mediaType.endsWith(".mp4") ? (
-                    <video
-                      muted
-                      playsInline
-                      className="w-[120px] h-[120px] lg:w-[180px] lg:h-[180px] object-cover rounded-md"
-                      src={post.mediaUrl}
-                    />
-                  ) : (
-                    <Image
-                      width={180}
-                      height={180}
-                      src={post.mediaUrl}
-                      alt={`Project ${index}`}
-                      className="w-[120px] h-[120px] lg:w-[180px] lg:h-[180px] object-cover rounded-md"
-                    />
-                  )}
-                </Link>
-              ))
-            ) : (
-              <p>No other posts available.</p>
-            )}
+                  </Link>
+                ))
+              ) : (
+                <p>No other posts available.</p>
+              )}
+            </div>
+          </div>
+        </div>
+        {/* Mobile layout: keep as before */}
+        <div className="md:hidden w-full flex flex-col items-center justify-start">
+          <div className="posts-container">
+            <PostsProvider value={{ allPosts: userPosts, username }}>
+              {children}
+            </PostsProvider>
           </div>
         </div>
       </div>

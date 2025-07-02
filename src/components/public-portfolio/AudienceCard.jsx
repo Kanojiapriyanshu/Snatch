@@ -80,7 +80,7 @@ const AudienceCard = () => {
 <div className="flex flex-col lg:flex-row gap-4 mt-6 w-full px-4 lg:px-20 justify-center items-stretch">
   {/* Gender */}
   {genderEndpoint && (
-    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-1/3 flex flex-col items-center justify-between min-h-[350px]">
+    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
       <h3 className="text-lg font-qimano text-gray-700 mb-2">Gender</h3>
       <div className="mb-6 w-full flex justify-center">
     <PieChart apiEndpoint={genderEndpoint} />
@@ -90,7 +90,7 @@ const AudienceCard = () => {
 
   {/* Age Range */}
   {ageEndpoint && (
-    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-1/3 flex flex-col items-center justify-between min-h-[350px]">
+    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
       <h3 className="text-lg font-qimano text-gray-700 mb-2">Age Range</h3>
       <AgeRangeChart apiEndpoint={ageEndpoint} />
     </div>
@@ -98,13 +98,12 @@ const AudienceCard = () => {
 
   {/* Location */}
   {locationEndpoint && (
-    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-1/3 flex flex-col items-center justify-between min-h-[350px]">
+    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
       <h3 className="text-lg font-qimano text-gray-700 mb-2">Top Locations</h3>
       <SimpleWorldMap apiEndpoint={locationEndpoint} />
     </div>
   )}
 </div>
-
     </div>
   );
 };
