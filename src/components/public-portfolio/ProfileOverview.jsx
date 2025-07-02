@@ -388,7 +388,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   <span className="flex max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-center">
     <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
       <Image
-        src="/assets/images/insta.svg"
+        src="/assets/images/Insta.svg"
         alt="Instagram"
         width={30}
         height={25}
