@@ -57,8 +57,6 @@ const Questionnaire = ({ name }) => {
     return () => window.removeEventListener('resize', checkOverflow);
   }, [data]);
 
-  if (loading) return <div>Loading...</div>;
-
   // Loading & error states
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Failed to load questions.</div>;
