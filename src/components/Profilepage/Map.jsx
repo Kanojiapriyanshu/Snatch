@@ -89,4 +89,3 @@ const SimpleWorldMap = ({apiEndpoint}) => {
 };
 
 export default SimpleWorldMap;
-

@@ -28,6 +28,7 @@ const Questionnaire = ({ name }) => {
   const desktopScrollRef = useRef(null);
   const mobileScrollRef = useRef(null);
   const [scrollResetTrigger, setScrollResetTrigger] = useState(0);
+  const [showNavButtons, setShowNavButtons] = useState(false);
 
 
   // Build flat cards safely
@@ -43,6 +44,20 @@ const Questionnaire = ({ name }) => {
     )
   );
 
+  // Check for overflow on desktop scroll area
+  useEffect(() => {
+    function checkOverflow() {
+      const container = desktopScrollRef.current;
+      if (container) {
+        setShowNavButtons(container.scrollWidth > container.clientWidth);
+      }
+    }
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, [data]);
+
+  if (loading) return <div>Loading...</div>;
 
   // Loading & error states
   if (isLoading) return <div>Loading...</div>;
@@ -65,10 +80,10 @@ const Questionnaire = ({ name }) => {
   return (
     <div className={clsx(
       "relative pb-10",
-      "lg:mt-10 lg:ml-10",
+      "lg:mt-10 lg:ml-2",
       "flex flex-col"
     )}>
-      <h3 className=" text-[45px] text-center lg:text-7xl lg:text-left text-2xl font-qimano text-electric-blue mb-4">About {name}</h3>
+      <h3 className=" text-[45px] text-center lg:text-7xl lg:text-left text-2xl font-qimano text-electric-blue mb-0 ">About {name}</h3>
 
       {/* Mobile view: horizontal scroll with snap and partial next card visibility */}
       <div className="lg:hidden relative flex-grow flex">
@@ -105,26 +120,28 @@ const Questionnaire = ({ name }) => {
       {/* Desktop view: horizontal scroll */}
      <div className="hidden lg:block relative flex-grow">
   {/* Left Scroll Button */}
-  <button
-    onClick={() => scrollDesktop("left")}
-    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-14 h-14"
-    aria-label="Scroll Left"
-  >
-    <div className="w-full h-full">
-      <Image
-        src="/assets/images/Lefthand.svg"
-        alt="left-arrow"
-        width={56}
-        height={56}
-        className="w-full h-full object-contain"
-      />
-    </div>
-  </button>
+  {showNavButtons && (
+    <button
+      onClick={() => scrollDesktop("left")}
+      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-18"
+      aria-label="Scroll Left"
+    >
+      <div className="w-full h-full">
+        <Image
+          src="/assets/images/Lefthand.svg"
+          alt="left-arrow"
+          width={56}
+          height={56}
+          className="w-full h-full object-contain"
+        />
+      </div>
+    </button>
+  )}
 
   {/* Scrollable Cards */}
   <div
     ref={desktopScrollRef}
-    className="mt-5 lg:mt-10 pb-5 lg:pb-0 overflow-x-auto scrollbar-hide max-w-full"
+    className="mt-5 lg:mt-4 pb-5 lg:pb-0 overflow-x-auto scrollbar-hide max-w-full"
     style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
   >
     <div className="flex gap-4 w-full sm:w-max rounded-3xl overflow-hidden px-2">
@@ -141,21 +158,23 @@ const Questionnaire = ({ name }) => {
   </div>
 
   {/* Right Scroll Button */}
-  <button
-    onClick={() => scrollDesktop("right")}
-    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-8 h-14"
-    aria-label="Scroll Right"
-  >
-    <div className="w-full h-full">
-      <Image
-        src="/assets/images/next.svg"
-        alt="right-arrow"
-        width={56}
-        height={56}
-        className="w-full h-full object-contain"
-      />
-    </div>
-  </button>
+  {showNavButtons && (
+    <button
+      onClick={() => scrollDesktop("right")}
+      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-12 h-14"
+      aria-label="Scroll Right"
+    >
+      <div className="w-full h-full">
+        <Image
+          src="/assets/images/next.svg"
+          alt="right-arrow"
+          width={56}
+          height={56}
+          className="w-full h-full object-contain"
+        />
+      </div>
+    </button>
+  )}
 </div>
 
     </div>
@@ -194,7 +213,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
     <div
       className={clsx(
         "relative flex border rounded-3xl overflow-hidden cursor-pointer shrink-0 transition-transform duration-300",
-        isMobile ? "w-[75vw] h-[490px]" : "w-[360px] h-[580px] mr-3",
+        isMobile ? "w-[75vw] h-[490px]" : "w-[390px] h-[530px] mr-6",
         isMobile && touched ? "-translate-y-4" : ""
       )}
       onMouseEnter={() => !isMobile && setHovered(true)}
