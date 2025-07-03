@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation"; 
+import { usePathname, useRouter } from "next/navigation"; 
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Writesvg from "@/components/svg/Writesvg";
 import Viewsvg from "@/components/svg/Viewsvg";
@@ -25,7 +25,8 @@ const steps = [
 ];
 
 const Header = () => {
-  const pathname = usePathname(); // Get the current route
+  const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <div className="sticky top-0 bg-electric-blue p-4 text-white shadow-lg">
@@ -33,17 +34,23 @@ const Header = () => {
         {steps.map((step, index) => (
           <React.Fragment key={index}>
             {/* Step Marker */}
+             <button
+                type="button"
+                onClick={() => router.push(step.id)}
+                className="focus:outline-none"
+              >
             <div className="flex flex-col items-center px-10">
               {/* SVG Icon */}
-<div
-  className={`w-5 h-5 transition-all duration-300 mr-2 ${
-    pathname === step.id ? "text-lime-yellow" : "text-white"
-  }`}
->
-  {step.icon}
-</div>
-
-
+             
+                <div
+                  className={`w-5 h-5 transition-all duration-300 mr-2 ${
+                    pathname === step.id ? "text-lime-yellow" : "text-white"
+                  }`}
+                >
+                  {step.icon}
+                </div>
+             
+             
               {/* Step Label */}
               <span
                 className={`mt-2 transition-all duration-300 font-apfel-grotezk-regular ${
@@ -54,8 +61,10 @@ const Header = () => {
               > 
                 {step.label}
               </span>
+        
             </div>
-
+             </button>
+    
             {/* Connecting Line */}
             {index < steps.length - 1 && (
               <div

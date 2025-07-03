@@ -145,7 +145,7 @@ console.log("preview activeimageid", activeProject,  activeImageId);
         // Only fetch insights for Instagram content
         if (activeProject && activeTab === "instagram") {
           const response = await fetchMediaInsights(activeProject.mediaId);
-          setInsights(response?.insights?.data || []);
+          setInsights(response?.data || []);
         } else {
           // Clear insights for uploaded files
           setInsights([]);
@@ -609,25 +609,30 @@ const handleHamburgerClick = () => {
 
 
           
-{/* Insights Section - Only for Instagram content */}
 {activeTab === "instagram" && insights && insights.length > 0 && (
-  <div className="mt-5 ml-20 flex gap-20 justify-center items-center text-black w-[300px]">     
+  <div className="mt-5 flex justify-between text-graphite w-full max-w-[500px]">
     {insights.map((item) => (
-      <div key={item.name} className="flex-col text-center">
-        <p className="text-[19px]">
-          {item.values[0]?.value || 0}
-        </p>
-        <p className="text-[12px] text-gray-500">{item.title}</p>
+      <div
+        key={item.name}
+        className="flex flex-col items-center min-w-[40px] text-center"
+      >
+        <div className="text-[22px] leading-none font-qimano text-graphite">
+          {item.values[0]?.value ?? 0}
+        </div>
+        <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
+          {item.title}
+        </div>
       </div>
     ))}
   </div>
 )}
+
            </div>           
             
           </div>
         </div>
 
-<div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 h-[67px] bg-white rounded-lg w-[630px] border-t border-gray-300 px-4 py-2 shadow-md z-50">
+<div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 h-[67px] bg-white rounded-lg w-[730px] border-t border-gray-300 px-4 py-2 shadow-md z-50">
   <div className="flex items-center justify-between w-full h-full">
     {/* Logo + Hamburger */}
     <div className="flex items-center gap-3">
@@ -685,7 +690,7 @@ const handleHamburgerClick = () => {
     </div>
 
     {/* Center Navigation: Previous/Next Project */}
-    <div className="flex items-center gap-3 ">
+    <div className="flex items-center gap-3 mx-1">
       <button
         className="text-electric-blue underline underline-offset-4 hover:opacity-80 transition-colors text-md"
         onClick={handlePrevious}
@@ -704,9 +709,13 @@ const handleHamburgerClick = () => {
     </div>
 
     {/* Right Buttons: Previous Step + See Previews */}
+   
     <div className="flex items-center gap-3">
+        <button className=" px-4 py-1 border-electric-blue border-2 text-electric-blue rounded hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
+        Back
+      </button>
       <button
-        className="px-5 py-1.5 bg-electric-blue text-white rounded-lg text-md hover:bg-blue-700 transition-colors"
+        className="px-5 py-1.5 bg-electric-blue text-white rounded text-md hover:bg-blue-700 transition-colors"
         onClick={handleSubmit}
       >
         Complete Project Details

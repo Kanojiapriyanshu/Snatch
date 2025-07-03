@@ -27,7 +27,7 @@ export default function OnboardingLayout({ children }) {
   }
   return (
     <FormProvider>
-      <div className="flex justify-center  h-[100vh] w-[100vw] relative bg-[#E9E9E9] ">
+      <div className="flex justify-center  h-[100vh] max-w-[99%] w-[100%] relative bg-[#E9E9E9] ">
         {/* Left side: Image with Preview items-center added above to center the dashboard */}
         <div className="w-[40vw] overflow-hidden relative flex items-center justify-center bg-[#E9E9E9] h-[100vh] ">
           <Image

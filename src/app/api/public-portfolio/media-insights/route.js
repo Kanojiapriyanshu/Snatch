@@ -4,6 +4,14 @@ import connectDb from "@/db/mongoose";
 
 export const dynamic = "force-dynamic";
 
+// Format utility
+function formatCount(num) {
+  if (num >= 1_000_000_000) return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+  if (num >= 1_000_000) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (num >= 1_000) return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(num);
+}
+
 export async function GET(req) {
   try {
     await connectDb();
@@ -19,10 +27,9 @@ export async function GET(req) {
       );
     }
 
-    // Find user based on username
     const user = await User.findOne({ instagramUsername });
 
-    if (!user) {
+    if (!user || !user.instagramAccessToken) {
       return NextResponse.json(
         { success: false, error: "User not found or missing Instagram Access Token." },
         { status: 404 }
@@ -31,9 +38,7 @@ export async function GET(req) {
 
     const { instagramAccessToken } = user;
 
-    // Fetch Instagram media insights
-    const insightsUrl = `https://graph.facebook.com/v17.0/${postId}/insights?metric=likes,comments,saved,shares&access_token=${instagramAccessToken}`;
-
+    const insightsUrl = `https://graph.facebook.com/v17.0/${postId}/insights?metric=views,likes,comments,shares&access_token=${instagramAccessToken}`;
     const response = await fetch(insightsUrl);
 
     if (!response.ok) {
@@ -47,7 +52,22 @@ export async function GET(req) {
 
     const insightsData = await response.json();
 
-    return NextResponse.json({ success: true, insights: insightsData }, { status: 200 });
+    // Format the values
+    const formattedData = insightsData.data.map(item => {
+      const rawValue = item.values?.[0]?.value ?? 0;
+
+      return {
+        ...item,
+        values: [
+          {
+            ...item.values[0],
+            value: formatCount(rawValue)
+          }
+        ]
+      };
+    });
+
+    return NextResponse.json({ success: true, insights: { data: formattedData } }, { status: 200 });
 
   } catch (error) {
     console.error("Error fetching media insights:", error);

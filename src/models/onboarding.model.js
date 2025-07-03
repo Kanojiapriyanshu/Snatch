@@ -77,7 +77,6 @@ const onboardingDataSchema = new mongoose.Schema(
     dateOfBirth: {
       type: String,
     },
-
     // Add other fields as needed
     isDraft: {
       type: Boolean,

@@ -16,6 +16,7 @@ export default function OnboardingLayout({ children }) {
   const [portfolioComplete, setPortfolioComplete] = useState(false);
   const [aboutComplete, setAboutComplete] = useState(false);
   const [audienceComplete, setAudienceComplete] = useState(false);
+  const [hasClickedPortfolio, setHasClickedPortfolio] = useState(false);
 
   // Portfolio
   useEffect(() => {
@@ -60,6 +61,16 @@ export default function OnboardingLayout({ children }) {
     fetchAudience();
   }, [userId]);
 
+  useEffect(() => {
+  async function fetchViewedPortfolio() {
+    if (!userId) return;
+    const res = await fetch("/api/onboarding/viewed-status");
+    const data = await res.json();
+    setHasClickedPortfolio(!!data.hasViewedPortfolio);
+  }
+  fetchViewedPortfolio();
+}, [userId]);
+
   const allComplete = portfolioComplete && aboutComplete && audienceComplete;
 
   const isRed = filledCount < 4;
@@ -92,11 +103,14 @@ export default function OnboardingLayout({ children }) {
     router.push("/settings");
   };
 
-  const handlePortfolioClick = () => {
+  const handlePortfolioClick = async () => {
     if (!userId) {
       console.error("No userId found, user not signed in!");
       return;
     }
+
+  setHasClickedPortfolio(true);
+  await fetch("/api/onboarding/viewed", { method: "POST" });
 
     const storedFormData = localStorage.getItem(`formData_${userId}`);
     if (storedFormData) {
@@ -137,8 +151,8 @@ export default function OnboardingLayout({ children }) {
 
         {/* Toolbar */}
         <div className={`fixed top-[85%] left-[50%] translate-x-[-50%] ${
-            isRed ? "w-[420px]" : "w-[600px]"
-          } h-[74px] flex justify-center items-center gap-3 border-2 bg-white border-light-grey rounded-md z-20 p-5 font-apfel-grotezk-regular`}>
+            isRed ? "w-[420px]" : "w-[620px]"
+          } h-[74px] flex justify-center items-center gap-3 shadow-md bg-white rounded-md z-20 p-5 font-apfel-grotezk-regular`}>
           <button
             onClick={handleNextClick}
             className="w-[100px] h-[50px]  text-electric-blue text-2xl font-semibold   text-center"
@@ -230,8 +244,22 @@ export default function OnboardingLayout({ children }) {
                 }`}
                 disabled={!allComplete}
               >
-                <Image src="/assets/images/share.svg" alt="share" width={20} height={20} />
-                <span className="text-white ml-1">Create Portfolio</span>
+              <Image
+                src={
+                  portfolioComplete && hasClickedPortfolio
+                    ? "/assets/images/preview.svg"
+                    : "/assets/images/create.svg"
+                }
+                alt="portfolio action"
+                width={20}
+                height={20}
+              />
+              <span className="text-white ml-1">
+                {portfolioComplete && hasClickedPortfolio
+                  ? "Preview Portfolio"
+                  : "Create Portfolio"}
+              </span>
+
               </button>
             )}
           </div>

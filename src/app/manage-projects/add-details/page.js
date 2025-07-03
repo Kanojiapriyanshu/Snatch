@@ -1132,7 +1132,7 @@ const handlePopupGenerate = async () => {
       
                 {/* Dropdown Menu */}
                 {isMenuVisible && (
-                  <div className="absolute top-[-260%] left-[-29px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+                  <div className="absolute top-[-270%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
                     <ul className="flex flex-col p-3 gap-2">
                       <li
                         onClick={handleDashboardClick}
@@ -1182,7 +1182,7 @@ const handlePopupGenerate = async () => {
         onClick={handlePreviewClick}
         disabled={!isFormComplete()} // Disable if form is incomplete
       >
-       preview
+       Preview
       </button>
     </div>
   </div>

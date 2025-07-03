@@ -322,10 +322,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
                 {post.media.source === "instagram" && insights && (
                   <div className="mt-5 flex justify-between text-graphite  w-full">
                     {[
-                      { label: "Views", key: "impressions" },
+                      { label: "Views", key: "views" },
                       { label: "Likes", key: "likes" },
-                      { label: "Shares", key: "shares" },
                       { label: "Comments", key: "comments" },
+                      { label: "Shares", key: "shares" }
                     ].map(({ label, key }) => (
                       <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
                         <div className="text-[22px] leading-none font-qimano text-graphite">
@@ -477,10 +477,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
             <div className="w-full h-px bg-[#e5e5e5] mb-4"></div>
             <div className="mt-2 flex justify-between text-black w-full px-1">
               {[
-                { label: "Views", key: "impressions" },
+                { label: "Views", key: "views" },
                 { label: "Likes", key: "likes" },
-                { label: "Shares", key: "shares" },
                 { label: "Comments", key: "comments" },
+                { label: "Shares", key: "shares" }
               ].map(({ label, key }) => (
                 <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
                   <div className="text-[19px] leading-none font-qimano text-[#212121]">

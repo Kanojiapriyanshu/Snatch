@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true, // Required because it is the user's primary Instagram username
     },
+      hasViewedPortfolio: {
+      type: Boolean,
+      default: false 
+    },
     onboardingData: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "OnboardingData", // Links to the OnboardingData schema
