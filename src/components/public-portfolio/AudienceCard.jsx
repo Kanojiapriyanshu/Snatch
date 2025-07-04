@@ -4,16 +4,22 @@ import SimpleWorldMap from "../Profilepage/Map";
 import AgeRangeChart from "../Profilepage/AgeRangeChart";
 import generateAudienceInsights from "@/utils/generateAudienceInsights";
 import { usePathname } from "next/navigation";
+
 const AudienceCard = () => {
   const [genderEndpoint, setGenderEndpoint] = useState("");
   const [ageEndpoint, setAgeEndpoint] = useState("");
   const [locationEndpoint, setLocationEndpoint] = useState("");
-  const [insights, setInsights] = useState("");
+  const [insights, setInsights] = useState({
+    gender: "",
+    age: "",
+    location: "",
+  });
   const [demographicData, setDemographicData] = useState({
     genderData: {},
     ageData: [],
     countryData: [],
   });
+
   const pathname = usePathname();
 
   useEffect(() => {
@@ -39,7 +45,7 @@ const AudienceCard = () => {
 
         setDemographicData(combinedData);
         const generatedInsights = await generateAudienceInsights(combinedData);
-        setInsights(generatedInsights);
+        setInsights(generatedInsights); // expecting an object with { gender, age, location }
       } catch (error) {
         console.error("Error fetching demographics:", error);
       }
@@ -47,7 +53,7 @@ const AudienceCard = () => {
 
     const parts = pathname.split("/").filter(Boolean);
     const username = parts[0];
-   
+
     if (username) {
       setGenderEndpoint(`/api/public-portfolio/audience/genderDemographics?username=${username}`);
       setAgeEndpoint(`/api/public-portfolio/audience/allDemographics?username=${username}`);
@@ -62,48 +68,61 @@ const AudienceCard = () => {
         Audience
       </h3>
 
-      {/* AI-generated insights */}
-      {insights ? (
-        <div className="mx-auto">
-          <div className="text-gray-700 whitespace-pre-line text-center text-[16px] font-apfel-grotezk-regular mt-2">
-            {insights}
+      <div className="flex flex-col lg:flex-row gap-4 mt-6 w-full px-4 lg:px-20 justify-center items-stretch">
+
+        {/* Gender */}
+        {genderEndpoint && (
+          <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center min-h-[350px]">
+            <h3 className="text-2xl font-qimano text-gray-700 mb-2">Gender</h3>
+
+            {insights?.gender ? (
+              <p className="text-gray-600 text-center text-sm font-apfel-grotezk-regular mb-3 px-2 mt-5">
+                {insights.gender}
+              </p>
+            ) : (
+              <div className="h-4 w-4/6 animate-pulse rounded bg-gray-200 mb-3" />
+            )}
+
+            <div className="mb-6 w-full flex justify-center">
+              <PieChart apiEndpoint={genderEndpoint} />
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="mx-auto space-y-2">
-          <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-5/6 animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-4/6 animate-pulse rounded bg-gray-200" />
-        </div>
-      )}
+        )}
 
-<div className="flex flex-col lg:flex-row gap-4 mt-6 w-full px-4 lg:px-20 justify-center items-stretch">
-  {/* Gender */}
-  {genderEndpoint && (
-    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
-      <h3 className="text-lg font-qimano text-gray-700 mb-2">Gender</h3>
-      <div className="mb-6 w-full flex justify-center">
-    <PieChart apiEndpoint={genderEndpoint} />
-  </div>
-    </div>
-  )}
+        {/* Age Range */}
+        {ageEndpoint && (
+          <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
+            <h3 className="text-2xl font-qimano text-gray-700 mb-2">Age Range</h3>
 
-  {/* Age Range */}
-  {ageEndpoint && (
-    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
-      <h3 className="text-lg font-qimano text-gray-700 mb-2">Age Range</h3>
-      <AgeRangeChart apiEndpoint={ageEndpoint} />
-    </div>
-  )}
+            {insights?.age ? (
+              <p className="text-gray-600 text-center text-sm font-apfel-grotezk-regular mb-3 px-2 mt-5">
+                {insights.age}
+              </p>
+            ) : (
+              <div className="h-4 w-4/6 animate-pulse rounded bg-gray-200 mb-3" />
+            )}
 
-  {/* Location */}
-  {locationEndpoint && (
-    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
-      <h3 className="text-lg font-qimano text-gray-700 mb-2">Top Locations</h3>
-      <SimpleWorldMap apiEndpoint={locationEndpoint} />
-    </div>
-  )}
-</div>
+            <AgeRangeChart apiEndpoint={ageEndpoint} />
+          </div>
+        )}
+
+        {/* Location */}
+        {locationEndpoint && (
+          <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
+            <h3 className="text-2xl font-qimano text-gray-700 mb-2">Top Locations</h3>
+
+            {insights?.location ? (
+              <p className="text-gray-600 text-center text-sm font-apfel-grotezk-regular mb-3 px-2 ">
+                {insights.location}
+              </p>
+            ) : (
+              <div className="h-4 w-4/6 animate-pulse rounded bg-gray-200 mb-3" />
+            )}
+
+            <SimpleWorldMap apiEndpoint={locationEndpoint} />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

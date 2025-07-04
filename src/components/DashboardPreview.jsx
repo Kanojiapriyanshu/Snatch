@@ -36,7 +36,7 @@ function formatNumber(value) {
 const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
     
     return (
-      <div className="h-[400px]  3xl:h-auto max-h-auto w-96 3xl:w-full ">
+      <div className="h-[430px]  3xl:h-auto max-h-auto w-96 3xl:w-full ">
 
           <div className="flex gap-0 justify-center items-center flex-wrap max-w-[380px]  mx-auto">
                 {(formData.industry && formData.industry.length > 0
@@ -88,7 +88,7 @@ const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
       </div>
 
   
-      <div className="flex mx-auto gap-5 px-10 text-dark-grey mt-[40px] max-w-[500px] font-apfel-grotezk-regular">
+      <div className="flex mx-auto gap-5 px-10 text-dark-grey mt-[20px] 3xl:mt-[40px] max-w-[500px] font-apfel-grotezk-regular">
 
         <Image 
         width={24}
@@ -153,12 +153,12 @@ const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
       </div>
   
       <div className="text-dark-grey px-10 flex flex-col justify-center items-center mt-2 3xl:mt-12">
-       <h3 className="3xl:text-3xl text-2xl font-qimano text-graphite">
-        {/* ₹ {formatNumber(formData.story)} - ₹ {formatNumber(formData.reels)} */}
+       <h3 className="3xl:text-3xl text-xl font-qimano text-graphite">
+
         {priceRange}
       </h3>
 
-       <div>Value per content piece</div>
+       <div className="text-[12px] 3xl:text-lg ">Value per content piece</div>
       </div>
 
 

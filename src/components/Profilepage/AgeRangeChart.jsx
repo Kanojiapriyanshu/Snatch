@@ -54,7 +54,7 @@ const AgeRangeChart = ({ apiEndpoint }) => {
   }
 
   return (
-    <div className="w-full max-w-[360px] mx-auto px-3 font-apfel-grotezk-regular">
+    <div className="w-full max-w-[360px] mx-auto px-3 mt-10 font-apfel-grotezk-regular">
       {/* Gender Buttons */}
       <div className="flex justify-center gap-2 mb-12 sm:mb-14">
         {['all', 'men', 'women'].map((gender) => (

@@ -377,76 +377,73 @@ return (
       {/* {renderInstagramTab()} */}
       {selectedTab === "instagram" ? renderInstagramTab() : renderUploadTab()}
 
-      <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg border-t border-gray-300 py-1 px-4 mb-2 font-apfel-grotezk-regular">
-  <div className="flex gap-2 justify-center mx-auto">
-    <div className="flex gap-2 px-3 py-1.5 justify-center rounded-md">
-
-
-          <button onClick={handleNextClick} className="w-[90px] h-[37px]  text-electric-blue text-2xl font-semibold text-center">
-              <Image 
-                src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
-                width={40}
-                height={40}
-                alt="snatchlogo"
-                className="mx-auto w-20 h-5"
-              />
-          </button>
-
-             <button
-                        onClick={handleHamburgerClick}
-                        className="w-[50px] h-[37px] bg-gray-100 text-electric-blue border  rounded-md mx-auto font-medium hover:bg-transparent relative"
-                      >
-                        <Image
-                          className="mx-auto w-8"
-                          src="/assets/icons/onboarding/Hamburger.svg"
-                          alt="hamburger"
-                          width={20}
-                          height={20}
-                        />
-            </button>
-
-            {/* Dropdown Menu */}
-              {isMenuVisible && (
-                <div className="absolute top-[-260%] left-[-29px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
-                  <ul className="flex flex-col p-3 gap-2">
-                    <li
-                      onClick={handleDashboardClick}
-                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                    >
-                      Dashboard
-                    </li>
-                    <li
-                      onClick={handleSettingClick}
-                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                    >
-                      Settings
-                    </li>
-                    <li
-                      onClick={handleProfileClick}
-                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                    >
-                      Profile
-                    </li>
-                  </ul>
-                </div>
-              )}
+<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg w-[435px] border-t border-gray-300 px-4 py-1.5 shadow-md z-50 h-[10%] font-apfel-grotezk-regular">
+  <div className="flex items-center justify-between w-full h-full">
     
-    <button className=" px-4 py-1.5 ml-4 border-electric-blue border-2 text-electric-blue rounded hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
-         ← Back
+    {/* Logo + Hamburger */}
+    <div className="flex items-start justify-center gap-2 mt-2 relative">
+      <button onClick={handleNextClick} className="w-[90px] h-[37px] text-electric-blue text-2xl font-semibold text-center">
+        <Image 
+          src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+          width={40}
+          height={40}
+          alt="snatchlogo"
+          className="mx-auto w-28 h-5"
+        />
+      </button>
+
+      <button
+        onClick={handleHamburgerClick}
+        className="w-[50px] h-[37px] bg-gray-100 text-electric-blue border rounded-md mx-auto font-medium hover:bg-transparent relative"
+      >
+        <Image
+          className="mx-auto w-8"
+          src="/assets/icons/onboarding/Hamburger.svg"
+          alt="hamburger"
+          width={20}
+          height={20}
+        />
+      </button>
+
+      {/* Dropdown Menu */}
+      {isMenuVisible && (
+        <div className="absolute top-[-460%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+          <ul className="flex flex-col p-3 gap-2">
+            <li onClick={handleDashboardClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">
+              Dashboard
+            </li>
+            <li onClick={handleSettingClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">
+              Settings
+            </li>
+            <li onClick={handleProfileClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">
+              Profile
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+
+    {/* Final Action Buttons */}
+    <div className="bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-start gap-2 w-fit">
+      <button className="px-4 py-1.5 border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
+        ← Back
       </button>
       <button
-        className={`px-4 py-1.7 border-2 rounded-md transition-colors 
-          ${isDisabled ? "bg-[#6C7FA5] text-light-grey cursor-not-allowed" : "bg-electric-blue text-white"}
-        `}
+        className={`px-5 py-2 rounded-lg text-md transition-colors ${
+          isDisabled
+            ? "bg-[#6C7FA5] text-light-grey cursor-not-allowed"
+            : "bg-electric-blue text-white hover:bg-blue-700"
+        }`}
         onClick={handleProjectClick}
         disabled={isDisabled}
       >
         Add Details →
       </button>
-
     </div>
+
   </div>
 </div>
+
 
 
     </div>

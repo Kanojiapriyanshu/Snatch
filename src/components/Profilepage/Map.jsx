@@ -42,7 +42,7 @@ const SimpleWorldMap = ({apiEndpoint}) => {
   }, []);
 
   return (
-    <div>
+    <div className="mt-10">
     <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={800} height={400} style={{ width: "100%", height: "auto" }} >
       <Geographies geography={geoUrl}>
         {({ geographies }) =>
@@ -68,7 +68,7 @@ const SimpleWorldMap = ({apiEndpoint}) => {
       </Geographies>
     </ComposableMap>
 
-<div className="mt-10">
+<div className="mt-[50px]">
 {topCountries.map((country, index) => (
   <div key={index} className="flex justify-between items-center border-b border-gray-300 py-3 font-apfel-grotesk-regular ml-3 mr-2">
     <span className="flex gap-5">

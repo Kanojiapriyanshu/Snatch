@@ -138,7 +138,7 @@ const DashboardPage = () => {
           />
 
           {/* Creator Circle Section */}
-          <div className="mt-1 3xl:mt-4 w-full max-w-[98%] mr-5 mx-auto bg-white rounded-xl shadow relative font-qimano overflow-hidden  px-4 md:px-8 xl:px-16 py-[clamp(20px,calc(8px+5vh+1vw),100px)] min-h-[250px] xl:min-h-[100px] 2xl:min-h-[200px] 5xl:min-h-[500px] flex ">
+          <div className="mt-1 3xl:mt-4 w-full max-w-[98%] mr-5 mx-auto bg-white rounded-xl shadow relative font-qimano overflow-hidden  px-4 md:px-8 xl:px-16 py-[clamp(20px,calc(8px+5vh+1vw),100px)] min-h-[250px] xl:min-h-[90px] 2xl:min-h-[200px] 5xl:min-h-[400px] flex ">
 
            
             <div

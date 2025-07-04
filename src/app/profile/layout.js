@@ -151,18 +151,18 @@ export default function OnboardingLayout({ children }) {
 
         {/* Toolbar */}
         <div className={`fixed top-[85%] left-[50%] translate-x-[-50%] ${
-            isRed ? "w-[420px]" : "w-[620px]"
+            isRed ? "w-[430px]" : "w-[630px]"
           } h-[74px] flex justify-center items-center gap-3 shadow-md bg-white rounded-md z-20 p-5 font-apfel-grotezk-regular`}>
           <button
             onClick={handleNextClick}
-            className="w-[100px] h-[50px]  text-electric-blue text-2xl font-semibold   text-center"
+            className="w-[100px] h-[50px]  text-electric-blue text-2xl font-semibold text-center"
           >
               <Image 
                 src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
                 width={40}
                 height={40}
                 alt="snatchlogo"
-                className="mx-auto w-20 h-5"
+                className="mx-auto w-28 h-5"
               />
           </button>
           {/* Hamburger Button */}

@@ -1105,16 +1105,18 @@ const handlePopupGenerate = async () => {
 
 <div className="border-b border-light-grey"></div>
 
-<div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg border-t border-gray-300 py-1 px-4 mb-2 font-apfel-grotezk-regular">
+<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg border-t border-gray-300 py-1.5 px-4 mb-2 font-apfel-grotezk-regular h-[10%]">
   <div className="flex gap-2 justify-center mx-auto">
     <div className="flex gap-2 px-3 py-1.5 justify-center  rounded-md">
-        <button onClick={handleNextClick} className="w-[90px] h-[37px]  text-electric-blue text-2xl font-semibold    text-center">
+
+      <div className="flex items-between justify-center gap-2 mt-2">
+         <button onClick={handleNextClick} className="w-[90px] h-[37px]  text-electric-blue text-2xl font-semibold    text-center">
              <Image 
               src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
               width={40}
               height={40}
               alt="snatchlogo"
-              className="mx-auto w-20 h-5"
+              className="mx-auto w-28 h-5"
             />
           </button>
                <button
@@ -1128,11 +1130,13 @@ const handlePopupGenerate = async () => {
                     width={20}
                     height={20}
                   />
-                </button>
+          </button>
+      </div>
+      
       
                 {/* Dropdown Menu */}
                 {isMenuVisible && (
-                  <div className="absolute top-[-270%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+                  <div className="absolute top-[-210%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
                     <ul className="flex flex-col p-3 gap-2">
                       <li
                         onClick={handleDashboardClick}
@@ -1155,7 +1159,10 @@ const handlePopupGenerate = async () => {
                     </ul>
                   </div>
                 )}
-          <button
+
+
+        <div className="flex justify-start items-start mt-2">
+            <button
           className="px-2 py-1.5 text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
           onClick={handlePrevious}
           disabled={projects.length <= 1}
@@ -1170,20 +1177,29 @@ const handlePopupGenerate = async () => {
         >
           Next Project →
         </button>
-      <button className=" px-4 py-1.5 border-electric-blue border-2 text-electric-blue rounded hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
-        Back
-      </button>
-      <button
-        className={`px-4 py-1.5  ${
-          isFormComplete()
-            ? "bg-electric-blue text-white hover:bg-blue-700"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-        } rounded transition-colors`}
-        onClick={handlePreviewClick}
-        disabled={!isFormComplete()} // Disable if form is incomplete
-      >
-       Preview
-      </button>
+        </div>
+          
+
+      <div className="bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-start gap-2 w-fit">
+  <button
+    className="px-4 py-1.5 rounded-lg border-electric-blue border-2 text-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
+    onClick={handleBackClick}
+  >
+    Back
+  </button>
+  <button
+    className={`px-4 py-2 rounded-lg ${
+      isFormComplete()
+        ? "bg-electric-blue text-white hover:bg-blue-700"
+        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+    } rounded transition-colors`}
+    onClick={handlePreviewClick}
+    disabled={!isFormComplete()}
+  >
+    Preview
+  </button>
+     </div>
+
     </div>
   </div>
 </div>

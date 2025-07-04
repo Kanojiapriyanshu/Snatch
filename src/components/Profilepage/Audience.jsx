@@ -7,7 +7,13 @@ import generateAudienceInsights from "@/utils/generateAudienceInsights";
 
 const Audience = () => {
   const scrollRef = useRef(null);
-  const [insights, setInsights] = useState("");
+  // const [insights, setInsights] = useState("");
+  const [insights, setInsights] = useState({
+  gender: "",
+  age: "",
+  location: "",
+});
+
   const [demographicData, setDemographicData] = useState({
     genderData: {},
     ageData: [],
@@ -66,19 +72,7 @@ const Audience = () => {
     msOverflowStyle: 'none' }}
     >
       <div className="relative w-full max-w-7xl mt-5 px-4">
-        {/* AI Generated Insights */}
-        {insights ? (
-          <div className="mx-auto mb-6">
-            <div className="text-gray-700 whitespace-pre-line font-apfel-grotezk-regular">{insights}</div>
-          </div>
-        ) : (
-          <div className="mx-auto space-y-2 mb-6">
-            <div className="h-4 w-full animate-pulse rounded bg-gray-200" />
-            <div className="h-4 w-5/6 animate-pulse rounded bg-gray-200" />
-            <div className="h-4 w-4/6 animate-pulse rounded bg-gray-200" />
-          </div>
-        )}
-
+        
         {/* Left Scroll Button */}
         <button
           onClick={() => scroll("left")}
@@ -101,28 +95,40 @@ const Audience = () => {
             {[
               {
                 title: "Gender",
+                insight: insights.gender,
                 component: (
                   <PieChart apiEndpoint="/api/profile/genderDemographics" />
                 )
               },
+               {
+                title: "Age Range",
+                insight: insights.age,
+                component: (
+                  <AgeRangeChart apiEndpoint="/api/profile/allDemographics" />
+                )
+              },
               {
                 title: "Country",
+                insight: insights.location,
                 component: (
                   <SimpleWorldMap apiEndpoint="/api/profile/countryDemographics" />
                 )
               },
-              {
-                title: "Age Range",
-                component: (
-                  <AgeRangeChart apiEndpoint="/api/profile/allDemographics" />
-                )
-              }
             ].map((item, index) => (
               <div
                 key={index}
-                className="flex-none w-[285px] h-[500px] bg-gray-100 rounded-md flex flex-col items-center p-4 snap-start"
+                className="flex-none w-[285px] h-[700px] bg-gray-100 rounded-md flex flex-col items-center p-4 snap-start"
               >
                 <h1 className="text-2xl">{item.title}</h1>
+
+                  {item.insight ? (
+                    <p className="text-gray-600 text-sm text-center mb-3 whitespace-pre-line font-apfel-grotezk-regular mt-4">
+                      {item.insight}
+                    </p>
+                  ) : (
+                    <div className="h-4 w-4/6 animate-pulse rounded bg-gray-200 mb-3" />
+                  )}
+
                 <div className="mt-5">{item.component}</div>
               </div>
             ))}

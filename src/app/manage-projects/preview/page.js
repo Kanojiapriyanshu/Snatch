@@ -632,95 +632,93 @@ const handleHamburgerClick = () => {
           </div>
         </div>
 
-<div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 h-[67px] bg-white rounded-lg w-[730px] border-t border-gray-300 px-4 py-2 shadow-md z-50">
-  <div className="flex items-center justify-between w-full h-full">
+<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  bg-white rounded-lg w-[750px] border-t border-gray-300 px-4 py-1.5 shadow-md z-50 h-[10%] ">
+  <div className="flex items-center justify-between  w-full h-full">
     {/* Logo + Hamburger */}
-    <div className="flex items-center gap-3">
-      {/* SNATCH Logo */}
-      <button onClick={handleNextClick}>
-        <Image
-          src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
-          alt="snatchlogo"
-          width={80}
-          height={24}
-          className="mx-auto w-20 h-5"
-        />
-      </button>
-
-      {/* Hamburger */}
-      <div className="relative">
-        <button
-          onClick={handleHamburgerClick}
-          className="w-[44px] h-[44px] bg-gray-100 rounded-md flex items-center justify-center"
-        >
-          <Image
-            src="/assets/icons/onboarding/Hamburger.svg"
-            alt="hamburger"
-            width={20}
-            height={20}
-          />
-        </button>
-
-        {/* Dropdown */}
-        {isMenuVisible && (
-          <div className="absolute bottom-[60px] left-0 w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
-            <ul className="flex flex-col p-3 gap-2">
-              <li
-                onClick={handleDashboardClick}
-                className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
-              >
-                Dashboard
-              </li>
-              <li
-                onClick={handleSettingClick}
-                className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
-              >
-                Settings
-              </li>
-              <li
-                onClick={handleProfileClick}
-                className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
-              >
-                Profile
-              </li>
-            </ul>
+          <div className="flex items-between justify-center gap-2 mt-2 ">
+             <button onClick={handleNextClick} className="w-[90px] h-[37px]  text-electric-blue text-2xl font-semibold    text-center">
+                 <Image 
+                  src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+                  width={40}
+                  height={40}
+                  alt="snatchlogo"
+                  className="mx-auto w-28 h-5"
+                />
+              </button>
+                   <button
+                      onClick={handleHamburgerClick}
+                      className="w-[50px] h-[37px] bg-gray-100 text-electric-blue border  rounded-md mx-auto font-medium hover:bg-transparent relative"
+                    >
+                      <Image
+                        className="mx-auto w-8"
+                        src="/assets/icons/onboarding/Hamburger.svg"
+                        alt="hamburger"
+                        width={20}
+                        height={20}
+                      />
+              </button>
           </div>
-        )}
-      </div>
-    </div>
 
-    {/* Center Navigation: Previous/Next Project */}
-    <div className="flex items-center gap-3 mx-1">
-      <button
-        className="text-electric-blue underline underline-offset-4 hover:opacity-80 transition-colors text-md"
-        onClick={handlePrevious}
-        disabled={projects.length <= 1}
-      >
-        ← Previous Project
-      </button>
+          {/* Dropdown Menu */}
+                {isMenuVisible && (
+                  <div className="absolute top-[-220%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+                    <ul className="flex flex-col p-3 gap-2">
+                      <li
+                        onClick={handleDashboardClick}
+                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      >
+                        Dashboard
+                      </li>
+                      <li
+                        onClick={handleSettingClick}
+                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      >
+                        Settings
+                      </li>
+                      <li
+                        onClick={handleProfileClick}
+                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      >
+                        Profile
+                      </li>
+                    </ul>
+                  </div>
+                )}
 
-      <button
-        className="text-electric-blue underline underline-offset-4 hover:opacity-80 transition-colors text-md"
-        onClick={handleNext}
-        disabled={projects.length <= 1}
-      >
-        Next Project →
-      </button>
-    </div>
+        <div className="flex justify-start items-start mt-2">
+            <button
+          className="px-2 py-1.5 text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
+          onClick={handlePrevious}
+          disabled={projects.length <= 1}
+        >
+          ← Previous Project
+        </button>
+        
+        <button
+          className="px-2 py-1.5 text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
+          onClick={handleNext}
+          disabled={projects.length <= 1}
+        >
+          Next Project →
+        </button>
+        </div>
+
+          
 
     {/* Right Buttons: Previous Step + See Previews */}
    
-    <div className="flex items-center gap-3">
-        <button className=" px-4 py-1 border-electric-blue border-2 text-electric-blue rounded hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
+    <div className="bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-start gap-2 w-fit">
+        <button className=" px-4 py-1.5 border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
         Back
       </button>
       <button
-        className="px-5 py-1.5 bg-electric-blue text-white rounded text-md hover:bg-blue-700 transition-colors"
+        className="px-5 py-2 bg-electric-blue text-white rounded-lg text-md hover:bg-blue-700 transition-colors"
         onClick={handleSubmit}
       >
         Complete Project Details
       </button>
     </div>
+
   </div>
 </div>
        

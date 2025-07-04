@@ -173,7 +173,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         </motion.p>
 
         {/* Category Tags */}
-        <motion.div className="flex gap-2 mt-2" style={{ opacity: contentOpacity }}>
+        <motion.div className="flex flex-wrap justify-center gap-2 mt-2" style={{ opacity: contentOpacity }}>
         {formData?.industry?.length > 0 ? (
           formData.industry.map((item, index) => (
             <div key={index} className="flex items-center justify-start gap-1">

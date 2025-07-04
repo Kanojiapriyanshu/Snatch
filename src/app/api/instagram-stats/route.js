@@ -5,9 +5,16 @@ import connectDb from "@/db/mongoose";
 
 export const dynamic = "force-dynamic";
 
+// Format helper function
+function formatCount(num) {
+  if (num >= 1_000_000_000) return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+  if (num >= 1_000_000) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (num >= 1_000) return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  return String(num);
+}
+
 export async function GET(req) {
   try {
-    // Get authenticated user ID from Clerk
     const { userId } = getAuth(req);
 
     if (!userId) {
@@ -17,10 +24,8 @@ export async function GET(req) {
       );
     }
 
-    // Connect to MongoDB
     await connectDb();
 
-    // Find the user in the database
     const user = await User.findOne({ userId });
 
     if (!user || !user.instagramAccessToken || !user.instagramAccountId) {
@@ -32,14 +37,10 @@ export async function GET(req) {
 
     const { instagramAccessToken, instagramAccountId } = user;
 
-    // Instagram Graph API endpoint to fetch followers, posts, and reach
     const url = `https://graph.facebook.com/v19.0/${instagramAccountId}?fields=followers_count,media_count,insights.metric(reach).period(days_28)&access_token=${instagramAccessToken}`;
 
-
-    // Fetch data from Instagram Graph API
     const response = await fetch(url);
 
-    // Handle errors if the request fails
     if (!response.ok) {
       const errorData = await response.json();
       return NextResponse.json(
@@ -48,20 +49,18 @@ export async function GET(req) {
       );
     }
 
-    // Parse JSON response
     const data = await response.json();
 
-    // Extract reach value safely
-    const reachValue =
-      data?.insights?.data?.find((item) => item.name === "reach")?.values[0]
-        ?.value || 0;
+    const followers = data.followers_count || 0;
+    const media = data.media_count || 0;
+    const reach =
+      data?.insights?.data?.find((item) => item.name === "reach")?.values?.[0]?.value || 0;
 
-    // Return required data
     return NextResponse.json(
       {
-        followers_count: data.followers_count || 0,
-        media_count: data.media_count || 0,
-        reach: reachValue,
+        followers_count: formatCount(followers),
+        media_count: formatCount(media),
+        reach: formatCount(reach),
       },
       { status: 200 }
     );

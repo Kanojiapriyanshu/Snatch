@@ -3,52 +3,86 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const generateAudienceInsights = async (demographicData) => {
   try {
     if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
-        throw new Error("Gemini API key is not configured");
-      }
-  
-      const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model:  "gemini-1.5-flash"  });
-    console.log("Demographic Data: GEMEINI API FILE", demographicData);
-    
-      const prompt = `
-You're an expert audience analyst helping a brand evaluate an influencer's Instagram audience based on their gender, age, and top country-level data. You are helping creators present their audience strengths to potential brand partners.
+      throw new Error("Gemini API key is not configured");
+    }
 
-You identify and explain the most **statistically significant patterns** in the audience, in the form of **4 bullet points**, each on a **separate line**.
+    const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-UData:
-- Gender distribution:  ${JSON.stringify(demographicData.genderData)}
+    const prompt = `
+You are an audience strategist helping creators present their audience strengths to potential brand partners.
+
+Use the following demographic data to generate insights that highlight clear, positive traits in the influencer’s Instagram audience.
+
+Data:
+- Gender distribution: ${JSON.stringify(demographicData.genderData)}
 - Age ranges: ${JSON.stringify(demographicData.ageData)}
 - Top countries: ${JSON.stringify(demographicData.countryData)}
 
-Your goal is to write 4 clear, positive, and statistically meaningful insights that help brands understand what makes this audience valuable and relevant.
+✅ Output Format:
+Write 1–2 bullet points under each of the following sections, as applicable:
 
-Follow these rules:
-- Highlight concentrations, skews, or distinct traits in gender, age, or geography
-- Use positive, brand-relevant framing (e.g. “Millennial focused” instead of “Low Gen Z reach”)
-- Include percentages to support your points
-- Do not repeat raw data — interpret it into meaningful takeaways
-- Be under 25 words per bullet
-- Avoid assumptions about behavior, income, profession, or interests
-- Do not include uncertain statements or suggest further research
-- If visible in the data, add 1 secondary or supporting insight
+**Gender Insight:**  
+- Primary insight about gender distribution or skew (required)  
+- Optional: Add a second bullet if a related observation is statistically strong (e.g., balanced split, low variability, or niche skew)
 
-Example insights:
-- 68% of followers are female, showing strong gender alignment
-- Millennial focused: 71% of audience is aged 25–34
-- 78% India-based audience suggests high domestic visibility and Tier 1 urban relevance
-- US (12%) forms a secondary cluster, indicating strong diaspora crossover
+**Age Insight:**  
+- Primary insight about dominant or skewed age group (required)  
+- Optional: Add a second bullet if another age band is also meaningfully represented (e.g., crossover across Gen Z + Millennials)
 
-Output:
-Write only the 4 bullet points. Do not include any intro, label, or explanation.
+**Location Insight:**  
+- Primary insight about top country or regional concentration (required)  
+- Optional: Add a second bullet if there's a meaningful secondary country, diaspora audience, or Tier 2/3 signal
+
+✅ Guidelines:
+- Frame positively (e.g., “Millennial focused” instead of “low Gen Z”)
+- Use percentages to highlight strength or clarity
+- Avoid repeating raw data — interpret it
+- No assumptions about behavior, profession, or income
+- No vague phrases or uncertainty (“could be”, “might”, “needs more info”)
+- Keep each bullet under 25 words
+
+✅ Example Output:
+
+**Gender Insight:**  
+- 68% female audience shows strong alignment with women-focused communities.  
+- Gender distribution is highly skewed, offering a focused audience profile.
+
+**Age Insight:**  
+- 25–34 dominates at 71%, indicating a clearly Millennial audience.  
+- 18–24 also forms 19%, offering some Gen Z crossover potential.
+
+**Location Insight:**  
+- 78% of the audience is India-based, ideal for local brand alignment.  
+- US (12%) adds diaspora depth to domestic reach.
+
+✅ Return format:
+Return your insights in **pure JSON format only**, as shown below — without any extra text, explanation, or Markdown:
+
+{
+  "gender": "Your bullet points for gender insight go here, separated by line breaks if two points exist.",
+  "age": "Your bullet points for age insight go here, separated by line breaks if two points exist.",
+  "location": "Your bullet points for location insight go here, separated by line breaks if two points exist."
+}
 `;
-
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text();
+    const rawText = response.text();
+
+    const cleanedJson = rawText
+      .replace(/```json\s*/, '')
+      .replace(/```[\s\n]*$/, '')
+      .trim();
+
+    return JSON.parse(cleanedJson);
   } catch (error) {
     console.error("Error generating insights:", error);
-    return "Unable to generate insights at this time.";
+    return {
+      gender: "Unable to generate gender insight.",
+      age: "Unable to generate age insight.",
+      location: "Unable to generate location insight."
+    };
   }
 };
 

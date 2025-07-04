@@ -56,7 +56,7 @@ export default function OnboardingLayout({ children }) {
                   width={40}
                   height={40}
                   alt="snatchlogo"
-                  className="mx-auto w-20 h-5"
+                  className="mx-auto w-28 h-5"
                 />
          </button>
           <button onClick={handleProfileClick} className="w-[80px] h-[50px] bg-gray-100 text-electric-blue  rounded-md text-center font-medium hover:bg-electric-blue hover:text-white">
