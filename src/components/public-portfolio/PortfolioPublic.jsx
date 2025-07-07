@@ -3,13 +3,18 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const PortfolioPublic = () => {
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const pathname = usePathname();
   const isAdminView = pathname.includes("/adminview");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [targetUrl, setTargetUrl] = useState('');
+  const [loadingPostId, setLoadingPostId] = useState(null);
 
   // Extract username
   const pathnameParts = pathname.split("/");
@@ -76,6 +81,15 @@ const PortfolioPublic = () => {
     });
   };
 
+  const handlePostClick = (e, mediaId, url) => {
+    e.preventDefault();
+    setLoadingPostId(mediaId);
+    setTimeout(() => {
+      setLoadingPostId(null);
+      router.push(url);
+    }, 1500);
+  };
+
   // ✅ Loading and error states
   if (isLoading) {
     return <p className="text-center text-gray-500 font-qimano">Finding your projects...</p>;
@@ -83,6 +97,19 @@ const PortfolioPublic = () => {
 
   if (isError) {
     return <p className="text-center text-red-500">Error: {error.message}</p>;
+  }
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+        <DotLottieReact
+          src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+          loop
+          autoplay
+          style={{ width: 180, height: 180 }}
+        />
+      </div>
+    );
   }
 
   // ✅ Render same as before
@@ -174,10 +201,22 @@ const PortfolioPublic = () => {
                         className="object-cover"
                       />
                     )}
-                    <div className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30">
-                      <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
-                        Post Info & Insights ↗
-                      </span>
+                    <div
+                      className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30 cursor-pointer"
+                      onClick={(e) => handlePostClick(e, project.mediaId, `/${username}/media-kit/post/?postId=${project.mediaId}`)}
+                    >
+                      {loadingPostId === project.mediaId ? (
+                        <DotLottieReact
+                          src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+                          loop
+                          autoplay
+                          style={{ width: 80, height: 80 }}
+                        />
+                      ) : (
+                        <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
+                          Post Info & Insights ↗
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -269,10 +308,22 @@ const PortfolioPublic = () => {
                         className="object-cover"
                       />
                     )}
-                    <div className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30">
-                      <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
-                        Post Info & Insights ↗
-                      </span>
+                    <div
+                      className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30 cursor-pointer"
+                      onClick={(e) => handlePostClick(e, project.mediaId, `/${username}/media-kit/post/?postId=${project.mediaId}`)}
+                    >
+                      {loadingPostId === project.mediaId ? (
+                        <DotLottieReact
+                          src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+                          loop
+                          autoplay
+                          style={{ width: 80, height: 80 }}
+                        />
+                      ) : (
+                        <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
+                          Post Info & Insights ↗
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useSpring } from "framer-motion"
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { FormProvider } from "@/app/onboarding/context";
 import { useFetchPortfolio, useInstagramData, useCheckScreenSize } from "@/utils/public-portfolio/portfolio";
 import Header from "./Header";
@@ -41,6 +41,7 @@ const ProfileOverview = ({ ownerId, isAdminView }) => {
  // const { data, loading, error } = useInstagramData(); // Instagram data
   const router = useRouter()
   const pathname = usePathname(); // e.g., "/public-portfolio/snatchsocial"
+  const searchParams = useSearchParams();
   
   const isMobile = useCheckScreenSize();
 
@@ -72,7 +73,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   const profileImageOpacity = useTransform(scrollY, [0, 150], [1, 0])
   const myOpacity = useTransform(scrollY, [0, 150], [0, 1])
   // For the press kit section to stay below the header
-  const pressKitMargin = useTransform(scrollY, [0, 200], ["40px", "150px"])
+  const pressKitMargin = useTransform(scrollY, [0, 200], ["40px", "270px"])
   const fontSizeStyle = useMotionTemplate`${nameSize}px`;
   
   // Always define useTransform, but use static values for mobile
@@ -126,10 +127,40 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   }
   };
 
-  
+  // Tooltip text logic for compensation types
+  const getCompensationTooltip = (item) => {
+    switch (item) {
+      case "Sponsorships":
+        return "Influencers are paid a fixed amount for each piece of content they create.";
+      case "Gifting":
+        return "This involves compensating influencers with products or services instead of money.";
+      case "Affiliate":
+        return "Influencers promote a product or service and receive a commission for every sale made through a unique affiliate link they share.";
+      case "Hosted":
+        return "Influencers are invited to events or trips, often in exchange for creating and sharing content related to the experience.";
+      case "Collaboration":
+        return "Influencers sometimes collaborate with brands to create a product.";
+      default:
+        return "More info coming soon.";
+    }
+  };
+
+  const [activeMobileTooltip, setActiveMobileTooltip] = useState(null);
+
+  useEffect(() => {
+    // Scroll to presskit if query param is present
+    if (typeof window !== 'undefined' && pressKitRef.current) {
+      const scrollTo = searchParams.get('scrollTo');
+      if (scrollTo === 'presskit') {
+        setTimeout(() => {
+          pressKitRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300); // Delay to ensure DOM is ready
+      }
+    }
+  }, [searchParams]);
 
   return (
-    <div className="flex flex-col w-full p-1 rounded-xl " ref={containerRef}>
+    <div className="flex flex-col w-full p-0 rounded-xl " ref={containerRef}>
     {/* Sticky Header (appears on scroll) */}
     <Header formData={formData} data={data} headerOpacity={headerOpacity} isAdminView={isAdminView} />
 
@@ -195,7 +226,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         <motion.div className="flex flex-col-reverse lg:flex-row justify-between w-80 lg:w-[1600px] lg:relative z-10 overflow-visible" style={{ opacity: isMobile? "1": contentOpacity }}>
 
           {/*1 Left Side - Pricing and Services */}
-          <div className="w-[370px] pt-20 ml-10 hidden lg:block">
+          <div className="w-[370px] pt-20 ml-2 hidden lg:block">
             <div className="flex gap-3  items-center mb-3">
               <h2 className="font-qimano text-3xl font-medium">
   <span className="font-md">₹</span> {formatNumber(lower)} - <span className="font-thin">₹</span> {formatNumber(upper)}
@@ -278,9 +309,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   }}
 >
   <div className="lg:absolute overflow-visible z-[9999]">
-    <div className="absolute -top-6 -left-6 bg-black bg-opacity-70 rounded-full p-2 z-[9999]">
-      {/* heart icon */}
-    </div>
+    
 
     <div className="absolute lg:translate-x-1/2 lg:translate-y-10 rounded-xl w-64 h-2/3 overflow-visible">
       <Image
@@ -294,7 +323,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   </div>
 </motion.div>
          {/* 3 Right Side - Stats */}
-         <div className="w-full lg:w-1/2 flex flex-row lg:flex-col items-center lg:items-end justify-center lg:justify-normal mr-0 lg:mr-10 gap-6 pt-4 z-20">
+         <div className="w-full lg:w-1/2 flex flex-row lg:flex-col items-center lg:items-end justify-center lg:justify-normal mr-0 lg:mr-4 gap-6 pt-4 z-20">
   <div className="text-center lg:text-end">
     <h2 className="text-5xl font-medium font-qimano">
       <motion.span>{reach}</motion.span>
@@ -322,7 +351,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
     </motion.div>
 
 
-<div className="w-full max-w-sm px-4 pt-0 mx-auto block lg:hidden overflow-x-hidden ">
+<div className="w-full pt-14 block lg:hidden overflow-x-hidden ">
   {/* Pricing */}
   <div className="flex flex-col items-center w-full mb-2">
     <div className="flex items-baseline gap-2">
@@ -332,20 +361,35 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   </div>
   {/* Divider */}
   <div className="border-b-[1.5px] border-[#C7D2FE] w-full my-2" />
-  {/* Services: 2 rows, 3 per row, with info icon and | separator */}
-  <div className="flex flex-col items-center w-full text-black font-qimano text-[20px] gap-1 mb-2">
-    <div className="flex flex-row items-center justify-center w-full gap-2 whitespace-nowrap">
-      <span className="inline-flex items-center">Gifting <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
-      <span className="mx-1">|</span>
-      <span className="inline-flex items-center">Sponsorships <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
-      <span className="mx-1">|</span>
-      <span className="inline-flex items-center">Hosted <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
-    </div>
-    <div className="flex flex-row items-center justify-center w-full gap-2 whitespace-nowrap">
-      <span className="inline-flex items-center">Affiliate <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
-      <span className="mx-1">|</span>
-      <span className="inline-flex items-center">Collaboration <img src='/assets/icons/i.svg' alt='info' className='w-4 h-4 ml-1' /></span>
-    </div>
+  {/* Services: dynamic rendering for mobile */}
+  <div className="flex flex-wrap items-center justify-center w-full text-black font-qimano text-[20px] gap-x-2 gap-y-1 mb-2">
+    {formData?.compensation?.length > 0 ? (
+      formData.compensation.map((item, index) => (
+        <div key={index} className="inline-flex items-center relative">
+          <span className="inline-flex items-center">{item}
+            <img
+              src='/assets/icons/i.svg'
+              alt='info'
+              className='w-4 h-4 ml-1 invert'
+              style={{ filter: 'invert(1)' }}
+              onClick={() => setActiveMobileTooltip(activeMobileTooltip === index ? null : index)}
+            />
+          </span>
+          {/* Tooltip for mobile: show only if active */}
+          {activeMobileTooltip === index && (
+            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 bg-lime-yellow text-black text-sm px-3 py-2 rounded-md shadow-md max-w-[90vw] w-max whitespace-normal break-words text-left z-50">
+              {getCompensationTooltip(item)}
+            </span>
+          )}
+          {/* Separator */}
+          {index !== formData.compensation.length - 1 && (
+            <span className="mx-1">|</span>
+          )}
+        </div>
+      ))
+    ) : (
+      <span>Compensation</span>
+    )}
   </div>
   {/* CTA Button */}
   <button
@@ -368,58 +412,18 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       ref={pressKitRef}
     >
       <div className="container mx-auto">
-        <h2 className="text-5xl lg:text-7xl font-qimano text-[#0044FF] text-center  lg:mt-8 text-electric-blue">
-          Press Kit
-        </h2>
+      <h2 className="text-5xl lg:text-7xl font-qimano text-[#0044FF] text-center mt-4 lg:mt-8 ml-0 mr-0 lg:ml-64 lg:mr-58 text-electric-blue">
+  Press Kit
+</h2>
+
+
+
 
         {/* Content Grid */}
         <PortfolioPublic />
 
         {/* social links */}
-        <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex justify-center items-center ">
-  {/* Visible only on lg screens */}
-  <span className="hidden lg:inline ml-6 font-apfel-grotezk-regular">My social media</span>
-
-  <span className="hidden lg:flex justify-center items-center w-[500%] lg:w-[1200px]">
-    <span className="border-b-[0.5px] border-gray-400 mx-2 w-full"></span>
-  </span>
-
-  {/* Icons (visible on all screen sizes, justified between for mobile) */}
-  <span className="flex max-w-[300px] justify-between lg:ml-2 gap-2 lg:justify-center">
-    <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
-      <Image
-        src="/assets/images/Insta.svg"
-        alt="Instagram"
-        width={30}
-        height={25}
-      />
-    </span>
-    <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
-      <Image
-        src="/assets/images/X.svg"
-        alt="X"
-        width={30}
-        height={20}
-      />
-    </span>
-    <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
-      <Image
-        src="/assets/icons/facebook.svg"
-        alt="Facebook"
-        width={30}
-        height={20}
-      />
-    </span>
-    <span className="bg-gray-150 rounded flex items-center justify-center w-10 h-10">
-      <Image
-        src="/assets/icons/linkedin.svg"
-        alt="LinkedIn"
-        width={30}
-        height={20}
-      />
-    </span>
-  </span>
-</div>
+        <SocialLinks formData={formData} />
 
 
 

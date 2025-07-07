@@ -13,6 +13,7 @@ const SendRequestPopup = ({ onClose, username }) => {
   const [bioCount, setBioCount] = useState(0);
   const [discussionCount, setDiscussionCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,7 +49,7 @@ const SendRequestPopup = ({ onClose, username }) => {
       });
       const data = await res.json();
       if (res.ok) {
-        alert("Request sent successfully!");
+        setSuccess(true);
       } else {
         alert(data.error || "Failed to send request.");
       }
@@ -59,8 +60,8 @@ const SendRequestPopup = ({ onClose, username }) => {
   };
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50" onSubmit={handleSubmit}>
-      <div className="bg-white rounded-xl p-6 w-[90%] max-w-xl shadow-xl relative border border-gray-200">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl p-6 w-[90%] max-w-xl shadow-xl relative border border-gray-200 min-h-[500px] flex flex-col justify-center">
         {/* Close icon */}
         <button className="absolute top-4 right-4" onClick={onClose}>
           <Image
@@ -71,113 +72,128 @@ const SendRequestPopup = ({ onClose, username }) => {
           />
         </button>
 
-        {/* Header */}
-        <h2 className="text-[18px] font-medium text-[#0037eb] mb-6 font-qimano leading-none">
-          Send request to :&nbsp;
-          <span className="inline-flex items-center gap-2 text-[#0037eb] align-middle">
-            <Image
-              src="/assets/images/popupImg.svg"
-              alt="Profile"
-              width={30}
-              height={30}
-              className="rounded-full"
-            />
-            {username}
-            <Image
-              src="/assets/icons/verify.svg"
-              alt="Verified"
-              width={18}
-              height={18}
-            />
-          </span>
-        </h2>
-
-        {/* Form */}
-        <form className="space-y-5 font-apfel">
-          {/* First Row */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <input
-              type="text"
-              name="brandName"
-              value={form.brandName}
-              onChange={handleChange}
-              placeholder="Name of the Company/Brand*"
-              className="flex-1 p-3 border border-gray-300 font-apfel-grotezk-regular rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            <input
-              type="text"
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              placeholder="Your role in the company/Brand*"
-              className="flex-1 p-3 border border-gray-300 font-apfel-grotezk-regular rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+        {/* Success message */}
+        {success ? (
+          <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+            <Image src="/assets/icons/paper-plane.svg" alt="Sent" width={60} height={60} className="mb-6" />
+            <h2 className="text-2xl font-qimano text-[#0037eb] text-center mb-2">
+              Awesome! Your Request Has Been Sent
+            </h2>
+            <p className="text-gray-700 text-center text-base max-w-md font-apfel-grotezk-regular">
+              Stay tuned! If it's a match, 'Influencer Name' will connect with you to discuss the next steps.
+            </p>
           </div>
+        ) : (
+          <>
+            {/* Header */}
+            <h2 className="text-[18px] font-medium text-[#0037eb] mb-6 font-qimano leading-none">
+              Send request to :&nbsp;
+              <span className="inline-flex items-center gap-2 text-[#0037eb] align-middle">
+                <Image
+                  src="/assets/images/popupImg.svg"
+                  alt="Profile"
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />
+                {username}
+                <Image
+                  src="/assets/icons/verify.svg"
+                  alt="Verified"
+                  width={18}
+                  height={18}
+                />
+              </span>
+            </h2>
 
-          {/* Email */}
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="Company/Brand Email id*"
-            className="p-3 border border-gray-300 font-apfel-grotezk-regular rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
+            {/* Form */}
+            <form className="space-y-5 font-apfel" onSubmit={handleSubmit}>
+              {/* First Row */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <input
+                  type="text"
+                  name="brandName"
+                  value={form.brandName}
+                  onChange={handleChange}
+                  placeholder="Name of the Company/Brand*"
+                  className="flex-1 p-3 border border-gray-300 font-apfel-grotezk-regular rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  name="role"
+                  value={form.role}
+                  onChange={handleChange}
+                  placeholder="Your role in the company/Brand*"
+                  className="flex-1 p-3 border border-gray-300 font-apfel-grotezk-regular rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
 
-          {/* Company Bio */}
-          <div className="p-4 border border-gray-300 font-apfel-grotezk-regular rounded-xl bg-white">
-            <div className="flex justify-between items-center mb-2">
-              <label className="text-sm font-medium text-black">
-                Company Bio*
-              </label>
-              <span className="text-xs text-gray-400">{bioCount}/200</span>
-            </div>
-            <textarea
-              name="bio"
-              value={form.bio}
-              onChange={handleChange}
-              placeholder="Tell us a little about your brand, audience and what you stand for."
-              className="w-full border-none outline-none resize-none font-apfel-grotezk-regular text-sm text-gray-700 placeholder:text-gray-400"
-              rows={4}
-              maxLength={200}
-              required
-            />
-          </div>
+              {/* Email */}
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Company/Brand Email id*"
+                className="p-3 border border-gray-300 font-apfel-grotezk-regular rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
 
-          {/* What would you like to discuss? */}
-          <div className="p-4 border border-gray-300 rounded-xl bg-white">
-            <div className="flex justify-between items-center mb-2">
-              <label className="text-sm font-medium font-apfel-grotezk-regular text-black">
-                What would you like to discuss?*
-              </label>
-              <span className="text-xs text-gray-400">{discussionCount}/200</span>
-            </div>
-            <textarea
-              name="discussion"
-              value={form.discussion}
-              onChange={handleChange}
-              placeholder="Share a quick brief – what's the collab about?"
-              className="w-full border-none outline-none font-apfel-grotezk-regular resize-none text-sm text-gray-700 placeholder:text-gray-400"
-              rows={4}
-              maxLength={200}
-              required
-            />
-          </div>
+              {/* Company Bio */}
+              <div className="p-4 border border-gray-300 font-apfel-grotezk-regular rounded-xl bg-white">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-sm font-medium text-black">
+                    Company Bio*
+                  </label>
+                  <span className="text-xs text-gray-400">{bioCount}/200</span>
+                </div>
+                <textarea
+                  name="bio"
+                  value={form.bio}
+                  onChange={handleChange}
+                  placeholder="Tell us a little about your brand, audience and what you stand for."
+                  className="w-full border-none outline-none resize-none font-apfel-grotezk-regular text-sm text-gray-700 placeholder:text-gray-400"
+                  rows={4}
+                  maxLength={200}
+                  required
+                />
+              </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center pt-2">
-            <button
-              type="submit"
-              className="bg-[#0037eb] hover:bg-blue-700 text-white font-apfel-grotezk-regular py-3 px-6 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!isFormValid || submitting}
-            >
-              Send Request
-            </button>
-          </div>
-        </form>
+              {/* What would you like to discuss? */}
+              <div className="p-4 border border-gray-300 rounded-xl bg-white">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-sm font-medium font-apfel-grotezk-regular text-black">
+                    What would you like to discuss?*
+                  </label>
+                  <span className="text-xs text-gray-400">{discussionCount}/200</span>
+                </div>
+                <textarea
+                  name="discussion"
+                  value={form.discussion}
+                  onChange={handleChange}
+                  placeholder="Share a quick brief – what's the collab about?"
+                  className="w-full border-none outline-none font-apfel-grotezk-regular resize-none text-sm text-gray-700 placeholder:text-gray-400"
+                  rows={4}
+                  maxLength={200}
+                  required
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center pt-2">
+                <button
+                  type="submit"
+                  className="bg-[#0037eb] hover:bg-blue-700 text-white font-apfel-grotezk-regular py-3 px-6 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!isFormValid || submitting}
+                >
+                  Send Request
+                </button>
+              </div>
+            </form>
+          </>
+        )}
       </div>
     </div>
   );
