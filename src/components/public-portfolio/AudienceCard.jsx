@@ -89,10 +89,16 @@ const AudienceCard = () => {
           </div>
         )}
 
-        {/* Age Range */}
-        {ageEndpoint && (
-          <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
-            <h3 className="text-2xl font-qimano text-gray-700 mb-2">Age Range</h3>
+<div className="flex flex-col lg:flex-row gap-9 mt-6 w-full px-4 lg:px-20 justify-center items-stretch">
+  {/* Gender */}
+  {genderEndpoint && (
+    <div className="bg-gray-100 shadow-md rounded-xl p-4 w-full lg:w-[370px] flex flex-col items-center justify-between min-h-[350px]">
+      <h3 className="text-lg font-qimano text-gray-700 mb-2">Gender</h3>
+      <div className="mb-6 w-full flex justify-center">
+    <PieChart apiEndpoint={genderEndpoint} />
+  </div>
+    </div>
+  )}
 
             {insights?.age ? (
               <p className="text-gray-600 text-center text-sm font-apfel-grotezk-regular mb-3 px-2 mt-5">

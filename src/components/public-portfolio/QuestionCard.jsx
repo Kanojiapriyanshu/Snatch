@@ -77,18 +77,18 @@ const Questionnaire = ({ name }) => {
 
   return (
     <div className={clsx(
-      "relative pb-10",
+      "relative pb-1 0",
       "lg:mt-10 lg:ml-2",
-      "flex flex-col"
+      "flex flex-col items-center"
     )}>
-      <h3 className=" text-[45px] text-center lg:text-7xl lg:text-left text-2xl font-qimano text-electric-blue mb-0 ">About {name}</h3>
+      <h3 className="text-[45px] text-center lg:text-7xl text-2xl font-qimano text-electric-blue mb-0 ">About {name}</h3>
 
       {/* Mobile view: horizontal scroll with snap and partial next card visibility */}
-      <div className="lg:hidden relative flex-grow flex">
+      <div className="lg:hidden relative flex-grow flex justify-start w-full max-w-full mt-5">
         {allCards.length > 0 && (
           <div
             ref={mobileScrollRef}
-            className="flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory w-full pl-[4vw]"
+            className="flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory w-full max-w-full justify-start"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             onScroll={() => setScrollResetTrigger(prev => prev + 1)}
           >
@@ -98,7 +98,7 @@ const Questionnaire = ({ name }) => {
                 className="flex-shrink-0 snap-center"
                 style={{
                   marginRight: (index < allCards.length - 1) ? '3vw' : '0',
-                  marginLeft: (index === 0) ? '5vw' : '0'
+                  marginLeft: 0
                 }}
               >
                 <QuestionCard
@@ -116,7 +116,7 @@ const Questionnaire = ({ name }) => {
       </div>
 
       {/* Desktop view: horizontal scroll */}
-     <div className="hidden lg:block relative flex-grow">
+     <div className="hidden lg:flex relative flex-grow justify-center">
   {/* Left Scroll Button */}
   {showNavButtons && (
     <button
@@ -142,7 +142,7 @@ const Questionnaire = ({ name }) => {
     className="mt-5 lg:mt-4 pb-5 lg:pb-0 overflow-x-auto scrollbar-hide max-w-full"
     style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
   >
-    <div className="flex gap-4 w-full sm:w-max rounded-3xl overflow-hidden px-2">
+    <div className="flex gap-2 w-full sm:w-max rounded-3xl overflow-hidden px-2 justify-center">
       {allCards.map((card) => (
         <QuestionCard
           key={card.key}
@@ -211,7 +211,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
     <div
       className={clsx(
         "relative flex border rounded-3xl overflow-hidden cursor-pointer shrink-0 transition-transform duration-300",
-        isMobile ? "w-[75vw] h-[490px]" : "w-[390px] h-[530px] mr-6",
+        isMobile ? "w-[75vw] h-[490px]" : "w-[370px] h-[530px] mr-6",
         isMobile && touched ? "-translate-y-4" : ""
       )}
       onMouseEnter={() => !isMobile && setHovered(true)}
@@ -237,27 +237,28 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
 
       <div
         className={clsx(
-          `absolute left-0 bottom-0 w-full flex flex-col p-5 items-center justify-center transition-all duration-300 rounded-t-xl`,
+          `absolute left-0 p-4 bottom-0 w-full flex flex-col items-center justify-between transition-all duration-300 rounded-t-xl`,
           cardType.bg,
           cardType.text,
           isMobile ? (isRevealed ? "h-[100%]" : "h-[50%]") : (hovered ? "h-[100%]" : "h-[45%]")
         )}
+        style={{ minHeight: isMobile ? 0 : 240 }} // ensure enough height for spacing
       >
         <Image
           src={cardType.icon}
           alt="icon"
           height={10}
           width={10}
-          className="w-20 h-17 mt-1"
+          className="w-20 h-17 mt-4"
         />
-        <p className={clsx("text-center text-xl p-5 lg:text-2xl font-qimano mb-4", cardType.text)}>
+        <p className={clsx("text-center text-xl p-2 lg:text-2xl font-qimano mb-1 line-clamp-3", cardType.text)} style={{ minHeight: '4.5em' }}>
           {question}
         </p>
 
         {(isMobile ? isRevealed : hovered) && (
           <p
             className={clsx(
-              "text-[16px] lg:text-[16px] text-center font-apfel-grotezk-regular mt-4",
+              "text-[16px] lg:text-[16px] text-center font-apfel-grotezk-regular mt-2",
               cardType.text
             )}
           >
@@ -265,7 +266,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
           </p>
         )}
 
-        <p className="mb-6 font-apfel-grotezk-regular text-xs text-center">
+        <p className="mb-2 font-apfel-grotezk-regular text-xs text-center">
           {cardType.bg === "bg-lime-yellow"
             ? "About"
             : cardType.bg === "bg-graphite"
@@ -291,7 +292,7 @@ function getCardType(section) {
       return {
         bg: "bg-electric-blue",
         text: "text-white",
-        icon: "/assets/images/brandIcon.svg",
+        icon: "/assets/images/brandicon1.svg",
       };
     case "audience":
       return {

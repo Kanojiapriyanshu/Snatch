@@ -368,7 +368,7 @@ const handleHamburgerClick = () => {
                     );
                   } // Replace the CAROUSEL_ALBUM case with:
 
-             if (activeProject.name === "CAROUSEL_ALBUM") {
+              if (activeProject.name === "CAROUSEL_ALBUM") {
               return (
                 <div className="relative w-full h-auto">
                     {activeProject.children.map((child, index) => (
@@ -419,7 +419,7 @@ const handleHamburgerClick = () => {
                   </div>
                 </div>
               );
-            } else if (activeProject.fileUrl) {
+            }else if (activeProject.fileUrl) {
                                         return (
                                           <div className="relative h-auto p-0 w-[300px]">
                                             {activeProject.fileUrl.match(/\.(jpeg|jpg|gif|png)$/) ? (

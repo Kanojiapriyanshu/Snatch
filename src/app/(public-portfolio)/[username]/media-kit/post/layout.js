@@ -75,7 +75,7 @@ export default async function PostLayout({ children, params }) {
                     >
                       <div className="transition-opacity duration-200 ease-in-out lg:opacity-60 lg:group-hover:opacity-10 lg:hover:opacity-100 lg:rounded-md">
                         {post.mediaType === "CAROUSEL_ALBUM" && post.children ? (
-                          <div className="relative w-[120px] h-[120px] lg:w-[70px] lg:h-[70px] group">
+                          <div className="relative w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] group">
                             <Image
                               src={post.children[0].mediaUrl}
                               alt={`Project ${index}`}
@@ -87,7 +87,7 @@ export default async function PostLayout({ children, params }) {
                           <video
                             muted
                             playsInline
-                            className="w-[120px] h-[120px] lg:w-[70px] lg:h-[70px] object-cover rounded-md"
+                            className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] object-cover rounded-md"
                             src={post.mediaUrl}
                           />
                         ) : (
@@ -96,7 +96,7 @@ export default async function PostLayout({ children, params }) {
                             height={180}
                             src={post.mediaUrl}
                             alt={`Project ${index}`}
-                            className="w-[120px] h-[120px] lg:w-[70px] lg:h-[70px] object-cover rounded-md"
+                            className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] object-cover rounded-md"
                           />
                         )}
                       </div>

@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 export default function PostCard({ post, postId, username, allPosts }) {
@@ -9,6 +9,9 @@ export default function PostCard({ post, postId, username, allPosts }) {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isPortrait, setIsPortrait] = useState(false);
   const router = useRouter();
+  const [slideDirection, setSlideDirection] = useState(null);
+  const [isSliding, setIsSliding] = useState(false);
+  const cardRef = useRef(null);
 
   const checkOrientation = (width, height) => {
     return height > width;
@@ -73,10 +76,25 @@ export default function PostCard({ post, postId, username, allPosts }) {
     const nextPost = allPosts[nextIndex];
     const pathname = window.location.pathname;
     const isAdminView = pathname.includes('/adminview');
-    
-    // Construct the URL based on whether it's admin view or not
     const baseUrl = `/${username}/media-kit${isAdminView ? '/adminview' : ''}/post`;
-    router.push(`${baseUrl}/?postId=${nextPost.mediaId}`);
+
+    if (!nextPost || !nextPost.mediaId) {
+      console.error("Next post is missing mediaId", nextPost);
+      return;
+    }
+
+    // Only animate on large screens
+    if (window.innerWidth >= 1024) {
+      setSlideDirection(direction === 'next' ? 'right' : 'left');
+      setIsSliding(true);
+      setTimeout(() => {
+        setIsSliding(false);
+        setSlideDirection(null);
+        router.push(`${baseUrl}/?postId=${nextPost.mediaId}`);
+      }, 400); // match transition duration
+    } else {
+      router.push(`${baseUrl}/?postId=${nextPost.mediaId}`);
+    }
   };
 
   useEffect(() => {
@@ -113,9 +131,12 @@ export default function PostCard({ post, postId, username, allPosts }) {
       {/* Cross icon: fixed for desktop, absolute/scrollable for mobile */}
       <button
         className="z-50  items-center justify-center flex
-          absolute right-2 top-2 w-7 h-7 min-w-[28px] min-h-[28px]
-          md:fixed md:right-60 md:top-9 md:w-14 md:h-14 md:min-w-[40px] md:min-h-[30px]"
-        onClick={() => router.push(`/${username}/media-kit`)}
+          absolute right-1 top-2 w-7 h-7 min-w-[28px] min-h-[28px]
+          md:fixed md:right-56 md:top-11 md:w-14 md:h-14 md:min-w-[40px] md:min-h-[30px]"
+        onClick={() => {
+          // Redirect to portfolio with scrollTo=presskit
+          router.push(`/${username}/media-kit?scrollTo=presskit`);
+        }}
         aria-label="Go to Portfolio"
       >
         <Image
@@ -128,28 +149,44 @@ export default function PostCard({ post, postId, username, allPosts }) {
       </button>
       {/* Main overlay background for large devices */}
       <div className="hidden md:flex fixed inset-0 w-full h-full bg-black/2 z-10 pointer-events-none" aria-hidden="true"></div>
+      
       {/* Desktop content wrapper with navigation arrows close to card */}
       <div className="hidden md:flex flex-col items-center justify-center w-full relative z-20">
+         
         <div className="flex items-center justify-center w-full relative" style={{ minHeight: '430px', overflowY: 'visible' }}>
           {/* Left Arrow - close to card */}
+
+          
           <button
-            onClick={() => handleNavigation('prev')}
-            className="absolute left-1/8 -translate-x-[490px] top-1/2 -translate-y-1/2 z-30"
-            aria-label="Previous"
-            style={{ minWidth: 56, minHeight: 56 }}
+  onClick={() => handleNavigation('prev')}
+  className="absolute left-1/8 -translate-x-[490px] top-1/2 -translate-y-1/2 z-30 transition-transform duration-200 hover:scale-105"
+  aria-label="Previous"
+  style={{ minWidth: 56, minHeight: 56 }}
+>
+  <div className="w-17 h-17 flex items-center justify-center">
+    <Image
+      src="/assets/images/Lefthand.svg"
+      alt="Previous"
+      width={56}
+      height={56}
+      className="w-full h-full object-contain"
+    />
+  </div>
+</button>
+
+          {/* Card with slide animation */}
+          <div
+            ref={cardRef}
+            className={`w-[864px] h-[450px] p-2 bg-[#FFFFFF] rounded-lg mx-auto transition-transform duration-400 ease-in-out
+              ${isSliding && slideDirection === 'right' ? 'animate-slide-left' : ''}
+              ${isSliding && slideDirection === 'left' ? 'animate-slide-right' : ''}
+            `}
+            onAnimationEnd={() => {
+              setIsSliding(false);
+              setSlideDirection(null);
+            }}
           >
-            <div className="w-17 h-17 flex items-center justify-center">
-              <Image
-                src="/assets/images/Lefthand.svg"
-                alt="Previous"
-                width={56}
-                height={56}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </button>
-          {/* Card (unchanged) */}
-          <div className="w-[864px] h-[450px] p-2 bg-[#FFFFFF] rounded-lg mx-auto">
+            
             <div className="flex gap-5 items-center mt-2">
               {/* Media Section */}
               <div className="w-[300px] h-full pl-5 pt-5">
@@ -202,8 +239,8 @@ export default function PostCard({ post, postId, username, allPosts }) {
                                     src={file.url}
                                     alt={`Carousel image ${index + 1}`}
                                     width={300}
-                                    height={1200}
-                                    className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                                    height={400}
+                                    className="w-full h-auto object-contain rounded-lg"
                                     onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                                       setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
                                     }}
@@ -343,21 +380,23 @@ export default function PostCard({ post, postId, username, allPosts }) {
           </div>
           {/* Right Arrow - close to card */}
           <button
-            onClick={() => handleNavigation('next')}
-            className="absolute left-1/8 translate-x-[490px] top-1/2 -translate-y-1/2 z-30"
-            aria-label="Next"
-            style={{ minWidth: 56, minHeight: 56 }}
-          >
-            <div className="w-17 h-17 flex items-center justify-center">
-              <Image
-                src="/assets/images/Righthand.svg"
-                alt="Next"
-                width={56}
-                height={56}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </button>
+  onClick={() => handleNavigation('next')}
+  className="absolute left-1/8 translate-x-[490px] top-1/2 -translate-y-1/2 z-30 transition-transform duration-200 hover:scale-105"
+  aria-label="Next"
+  style={{ minWidth: 56, minHeight: 56 }}
+>
+  <div className="w-17 h-17 flex items-center justify-center">
+    <Image
+      src="/assets/images/Righthand.svg"
+      alt="Next"
+      width={56}
+      height={56}
+      className="w-full h-full object-contain"
+    />
+  </div>
+</button>
+
+
         </div>
       </div>
       
@@ -370,7 +409,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
           </div>
           <button
             className="bg-[#F2F2F2] rounded-full shadow-lg border border-gray-200 items-center justify-center flex w-7 h-7 min-w-[28px] min-h-[28px]"
-            onClick={() => router.push(`/${username}/media-kit`)}
+            onClick={() => router.push(`/${username}/media-kit?scrollTo=presskit`)}
             aria-label="Go to Portfolio"
           >
             <Image
@@ -383,7 +422,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
           </button>
         </div>
         {/* Main Content for Mobile */}
-        <div className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[60px] overflow-y-auto rounded-lg bg-white" style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[px] overflow-y-auto rounded-lg bg-white" style={{ WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* Media Section (mobile) */}
           <div className="relative w-full flex-shrink-0 flex items-center justify-center rounded-lg">
             <div className="relative w-full rounded-lg overflow-hidden flex items-center justify-center">
@@ -402,7 +441,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                             alt={`Carousel image ${index + 1}`}
                             width={300}
                             height={400}
-                            className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                            className="w-full h-auto object-contain rounded-lg"
                             onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                               setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
                             }}
