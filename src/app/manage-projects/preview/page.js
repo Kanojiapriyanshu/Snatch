@@ -632,22 +632,22 @@ const handleHamburgerClick = () => {
           </div>
         </div>
 
-<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  bg-white rounded-lg w-[750px] border-t border-gray-300 px-4 py-1.5 shadow-md z-50 h-[10%] ">
-  <div className="flex items-center justify-between  w-full h-full">
+<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  bg-white rounded-lg w-[823px] h-[74px] px-4 py-1.5 shadow-lg z-50 ">
+  <div className="flex items-center gap-[9px] w-full h-full">
     {/* Logo + Hamburger */}
-          <div className="flex items-between justify-center gap-2 mt-2 ">
-             <button onClick={handleNextClick} className="w-[90px] h-[37px]  text-electric-blue text-2xl font-semibold    text-center">
-                 <Image 
-                  src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
-                  width={40}
-                  height={40}
-                  alt="snatchlogo"
-                  className="mx-auto w-28 h-5"
-                />
+          <div className="flex w-[175px] h-[56px] gap-[8px] items-center ">
+             <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold text-center">
+                  <Image 
+                           src="/assets/images/snatch.svg"
+                           width={40}
+                           height={40}
+                           alt="snatchlogo"
+                           className="mx-auto w-32 h-10"
+                  />
               </button>
                    <button
                       onClick={handleHamburgerClick}
-                      className="w-[50px] h-[37px] bg-gray-100 text-electric-blue border  rounded-md mx-auto font-medium hover:bg-transparent relative"
+                      className="w-[61px] h-[56px]  text-electric-blue bg-gray-100  rounded-md mx-auto font-medium hover:bg-transparent relative"
                     >
                       <Image
                         className="mx-auto w-8"
@@ -685,34 +685,48 @@ const handleHamburgerClick = () => {
                   </div>
                 )}
 
-        <div className="flex justify-start items-start mt-2">
+        <div className="flex justify-start items-start">
             <button
-          className="px-2 py-1.5 text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
+          className="px-2 py-1.5 w-[149px] h-[38px] text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4 flex items-center justify-between"
           onClick={handlePrevious}
           disabled={projects.length <= 1}
         >
-          ← Previous Project
+           <Image
+            src="/assets/images/projectsLeftarrow.svg"
+            alt="back arrow"
+            width={14}
+            height={14}
+            className="w-[14px] h-[14px]"
+          />
+          <span className="text-md">Previous Project</span>
         </button>
         
-        <button
-          className="px-2 py-1.5 text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
-          onClick={handleNext}
-          disabled={projects.length <= 1}
-        >
-          Next Project →
-        </button>
+            <button
+                className="px-2 py-1.5 w-[119px] h-[38px] flex items-center justify-between text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
+                onClick={handleNext}
+                disabled={projects.length <= 1}
+              >
+                  <span className="text-md">Next Project</span>
+                   <Image
+                          src="/assets/images/projectRightarrow.svg"
+                          alt="back arrow"
+                          width={14}
+                          height={14}
+                          className="w-[14px] h-[14px]"
+                  />
+              </button>
         </div>
 
           
 
     {/* Right Buttons: Previous Step + See Previews */}
    
-    <div className="bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-start gap-2 w-fit">
-        <button className=" px-4 py-1.5 border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
-        Back
+    <div className="bg-gray-100 px-2 py-2 w-[337px] h-[56px] rounded-lg flex justify-between items-start gap-[8px] w-fit">
+        <button className=" w-[118px] h-[38px] border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
+        Previous Step
       </button>
       <button
-        className="px-5 py-2 bg-electric-blue text-white rounded-lg text-md hover:bg-blue-700 transition-colors"
+        className=" bg-electric-blue w-[193px] h-[38px] text-white rounded-lg text-md hover:bg-blue-700 transition-colors"
         onClick={handleSubmit}
       >
         Complete Project Details

@@ -1105,23 +1105,24 @@ const handlePopupGenerate = async () => {
 
 <div className="border-b border-light-grey"></div>
 
-<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg border-t border-gray-300 py-1.5 px-4 mb-2 font-apfel-grotezk-regular h-[10%]">
-  <div className="flex gap-2 justify-center mx-auto">
-    <div className="flex gap-2 px-3 py-1.5 justify-center  rounded-md">
+<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[743px] h-[74px] bg-white rounded-lg shadow-lg  py-1.5 px-4 mb-2 font-apfel-grotezk-regular h-[10%]">
+  <div className="flex gap-2">
 
-      <div className="flex items-between justify-center gap-2 mt-2">
-         <button onClick={handleNextClick} className="w-[90px] h-[37px]  text-electric-blue text-2xl font-semibold    text-center">
+    <div className="flex gap-[9px] px-3 py-1.5 w-[750px] items-center  rounded-md">
+
+      <div className="flex items-center justify-center gap-[9px]">
+         <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold  text-center">
              <Image 
-              src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+              src="/assets/images/snatch.svg"
               width={40}
               height={40}
               alt="snatchlogo"
-              className="mx-auto w-28 h-5"
+              className=" w-32 h-10"
             />
           </button>
                <button
                   onClick={handleHamburgerClick}
-                  className="w-[50px] h-[37px] bg-gray-100 text-electric-blue border  rounded-md mx-auto font-medium hover:bg-transparent relative"
+                  className="w-[61px] h-[56px] bg-gray-100 text-electric-blue  rounded-md mx-auto font-medium hover:bg-transparent relative"
                 >
                   <Image
                     className="mx-auto w-8"
@@ -1161,31 +1162,45 @@ const handlePopupGenerate = async () => {
                 )}
 
 
-        <div className="flex justify-start items-start mt-2">
+        <div className="flex justify-start items-start ">
             <button
-          className="px-2 py-1.5 text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
+          className="px-2 py-1.5 w-[149px] h-[38px] text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4 flex items-center justify-between"
           onClick={handlePrevious}
           disabled={projects.length <= 1}
         >
-          ← Previous Project
+           <Image
+              src="/assets/images/projectsLeftarrow.svg"
+              alt="back arrow"
+              width={14}
+              height={14}
+              className="w-[14px] h-[14px]"
+            />
+            <span className="text-md">Previous Project</span>
         </button>
         
         <button
-          className="px-2 py-1.5 text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
+          className="px-2 py-1.5 w-[119px] h-[38px] flex items-center justify-between text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
           onClick={handleNext}
           disabled={projects.length <= 1}
         >
-          Next Project →
+            <span className="text-md">Next Project</span>
+             <Image
+                    src="/assets/images/projectRightarrow.svg"
+                    alt="back arrow"
+                    width={14}
+                    height={14}
+                    className="w-[14px] h-[14px]"
+            />
         </button>
         </div>
           
 
-      <div className="bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-start gap-2 w-fit">
+      <div className="bg-gray-100 px-3 py-2 w-[247px] h-[56px] rounded-lg flex items-start gap-[8px] w-fit">
   <button
     className="px-4 py-1.5 rounded-lg border-electric-blue border-2 text-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
     onClick={handleBackClick}
   >
-    Back
+    Previous Step
   </button>
   <button
     className={`px-4 py-2 rounded-lg ${

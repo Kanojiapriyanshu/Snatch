@@ -38,7 +38,6 @@ const ProfileOverview = ({ ownerId, isAdminView }) => {
   const { data: formData } = useFetchPortfolio(ownerId);
   const { data } = useInstagramData();
 
- // const { data, loading, error } = useInstagramData(); // Instagram data
   const router = useRouter()
   const pathname = usePathname(); // e.g., "/public-portfolio/snatchsocial"
   
@@ -60,7 +59,6 @@ const headerHeight = useTransform(scrollY, [0, 200], ["560px", "80px"]);
 // If on mobile, override motion values with static values
 const finalBg = isMobile ? defaultBg : headerBg;
 const finalHeight = isMobile ? defaultHeight : headerHeight;
-  //const nameSize = useTransform(scrollY, [0, 200], [88, 28])
   const nameSize = useTransform(
     scrollY,
     [0, 200],
@@ -419,6 +417,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       />
     </span>
   </span>
+  
 </div>
 
 

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Writesvg from "@/components/svg/Writesvg";
 import Viewsvg from "@/components/svg/Viewsvg";
+import { useSelectedProjects } from "@/app/manage-projects/context"; // adjust path if needed
 
 const steps = [
   {
@@ -25,8 +26,15 @@ const steps = [
 ];
 
 const Header = () => {
-  const pathname = usePathname();
-  const router = useRouter();
+ const pathname = usePathname();
+ const router = useRouter();
+ const { selectionState } = useSelectedProjects();
+
+   // Calculate if Add Details should be enabled
+  const totalSelected =
+    (selectionState?.instagramSelected?.length || 0) +
+    (selectionState?.uploadedFiles?.length || 0);
+  const canGoToAddDetails = totalSelected >= 4;
 
   return (
     <div className="sticky top-0 bg-electric-blue p-4 text-white shadow-lg">
@@ -34,14 +42,28 @@ const Header = () => {
         {steps.map((step, index) => (
           <React.Fragment key={index}>
             {/* Step Marker */}
-             <button
-                type="button"
-                onClick={() => router.push(step.id)}
-                className="focus:outline-none"
-              >
-            <div className="flex flex-col items-center px-10">
-              {/* SVG Icon */}
-             
+            <button
+              type="button"
+              onClick={() => {
+                // Only allow navigation to Add Details if allowed
+                if (
+                  step.id !== "/manage-projects/add-details" ||
+                  canGoToAddDetails
+                ) {
+                  router.push(step.id);
+                }
+              }}
+              className={`focus:outline-none ${
+                step.id === "/manage-projects/add-details" && !canGoToAddDetails
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+              disabled={
+                step.id === "/manage-projects/add-details" && !canGoToAddDetails
+              }
+            >
+              <div className="flex flex-col items-center px-10">
+                {/* SVG Icon */}
                 <div
                   className={`w-5 h-5 transition-all duration-300 mr-2 ${
                     pathname === step.id ? "text-lime-yellow" : "text-white"
@@ -49,22 +71,18 @@ const Header = () => {
                 >
                   {step.icon}
                 </div>
-             
-             
-              {/* Step Label */}
-              <span
-                className={`mt-2 transition-all duration-300 font-apfel-grotezk-regular ${
-                  pathname === step.id
-                    ? "text-lime-yellow "
-                    : "text-gray-300"
-                }`}
-              > 
-                {step.label}
-              </span>
-        
-            </div>
-             </button>
-    
+                {/* Step Label */}
+                <span
+                  className={`mt-2 transition-all duration-300 font-apfel-grotezk-regular ${
+                    pathname === step.id
+                      ? "text-lime-yellow "
+                      : "text-gray-300"
+                  }`}
+                >
+                  {step.label}
+                </span>
+              </div>
+            </button>
             {/* Connecting Line */}
             {index < steps.length - 1 && (
               <div

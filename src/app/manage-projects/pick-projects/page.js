@@ -87,7 +87,13 @@ export default function PickProjects() {
     };
 
     const handleProjectClick = () => {
-      const totalSelected = selectionState.instagramSelected.length + selectionState.uploadedFiles.length;
+      // const totalSelected = selectionState.instagramSelected.length + selectionState.uploadedFiles.length;
+
+        const totalSelected =
+    (selectionState?.instagramSelected?.length || 0) +
+    (selectionState?.uploadedFiles?.length || 0);
+
+      const canGoToAddDetails = totalSelected >= 4;
 
       console.log("Total selected:", totalSelected);
       
@@ -377,24 +383,24 @@ return (
       {/* {renderInstagramTab()} */}
       {selectedTab === "instagram" ? renderInstagramTab() : renderUploadTab()}
 
-<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg w-[435px] border-t border-gray-300 px-4 py-1.5 shadow-md z-50 h-[10%] font-apfel-grotezk-regular">
-  <div className="flex items-center justify-between w-full h-full">
+<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg w-[530px] px-4 py-1.5 shadow-xl z-50 h-[11%] font-apfel-grotezk-regular">
+  <div className="flex items-center gap-[9px] w-full h-full">
     
     {/* Logo + Hamburger */}
-    <div className="flex items-start justify-center gap-2 mt-2 relative">
-      <button onClick={handleNextClick} className="w-[90px] h-[37px] text-electric-blue text-2xl font-semibold text-center">
+    <div className="flex items-center justify-center gap-2 relative px-2 py-2">
+      <button onClick={handleNextClick} className="w-[105px] h-[56px] text-electric-blue text-2xl font-semibold text-center">
         <Image 
-          src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"
+          src="/assets/images/snatch.svg"
           width={40}
           height={40}
           alt="snatchlogo"
-          className="mx-auto w-28 h-5"
+          className="mx-auto w-32 h-10"
         />
       </button>
 
       <button
         onClick={handleHamburgerClick}
-        className="w-[50px] h-[37px] bg-gray-100 text-electric-blue border rounded-md mx-auto font-medium hover:bg-transparent relative"
+        className="w-[60px] h-[53px] bg-gray-100 text-electric-blue rounded-md mx-auto font-medium hover:bg-transparent relative"
       >
         <Image
           className="mx-auto w-8"
@@ -407,7 +413,7 @@ return (
 
       {/* Dropdown Menu */}
       {isMenuVisible && (
-        <div className="absolute top-[-460%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+        <div className="absolute top-[-300%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
           <ul className="flex flex-col p-3 gap-2">
             <li onClick={handleDashboardClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">
               Dashboard
@@ -424,12 +430,24 @@ return (
     </div>
 
     {/* Final Action Buttons */}
-    <div className="bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-start gap-2 w-fit">
-      <button className="px-4 py-1.5 border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
-        ← Back
-      </button>
+    <div className="w-[300px] h-[56px] bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-center gap-2 w-fit">
+     <button
+  className="w-[96px] h-[38px] flex  items-center justify-between gap-1 px-3 py-1.5 border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors"
+  onClick={handleBackClick}
+>
+  <Image
+    src="/assets/images/projectsLeftarrow.svg"
+    alt="back arrow"
+    width={14}
+    height={14}
+    className="w-[14px] h-[14px]"
+  />
+  <span className="text-lg">Back</span>
+</button>
+
+
       <button
-        className={`px-5 py-2 rounded-lg text-md transition-colors ${
+        className={`w-[180px] h-[38px] flex items-center justify-between px-3 py-2 rounded-lg text-md transition-colors ${
           isDisabled
             ? "bg-[#6C7FA5] text-light-grey cursor-not-allowed"
             : "bg-electric-blue text-white hover:bg-blue-700"
@@ -437,8 +455,16 @@ return (
         onClick={handleProjectClick}
         disabled={isDisabled}
       >
-        Add Details →
+         <span className="text-md">Add Project Details</span>
+          <Image
+          src="/assets/images/projectRightWhitearrow.svg"
+          alt="back arrow"
+          width={14}
+          height={14}
+          className="w-[14px] h-[14px]"
+        />
       </button>
+      
     </div>
 
   </div>
