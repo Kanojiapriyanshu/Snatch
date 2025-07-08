@@ -1105,7 +1105,7 @@ const handlePopupGenerate = async () => {
 
 <div className="border-b border-light-grey"></div>
 
-<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[743px] h-[74px] bg-white rounded-lg shadow-lg  py-1.5 px-4 mb-2 font-apfel-grotezk-regular h-[10%]">
+<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[740px] h-[74px] bg-white rounded-lg shadow-lg  py-1.5 px-4 mb-2 font-apfel-grotezk-regular">
   <div className="flex gap-2">
 
     <div className="flex gap-[9px] px-3 py-1.5 w-[750px] items-center  rounded-md">
@@ -1195,9 +1195,9 @@ const handlePopupGenerate = async () => {
         </div>
           
 
-      <div className="bg-gray-100 px-3 py-2 w-[247px] h-[56px] rounded-lg flex items-start gap-[8px] w-fit">
+      <div className="bg-gray-100 px-3 py-2 w-[230px] h-[56px] rounded-lg flex items-start gap-[8px] ">
   <button
-    className="px-4 py-1.5 rounded-lg border-electric-blue border-2 text-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
+    className="w-[118px] h-[38px] rounded-lg border-electric-blue border-2 text-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
     onClick={handleBackClick}
   >
     Previous Step

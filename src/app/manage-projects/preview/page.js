@@ -721,7 +721,7 @@ const handleHamburgerClick = () => {
 
     {/* Right Buttons: Previous Step + See Previews */}
    
-    <div className="bg-gray-100 px-2 py-2 w-[337px] h-[56px] rounded-lg flex justify-between items-start gap-[8px] w-fit">
+    <div className="bg-gray-100 px-2 py-2 w-[337px] h-[56px] rounded-lg flex justify-between items-start gap-[8px]">
         <button className=" w-[118px] h-[38px] border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
         Previous Step
       </button>

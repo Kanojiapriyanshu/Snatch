@@ -413,7 +413,7 @@ return (
 
       {/* Dropdown Menu */}
       {isMenuVisible && (
-        <div className="absolute top-[-300%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+        <div className="absolute top-[-220%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
           <ul className="flex flex-col p-3 gap-2">
             <li onClick={handleDashboardClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">
               Dashboard
