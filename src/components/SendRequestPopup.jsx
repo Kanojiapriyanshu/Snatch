@@ -80,7 +80,7 @@ const SendRequestPopup = ({ onClose, username }) => {
               Awesome! Your Request Has Been Sent
             </h2>
             <p className="text-gray-700 text-center text-base max-w-md font-apfel-grotezk-regular">
-              Stay tuned! If it's a match, 'Influencer Name' will connect with you to discuss the next steps.
+              Stay tuned! If it&apos;s a match, &apos;Influencer Name&apos; will connect with you to discuss the next steps.
             </p>
           </div>
         ) : (
