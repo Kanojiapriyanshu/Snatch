@@ -9,6 +9,7 @@ import { useSelectedProjects } from "../context";
 import { useRouter } from "next/navigation";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
+
 export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [selectedTab, setSelectedTab] = useState("instagram");
@@ -228,6 +229,7 @@ const renderInstagramTab = () => (
       </div>
     </div>
 
+    {/* right side rendered projects */}
     <div className="w-[70vw] h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
     <MediaDisplay media={media} displayType="instagram"/>
     </div>
@@ -326,6 +328,7 @@ const renderUploadTab = () => (
           className="hidden"
           onChange={handleFileChange}
         />
+        {/* right side rendered uplaod projects */}
          <MediaDisplay uploadedFiles={selectionState.uploadedFiles}  displayType="uploaded"/>
       </div>
     </div>
@@ -380,7 +383,7 @@ return (
         </button>
       </div>
 
-      {/* {renderInstagramTab()} */}
+    {/* left side insta and upload projects */}
       {selectedTab === "instagram" ? renderInstagramTab() : renderUploadTab()}
 
 <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg w-[530px] px-4 py-1.5 shadow-xl z-50 h-[11%] font-apfel-grotezk-regular">
@@ -457,7 +460,7 @@ return (
       >
          <span className="text-md">Add Project Details</span>
           <Image
-          src="/assets/images/projectRightWhitearrow.svg"
+          src="/assets/images/projectRightWhiteArrow.svg"
           alt="back arrow"
           width={14}
           height={14}
