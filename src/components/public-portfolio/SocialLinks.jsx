@@ -3,7 +3,7 @@
 import Image from "next/image";
 
 const socialIcons = {
-  instagram: "/assets/images/insta.svg",
+  instagram: "/assets/images/Insta.svg",
   facebook: "/assets/icons/facebook.svg",
   twitter: "/assets/images/X.svg",
   linkedin: "/assets/icons/linkedin.svg",
