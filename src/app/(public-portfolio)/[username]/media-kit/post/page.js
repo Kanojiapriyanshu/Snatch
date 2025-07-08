@@ -70,5 +70,5 @@ export default function PostDetailsPage() {
     return <div>Post not found</div>;
   }
 
-  return <PostCard post={post} username={username} postId={postId} allPosts={allPosts}/>;
+  return <PostCard key={postId} post={post} username={username} postId={postId} allPosts={allPosts}/>;
 }
