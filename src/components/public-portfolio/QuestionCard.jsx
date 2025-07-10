@@ -237,10 +237,12 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
 
       <div
         className={clsx(
-          `absolute left-0 p-4 bottom-0 w-full flex flex-col items-center justify-between transition-all duration-300 rounded-t-xl`,
+          `absolute left-0 p-4 bottom-0 w-full flex flex-col items-center transition-all duration-300 rounded-t-xl`,
           cardType.bg,
           cardType.text,
-          isMobile ? (isRevealed ? "h-[100%]" : "h-[50%]") : (hovered ? "h-[100%]" : "h-[45%]")
+          isMobile
+            ? (isRevealed ? "h-[100%]" : "h-[50%]")
+            : (hovered ? "h-[100%]" : "h-[45%]")
         )}
         style={{ minHeight: isMobile ? 0 : 240 }} // ensure enough height for spacing
       >
@@ -249,12 +251,21 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
           alt="icon"
           height={10}
           width={10}
-          className="w-20 h-17 mt-4"
+          className="w-20 h-17 mt-4 lg:mt-0 lg:mb-2"
         />
-        <p className={clsx("text-center text-xl p-2 lg:text-2xl font-qimano mb-1 line-clamp-3", cardType.text)} style={{ minHeight: '4.5em' }}>
+        <p className={clsx("text-center text-xl p-2 lg:text-2xl font-qimano mb-0 line-clamp-3", cardType.text, "lg:mb-0 lg:mt-0")}
+           style={{ minHeight: '4.5em' }}>
           {question}
         </p>
-
+        <p className="font-apfel-grotezk-regular text-xs text-center mb-2 lg:mb-2 lg:mt-0">
+          {cardType.bg === "bg-lime-yellow"
+            ? "About"
+            : cardType.bg === "bg-graphite"
+            ? "Audience"
+            : cardType.bg === "bg-electric-blue"
+            ? "Brand"
+            : ""}
+        </p>
         {(isMobile ? isRevealed : hovered) && (
           <p
             className={clsx(
@@ -265,16 +276,6 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
             {answer}
           </p>
         )}
-
-        <p className="mb-2 font-apfel-grotezk-regular text-xs text-center">
-          {cardType.bg === "bg-lime-yellow"
-            ? "About"
-            : cardType.bg === "bg-graphite"
-            ? "Audience"
-            : cardType.bg === "bg-electric-blue"
-            ? "Brand"
-            : ""}
-        </p>
       </div>
     </div>
   );

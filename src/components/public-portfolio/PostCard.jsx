@@ -129,7 +129,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
   return (
     <div className="w-full flex flex-col items-center justify-start mt-10">
       {/* Cross icon: fixed for desktop, absolute/scrollable for mobile */}
-      <button
+      {/* <button
         className="z-50  items-center justify-center flex
           absolute right-1 top-2 w-7 h-7 min-w-[28px] min-h-[28px]
           md:fixed md:right-56 md:top-11 md:w-14 md:h-14 md:min-w-[40px] md:min-h-[30px]"
@@ -146,33 +146,30 @@ export default function PostCard({ post, postId, username, allPosts }) {
           height={20}
           className="w-full h-full object-contain md:w-8 md:h-9"
         />
-      </button>
+      </button> */}
       {/* Main overlay background for large devices */}
       <div className="hidden md:flex fixed inset-0 w-full h-full bg-black/2 z-10 pointer-events-none" aria-hidden="true"></div>
       
       {/* Desktop content wrapper with navigation arrows close to card */}
       <div className="hidden md:flex flex-col items-center justify-center w-full relative z-20">
-         
         <div className="flex items-center justify-center w-full relative" style={{ minHeight: '430px', overflowY: 'visible' }}>
           {/* Left Arrow - close to card */}
-
-          
           <button
-  onClick={() => handleNavigation('prev')}
-  className="absolute left-1/8 -translate-x-[490px] top-1/2 -translate-y-1/2 z-30 transition-transform duration-200 hover:scale-105"
-  aria-label="Previous"
-  style={{ minWidth: 56, minHeight: 56 }}
->
-  <div className="w-17 h-17 flex items-center justify-center">
-    <Image
-      src="/assets/images/Lefthand.svg"
-      alt="Previous"
-      width={56}
-      height={56}
-      className="w-full h-full object-contain"
-    />
-  </div>
-</button>
+            onClick={() => handleNavigation('prev')}
+            className="absolute left-1/8 -translate-x-[490px] top-1/2 -translate-y-1/2 z-30 transition-transform duration-200 hover:scale-105"
+            aria-label="Previous"
+            style={{ minWidth: 56, minHeight: 56 }}
+          >
+            <div className="w-17 h-17 flex items-center justify-center">
+              <Image
+                src="/assets/images/Lefthand.svg"
+                alt="Previous"
+                width={56}
+                height={56}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </button>
 
           {/* Card with slide animation */}
           <div
@@ -378,25 +375,43 @@ export default function PostCard({ post, postId, username, allPosts }) {
               </div>
             </div>
           </div>
-          {/* Right Arrow - close to card */}
+
+          {/* Right Arrow - match position to left arrow for desktop */}
           <button
-  onClick={() => handleNavigation('next')}
-  className="absolute left-1/8 translate-x-[490px] top-1/2 -translate-y-1/2 z-30 transition-transform duration-200 hover:scale-105"
-  aria-label="Next"
-  style={{ minWidth: 56, minHeight: 56 }}
->
-  <div className="w-17 h-17 flex items-center justify-center">
-    <Image
-      src="/assets/images/Righthand.svg"
-      alt="Next"
-      width={56}
-      height={56}
-      className="w-full h-full object-contain"
-    />
-  </div>
-</button>
+            onClick={() => handleNavigation('next')}
+            className="absolute right-1/8 translate-x-[490px] top-1/2 -translate-y-1/2 z-30 transition-transform duration-200 hover:scale-105"
+            aria-label="Next"
+            style={{ minWidth: 56, minHeight: 56 }}
+          >
+            <div className="w-17 h-17 flex items-center justify-center">
+              <Image
+                src="/assets/images/Righthand.svg"
+                alt="Next"
+                width={56}
+                height={56}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </button>
 
-
+          {/* Cross icon at the top right */}
+          <div className="absolute right-1/8 translate-x-[490px] top-0 z-30" style={{ minWidth: 56 }}>
+            <button
+              className="absolute top-0 right-0 w-12 h-12 flex items-center justify-center z-40"
+              onClick={() => {
+                router.push(`/${username}/media-kit?scrollTo=presskit`);
+              }}
+              aria-label="Go to Portfolio"
+            >
+              <Image
+                src="/assets/icons/cross-mark.svg"
+                alt="Go to Portfolio"
+                width={28}
+                height={28}
+                className="w-7 h-7 object-contain"
+              />
+            </button>
+          </div>
         </div>
       </div>
       
