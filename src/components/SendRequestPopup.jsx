@@ -75,7 +75,7 @@ const SendRequestPopup = ({ onClose, username }) => {
         {/* Success message */}
         {success ? (
           <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
-            <Image src="/assets/icons/paper-plane.svg" alt="Sent" width={60} height={60} className="mb-6" />
+            <Image src="/assets/images/paper-plane.png" alt="Sent" width={60} height={60} className="mb-6" />
             <h2 className="text-2xl font-qimano text-[#0037eb] text-center mb-2">
               Awesome! Your Request Has Been Sent
             </h2>
