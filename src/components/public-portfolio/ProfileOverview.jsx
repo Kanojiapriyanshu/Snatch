@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useLayoutEffect } from "react"
 import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useSpring } from "framer-motion"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { FormProvider } from "@/app/onboarding/context";
@@ -152,14 +152,12 @@ const priceRange = lowest === highest ? (
 
   const [activeMobileTooltip, setActiveMobileTooltip] = useState(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Scroll to presskit if query param is present
     if (typeof window !== 'undefined' && pressKitRef.current) {
       const scrollTo = searchParams.get('scrollTo');
       if (scrollTo === 'presskit') {
-        setTimeout(() => {
-          pressKitRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 300); // Delay to ensure DOM is ready
+        pressKitRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
       }
     }
   }, [searchParams]);
