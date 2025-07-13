@@ -28,7 +28,8 @@ export async function POST(req) {
       email,
       influencerUserId,
     });
-
+    
+    //change the copy here
     if (existingRequest) {
       return NextResponse.json(
         { error: "You've already contacted this influencer." },

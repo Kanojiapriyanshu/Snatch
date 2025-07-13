@@ -1,9 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const CustomDropdown = ({ options, placeholder, onSelect, selected }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef(null);
+   // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setIsOpen(false); // Use isOpen here
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
@@ -13,7 +29,7 @@ const CustomDropdown = ({ options, placeholder, onSelect, selected }) => {
   };
 
   return (
-    <div className="relative w-[369px]">
+    <div ref={ref} className="relative w-[369px]">
       {/* Display selected option or placeholder */}
       <div
        className={`rounded-lg border border-stroke bg-transparent py-[10px] px-5 cursor-pointer ${

@@ -636,16 +636,16 @@ const handleHamburgerClick = () => {
   <div className="flex items-center gap-[9px] w-full h-full">
     {/* Logo + Hamburger */}
           <div className="flex w-[175px] h-[56px] gap-[8px] items-center ">
-             <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold text-center">
-                  <Image 
-                           src="/assets/images/snatch.svg"
-                           width={40}
-                           height={40}
-                           alt="snatchlogo"
-                           className="mx-auto w-32 h-10"
-                  />
-              </button>
-                   <button
+               <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold  text-center px-2">
+                           <Image 
+                            src="/assets/images/snatch.svg"
+                            width={40}
+                            height={40}
+                            alt="snatchlogo"
+                            className=" w-32 h-10"
+                          />
+                        </button>
+                <button
                       onClick={handleHamburgerClick}
                       className="w-[61px] h-[56px]  text-electric-blue bg-gray-100  rounded-md mx-auto font-medium hover:bg-transparent relative"
                     >
@@ -721,12 +721,12 @@ const handleHamburgerClick = () => {
 
     {/* Right Buttons: Previous Step + See Previews */}
    
-    <div className="bg-gray-100 px-2 py-2 w-[337px] h-[56px] rounded-lg flex justify-between items-start gap-[8px]">
-        <button className=" w-[118px] h-[38px] border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
+    <div className="bg-gray-100 px-2 py-2 h-[56px] rounded-lg flex justify-between items-start gap-[8px]">
+        <button className="px-2 h-[38px] border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
         Previous Step
       </button>
       <button
-        className=" bg-electric-blue w-[193px] h-[38px] text-white rounded-lg text-md hover:bg-blue-700 transition-colors"
+        className=" bg-electric-blue px-3 h-[38px] text-white rounded-lg text-md hover:bg-blue-700 transition-colors"
         onClick={handleSubmit}
       >
         Complete Project Details

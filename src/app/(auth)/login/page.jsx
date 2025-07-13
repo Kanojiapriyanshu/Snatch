@@ -54,10 +54,23 @@ export default function Page() {
 
       // Navigate to OTP entry page
       router.push(`/login/enter-otp?email=${email}`);
-    } catch (err) {
-      setError(err.message || 'Something went wrong.');
-      console.error('Sign-in error:', err);
-    }
+    } 
+  catch (err) {
+  console.error("Sign-in error:", err);
+
+  // Get the first error from Clerk (it's an array)
+  const clerkError = err?.errors?.[0];
+
+  // Use error code to set a custom message
+  if (clerkError?.code === "form_identifier_not_found") {
+    setError("This email is not registered. Please create an account.");
+  } else if (clerkError?.code === "form_param_format_invalid") {
+    setError("Please enter a valid email address.");
+  } else {
+    // Fall back to Clerk's own message or a default
+    setError(clerkError?.message || "Something went wrong. Please try again.");
+  }
+}
   }
 
   function handleInputChange(e) {
@@ -82,37 +95,53 @@ export default function Page() {
 
     if (!isLoaded || !signIn) return;
 
-    try {
-      // Start the sign-in process
-      const { supportedFirstFactors } = await signIn.create({ identifier: email });
+      try {
+        // Start the sign-in process
+        const { supportedFirstFactors } = await signIn.create({ identifier: email });
 
-      // Ensure `supportedFirstFactors` exists and has valid entries
-      if (!supportedFirstFactors || supportedFirstFactors.length === 0) {
-        throw new Error('No supported first factors available for this email.');
+        // Handle edge case: No first factors available
+        if (!supportedFirstFactors || supportedFirstFactors.length === 0) {
+          setError("This email doesn't support sign-in methods. Please contact support.");
+          return;
+        }
+
+        // Find email_code strategy
+        const firstFactor = supportedFirstFactors.find(
+          (factor) => factor.strategy === "email_code"
+        );
+
+        if (!firstFactor) {
+          setError("Email-based OTP login is not available for this account.");
+          return;
+        }
+
+        // Trigger sending OTP
+        await signIn.prepareFirstFactor({
+          strategy: firstFactor.strategy,
+          emailAddressId: firstFactor.emailAddressId,
+        });
+
+        // Navigate to OTP entry page
+        router.push(`/login/enter-otp?email=${email}`);
+      } 
+      catch (err) {
+        console.error("Sign-in error:", err);
+
+        // Get the first error from Clerk (it's an array)
+        const clerkError = err?.errors?.[0];
+
+        // Use error code to set a custom message
+        if (clerkError?.code === "form_identifier_not_found") {
+          setError("This email is not registered. Please create an account.");
+        } else if (clerkError?.code === "form_param_format_invalid") {
+          setError("Please enter a valid email address.");
+        } else {
+          // Fall back to Clerk's own message or a default
+          setError(clerkError?.message || "Something went wrong. Please try again.");
+        }
       }
 
-      // Find the appropriate first factor strategy
-      const firstFactor = supportedFirstFactors.find(
-        (factor) => factor.strategy === 'email_code'
-      );
-
-      if (!firstFactor) {
-        throw new Error('Email code strategy is not supported for this user.');
-      }
-
-      // Prepare the email address for OTP verification
-      await signIn.prepareFirstFactor({
-        strategy: firstFactor.strategy,
-        emailAddressId: firstFactor.emailAddressId,
-      });
-
-      // Navigate to OTP entry page
-      router.push(`/login/enter-otp?email=${email}`);
-    } catch (err) {
-      setError(err.message || 'Something went wrong.');
-      console.error('Sign-in error:', err);
-    }
-    };
+  };
 
   const handleKeyDown = (e) => {
     // Check if the Enter key is pressed

@@ -36,9 +36,22 @@ export default function SignUp() {
 
       // Navigate to OTP entry page
       router.push(`/signup/enter-otp?email=${email}`);
-    } catch (err) {
-      setError(err.errors[0]?.message || "Something went wrong.");
-    }
+    }   catch (err) {
+  console.error("Sign-in error:", err);
+
+  // Get the first error from Clerk (it's an array)
+  const clerkError = err?.errors?.[0];
+
+  // Use error code to set a custom message
+  if (clerkError?.code === "form_identifier_not_found") {
+    setError("This email is not registered. Please create an account.");
+  } else if (clerkError?.code === "form_param_format_invalid") {
+    setError("Please enter a valid email address.");
+  } else {
+    // Fall back to Clerk's own message or a default
+    setError(clerkError?.message || "Something went wrong. Please try again.");
+  }
+}
   };
 
   function handleInputChange(e) {

@@ -82,10 +82,10 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   const reel = Number(formData?.reels) || 0;
   const post = Number(formData?.post) || 0;
  
- // Average engagement
- const average = Math.round((story + reel + post) / 3);
- const lower = Math.round(average * 0.8);
- const upper = Math.round(average * 1.2);
+   // Find the lowest and highest values among story, reel, and post
+  const values = [story, reel, post].filter((v) => v > 0);
+  const lowest = values.length ? Math.min(...values) : 0;
+  const highest = values.length ? Math.max(...values) : 0;
 
   function formatNumber(value) {
     const num = Number(value); // parse string/number safely
@@ -101,7 +101,13 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
     return num.toString();
   }
   
-  const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
+const priceRange = lowest === highest ? (
+  <><span className="font-md">₹</span> {formatNumber(lowest)}</>) : (
+  <><span className="font-md">₹</span> {formatNumber(lowest)}{' '}
+  - <span className="font-thin">₹</span> {formatNumber(highest)}
+  </>
+);
+
   
   // Update the handleRequest function to handle both admin and public cases
   const handleRequest = () => {
@@ -228,8 +234,8 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
           <div className="w-[370px] pt-20 ml-2 hidden lg:block">
             <div className="flex gap-3  items-center mb-3">
               <h2 className="font-qimano text-3xl font-medium">
-  <span className="font-md">₹</span> {formatNumber(lower)} - <span className="font-thin">₹</span> {formatNumber(upper)}
-</h2>
+              {priceRange}
+              </h2>
 
               <p className=" text-gray-500 font-apfel-grotezk-regular text-lg  ">Value per content piece</p>
             </div>

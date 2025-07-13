@@ -166,7 +166,7 @@ export default function Step1() {
     {/* Upload Picture & Background */}
     <div className="space-y-4">
       <CustomFileInput
-        onFileChange={(uploadedUrl) => updateFormData({ profilePicture: uploadedUrl })}
+        onFileChange={(uploadedUrl, uploadedFileName) => updateFormData({ profilePicture: uploadedUrl, profilePictureName: uploadedFileName, })}
         placeholder="Upload a profile picture from your device"
         iconSrc="/assets/icons/onboarding/Upload.svg"
         label="Upload picture"

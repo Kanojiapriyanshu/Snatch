@@ -88,7 +88,7 @@ export default function DatePicker4({ value, onChange, placeholder }) {
             <div className="mb-0">
               <div className="relative" ref={datepickerRef}>
                 <div className="relative flex items-center">
-                  <span className="absolute left-0 pl-5 text-dark-5">
+                  <span onClick={toggleDatepicker} className="absolute left-0 pl-5 text-dark-5 cursor-pointer">
                     <svg
                       className="fill-current"
                       width="20"

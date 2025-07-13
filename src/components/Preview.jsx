@@ -9,11 +9,10 @@ function Preview() {
  const reel = Number(formData.reels) || 0;
  const post = Number(formData.post) || 0;
 
-// Average engagement
-const average = Math.round((story + reel + post) / 3);
-const lower = Math.round(average * 0.8);
-const upper = Math.round(average * 1.2);
 let profileImageSrc = "/assets/images/profile_defaultOnborad.svg"; 
+ const values = [story, reel, post].filter((v) => v > 0);
+ const lowest = values.length ? Math.min(...values) : 0;
+ const highest = values.length ? Math.max(...values) : 0;
 
  if (formData.profilePicture) {
   profileImageSrc = formData.profilePicture;
@@ -33,8 +32,10 @@ function formatNumber(value) {
   return num.toString();
 }
 
-const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
-
+ const priceRange =
+   lowest === highest
+     ? `₹ ${formatNumber(lowest)}`
+     : `₹ ${formatNumber(lowest)} - ₹ ${formatNumber(highest)}`;
     
     return (
       <div className="h-auto max-h-[530px] py-7 ">

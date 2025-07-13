@@ -1105,13 +1105,13 @@ const handlePopupGenerate = async () => {
 
 <div className="border-b border-light-grey"></div>
 
-<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[740px] h-[74px] bg-white rounded-lg shadow-lg  py-1.5 px-4 mb-2 font-apfel-grotezk-regular">
+<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  h-[74px] bg-white rounded-lg shadow-lg  py-1 px-3 font-apfel-grotezk-regular">
   <div className="flex gap-2">
 
     <div className="flex gap-[9px] px-3 py-1.5 w-[750px] items-center  rounded-md">
 
       <div className="flex items-center justify-center gap-[9px]">
-         <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold  text-center">
+         <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold  text-center px-2">
              <Image 
               src="/assets/images/snatch.svg"
               width={40}
@@ -1195,15 +1195,15 @@ const handlePopupGenerate = async () => {
         </div>
           
 
-      <div className="bg-gray-100 px-3 py-2 w-[230px] h-[56px] rounded-lg flex items-start gap-[8px] ">
+      <div className="bg-gray-100 px-3 py-2 h-[56px] rounded-lg flex items-center gap-[8px] ">
   <button
-    className="w-[118px] h-[38px] rounded-lg border-electric-blue border-2 text-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
+    className="px-4 h-[38px] rounded-lg border-electric-blue border-[1px] text-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
     onClick={handleBackClick}
   >
     Previous Step
   </button>
   <button
-    className={`px-4 py-2 rounded-lg ${
+    className={`px-4 h-[38px] rounded-lg ${
       isFormComplete()
         ? "bg-electric-blue text-white hover:bg-blue-700"
         : "bg-gray-300 text-gray-500 cursor-not-allowed"

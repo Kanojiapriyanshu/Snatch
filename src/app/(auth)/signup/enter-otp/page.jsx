@@ -13,6 +13,8 @@ export default function EnterOtp() {
   const [otp, setOtp] = useState(Array(6).fill("")); 
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   console.log("signUp", signUp);
 
@@ -50,6 +52,24 @@ export default function EnterOtp() {
       verifyOtp();
     }
   };
+
+  const handleResendOtp = async () => {
+  if (!isLoaded || !signUp) return;
+
+  setIsResending(true);
+  setError("");
+  setResendSuccess(false);
+
+  try {
+    await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+    setResendSuccess(true);
+  } catch (err) {
+    console.error("Resend OTP error:", err);
+    setError(err.errors?.[0]?.message || "Failed to resend OTP. Try again.");
+  } finally {
+    setIsResending(false);
+  }
+};
  
   return (
     <div className="h-screen  flex flex-col justify-center lg:flex-row overflow-hidden ">
@@ -109,6 +129,15 @@ export default function EnterOtp() {
       <div className="flex flex-col justify-center items-center text-center w-full px-6 sm:px-10">
       <h1 className="text-graphite text-2xl sm:text-5xl mb-8 font-qimano">Enter OTP</h1>
       <Otp otp={otp} setOtp={setOtp}  onKeyDown={handleKeyDown}/> {/* Use Otp component here */}
+       <div className="mt-4 mb-1 font-apfel-grotezk-regular ">
+        <button
+            onClick={handleResendOtp}
+            disabled={isResending}
+            className="text-sm text-electric-blue hover:underline disabled:text-gray-400"
+          >
+            {isResending ? "Resending..." : "Resend OTP"}
+        </button>
+       </div>
              <button
              onClick={verifyOtp}
              className="w-full sm:w-[356px] h-12 bg-[#0037EB] text-white rounded-lg mt-4"

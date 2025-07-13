@@ -403,7 +403,7 @@ return (
 
       <button
         onClick={handleHamburgerClick}
-        className="w-[60px] h-[53px] bg-gray-100 text-electric-blue rounded-md mx-auto font-medium hover:bg-transparent relative"
+        className="w-[60px] h-[56px] bg-gray-100 text-electric-blue rounded-md mx-auto font-medium hover:bg-transparent relative"
       >
         <Image
           className="mx-auto w-8"
@@ -433,9 +433,9 @@ return (
     </div>
 
     {/* Final Action Buttons */}
-    <div className="w-[300px] h-[56px] bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-center gap-2 w-fit">
+    <div className=" h-[56px] bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-center gap-[8px]">
      <button
-  className="w-[96px] h-[38px] flex  items-center justify-between gap-1 px-3 py-1.5 border-electric-blue border-2 text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors"
+  className=" h-[38px] flex  items-center  gap-1 px-3 py-2 border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors"
   onClick={handleBackClick}
 >
   <Image
@@ -445,12 +445,12 @@ return (
     height={14}
     className="w-[14px] h-[14px]"
   />
-  <span className="text-lg">Back</span>
+  <span className="text-md">Back</span>
 </button>
 
 
       <button
-        className={`w-[180px] h-[38px] flex items-center justify-between px-3 py-2 rounded-lg text-md transition-colors ${
+        className={` h-[38px] flex items-center justify-between gap-1 px-4 py-2 rounded-lg text-md transition-colors ${
           isDisabled
             ? "bg-[#6C7FA5] text-light-grey cursor-not-allowed"
             : "bg-electric-blue text-white hover:bg-blue-700"

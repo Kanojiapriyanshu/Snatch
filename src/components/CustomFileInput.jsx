@@ -50,16 +50,27 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
   };
 
 
+  // const cropImage = async () => {
+  //   const croppedImage = await getCroppedImage(imageSrc, croppedAreaPixels, fileName);
+  //   const uploadedUrl = await cloudinaryUpload(croppedImage);
+  //  // onFileChange(croppedImage); // Pass cropped file to parent
+  //   console.log("uploaded url", uploadedUrl)
+  //   alert("Your image has been uploaded successfully");
+  //   onFileChange(uploadedUrl);
+  //   setIsCropping(false); // Close modal
+  //   setImageSrc(null);
+  // };
+
+  // ...existing code...
+
   const cropImage = async () => {
-    const croppedImage = await getCroppedImage(imageSrc, croppedAreaPixels, fileName);
-    const uploadedUrl = await cloudinaryUpload(croppedImage);
-   // onFileChange(croppedImage); // Pass cropped file to parent
-    console.log("uploaded url", uploadedUrl)
-    alert("Your image has been uploaded successfully");
-    onFileChange(uploadedUrl);
-    setIsCropping(false); // Close modal
-    setImageSrc(null);
-  };
+  const croppedImage = await getCroppedImage(imageSrc, croppedAreaPixels, fileName);
+  const uploadedUrl = await cloudinaryUpload(croppedImage);
+  alert("Your image has been uploaded successfully");
+  onFileChange(uploadedUrl, fileName); // Pass both URL and file name
+  setIsCropping(false); // Close modal
+  setImageSrc(null);
+};
 
 
   const getCroppedImage = (imageSrc, croppedAreaPixels, originalFileName) => {
@@ -96,20 +107,35 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
   return (
     <div className="mt-4">
       <h5>{label}</h5>
-      <div
-        className="mt-4 flex gap-8 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
-        onClick={handleButtonClick}
-      >
-        <Image src={iconSrc} alt="upload" width={30} height={20} />
-        <span>{fileName || placeholder}</span>
-      </div>
-      <input
-        type="file"
-        className="hidden"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept="image/*"
-      />
+
+<div
+  className="mt-4 flex gap-4 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary items-center"
+  onClick={handleButtonClick}
+>
+  {/* Show uploaded image in place of Upload icon */}
+  {(imageSrc || formData[iconSrc === "/assets/icons/onboarding/Upload.svg" ? "profilePicture" : "backgroundPicture"]) ? (
+    <Image
+      src={imageSrc || formData[iconSrc === "/assets/icons/onboarding/Upload.svg" ? "profilePicture" : "backgroundPicture"]}
+      alt="Preview"
+      width={30}
+      height={30}
+      className="rounded-full object-cover"
+    />
+  ) : (
+    <Image src={iconSrc} alt="upload" width={30} height={20} />
+  )}
+
+  <span>  {fileName || formData[fileNameKey] || placeholder}</span>
+</div>
+
+    <input
+      type="file"
+      className="hidden"
+      ref={fileInputRef}
+      onChange={handleFileChange}
+      accept="image/*"
+    />
+
 
 
       {/* Crop Modal */}
@@ -153,54 +179,3 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
 
 export default CustomFileInput;
 
-
-// import React, { useRef, useState, useEffect } from "react";
-// import Image from "next/image";
-// import { useFormContext } from "@/app/onboarding/context";
-
-
-//   const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKey }) => {
-//     const [fileName, setFileName] = useState(""); 
-//     const { formData } = useFormContext(); 
-//     const fileInputRef = useRef(null);
-  
-//     // Load the file name directly from context when the component mounts
-//     useEffect(() => {
-//       if (formData && formData[fileNameKey]) {
-//         setFileName(formData[fileNameKey]); 
-//       }
-//     }, [formData, fileNameKey]); 
-  
-//     const handleButtonClick = () => {
-//       fileInputRef.current.click(); 
-//     };
-  
-//     const handleFileChange = (event) => {
-//       if (event.target.files) {
-//         const selectedFile = event.target.files[0];
-//         setFileName(selectedFile.name); 
-//         onFileChange(selectedFile); 
-//       }
-//     };
-  
-//     return (
-//       <div className="mt-4">
-//         <h5>{label}</h5> 
-//         <div
-//           className="mt-4 flex gap-8 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
-//           onClick={handleButtonClick}
-//         >
-//           <Image src={iconSrc} alt="upload" width={30} height={20} />
-//           <span>{fileName || placeholder}</span> 
-//         </div>
-//         <input
-//           type="file"
-//           className="hidden"
-//           ref={fileInputRef}
-//           onChange={handleFileChange}
-//         />
-//       </div>
-//     );
-//   };
-
-// export default CustomFileInput;

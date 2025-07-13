@@ -1,10 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveValue }) => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -43,7 +60,7 @@ const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveVal
   };
 
   return (
-    <div className="multi-select-input text-black">
+    <div ref={ref} className="multi-select-input text-black">
       <label className="block mb-2 font-apfel-grotezk-regular">{label}</label>
       <div className="flex flex-wrap gap-2 p-2 border border-gray-300">
         {selectedValues.map((value, index) => (
@@ -68,10 +85,11 @@ const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveVal
           placeholder="Type and press Enter"
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
+          onFocus={() => setOpen(true)} // <-- Add this line
         />
       </div>
       {/* Dropdown suggestions */}
-      {suggestions.length > 0 && (
+      {open && suggestions.length > 0 && ( // <-- Change here
         <ul className="border border-gray-300 bg-[#E9E9E9] rounded mt-2 max-h-40 overflow-y-auto">
           {suggestions.map((suggestion, index) => (
             <li

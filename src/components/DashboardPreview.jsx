@@ -7,11 +7,10 @@ export default function Preview() {
  const reel = Number(formData.reels) || 0;
  const post = Number(formData.post) || 0;
 
-// Average engagement
-const average = Math.round((story + reel + post) / 3);
-const lower = Math.round(average * 0.8);
-const upper = Math.round(average * 1.2);
-
+ // Find the lowest and highest values among story, reel, and post
+ const values = [story, reel, post].filter((v) => v > 0);
+ const lowest = values.length ? Math.min(...values) : 0;
+ const highest = values.length ? Math.max(...values) : 0;
 
  let profileImageSrc = "/assets/images/profile_defaultOnborad.svg"; 
 
@@ -33,8 +32,11 @@ function formatNumber(value) {
   return num.toString();
 }
 
-const priceRange = `₹ ${formatNumber(lower)} - ₹ ${formatNumber(upper)}`;
-    
+const priceRange =
+   lowest === highest
+     ? `₹ ${formatNumber(lowest)}`
+     : `₹ ${formatNumber(lowest)} - ₹ ${formatNumber(highest)}`;
+
     return (
       <div className="h-[430px]  3xl:h-auto max-h-auto w-96 3xl:w-full ">
 

@@ -1,8 +1,6 @@
-
-
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { z } from "zod";
 
@@ -11,31 +9,32 @@ const SOCIAL_OPTIONS = [
     value: "facebook",
     label: "Facebook",
     icon: "/assets/icons/facebook.svg",
-    pattern: /^https:\/\/(www\.)?facebook\.com\/(?!pages\/)([a-zA-Z0-9.]+|(profile\.php\?id=\d+))$/,
+    pattern: /^https:\/\/(www\.)?facebook\.com\/(?!pages\/)([a-zA-Z0-9.]+|(profile\.php\?id=\d+))\/?$/,
     errorMessage: "Invalid Facebook profile URL",
   },
   {
     value: "x",
     label: "X (formerly Twitter)",
     icon: "/assets/images/X.svg",
-    pattern: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+$/,
+    pattern: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/?$/,
     errorMessage: "Invalid X (Twitter) profile URL",
   },
   {
     value: "linkedin",
     label: "LinkedIn",
     icon: "/assets/icons/linkedin.svg",
-    pattern: /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+$/,
+    pattern: /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/,
     errorMessage: "Invalid LinkedIn profile URL",
   },
   {
     value: "youtube",
     label: "YouTube",
     icon: "/assets/icons/onboarding/Plusicon.svg",
-    pattern: /^https:\/\/(www\.)?youtube\.com\/(user\/[a-zA-Z0-9_-]+|channel\/[a-zA-Z0-9_-]+|\@[a-zA-Z0-9._-]+)$/,
+    pattern: /^https:\/\/(www\.)?youtube\.com\/(user\/[a-zA-Z0-9_-]+|channel\/[a-zA-Z0-9_-]+|@[a-zA-Z0-9._-]+)\/?$/,
     errorMessage: "Invalid YouTube profile URL",
   },
 ];
+
 
 // Generate Zod schemas for each social platform
 const urlSchemas = SOCIAL_OPTIONS.reduce((schemas, option) => {
@@ -52,6 +51,22 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
   const [url, setUrl] = useState(initialData?.url || "");
   const [error, setError] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const ref = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setIsDropdownOpen(false); // <-- Use isDropdownOpen here
+      }
+    }
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     if (onChange) {
@@ -91,7 +106,7 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
   };
 
   return (
-    <div className="relative w-full mt-4">
+    <div ref={ref} className="relative w-full mt-4">
       {/* Input container */}
       <div className="flex items-center gap-2 w-full">
         {/* Left-most Icon inside the input field */}
