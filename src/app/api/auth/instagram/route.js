@@ -13,7 +13,6 @@ const SCOPES = [
   'instagram_manage_insights',      // Access to account insights
   'pages_show_list',               // Access to page list
   'pages_read_engagement',         // Read page engagement metrics
-  'public_profile',                 // Basic Facebook profile info
   'business_management',
 ].join(',');
 
