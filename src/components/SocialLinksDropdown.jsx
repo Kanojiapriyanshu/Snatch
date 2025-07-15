@@ -3,34 +3,39 @@
 import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { z } from "zod";
+// Remove SVG imports
 
 const SOCIAL_OPTIONS = [
   {
     value: "facebook",
     label: "Facebook",
-    icon: "/assets/icons/facebook.svg",
-    pattern: /^https:\/\/(www\.)?facebook\.com\/(?!pages\/)([a-zA-Z0-9.]+|(profile\.php\?id=\d+))\/?$/,
+    icon: "/assets/images/facebook_logo.svg",
+    hoverIcon: "/assets/images/facebook_logo_h.svg",
+    pattern: /^https:\/\/(www\.)?facebook\.com\/(?!pages\/)([a-zA-Z0-9.]+|(profile\.php\?id=\d+))$/,
     errorMessage: "Invalid Facebook profile URL",
   },
   {
     value: "x",
     label: "X (formerly Twitter)",
-    icon: "/assets/images/X.svg",
-    pattern: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/?$/,
+    icon: "/assets/images/X_logo.svg",
+    hoverIcon: "/assets/images/X_logo_h.svg",
+    pattern: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+$/,
     errorMessage: "Invalid X (Twitter) profile URL",
   },
   {
     value: "linkedin",
     label: "LinkedIn",
-    icon: "/assets/icons/linkedin.svg",
-    pattern: /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/,
+    icon: "/assets/images/linkedin_logo.svg",
+    hoverIcon: "/assets/images/linkedin_logo_h.svg",
+    pattern: /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+$/,
     errorMessage: "Invalid LinkedIn profile URL",
   },
   {
     value: "youtube",
     label: "YouTube",
-    icon: "/assets/icons/onboarding/Plusicon.svg",
-    pattern: /^https:\/\/(www\.)?youtube\.com\/(user\/[a-zA-Z0-9_-]+|channel\/[a-zA-Z0-9_-]+|@[a-zA-Z0-9._-]+)\/?$/,
+    icon: "/assets/images/youtube_logo.svg",
+    hoverIcon: "/assets/images/youtube_logo_h.svg",
+    pattern: /^https:\/\/(www\.)?youtube\.com\/(user\/[a-zA-Z0-9_-]+|channel\/[a-zA-Z0-9_-]+|\@[a-zA-Z0-9._-]+)$/,
     errorMessage: "Invalid YouTube profile URL",
   },
 ];
@@ -51,23 +56,8 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
   const [url, setUrl] = useState(initialData?.url || "");
   const [error, setError] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const ref = useRef(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setIsDropdownOpen(false); // <-- Use isDropdownOpen here
-      }
-    }
-    if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDropdownOpen]);
-
+  const [hoveredOption, setHoveredOption] = useState(null);
+  const ref = useRef(null)
   useEffect(() => {
     if (onChange) {
       onChange({ icon: selectedOption.icon, url });
@@ -89,7 +79,8 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
 
   const handleIconSelect = (option) => {
     setSelectedOption(option);
-    validateUrl(url); // Revalidate URL when changing platform
+    setUrl(""); // Clear the URL input when changing platform
+    setError(null); // Clear any previous error
     setIsDropdownOpen(false);
   };
 
@@ -112,39 +103,38 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
   return (
     <div ref={ref} className="relative w-full mt-4">
       {/* Input container */}
-      <div className="flex items-center gap-2 w-full">
-        {/* Left-most Icon inside the input field */}
-        <div className="flex items-center justify-center w-10 h-10 absolute left-2">
-          <Image src={selectedOption.icon} alt={selectedOption.label} width={10} height={24} className="w-5" />
-        </div>
-
+      <div className="flex items-center w-full rounded-md border border-stroke px-2 py-2 relative">
+        {/* Social Icon (SVG logo) */}
+        <span className="text-[#7f7f7f] bg-transparent" style={{ background: "none" }}>
+          {selectedOption.icon ? (
+            <Image src={selectedOption.icon} alt={selectedOption.label} width={40} height={40} style={{ width: 40, height: 40, background: "none" }} />
+          ) : null}
+        </span>
+        {/* Vertical Divider */}
+        <div className="w-[1px] h-6 bg-stroke mx-1"></div>
         {/* URL Input */}
         <input
           type="url"
           placeholder="Enter Social Link URL"
-          className={`flex-1 rounded-lg border py-[10px] pl-12 pr-14 text-graphite outline-none ${
-            error ? "border-red-500" : "border-stroke"
-          }`}
+          className={`flex-grow pl-2 bg-transparent text-graphite outline-none transition placeholder:text-dark-grey ${error ? "border-red-500" : ""}`}
           value={url}
           onChange={handleUrlChange}
         />
-
         {/* Delete Icon */}
         <div
-          className="absolute right-10 top-0 bottom-0 flex items-center justify-center w-10 h-10 cursor-pointer"
+          className="absolute right-10 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-10 cursor-pointer"
           onClick={handleDelete}
         >
           <Image
-            src="/assets/images/delete.svg" // Replace with your delete icon path
+            src="/assets/images/delete.svg"
             alt="Delete"
             width={21}
             height={16}
           />
         </div>
-
         {/* Dropdown Icon (Arrow) */}
         <div
-          className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-10 h-10 cursor-pointer"
+          className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center justify-center w-10 h-12 cursor-pointer"
           onClick={toggleDropdown}
         >
           <Image
@@ -155,10 +145,8 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
           />
         </div>
       </div>
-
       {/* Error Message */}
       {error && <p className="mt-2 text-red-500 text-sm">{error}</p>}
-
       {/* Dropdown List - Full Width of Input */}
       {isDropdownOpen && (
         <ul className="absolute mt-2 w-full rounded-lg border border-stroke bg-[#E2E2E2] py-2 z-10">
@@ -167,9 +155,19 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
               key={option.value}
               className="px-5 py-2 text-graphite hover:text-electric-blue cursor-pointer flex items-center gap-2"
               onClick={() => handleIconSelect(option)}
+              onMouseEnter={() => setHoveredOption(option.value)}
+              onMouseLeave={() => setHoveredOption(null)}
             >
-              <Image src={option.icon} alt={option.label} width={10} height={24} className="w-5" />
-              {option.label} 
+              {option.icon ? (
+                <Image
+                  src={hoveredOption === option.value && option.hoverIcon ? option.hoverIcon : option.icon}
+                  alt={option.label}
+                  width={40}
+                  height={40}
+                  style={{ width: 40, height: 40, background: "none" }}
+                />
+              ) : null}
+              {option.label}
             </li>
           ))}
         </ul>

@@ -62,7 +62,7 @@ const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveVal
   return (
     <div ref={ref} className="multi-select-input text-black">
       <label className="block mb-2 font-apfel-grotezk-regular">{label}</label>
-      <div className="flex flex-wrap gap-2 p-2 border border-gray-300">
+      <div className="flex flex-wrap gap-2 p-2 rounded-md border border-gray-300 focus-within:border-electric-blue">
         {selectedValues.map((value, index) => (
           <div
             key={index}

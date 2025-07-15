@@ -120,8 +120,9 @@ export default function Step1() {
       />
     </div>
 
-   
+    {/* Location */}
     <LocationInput
+      placeholder="Which city do you stay in?"
       value={formState.location}
       onSelectLocation={(loc) => {
         updateField("location", loc.label); // or save loc.city & loc.country separately
@@ -140,12 +141,12 @@ export default function Step1() {
           onChange={(value) => updateField("instagram", value)}
           className="w-full"
         />
-        <div className="flex items-center mt-1 text-sm text-graphite font-apfel-grotezk-regular">
-          <span>Minimum <span className="font-bold">1,000 Instagram followers
+        <div className="flex items-center mt-1 text-sm  font-apfel-grotezk-regular">
+          <span className="tracking-wide">Minimum <span className="font-bold tracking-wide">1,000 Instagram followers
             </span> required</span>
-          <InfoTooltip 
-            text="If you have under 1k followers, you will not be able to access snatch features once you've signed up."
-          />
+          <span title="If you have under 1k followers, you will not be able to access snatch features once you've signed up.">
+            <img src="/assets/images/info.svg" alt="info" className="w-4 h-4 ml-2 inline" />
+          </span>
         </div>
         {formState.links.slice(0, 4).map((link, index) => (
           <SocialLinksDropdown
@@ -156,14 +157,17 @@ export default function Step1() {
             className="w-full"
           />
         ))}
-        <button
-          type="button"
-          className="mt-4 flex items-center gap-2 text-dark-grey cursor-pointer"
-          onClick={handleAddSocialLink}
-          disabled={numLinks >= 4}
+        {/* Add More Links styled as input box, always at the bottom */}
+        <div
+          className={`flex items-center w-full rounded-md border border-stroke px-5 py-4 mt-4 ${formState.links.length >= 4 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer '}`}
+          onClick={formState.links.length >= 4 ? undefined : handleAddSocialLink}
         >
-          Add More Links
-        </button>
+          <span className="text-primary">
+            <img src="/assets/icons/onboarding/Plusicon.svg" alt="Add" width={20} height={30} />
+          </span>
+          <div className="w-[1px] h-6 bg-stroke mx-3"></div>
+          <span className="text-graphite opacity-60 select-none">Add another social link</span>
+        </div>
       </div>
     </div>
 

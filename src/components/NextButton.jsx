@@ -111,7 +111,7 @@ const NextButton = () => {
   return (
     <button
       onClick={handleNextClick}
-      className="w-[72px] h-[37px] bg-white text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
+      className="w-[72px] h-[37px] bg-white text-electric-blue border z-50 border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
     >
       Next
     </button>

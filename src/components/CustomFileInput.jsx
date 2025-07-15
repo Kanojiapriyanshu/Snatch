@@ -107,35 +107,21 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
   return (
     <div className="mt-4">
       <h5>{label}</h5>
-
-<div
-  className="mt-4 flex gap-4 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary items-center"
-  onClick={handleButtonClick}
->
-  {/* Show uploaded image in place of Upload icon */}
-  {(imageSrc || formData[iconSrc === "/assets/icons/onboarding/Upload.svg" ? "profilePicture" : "backgroundPicture"]) ? (
-    <Image
-      src={imageSrc || formData[iconSrc === "/assets/icons/onboarding/Upload.svg" ? "profilePicture" : "backgroundPicture"]}
-      alt="Preview"
-      width={30}
-      height={30}
-      className="rounded-full object-cover w-10 h-10"
-    />
-  ) : (
-    <Image src={iconSrc} alt="upload" width={30} height={20} />
-  )}
-
-  <span>  {fileName || formData[fileNameKey] || placeholder}</span>
-</div>
-
-    <input
-      type="file"
-      className="hidden"
-      ref={fileInputRef}
-      onChange={handleFileChange}
-      accept="image/*"
-    />
-
+      <div
+        className="mt-4 flex gap-8 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
+        onClick={handleButtonClick}
+      >
+        <Image src={iconSrc} alt="upload" width={30} height={20} />
+        <div className="w-[1px] h-6 bg-stroke mx-3"></div>
+        <span>{fileName || placeholder}</span>
+      </div>
+      <input
+        type="file"
+        className="hidden"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+      />
 
 
       {/* Crop Modal */}
