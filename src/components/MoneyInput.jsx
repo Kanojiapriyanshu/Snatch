@@ -1,6 +1,6 @@
 export default function MoneyInput({ title, placeholder, value, onChange }) {
     return (
-      <div className="flex items-center justify-between border border-gray-300 rounded-lg w-[186px] h-[54px] px-3">
+      <div className="flex items-center justify-between border border-gray-300 rounded-lg w-[186px] h-[54px] px-3 focus-within:border-electric-blue">
         <span className="text-sm text-dark-grey">{title}</span>
   
         <div className="h-full w-px bg-gray-300 mx-2"></div>

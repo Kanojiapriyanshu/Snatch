@@ -41,7 +41,7 @@ const CustomDropdown = ({ options, placeholder, onSelect, selected }) => {
       </div>
 
       {isOpen && (
-        <ul className="z-50 absolute mt-2 w-[300px] rounded-lg border border-stroke bg-[#E9E9E9] py-2 text-graphite">
+        <ul className="absolute mt-2 w-[369px] rounded-lg border border-stroke bg-[#E9E9E9] py-2 text-graphite">
           {options.map((option, index) => (
             <li
               key={index}

@@ -1,6 +1,7 @@
 
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onRemoveValue }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -28,8 +29,10 @@ const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onR
   const handleOptionSelect = (option) => {
     if (!selectedValues.includes(option)) {
       onAddValue(option);
+    } else {
+      onRemoveValue(option);
     }
-    setIsDropdownOpen(false);
+    // Do not close the dropdown on selection
   };
 
   const getTooltipText = (option) => {
@@ -76,31 +79,16 @@ const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onR
             selectedValues.map((value, index) => (
               <span
                 key={`${label}-${index}`}
-                className="m-[5px] flex items-center justify-center border-[.5px] border-stroke bg-[#0037EB] bg-opacity-10 py-[7px] px-[20px] text-sm font-medium text-graphite relative z-20 rounded-lg"
+                className="flex items-center px-3 py-1 text-sm text-graphite bg-[#0037EB] bg-opacity-10 rounded-md m-[5px]"
               >
-                {value}
-                <span
-                  className="cursor-pointer z-20 pl-2 text-gray-500 hover:text-gray-700 absolute right-[5px] top-1/2 transform -translate-y-1/2"
-                  onClick={(e) => {
-                    e.stopPropagation(); 
-                    onRemoveValue(value); 
-                  }}
+                <span>{value}</span>
+                <button
+                  type="button"
+                  className="ml-2 text-xs text-gray-500 hover:text-red-500"
+                  onClick={e => { e.stopPropagation(); onRemoveValue(value); }}
                 >
-                  <svg
-                    width={12}
-                    height={12}
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M9.35355 3.35355C9.54882 3.15829 9.54882 2.84171 9.35355 2.64645C9.15829 2.45118 8.84171 2.45118 8.64645 2.64645L6 5.29289L3.35355 2.64645C3.15829 2.45118 2.84171 2.45118 2.64645 2.64645C2.45118 2.84171 2.45118 3.15829 2.64645 3.35355L5.29289 6L2.64645 8.64645C2.45118 8.84171 2.45118 9.15829 2.64645 9.35355C2.84171 9.54882 3.15829 9.54882 3.35355 9.35355L6 6.70711L8.64645 9.35355C8.84171 9.54882 9.15829 9.54882 9.35355 9.35355C9.54882 9.15829 9.54882 8.84171 9.35355 8.64645L6.70711 6L9.35355 3.35355Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </span>
+                  ✕
+                </button>
               </span>
             ))}
         </div>
@@ -132,37 +120,30 @@ const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onR
             <li
               key={idx}
               className="px-5 py-2 text-graphite hover:text-electric-blue cursor-pointer flex items-center gap-2"
-              onClick={() => handleOptionSelect(option)}
+              onClick={(e) => { e.stopPropagation(); handleOptionSelect(option); }}
             >
+              <input
+                type="checkbox"
+                checked={selectedValues.includes(option)}
+                onChange={() => handleOptionSelect(option)}
+                className="mr-2 accent-electric-blue hover:border-electric-blue focus:ring-electric-blue border border-gray-300 transition-colors duration-150"
+                onClick={e => e.stopPropagation()} // Prevent dropdown toggle
+              />
               <span>{option}</span>
               <div
                 className="relative"
                 onMouseEnter={() => setIsTooltipVisible(idx)}
                 onMouseLeave={() => setIsTooltipVisible(null)}
               >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                <Image
+                  src="/assets/images/info.svg"
+                  alt="info"
+                  width={16}
+                  height={16}
                   className="cursor-pointer"
-                >
-                  <path
-                    d="M8 1C4.13401 1 1 4.13401 1 8C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8C15 4.13401 11.866 1 8 1ZM8 13.5C4.96243 13.5 2.5 11.0376 2.5 8C2.5 4.96243 4.96243 2.5 8 2.5C11.0376 2.5 13.5 4.96243 13.5 8C13.5 11.0376 11.0376 13.5 8 13.5Z"
-                    fill="#6B7280"
-                  />
-                  <path
-                    d="M8 7C8.27614 7 8.5 7.22386 8.5 7.5V11C8.5 11.2761 8.27614 11.5 8 11.5C7.72386 11.5 7.5 11.2761 7.5 11V7.5C7.5 7.22386 7.72386 7 8 7Z"
-                    fill="#6B7280"
-                  />
-                  <path
-                    d="M8 5.5C8.27614 5.5 8.5 5.27614 8.5 5C8.5 4.72386 8.27614 4.5 8 4.5C7.72386 4.5 7.5 4.72386 7.5 5C7.5 5.27614 7.72386 5.5 8 5.5Z"
-                    fill="#6B7280"
-                  />
-                </svg>
+                />
                 {isTooltipVisible === idx && (
-                  <div className="absolute left-full top-0 px-1 py-1 text-xs text-graphite rounded-lg whitespace-nowrap max-w-[800px] ">
+                  <div className="absolute left-full top-0 text-start px-2 pb-8 text-sm text-graphite rounded-lg whitespace-nowrap max-w-[800px] ">
                     {getTooltipText(option)}
                   </div>
                 )}
