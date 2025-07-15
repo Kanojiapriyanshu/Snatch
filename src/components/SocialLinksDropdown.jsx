@@ -75,13 +75,17 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
   }, [selectedOption, url]);
 
   const validateUrl = (currentUrl) => {
-    try {
-      urlSchemas[selectedOption.value].parse(currentUrl);
-      setError(null);
-    } catch (e) {
-      setError(e.errors[0]?.message || "Invalid URL");
-    }
-  };
+  if (!currentUrl) {
+    setError(null); // Don't show error if input is empty
+    return;
+  }
+  try {
+    urlSchemas[selectedOption.value].parse(currentUrl);
+    setError(null);
+  } catch (e) {
+    setError(e.errors[0]?.message || "Invalid URL");
+  }
+};
 
   const handleIconSelect = (option) => {
     setSelectedOption(option);

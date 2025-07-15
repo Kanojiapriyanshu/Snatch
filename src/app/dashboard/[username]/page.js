@@ -6,6 +6,7 @@ import DashboardCardwrapper from "@/components/DashboardCardwrapper";
 import LocationWrapper from "@/components/LocationWrapper";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { DashboardContext } from "../DashboardContext";
 
 const DashboardPage = () => {
   const [selectedLocationType, setSelectedLocationType] = useState("country");
@@ -115,6 +116,7 @@ const DashboardPage = () => {
   }
 
   return (
+     <DashboardContext.Provider value={{ isInstagramLinked }}>
     <div className="mt-2 relative p-3">
       {/* Blur wrapper when conditions are not met */}
       <div className={`${(!isInstagramLinked || !hasMinFollowers) ? "blur-sm pointer-events-none select-none" : ""}`}>
@@ -235,6 +237,8 @@ const DashboardPage = () => {
         </div>
       )}
     </div>
+     </DashboardContext.Provider>
+
   );
 };
 

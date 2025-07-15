@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 
 const StatsCard = () => {
   const [stats, setStats] = useState({
-    posts: 0,
-    followers: 0,
-    reach: 0,
+    posts: null,
+    followers: null,
+    reach: null,
   });
 
   const fetchInstagramData = async () => {
@@ -34,17 +34,19 @@ const StatsCard = () => {
     <div className="w-64 h-20 z-50 absolute left-24 -bottom-24 mx-auto font-qimano">
       <div className="flex justify-center items-center gap-20 text-smoke">
         <div className="flex flex-col">
-          <h2 className="text-3xl text-center">{stats.posts}</h2>
+          <h2 className="text-3xl text-center">
+              {stats.posts !== null ? stats.posts : "N/A"}
+            </h2>
           <p className="text-1xl">Posts</p>
         </div>
 
         <div className="flex flex-col">
-          <h2 className="text-3xl text-center">{stats.followers}</h2>
+          <h2 className="text-3xl text-center">{stats.followers !== null ? stats.followers : "N/A"}</h2>
           <p className="text-1xl">Followers</p>
         </div>
 
         <div className="flex flex-col">
-          <h2 className="text-3xl text-center">{stats.reach}</h2>
+          <h2 className="text-3xl text-center">{stats.reach !== null ? stats.reach : "N/A"}</h2>
           <p className="text-1xl">Reach</p>
         </div>
       </div>

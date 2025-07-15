@@ -8,11 +8,12 @@ import Preview from "@/components/Preview";
 import { useRouter } from "next/navigation";
 import DashboardPreview from "@/components/DashboardPreview";
 import StatsCard from "@/components/StatsCard";
+import { useDashboardContext } from "./DashboardContext";
 
 export default function OnboardingLayout({ children }) {
 
   const router = useRouter();
-
+  const { isInstagramLinked } = useDashboardContext() || {};
   
   const handleNextClick = () => {
     router.push("/dashboard");
@@ -59,7 +60,7 @@ export default function OnboardingLayout({ children }) {
                   className="mx-auto w-28 h-5"
                 />
          </button>
-          <button onClick={handleProfileClick} className="w-[80px] h-[50px] bg-gray-100 text-electric-blue  rounded-md text-center font-medium hover:bg-electric-blue hover:text-white">
+          <button onClick={handleProfileClick} className="w-[80px] h-[50px] bg-gray-100 text-electric-blue  rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"  disabled={isInstagramLinked === false}  style={isInstagramLinked === false ? { opacity: 0.5, cursor: "not-allowed" } : {}}>
             Profile
           </button>
 

@@ -15,6 +15,8 @@ export default function EnterOtp() {
   const [email, setEmail] = useState("");
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [resendTimer, setResendTimer] = useState(60);
+
 
   console.log("signUp", signUp);
 
@@ -26,6 +28,15 @@ export default function EnterOtp() {
       setEmail(emailFromUrl);
     }
   }, []);
+
+  useEffect(() => {
+  let timer;
+  if (resendTimer > 0) {
+    timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+  }
+  return () => clearTimeout(timer);
+}, [resendTimer]);
+
 
   const verifyOtp = async () => {
     if (!isLoaded || !email) return;
@@ -53,7 +64,7 @@ export default function EnterOtp() {
     }
   };
 
-  const handleResendOtp = async () => {
+const handleResendOtp = async () => {
   if (!isLoaded || !signUp) return;
 
   setIsResending(true);
@@ -63,6 +74,7 @@ export default function EnterOtp() {
   try {
     await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
     setResendSuccess(true);
+    setResendTimer(60); // reset cooldown
   } catch (err) {
     console.error("Resend OTP error:", err);
     setError(err.errors?.[0]?.message || "Failed to resend OTP. Try again.");
@@ -70,6 +82,7 @@ export default function EnterOtp() {
     setIsResending(false);
   }
 };
+
  
   return (
     <div className="h-screen  flex flex-col justify-center lg:flex-row overflow-hidden ">
@@ -129,15 +142,25 @@ export default function EnterOtp() {
       <div className="flex flex-col justify-center items-center text-center w-full px-6 sm:px-10">
       <h1 className="text-graphite text-2xl sm:text-5xl mb-8 font-qimano">Enter OTP</h1>
       <Otp otp={otp} setOtp={setOtp}  onKeyDown={handleKeyDown}/> {/* Use Otp component here */}
-       <div className="mt-4 mb-1 font-apfel-grotezk-regular ">
-        <button
+       <div className="mt-4 mb-1 font-apfel-grotezk-regular">
+        {resendTimer > 0 ? (
+          <p className="text-gray-500 text-sm">
+            You can resend OTP in {resendTimer}s
+          </p>
+        ) : (
+          <button
             onClick={handleResendOtp}
             disabled={isResending}
             className="text-sm text-electric-blue hover:underline disabled:text-gray-400"
           >
             {isResending ? "Resending..." : "Resend OTP"}
-        </button>
-       </div>
+          </button>
+        )}
+        {resendSuccess && (
+          <p className="text-green-500 text-sm mt-1">OTP resent successfully!</p>
+        )}
+      </div>
+
              <button
              onClick={verifyOtp}
              className="w-full sm:w-[356px] h-12 bg-[#0037EB] text-white rounded-lg mt-4"

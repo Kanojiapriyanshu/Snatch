@@ -12,6 +12,7 @@ import FormInput from "@/components/FormInput";
 import { useAuth } from "@clerk/nextjs";
 import DateInput from "@/components/DateInput";
 import InfoTooltip from '@/components/InfoTooltip';
+import LocationInput from "@/components/LocationInput";
 
 export default function Step1() {
   const { formData, updateFormData, isSaving } = useFormContext();
@@ -119,13 +120,16 @@ export default function Step1() {
       />
     </div>
 
-    {/* Location */}
-    <FormInput
-      placeholder="Location"
+   
+    <LocationInput
       value={formState.location}
-      onChange={(e) => updateField("location", e.target.value)}
+      onSelectLocation={(loc) => {
+        updateField("location", loc.label); // or save loc.city & loc.country separately
+      }}
+      consideration="Please select your city and country"
       className="w-full"
     />
+
 
     {/* Social Links */}
     <div>

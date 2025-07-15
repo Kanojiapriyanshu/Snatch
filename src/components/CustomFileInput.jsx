@@ -119,7 +119,7 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
       alt="Preview"
       width={30}
       height={30}
-      className="rounded-full object-cover"
+      className="rounded-full object-cover w-10 h-10"
     />
   ) : (
     <Image src={iconSrc} alt="upload" width={30} height={20} />
