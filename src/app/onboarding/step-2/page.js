@@ -100,7 +100,7 @@ export default function Step2() {
         <MultiSelectInput
           label="Choose Languages (Max 5)"
           data={[
-            "English", "Spanish", "French", "German", "Mandarin", "Hindi", "Japanese", "Marathi", "Gujarati", "Tamil", "Telugu", "Bengali", "Portuguese", "Italian", "Russian", "Arabic", "Korean", "Vietnamese", "Indonesian", "Turkish", "Urdu"
+            "English", "Spanish", "French", "German", "Mandarin", "Hindi", "Japanese", "Marathi", "Gujarati", "Tamil", "Telugu", "Bengali", "Portuguese", "Italian", "Russian", "Arabic", "Korean", "Vietnamese", "Indonesian", "Turkish", "Urdu", "Chinese", "Punjabi", "Malayalam", "Kannada", "Odia", "Assamese", "Maithili", "Santali", "Bhojpuri", "Nepali", "Dogri", "Manipuri", "Kashmiri", "Konkani", "Sindhi", "Tulu", "Bodo", "Santhali", "Meitei", "Khasi", "Garo", "Mizo", "Lepcha", "Sikkimese", "Bhutia"
           ]}
           selectedValues={formData.languages || []}
           onAddValue={(value) => handleAddValue("languages", value)}

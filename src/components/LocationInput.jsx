@@ -31,26 +31,28 @@ const LocationInput = ({ value, onSelectLocation, consideration, ...props }) => 
     return () => clearTimeout(timeout);
   }, [query]);
 
-  const fetchLocations = async (q) => {
+const fetchLocations = async (q) => {
   try {
-    const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=10`);
+    const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=15`);
     const data = await res.json();
 
-    // Filter for locations in India
-    const filtered = data.features.filter(
-      (f) => f.properties.country === 'India' && f.properties.name
+    // Only consider features that are of type "city" or "town"
+    const filtered = data.features.filter((f) =>
+      ['city', 'town'].includes(f.properties.osm_value) && f.properties.name
     );
 
-    // Remove duplicates based on "city,country"
+    // Deduplicate using "city-country" key
     const uniqueMap = new Map();
     filtered.forEach((f) => {
-      const key = `${f.properties.name},${f.properties.country}`;
+      const city = f.properties.name;
+      const country = f.properties.country;
+      const key = `${city.toLowerCase()},${country.toLowerCase()}`;
       if (!uniqueMap.has(key)) {
         uniqueMap.set(key, {
           id: f.properties.osm_id,
-          city: f.properties.name,
-          country: f.properties.country,
-          label: key,
+          city,
+          country,
+          label: `${city}, ${country}`,
         });
       }
     });
@@ -60,6 +62,7 @@ const LocationInput = ({ value, onSelectLocation, consideration, ...props }) => 
     console.error('Location fetch failed:', err);
   }
 };
+
 
 
   const handleSelect = (loc) => {

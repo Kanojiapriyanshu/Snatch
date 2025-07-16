@@ -38,13 +38,17 @@ const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveVal
   };
 
   const handleAddChip = (value) => {
-    const newValue = value || inputValue.trim();
-    if (newValue && !selectedValues.includes(newValue)) {
-      onAddValue(newValue);
-      setInputValue("");
-      setSuggestions([]);
-    }
-  };
+  let newValue = value !== undefined ? value : inputValue.trim();
+  // If user pressed Enter and input matches a suggestion, use the suggestion
+  if (!value && suggestions.length > 0) {
+    newValue = suggestions[0];
+  }
+  if (newValue && !selectedValues.includes(newValue)) {
+    onAddValue(newValue);
+    setInputValue("");
+    setSuggestions([]);
+  }
+};
 
   const handleRemoveChip = (e,value) => {
     e.stopPropagation(); // Prevent 
@@ -53,11 +57,11 @@ const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveVal
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter" || event.key === ",") {
-      event.preventDefault();
-      handleAddChip();
-    }
-  };
+  if (event.key === "Enter" || event.key === ",") {
+    event.preventDefault();
+    handleAddChip();
+  }
+};
 
   return (
     <div ref={ref} className="multi-select-input text-black">
