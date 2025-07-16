@@ -40,17 +40,17 @@ export default function OnboardingLayout({ children }) {
             priority
           />
 
-          <div className="relative mb-20 z-10 p-1 bg-white 2xl:p-4 py-2  bg-opacity-90 rounded-lg shadow-lg grid grid-rows-1">
+          <div className="relative mb-20 z-10 p-1 bg-white 2xl:p-4 py-  bg-opacity-90 rounded-lg shadow-lg grid grid-rows-1">
             <DashboardPreview />
             <StatsCard />
           </div>
 
         </div>
 
-        <div className="absolute top-[87%] left-[37%]  w-[450px] h-[79px] flex justify-center items-center gap-3  bg-white font-apfel-grotezk-regular rounded-xl shadow-md z-50">
+        <div className="absolute top-[87%] left-[37%]  w-[420px] h-[79px] flex justify-center items-center gap-3  bg-white font-apfel-grotezk-regular rounded-xl shadow-md z-50">
                   <button
               onClick={handleNextClick}
-              className="w-[100px] h-[50px]  text-electric-blue text-2xl font-semibold   text-center"
+              className="w-[100px] h-[45px]  text-electric-blue text-2xl font-semibold   text-center"
             >
                 <Image 
                   src="https://res.cloudinary.com/dgk9ok5fx/image/upload/v1746447360/Group_7976_lzrnj5.png"

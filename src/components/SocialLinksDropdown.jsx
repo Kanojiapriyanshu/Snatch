@@ -103,7 +103,7 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
   return (
     <div ref={ref} className="relative w-full mt-4">
       {/* Input container */}
-      <div className="flex items-center w-full rounded-md border border-stroke px-2 py-2 relative">
+      <div className="flex items-center w-full rounded-md border border-stroke px-2 py-1 relative">
         {/* Social Icon (SVG logo) */}
         <span className="text-[#7f7f7f] bg-transparent" style={{ background: "none" }}>
           {selectedOption.icon ? (
@@ -111,7 +111,7 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
           ) : null}
         </span>
         {/* Vertical Divider */}
-        <div className="w-[1px] h-6 bg-stroke mx-1"></div>
+        <div className="w-[1px] h-8 bg-stroke mx-1"></div>
         {/* URL Input */}
         <input
           type="url"

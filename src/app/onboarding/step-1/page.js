@@ -142,7 +142,7 @@ export default function Step1() {
           className="w-full"
         />
         <div className="flex items-center mt-1 text-sm  font-apfel-grotezk-regular">
-          <span className="tracking-wide">Minimum <span className="font-bold tracking-wide">1,000 Instagram followers
+          <span className="tracking-wide">Minimum <span className="font-normal tracking-wide">1,000 Instagram Followers
             </span> required</span>
           <span title="If you have under 1k followers, you will not be able to access snatch features once you've signed up.">
             <img src="/assets/images/info.svg" alt="info" className="w-4 h-4 ml-2 inline" />
@@ -172,7 +172,7 @@ export default function Step1() {
     </div>
 
     {/* Upload Picture & Background */}
-    <div className="space-y-4">
+    <div className="space-y-3">
       <CustomFileInput
         onFileChange={(uploadedUrl, uploadedFileName) => updateFormData({ profilePicture: uploadedUrl, profilePictureName: uploadedFileName, })}
         placeholder="Upload a profile picture from your device"
