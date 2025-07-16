@@ -50,15 +50,15 @@ export default function InstagramInput({ placeholder = "Enter Instagram username
 
   return (
     <div>
-   <div className="flex items-center w-full rounded-md border border-stroke px-2 py-3">
+   <div className="flex items-center w-full rounded-md border border-stroke px-2 py-2">
       {/* Instagram Icon */}
       <span className="text-primary">
-        <Image src="/assets/icons/onboarding/Instagram.svg" alt="Instagram" width={30} height={34} />
+        <Image src="/assets/icons/onboarding/Instagram.svg" alt="Instagram" width={40} height={34} />
       </span>
       {/* Vertical Line */}
-      <div className="w-[1px] h-6 bg-stroke mx-3"></div>
+      <div className="w-[1px] h-8 bg-stroke mx-1"></div>
       {/* Static URL Prefix */}
-      <span className="text-graphite text-md select-none">
+      <span className="text-graphite text-md mx-1 select-none">
         https://instagram.com/
       </span>
       {/* Input Field */}

@@ -164,7 +164,7 @@ const DashboardPage = () => {
 
               {/* Right Images */}
               <div className="flex justify-center items-end relative bottom-8">
-                <div className="w-32 h-40 rounded-xl overflow-hidden shadow-md z-10 translate-y-4 -mr-4">
+                <div className="w-32 h-38 rounded-xl overflow-hidden shadow-md z-10 translate-y-4 -mr-4">
                   <Image
                     src="/assets/images/dashboard/influencer1.svg"
                     alt="Influencer 1"
@@ -221,17 +221,16 @@ const DashboardPage = () => {
       {isInstagramLinked && !hasMinFollowers && (
         <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-6 rounded-xl" style={{ height: "680px" }}>
           <h2 className="text-3xl md:text-4xl text-[#e7e300] font-qimano mb-4">
-            Dashboard Not Accessible
+          Get Started
           </h2>
-          <p className="text-white mb-6 max-w-lg font-apfel-grotezk-regular">
-            Uh oh, looks like you&#39;re just shy of the 1k mark! Snatch features unlock once you hit that milestone. 
-            We&#39;re rooting for you, can&#39;t wait to welcome you back once you&#39;re there! 🚀
+          <p className="text-white mb-6 max-w-lg text-lg font-apfel-grotezk-regular">
+          For creators with 1K+ followers, Snatch allows you directly connect your Instagram. Select your best posts, past collabs, stats and turn it into a professional press kit within minutes.
           </p>
           <button
             onClick={handleLogin}
             className="bg-lime-yellow text-black px-6 py-3 rounded-lg hover:bg-yellow-300 transition-all duration-200 flex items-center gap-2 font-apfel-grotezk-regular"
           >
-            Try Again
+            Connect Instagram via Facebook
             <span className="text-xl">→</span>
           </button>
         </div>

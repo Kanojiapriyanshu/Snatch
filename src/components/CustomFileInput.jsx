@@ -108,11 +108,11 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
     <div className="mt-4">
       <h5>{label}</h5>
       <div
-        className="mt-4 flex gap-8 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
+        className="mt-4 flex gap-3 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
         onClick={handleButtonClick}
       >
-        <Image src={iconSrc} alt="upload" width={30} height={20} />
-        <div className="w-[1px] h-6 bg-stroke mx-3"></div>
+        <Image src={iconSrc} alt="upload" width={25} height={20} />
+        <div className="w-[1px] h-10 bg-stroke"></div>
         <span>{fileName || placeholder}</span>
       </div>
       <input
