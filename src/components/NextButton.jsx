@@ -25,7 +25,7 @@ const NextButton = () => {
       const {
         username,
         industry,
-        contentType,
+        // contentType,
         languages,
         compensation,
         post,
@@ -40,7 +40,7 @@ const NextButton = () => {
       if (!dateOfBirth?.trim()) missingFields.push("Date of Birth");
     
       if (!Array.isArray(industry) || industry.length === 0) missingFields.push("Industry");
-      if (!Array.isArray(contentType) || contentType.length === 0) missingFields.push("Content Type");
+      //if (!Array.isArray(contentType) || contentType.length === 0) missingFields.push("Content Type");
       if (!Array.isArray(languages) || languages.length === 0) missingFields.push("Languages");
       if (!Array.isArray(compensation) || compensation.length === 0) missingFields.push("Compensation");
     
