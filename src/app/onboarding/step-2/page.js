@@ -23,7 +23,6 @@ export default function Step2() {
     const checkFormCompletion = () => {
       const requiredFields = {
         industry: formData.industry?.length > 0,
-        contentType: formData.contentType?.length > 0,
         languages: formData.languages?.length > 0,
         compensation: formData.compensation?.length > 0,
       };
