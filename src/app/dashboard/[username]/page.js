@@ -121,7 +121,7 @@ const DashboardPage = () => {
       {/* Blur wrapper when conditions are not met */}
       <div className={`${(!isInstagramLinked || !hasMinFollowers) ? "blur-sm pointer-events-none select-none" : ""}`}>
         {/* Top Analytics Cards */}
-        <div className="mb-[430px] 3xl:mb-[500px] flex gap-3">
+        <div className="mb-[430px] 3xl:mb-[490px] flex gap-3 ">
           <DashboardCardwrapper count={analytics.totalVisitors} label="Profile Visits" />
           <DashboardCardwrapper count={totalRequests} label="Request Received" />
           <DashboardCardwrapper 
@@ -132,7 +132,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Location Analytics */}
-        <div className="absolute top-[23%] w-full">
+        <div className="absolute top-[22%] w-full">
           <LocationWrapper
             topLocations={getTopLocations()}
             setSelectedLocationType={setSelectedLocationType}
@@ -140,14 +140,14 @@ const DashboardPage = () => {
           />
 
           {/* Creator Circle Section */}
-          <div className="mt-1 3xl:mt-4 w-full max-w-[98%] mr-5 mx-auto bg-white rounded-xl shadow relative font-qimano overflow-hidden  px-4 md:px-8 xl:px-16 py-[clamp(20px,calc(8px+5vh+1vw),100px)] min-h-[250px] xl:min-h-[90px] 2xl:min-h-[200px] 5xl:min-h-[400px] flex ">
+          <div className="mt-1 3xl:mt-2 w-full max-w-[98%] mr-5 mx-auto bg-white rounded-xl shadow relative font-qimano overflow-hidden  px-4 md:px-8 xl:px-16 py-[clamp(20px,calc(8px+5vh+1vw),100px)] min-h-[250px] xl:min-h-[90px] 2xl:min-h-[200px] 5xl:min-h-[400px] flex ">
 
            
             <div
-              className="absolute top-3 -left-14 w-96 z-30"
-              style={{ transform: "rotate(-25deg)" }}
+              className="absolute top-0 -left-12 w-80 z-30 bg-[#e7e300]"
+              style={{ transform: "rotate(-30deg)" }}
             >
-              <p className="bg-[#e7e300] text-black text-center text-2xl py-4 shadow-md">
+              <p className=" text-black text-center text-2xl py-2 shadow-md mr-24">
                 Coming Soon!
               </p>
             </div>
@@ -164,7 +164,7 @@ const DashboardPage = () => {
 
               {/* Right Images */}
               <div className="flex justify-center items-end relative bottom-8">
-                <div className="w-32 h-38 rounded-xl overflow-hidden shadow-md z-10 translate-y-4 -mr-4">
+                <div className="w-32 h-40 rounded-xl overflow-hidden shadow-md z-10 translate-y-4 -mr-4">
                   <Image
                     src="/assets/images/dashboard/influencer1.svg"
                     alt="Influencer 1"
@@ -221,16 +221,17 @@ const DashboardPage = () => {
       {isInstagramLinked && !hasMinFollowers && (
         <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-6 rounded-xl" style={{ height: "680px" }}>
           <h2 className="text-3xl md:text-4xl text-[#e7e300] font-qimano mb-4">
-          Get Started
+            Dashboard Not Accessible
           </h2>
-          <p className="text-white mb-6 max-w-lg text-lg font-apfel-grotezk-regular">
-          For creators with 1K+ followers, Snatch allows you directly connect your Instagram. Select your best posts, past collabs, stats and turn it into a professional press kit within minutes.
+          <p className="text-white mb-6 max-w-lg font-apfel-grotezk-regular">
+            Uh oh, looks like you&#39;re just shy of the 1k mark! Snatch features unlock once you hit that milestone. 
+            We&#39;re rooting for you, can&#39;t wait to welcome you back once you&#39;re there! 🚀
           </p>
           <button
             onClick={handleLogin}
             className="bg-lime-yellow text-black px-6 py-3 rounded-lg hover:bg-yellow-300 transition-all duration-200 flex items-center gap-2 font-apfel-grotezk-regular"
           >
-            Connect Instagram via Facebook
+            Try Again
             <span className="text-xl">→</span>
           </button>
         </div>
