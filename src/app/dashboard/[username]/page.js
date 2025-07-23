@@ -13,6 +13,7 @@ const DashboardPage = () => {
   const [isInstagramLinked, setIsInstagramLinked] = useState(false);
   const [hasMinFollowers, setHasMinFollowers] = useState(false);
   const [totalRequests, setTotalRequests] = useState(0); 
+  const [isCheckingInstagram, setIsCheckingInstagram] = useState(true);
   const pathname = usePathname();
   const username = pathname.split("/").pop();
 
@@ -65,6 +66,8 @@ const DashboardPage = () => {
       } catch (error) {
         console.error("Error fetching influencer data:", error);
         setIsInstagramLinked(false);
+      } finally {
+        setIsCheckingInstagram(false); // Always stop loading after the check
       }
     };
 
@@ -106,6 +109,15 @@ const DashboardPage = () => {
       </div>
     );
   }
+
+  if (isCheckingInstagram) {
+  return (
+    <div className="h-screen bg-smoke flex justify-center items-center font-qimano text-3xl text-electric-blue">
+      Checking account status...
+    </div>
+  );
+}
+
 
   if (isError) {
     return (
