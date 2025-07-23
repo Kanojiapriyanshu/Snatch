@@ -8,78 +8,39 @@ export const dynamic = "force-dynamic";
 export async function POST(req) {
   try {
     await connectDb();
+    const { mediaIds } = await req.json();
     const { userId } = getAuth(req);
-    const { activeImageId } = await req.json();
 
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, error: "User ID is required." },
-        { status: 400 }
-      );
+    if (!userId || !Array.isArray(mediaIds) || mediaIds.length === 0) {
+      return NextResponse.json({ success: false, error: "Missing userId or mediaIds" }, { status: 400 });
     }
 
-    const project = await ProjectDraft.findOne({ userId });
-    if (!project) {
-      return NextResponse.json(
-        { success: false, error: "Project not found." },
-        { status: 404 }
-      );
+    // Find the user's draft
+    const draft = await ProjectDraft.findOne({ userId });
+    if (!draft) {
+      return NextResponse.json({ success: false, error: "No draft found for user" }, { status: 404 });
     }
 
-    // Function to update isDraft for formData
-    const updateIsDraftForActiveImageId = (items) => {
-      return items
-        .filter((item) => item && item.key && item.key.trim() !== "")
-        .map((item) => {
-          if (item.key === activeImageId) {
-            return { ...item, isDraft: false };
-          }
-          return item;
-        });
-    };
-    
-    // Function to update isDraft for instagramSelected
-    const updateInstagramSelectedforActiveImageId = (items) => {
-      return items
-        .filter((item) => item && item.mediaId && item.mediaId.trim() !== "")
-        .map((item) => {
-          if (item.mediaId === activeImageId) {
-            return { ...item, isDraft: false };
-          }
-          return item;
-        });
-    };
-
-    // Function to update isDraft for uploadedFiles
-    const updateUploadedFilesForActiveImageId = (items) => {
-      return items
-        .filter((item) => item && item.mediaId)
-        .map((item) => {
-          if (String(item.mediaId) === String(activeImageId)) {
-            return { ...item, isDraft: false };
-          }
-          return item;
-        });
-    };
-
-    // Update formData, instagramSelected, and uploadedFiles where activeImageId matches
-    project.formData = updateIsDraftForActiveImageId(project.formData);
-    project.instagramSelected = updateInstagramSelectedforActiveImageId(project.instagramSelected);
-    project.uploadedFiles = updateUploadedFilesForActiveImageId(project.uploadedFiles);
-
-    // Save the updated project
-    await project.save();
-
-    return NextResponse.json({ 
-      success: true, 
-      message: "Project has been finalized successfully." 
-    });
-
-  } catch (error) {
-    console.error("Error finalizing project:", error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
+    // Update isDraft for matching projects in instagramSelected
+    draft.instagramSelected = (draft.instagramSelected || []).map(item =>
+      mediaIds.includes(item.mediaId) ? { ...item, isDraft: false } : item
     );
+
+    // Update isDraft for matching projects in uploadedFiles
+    draft.uploadedFiles = (draft.uploadedFiles || []).map(item =>
+      mediaIds.includes(item.mediaId) ? { ...item, isDraft: false } : item
+    );
+
+    // Also update isDraft for matching formData (if needed)
+    draft.formData = (draft.formData || []).map(item =>
+      mediaIds.includes(item.key) ? { ...item, isDraft: false } : item
+    );
+
+    await draft.save();
+
+    return NextResponse.json({ success: true, message: "Projects finalized", instagram: draft.instagramSelected, uploaded: draft.uploadedFiles });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

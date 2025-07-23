@@ -9,9 +9,9 @@ import { useQuery } from "@tanstack/react-query";
 import { DashboardContext } from "../DashboardContext";
 
 const DashboardPage = () => {
-  const [selectedLocationType, setSelectedLocationType] = useState("country");
-  const [isInstagramLinked, setIsInstagramLinked] = useState(true);
-  const [hasMinFollowers, setHasMinFollowers] = useState(true);
+  const [selectedLocationType, setSelectedLocationType] = useState("city");
+  const [isInstagramLinked, setIsInstagramLinked] = useState(false);
+  const [hasMinFollowers, setHasMinFollowers] = useState(false);
   const [totalRequests, setTotalRequests] = useState(0); 
   const pathname = usePathname();
   const username = pathname.split("/").pop();

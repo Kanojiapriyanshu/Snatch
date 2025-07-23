@@ -56,7 +56,7 @@ export default function Step1() {
   };
 
   const handleAddSocialLink = () => {
-    updateField("links", [...formState.links, {}]);
+    updateField("links", [...formState.links, { autoOpenDropdown: true }]);
   };
 
   const handleLinkChange = (index, data) => {
@@ -155,6 +155,7 @@ export default function Step1() {
             onChange={(data) => handleLinkChange(index, data)}
             onDelete={() => handleDeleteLink(index)}
             className="w-full"
+            autoOpenDropdown={!!link.autoOpenDropdown}
           />
         ))}
         {/* Add More Links styled as input box, always at the bottom */}

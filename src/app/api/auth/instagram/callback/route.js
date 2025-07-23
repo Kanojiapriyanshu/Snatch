@@ -132,39 +132,6 @@ if (pagesData.error) {
     const insightsData = await insightsResponse.json();
     console.log("Full Response:", insightsData);
 
-    // const demographicsMetric = insightsData.data?.find(
-    //   item => item.name === 'follower_demographics'
-    // );
-
-    // if (
-    //   demographicsMetric?.total_value?.breakdowns &&
-    //   Array.isArray(demographicsMetric.total_value.breakdowns)
-    // ) {
-    //   const breakdowns = demographicsMetric.total_value.breakdowns;
-
-    //   breakdowns.forEach(entry => {
-    //     const { dimension_keys, results } = entry;
-       
-    //     // Log to inspect the structure of the results
-    //     console.log("Dimension Keys:", dimension_keys);
-    //     console.log("Results:", results);
-       
-    //     // If results is an object, try to extract its proper value
-    //     dimension_keys.forEach((key, index) => {
-    //       const result = results[index];
-         
-    //       // If result is an object, let's log it to understand its structure
-    //       if (typeof result === 'object') {
-    //         console.log(`Result for ${key}:`, result);
-    //       } else {
-    //         console.log(`Country: ${key}, Followers: ${result}`);
-    //       }
-    //     });
-    //   });
-    // } else {
-    //   console.warn("Breakdown data not found in follower_demographics.");
-    // }
-
     const demographicsMetric = insightsData.data?.find(
           item => item.name === 'follower_demographics'
         );

@@ -47,7 +47,7 @@ const urlSchemas = SOCIAL_OPTIONS.reduce((schemas, option) => {
   return schemas;
 }, {});
 
-export default function SocialLinksDropdown({ initialData, onChange, onDelete }) {
+export default function SocialLinksDropdown({ initialData, onChange, onDelete, autoOpenDropdown  }) {
   const [selectedOption, setSelectedOption] = useState(
     initialData?.icon
       ? SOCIAL_OPTIONS.find((opt) => opt.icon === initialData.icon) || SOCIAL_OPTIONS[0]
@@ -63,6 +63,12 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete })
       onChange({ icon: selectedOption.icon, url });
     }
   }, [selectedOption, url]);
+
+    useEffect(() => {
+    if (autoOpenDropdown) {
+      setIsDropdownOpen(true);
+    }
+  }, [autoOpenDropdown]);
 
   const validateUrl = (currentUrl) => {
   if (!currentUrl) {

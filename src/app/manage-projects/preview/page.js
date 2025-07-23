@@ -60,34 +60,44 @@ import SvgComponent from "@/components/svg/Instagramsvg";
   };
 
   const handleNextStep = () => {
-    setIsModalOpen(false);
-    // Add logic for next step data submit
-    const finalSubmit = async () => {
-      try {
-        const response = await fetch('/api/projects/final', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json', // Ensure JSON content type
-          },
-          body: JSON.stringify({ activeImageId }) // Send the activeImageId in the body
-        });
-    
-        console.log("Project and formdata set draft false succesfully! check admin to see database as well!");
-        alert("Project saved successfully!");
-        if (filledProjectsCount < 4) {
-          //comes for a sec with query then goes to /profile/:username
-          router.push("/profile?incompleteProjects=1");
-        }
-        else {
+  setIsModalOpen(false);
+
+  // Collect all filled project mediaIds
+  const filledProjectIds = [
+    ...(selectionState.instagramSelected || []),
+    ...(selectionState.uploadedFiles || [])
+  ]
+    .filter(project => {
+      const formData = Array.isArray(selectionState.formData)
+        ? selectionState.formData.find(item => String(item.key) === String(project.mediaId))
+        : null;
+      return isProjectFilled(formData);
+    })
+    .map(project => project.mediaId);
+
+    console.log("SENDING FILLED PROJECT IDS TO SAVE all", filledProjectIds);
+
+  const finalSubmit = async () => {
+    try {
+      const response = await fetch('/api/projects/final', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mediaIds: filledProjectIds })
+      });
+
+      alert("Projects saved successfully!");
+      if (filledProjectsCount < 4) {
+        router.push("/profile?incompleteProjects=1");
+      } else {
         router.push("/profile");
-        }
-      } catch (error) {
-        console.error("Error deleting formData:", error);
-        throw error;
       }
+    } catch (error) {
+      console.error("Error saving projects:", error);
+      throw error;
     }
-finalSubmit();
   };
+  finalSubmit();
+};
 
   const projects = activeTab === "instagram"
   ? selectionState.instagramSelected
