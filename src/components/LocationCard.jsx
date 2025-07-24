@@ -9,7 +9,7 @@ const LocationCard = ({
 }) => {
   const [filteredLocations, setFilteredLocations] = useState([]);
 
-  // Update location data based on selected filter
+  //Update location data based on selected filter
   useEffect(() => {
     const getFilteredData = () => {
       const filteredData = topLocations?.slice(0, 3) || [];
@@ -70,7 +70,11 @@ const LocationCard = ({
       </div>
     ))
   ) : (
-    <p className="text-center text-gray-500">No location data available</p>
+    <div className="flex flex-col items-center justify-center h-full h-90 text-gray-500 mr-20 mt-[20px]">
+    <p className="text-center text-lg font-apfel-grotezk-regular">Share your portfolio to unlock 
+      <p>location insights as soon as</p> 
+      <p>people start viewing it.</p></p>
+    </div>
   )}
 </div>
 

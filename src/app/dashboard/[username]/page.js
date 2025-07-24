@@ -214,18 +214,23 @@ const DashboardPage = () => {
       {!isInstagramLinked && (
         <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-6 rounded-xl" style={{ height: "680px" }}>
           <h2 className="text-3xl md:text-4xl text-[#e7e300] font-qimano mb-4">
-            Dashboard Inactive
+            Get Started
           </h2>
           <p className="text-white mb-6 max-w-lg font-apfel-grotezk-regular">
-            Complete your Press Kit by adding your work and their details to activate the dashboard
-          </p>
+             For creators with 1K+ followers, Snatch allows you to directly connect your Instagram. Select your best posts, past collabs, stats, and turn it into a professional press kit within minutes.
+         </p>
+         <a
+          href="https://www.snatchsocial.com/connect-instagram-via-facebook-step1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <button
-            onClick={handleLogin}
-            className="bg-[#e7e300] text-black px-6 py-3 rounded-lg hover:bg-yellow-300 transition-all duration-200 flex items-center gap-2"
+            className="bg-[#e7e300] text-black px-6 py-3 rounded-lg hover:bg-yellow-300 transition-all duration-200 flex items-center gap-2 font-apfel-grotezk-regular "
           >
-            Get Started / Complete Press Kit
+            Connect Instagram via Facebook
             <span className="text-xl">→</span>
           </button>
+          </a>
         </div>
       )}
 
@@ -233,19 +238,11 @@ const DashboardPage = () => {
       {isInstagramLinked && !hasMinFollowers && (
         <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-6 rounded-xl" style={{ height: "680px" }}>
           <h2 className="text-3xl md:text-4xl text-[#e7e300] font-qimano mb-4">
-            Dashboard Not Accessible
+            You're almost there!
           </h2>
           <p className="text-white mb-6 max-w-lg font-apfel-grotezk-regular">
-            Uh oh, looks like you&#39;re just shy of the 1k mark! Snatch features unlock once you hit that milestone. 
-            We&#39;re rooting for you, can&#39;t wait to welcome you back once you&#39;re there! 🚀
+          Once your Instagram crosses 1,000 followers, you&#39;ll get full access to Snatch&#39;s dashboard and tools. Keep growing your audience, well be here when you&#39;re ready.
           </p>
-          <button
-            onClick={handleLogin}
-            className="bg-lime-yellow text-black px-6 py-3 rounded-lg hover:bg-yellow-300 transition-all duration-200 flex items-center gap-2 font-apfel-grotezk-regular"
-          >
-            Try Again
-            <span className="text-xl">→</span>
-          </button>
         </div>
       )}
     </div>
