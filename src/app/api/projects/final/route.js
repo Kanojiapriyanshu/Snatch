@@ -44,3 +44,8 @@ export async function POST(req) {
   }
 }
 
+
+// {
+//     "success": false,
+//     "error": "ProjectDraft validation failed: formData.0.key: Path `key` is required."
+// }  becuase at 0 index 1 project empty got created 

@@ -103,32 +103,36 @@ export default function OnboardingLayout({ children }) {
     router.push("/settings");
   };
 
-  const handlePortfolioClick = async () => {
-    if (!userId) {
-      console.error("No userId found, user not signed in!");
-      return;
-    }
+const handlePortfolioClick = async () => {
+  if (!userId) {
+    console.error("No userId found, user not signed in!");
+    return;
+  }
 
   setHasClickedPortfolio(true);
   await fetch("/api/onboarding/viewed", { method: "POST" });
 
-    const storedFormData = localStorage.getItem(`formData_${userId}`);
-    if (storedFormData) {
-      const parsedData = JSON.parse(storedFormData);
-      const username = parsedData?.username;
+  const storedFormData = localStorage.getItem(`formData_${userId}`);
+  if (storedFormData) {
+    const parsedData = JSON.parse(storedFormData);
+    const username = parsedData?.username;
 
-      if (username) {
-        // If the logged-in user's ID matches the portfolio's userId, they are the admin
-        const isAdmin = userId === parsedData.userId;
-        const route = isAdmin ? `/${username}/media-kit/adminview` : `/${username}/media-kit`;
-        router.push(route);
-      } else {
-        console.error("Username not found in formData!");
-      }
+    if (username) {
+      const isAdmin = userId === parsedData.userId;
+      const route = isAdmin
+        ? `/${username}/media-kit/adminview`
+        : `/${username}/media-kit`;
+        
+      // Open the route in a new tab
+      window.open(route, "_blank");
     } else {
-      console.error("No formData found in localStorage!");
+      console.error("Username not found in formData!");
     }
-  };
+  } else {
+    console.error("No formData found in localStorage!");
+  }
+};
+
 
   return (
     <FormProvider>
