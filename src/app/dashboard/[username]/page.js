@@ -170,7 +170,7 @@ const DashboardPage = () => {
                 <h2 className="text-2xl 3xl:text-3xl text-gray-800">Explore the Creator Circle</h2>
                 <p className="mt-4 text-sm 3xl:text-base text-center font-apfel-grotezk-regular text-gray-700 leading-relaxed min-w-80 3xl:min-w-0">
                   Get inspired by fellow influencers on the platform. Browse profiles,
-                  see how they’re showcasing themselves, and discover fresh ways to shine.
+                  see how they&#39;re showcasing themselves, and discover fresh ways to shine.
                 </p>
               </div>
 
@@ -238,7 +238,7 @@ const DashboardPage = () => {
       {isInstagramLinked && !hasMinFollowers && (
         <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-6 rounded-xl" style={{ height: "680px" }}>
           <h2 className="text-3xl md:text-4xl text-[#e7e300] font-qimano mb-4">
-            You're almost there!
+            You&#39;re almost there!
           </h2>
           <p className="text-white mb-6 max-w-lg font-apfel-grotezk-regular">
           Once your Instagram crosses 1,000 followers, you&#39;ll get full access to Snatch&#39;s dashboard and tools. Keep growing your audience, well be here when you&#39;re ready.
