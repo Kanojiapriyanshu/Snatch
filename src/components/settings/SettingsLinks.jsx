@@ -1,12 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
+
 export default function SettingsLinks() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const router = useRouter();
   const { signOut } = useClerk();
-
+  const { user } = useUser();
 
   const items = [
     {
@@ -36,23 +39,38 @@ export default function SettingsLinks() {
     },
   ];
 
-
   const handleItemClick = (label, href) => {
     if (label === "Delete Account") {
       setShowDeleteModal(true);
-    }
-     else if (label === "Logout") {
+    } else if (label === "Logout") {
       signOut(() => router.push("/"));
     } else {
       router.push(href);
     }
   };
 
+const handleDelete = async () => {
+  setShowDeleteModal(false);
+  try {
+    const res = await fetch("/api/requestDelete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user?.id,
+        email: user?.emailAddresses?.[0]?.emailAddress,
+      }),
+    });
 
-  const handleDelete = () => {
-    setShowDeleteModal(false);
-    router.push("/delete-account");
-  };
+    if (res.ok) {
+      alert("✅ Your deletion request has been submitted.");
+    } else {
+      alert("❌ Failed to submit deletion request. Please try again later or email our support team.");
+    }
+  } catch (err) {
+    console.error("Failed to notify server of account deletion", err);
+    alert("❌ An unexpected error occurred. Please contact support.");
+  }
+};
 
 
   return (
@@ -69,12 +87,11 @@ export default function SettingsLinks() {
               {item.label}
             </span>
           </div>
-          {item.label === "Delete Account" ? (
+          {item.label === "Delete Account" && (
             <span className="text-gray-400 text-lg">…</span>
-          ) : null}
+          )}
         </button>
       ))}
-
 
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -83,7 +100,7 @@ export default function SettingsLinks() {
               <h2 className="text-md font-qimano font-semibold">Hold on!</h2>
               <button onClick={() => setShowDeleteModal(false)}>
                 <Image
-                  src="/assets/icons/settings/Cross.svg" // replace this path with your actual cross icon
+                  src="/assets/icons/settings/Cross.svg"
                   alt="Close"
                   width={16}
                   height={16}
@@ -92,12 +109,12 @@ export default function SettingsLinks() {
             </div>
             <p className="mt-4 text-sm text-gray-700 font-apfel-grotezk-regular">
               Are you sure you want to delete your account? This action is
-              permanent and all your data will be removed.
+              permanent and all your data will be removed within next 24 hours.
             </p>
             <div className="mt-6 flex justify-end gap-3 font-apfel-grotezk-regular">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="border border-blue-600 text-blue-600 rounded px-4 py-1 hover:bg-blue-50 transition font-apfel-grotezk-regular"
+                className="border border-blue-600 text-blue-600 rounded px-4 py-1 hover:bg-blue-50 transition"
               >
                 Cancel
               </button>
