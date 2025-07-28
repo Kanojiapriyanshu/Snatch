@@ -22,10 +22,23 @@ const ProjectCustomFileInput = ({
 
   const { handleCompanyLogoUpload, updateFormDataForMedia, selectionState } = useSelectedProjects();
 
-  // Retrieve file name from formData on component mount
-  useEffect(() => {
-    if (activeImageId && selectionState.formData[activeImageId]?.companyLogoFileName) {
-      setFileName(selectionState.formData[activeImageId].companyLogoFileName);
+    useEffect(() => {
+    if (!activeImageId) return;
+    // Find the formData entry for the current activeImageId
+    const formDataEntry = Array.isArray(selectionState.formData)
+      ? selectionState.formData.find(item => item.key === activeImageId.toString())
+      : null;
+
+    if (formDataEntry?.companyLogoFileName) {
+      setFileName(formDataEntry.companyLogoFileName);
+    } else {
+      setFileName("");
+    }
+
+    if (formDataEntry?.companyLogo) {
+      setImageSrc(formDataEntry.companyLogo); // Show logo preview
+    } else {
+      setImageSrc(null);
     }
   }, [activeImageId, selectionState.formData]);
 
@@ -103,15 +116,27 @@ const ProjectCustomFileInput = ({
   };
 
   return (
-    <div className="mt-0">
-      {/* File Upload Section */}
+   <div className="mt-0">
+      {/* Upload Container */}
       <div
-        className="mt-0 flex gap-8 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
+        className="mt-0 flex items-center gap-4 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
         onClick={handleButtonClick}
       >
-        <Image src={iconSrc} alt="upload" width={30} height={20} />
-        <span>{fileName || placeholder}</span> {/* Show file name or placeholder */}
+        {imageSrc ? (
+          <img
+            src={imageSrc}
+            alt="Logo Preview"
+            className="w-8 h-8 rounded-full object-cover border"
+          />
+        ) : (
+          <Image src={iconSrc} alt="upload" width={30} height={30} />
+        )}
+        <span className="text-sm text-gray-700">
+          {fileName || placeholder}
+        </span>
       </div>
+
+      {/* Hidden Input */}
       <input
         type="file"
         className="hidden"
@@ -135,7 +160,7 @@ const ProjectCustomFileInput = ({
                 onCropComplete={onCropComplete}
               />
             </div>
-            <div className="flex gap-4 mt-4">
+            <div className="flex gap-4 mt-4 justify-end">
               <button
                 onClick={() => setIsCropping(false)}
                 className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
@@ -144,7 +169,7 @@ const ProjectCustomFileInput = ({
               </button>
               <button
                 onClick={cropImage}
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
               >
                 Set
               </button>

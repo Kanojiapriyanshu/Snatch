@@ -224,10 +224,29 @@ const areFormFieldsEmpty = (formData) => {
   });
 };
 
-// ...existing code...
+// useEffect(() => {
+//   if (!activeProject) return;
+//   const formData = selectionState.formData.find((item) => item.key === activeProject.mediaId?.toString());
+//   if (areFormFieldsEmpty(formData)) {
+//     setTimeout(() => {
+//       setShowBrandPopup(true);
+//       setPopupStep(1); // Reset to first step
+//       setPopupAnimating(true);
+//       setTimeout(() => setPopupAnimating(false), 1000);
+//     }, 1000);
+//   } else {
+//     setShowBrandPopup(false);
+//   }
+// }, [activeProject?.mediaId]);
+
 useEffect(() => {
   if (!activeProject) return;
-  const formData = selectionState.formData.find((item) => item.key === activeProject.mediaId?.toString());
+  const formDataArray = Array.isArray(selectionState.formData)
+    ? selectionState.formData
+    : [];
+  const formData = formDataArray.find(
+    (item) => item.key === activeProject.mediaId?.toString()
+  );
   if (areFormFieldsEmpty(formData)) {
     setTimeout(() => {
       setShowBrandPopup(true);
@@ -239,7 +258,6 @@ useEffect(() => {
     setShowBrandPopup(false);
   }
 }, [activeProject?.mediaId]);
-// ...existing code...
 
 
 // Add this useEffect to your component fr uplaoded files form data
@@ -442,9 +460,12 @@ const isFormComplete = () => {
     if (activeProject && project.mediaId === activeProject.mediaId) {
       return "Editing";
     }
-    const formEntry = selectionState.formData.find(
-      (item) => item.key === project.mediaId
-    );
+    // const formEntry = selectionState.formData.find(
+    //   (item) => item.key === project.mediaId
+    // );
+    const formEntry = Array.isArray(selectionState.formData)
+    ? selectionState.formData.find((item) => item.key === project.mediaId)
+    : null;
     if (formEntry) {
       const isComplete = requiredFields.every((field) => !!formEntry[field]);
       console.log("iscomplete project", isComplete)
@@ -1052,7 +1073,6 @@ const handlePopupGenerate = async () => {
                 onFileChange={(uploadedUrl) => console.log("Uploaded URL:", uploadedUrl)}
                 placeholder="Upload a company logo from your device"
                 iconSrc="/assets/icons/onboarding/Upload.svg"
-                label="Upload company logo"
                 activeImageId={activeImageId} 
               />
               </div>
