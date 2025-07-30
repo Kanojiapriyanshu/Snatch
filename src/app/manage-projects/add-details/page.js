@@ -609,7 +609,7 @@ const handlePopupGenerate = async () => {
 
       {/* Message */}
       <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
-        You need at least <strong>4 projects</strong> to create your portfolio. Until then, previews will look incomplete. Your progress will be saved, but your profile won't be shareable just yet.
+        You need at least <strong>4 projects</strong> to create your portfolio. Until then, previews will look incomplete. Your progress will be saved, but your profile won&apos;t be shareable just yet.
       </p>
 
       {/* Buttons */}
@@ -650,13 +650,13 @@ const handlePopupGenerate = async () => {
       </button>
 
       {/* Title */}
-      <h2 className="text-xl text-graphite mb-4 text-left font-qimano">You’re Good to Go!</h2>
+      <h2 className="text-xl text-graphite mb-4 text-left font-qimano">You&apos;re Good to Go!</h2>
 
       <hr className="border-gray-200 mb-4" />
 
       {/* Message */}
       <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
-       Nice work! You’ve completed the required project details. Any unfinished ones have been saved as drafts and won’t appear in your portfolio (yet!).
+       Nice work! You&apos;ve completed the required project details. Any unfinished ones have been saved as drafts and won&apos;t appear in your portfolio (yet!).
       </p>
 
       {/* Buttons */}
