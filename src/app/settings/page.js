@@ -4,19 +4,26 @@ import { useState, useEffect } from "react";
 import Header from "@/components/settings/Header";
 import Menu from "@/components/settings/Menu";
 import SettingsLinks from "@/components/settings/SettingsLinks";
+import Image from "next/image";
 
 export default function Page() {
   const [isConnected, setIsConnected] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true); 
   const [loading, setLoading] = useState(false);
+  const [facebookPageName, setFacebookPageName] = useState("");
+  const [instagramUsername, setInstagramUsername] = useState("");
 
 useEffect(() => {
   const checkConnection = async () => {
     try {
       const response = await fetch("/api/auth/check-instagram-connection");
       const data = await response.json();
-      if (data.connected) setIsConnected(true);
+      if (data.connected) {
+        setIsConnected(true);
+        setFacebookPageName(data.facebookPageName || "");
+        setInstagramUsername(data.instagramUsername || "");
+      }
     } catch (error) {
       console.error("Error checking Instagram connection:", error);
     } finally {
@@ -45,7 +52,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] flex flex-col">
+   <div className="min-h-screen bg-[#f5f5f5] flex flex-col">
       <div className="sticky top-0 z-50">
         <Header />
       </div>
@@ -60,44 +67,81 @@ useEffect(() => {
             Link social media
           </div>
 
-          <p className="text-xl font-medium font-qimano">
-            Connect With Instagram To Add Your Projects
-          </p>
-          <p className="text-md text-gray-600 mt-2 font-apfel-grotezk-regular">
-            Linking your Instagram account allows you to directly add your creations to your profile kit on Snatch.
-          </p>
-          <p className="text-md text-gray-600 mt-2 font-apfel-grotezk-regular">
-            To disconnect your Instagram from Snatch: Go to your Facebook account settings → Settings & Privacy → Settings → Business Integrations. Find Snatch, click Remove, and confirm.
-          </p>
+          {checkingStatus ? (
+            // 🔄 Loader while checking
+            <div className="mt-6 text-center">
+              <h2 className="text-lg font-apfel-grotezk-regular text-gray-600">
+                Checking your Instagram connection...
+              </h2>
+              <div className="mt-4 flex justify-center">
+                <div className="w-6 h-6 border-2 border-gray-300 border-t-electric-blue rounded-full animate-spin"></div>
+              </div>
+            </div>
+          ) : isConnected ? (
+            // ✅ Connected state
+            <div className="mt-6 text-center">
+              <h2 className="text-2xl font-qimano text-electric-blue mb-4">
+                Your account is connected!
+              </h2>
 
-          {/* Shows status only */}
-         <button
-          onClick={!isConnected ? handleLoginRedirect : null}
-          disabled={loading || isConnected || checkingStatus}
-          className={`px-5 py-2.5 mt-5 ${
-            checkingStatus
-              ? "bg-gray-300 text-gray-600"
-              : isConnected
-              ? "bg-green-500 text-white"
-              : "bg-electric-blue text-white hover:bg-blue-600"
-          } border border-light-grey rounded-md text-md font-apfel-grotezk-regular font-medium transition`}
-        >
-          {checkingStatus
-            ? "Checking connection..."
-            : isConnected
-            ? "Your account is connected"
-            : "Your account is not connected"}
-        </button>
+              <div className="flex justify-center gap-3 mb-4">
+                {/* Facebook Button */}
+                <div className="bg-gray-200 text-[#009951] px-2 py-1 rounded-lg flex items-center min-w-[160px]">
+                  <Image
+                    src="/assets/images/facebook-green.svg"
+                    alt="Facebook"
+                    width={16}
+                    height={16}
+                    className="w-10 h-9"
+                  />
+                  <span className="text-sm font-medium">
+                    {facebookPageName || "N/A"}
+                  </span>
+                </div>
 
+                {/* Instagram Button */}
+                <div className="bg-gray-200 text-[#009951] px-2 py-1 rounded-lg flex items-center min-w-[160px]">
+                  <Image
+                    src="/assets/images/insta-green.svg"
+                    alt="Instagram"
+                    width={16}
+                    height={16}
+                    className="w-10 h-9"
+                  />
+                  <span className="text-sm font-medium">
+                    {instagramUsername || "N/A"}
+                  </span>
+                </div>
+              </div>
 
-          {/* Triggers redirect */}
-          <button
-            onClick={handleLoginRedirect}
-            disabled={isRedirecting}
-            className="px-5 py-2.5 bg-electric-blue text-white text-md font-apfel-grotezk-regular font-medium transition rounded-md ml-8"
-          >
-            {isRedirecting ? "Redirecting..." : "Refresh Instagram login"}
-          </button>
+              <p className="text-gray-600 text-md font-apfel-grotezk-regular">
+                Your Instagram is now securely connected to Snatch, and your
+                content will begin syncing automatically.
+              </p>
+            </div>
+          ) : (
+            // ❌ Not connected state
+            <>
+              <p className="text-xl font-medium font-qimano">
+                Connect With Instagram To Add Your Projects
+              </p>
+              <p className="text-md text-gray-600 mt-2 font-apfel-grotezk-regular">
+                Linking your Instagram account allows you to directly add your
+                creations to your profile kit on Snatch.
+              </p>
+            </>
+          )}
+
+          {/* Refresh Button */}
+          {!checkingStatus && (
+            <button
+              onClick={handleLoginRedirect}
+              disabled={isRedirecting}
+              className="px-12 py-2.5 mt-4 bg-electric-blue text-white text-md font-apfel-grotezk-regular font-medium transition rounded-md ml-8"
+            >
+              {isRedirecting ? "Redirecting..." : "Refresh Instagram login"}
+            </button>
+          )}
 
           {/* Settings Links */}
           <SettingsLinks />

@@ -25,7 +25,8 @@ export async function GET(req) {
     // Check if Instagram details are present
     const isConnected = !!(user.instagramAccessToken && user.instagramAccountId);
 
-    return NextResponse.json({ connected: isConnected });
+    return NextResponse.json({ connected: isConnected, facebookPageName: user.facebookPageName || null,
+      instagramUsername: user.instagramUsername || null, });
   } catch (error) {
     console.error("Error checking Instagram connection:", error);
     return NextResponse.json(

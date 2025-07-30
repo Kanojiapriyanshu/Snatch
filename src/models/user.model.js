@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema(
       ref: "OnboardingData", // Links to the OnboardingData schema
       required: false, // Allows flexibility to add this field later
     },
+    facebookPageName: {
+      type: String,
+      required: false, // added to save the fb page name
+    },
   },
   { timestamps: true }
 );

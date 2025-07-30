@@ -92,9 +92,11 @@ if (pagesData.error) {
       if (igAccountData.instagram_business_account) {
         selectedPage = {
           pageId: page.id,
+          pageName: page.name,  //added for page name
           pageToken: page.access_token,
           instagramAccountId: igAccountData.instagram_business_account.id
         };
+        console.log("Selected Page: to add facebookpagename", selectedPage);
         break;
       }
     }
@@ -115,9 +117,19 @@ if (pagesData.error) {
       );
     }
 
-    user.instagramAccessToken = selectedPage.pageToken; // Using page token for Instagram API calls
-    user.instagramAccountId = selectedPage.instagramAccountId;
-    await user.save();
+    const updatedUser = await User.findOneAndUpdate(
+      { userId },
+      {
+        $set: {
+          instagramAccessToken: selectedPage.pageToken,
+          instagramAccountId: selectedPage.instagramAccountId,
+          facebookPageName: selectedPage.pageName,
+        },
+      },
+      { new: true }
+    );
+
+   console.log("Updated user with Facebook page:", updatedUser);
 
     const insightsResponse = await fetch(
       `https://graph.facebook.com/v21.0/${selectedPage.instagramAccountId}/insights?` +
