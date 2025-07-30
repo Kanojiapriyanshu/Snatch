@@ -86,7 +86,7 @@ useEffect(() => {
 
               <div className="flex justify-center gap-3 mb-4">
                 {/* Facebook Button */}
-                <div className="bg-gray-200 text-[#009951] px-2 py-1 rounded-lg flex items-center min-w-[160px]">
+                <div className="bg-[#0099510D] text-[#009951] px-2 py-1 rounded-lg flex items-center min-w-[160px]">
                   <Image
                     src="/assets/images/facebook-green.svg"
                     alt="Facebook"
@@ -100,7 +100,7 @@ useEffect(() => {
                 </div>
 
                 {/* Instagram Button */}
-                <div className="bg-gray-200 text-[#009951] px-2 py-1 rounded-lg flex items-center min-w-[160px]">
+                <div className="bg-[#0099510D] text-[#009951] px-2 py-1 rounded-lg flex items-center min-w-[160px]">
                   <Image
                     src="/assets/images/insta-green.svg"
                     alt="Instagram"

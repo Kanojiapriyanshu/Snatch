@@ -113,8 +113,8 @@ const handleDelete = async () => {
           </button>
 
           {expandedItem === "Disconnect Facebook Account" && item.label === "Disconnect Facebook Account" && (
-            <div className="pl-10 pr-4 py-2 text-sm text-graphite">
-              <p className="mt-2">
+            <div className="pl-10 pr-4 py-2 text-sm text-graphite font-apfel-grotezk-regular">
+              <p className="mt-2 font-apfel-grotezk-regular">
                 Go to your Facebook account settings → Settings & Privacy → Settings → Business Integrations →
                 Find Snatch → Click Remove → Confirm
               </p>
