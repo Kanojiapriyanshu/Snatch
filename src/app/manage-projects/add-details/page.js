@@ -62,8 +62,7 @@ const [popupGenerating, setPopupGenerating] = useState(false);
 const [showToast, setShowToast] = useState(false);
 const [hasConsiderations, setHasConsiderations] = useState(false);
 const [showMinProjectsPopup, setShowMinProjectsPopup] = useState(false);
-
-// ...existing code...
+const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Add this helper function before the return statement
 const checkOrientation = (width, height) => {
@@ -407,15 +406,12 @@ const handleToggle = () => {
 
   const handlePreviewClick = () => {
     if (isHydrated && filledProjectsCount < 4) {
-    setShowMinProjectsPopup(true);
-    const timer = setTimeout(() => {
-      setShowMinProjectsPopup(false);
+      setShowMinProjectsPopup(true);
+    } else if (isHydrated && filledProjectsCount >= 4) {
+      setShowSuccessPopup(true);
+    } else {
       router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
-    }, 2000);
-    return () => clearTimeout(timer);
-  } else {
-    router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
-  }
+    }
   };
  
 const isFormComplete = () => {
@@ -519,7 +515,6 @@ const handleNext = () => {
    router.push("/settings")
   }
 
-// ...existing code...
 const handleBrandPopupChoice = (isBrand) => {
   setIsBrandCollaboration(isBrand);
   // Update form data for this project
@@ -614,7 +609,7 @@ const handlePopupGenerate = async () => {
 
       {/* Message */}
       <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
-        You need at least <strong>4 projects</strong> to create your portfolio. Until then, previews will look incomplete. Your progress will be saved, but your profile won’t be shareable just yet.
+        You need at least <strong>4 projects</strong> to create your portfolio. Until then, previews will look incomplete. Your progress will be saved, but your profile won't be shareable just yet.
       </p>
 
       {/* Buttons */}
@@ -632,6 +627,51 @@ const handlePopupGenerate = async () => {
       setShowMinProjectsPopup(false);
       router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
     }, 2000);}}
+          className="bg-electric-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+        >
+          Save and Continue
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{showSuccessPopup && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+    <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
+      
+      {/* Close Icon */}
+      <button
+        className="absolute top-4 right-4 text-gray-500 hover:text-black"
+        onClick={() => setShowSuccessPopup(false)}
+        aria-label="Close"
+      >
+        ✕
+      </button>
+
+      {/* Title */}
+      <h2 className="text-xl text-graphite mb-4 text-left font-qimano">You’re Good to Go!</h2>
+
+      <hr className="border-gray-200 mb-4" />
+
+      {/* Message */}
+      <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
+       Nice work! You’ve completed the required project details. Any unfinished ones have been saved as drafts and won’t appear in your portfolio (yet!).
+      </p>
+
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row justify-center gap-4 font-apfel-grotezk-regular">
+        <button
+          onClick={() => setShowSuccessPopup(false)}
+          className="border border-electric-blue text-electric-blue px-6 py-2 rounded-xl hover:bg-blue-50 transition"
+        >
+          Keep Editing
+        </button>
+        <button
+          onClick={() => {
+            setShowSuccessPopup(false);
+            router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
+          }}
           className="bg-electric-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
         >
           Save and Continue

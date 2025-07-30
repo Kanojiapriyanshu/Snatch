@@ -205,7 +205,21 @@ export default function SignUp() {
             Verify email
           </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
-          <div className="mt-5 text-dark-grey">
+          <p className="text-gray-500 mt-2 max-w-sm text-[13px]">By signing up you have read and agree to our<Link href="/terms-and-services">
+          <span className="text-electric-blue cursor-pointer underline ml-1 mr-1">Terms of service</span>
+        </Link> 
+          and 
+        <Link href="/privacy-policy">
+          <span className="text-electric-blue cursor-pointer underline ml-1">Privacy policy</span>
+        </Link>
+        </p>
+
+         <div className="flex items-center my-3 w-[300px]">
+          <div className="flex-grow border-t border-gray-300"></div>
+          <span className="mx-4 text-gray-500 text-sm">or</span>
+          <div className="flex-grow border-t border-gray-300"></div>
+        </div>
+          <div className="mt-2 text-dark-grey">
             Already have an account?
             <Link href="/login">
               <span className="text-electric-blue ml-2 cursor-pointer">Login</span>

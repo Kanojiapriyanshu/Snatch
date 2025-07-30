@@ -13,8 +13,8 @@ const SCOPES = [
   'instagram_basic',                // Basic instagram account info
   'instagram_manage_insights',      // Access to account insights
   'pages_show_list',               // Access to page list
-  'pages_read_engagement',         // Read page engagement metrics
-  'business_management',
+  'pages_read_engagement',
+  'business_management',         
 ].join(',');
 
 export async function GET() {
