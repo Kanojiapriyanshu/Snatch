@@ -27,7 +27,7 @@ const LocationInput = ({ value, onSelectLocation, consideration, ...props }) => 
       } else {
         setSuggestions([]);
       }
-    }, 100);
+    }, 20);
     return () => clearTimeout(timeout);
   }, [query]);
 

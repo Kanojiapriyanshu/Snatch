@@ -42,14 +42,15 @@ export default function RootLayout({ children }) {
           {children}
         </Providers>
 
-          {/* ✅ Feedbask Widget Script */}
+      </body>
+    </html>
+  );
+}
+
+  {/* ✅ Feedbask Widget Script */}
         {/* <Script
           id="feedbask-widget-script"
           strategy="lazyOnload"
           src="https://cdn.feedbask.com/widget.js"
           data-client-key="d847c202-9bd5-4a9d-8e3a-8ec8f95ce897"
         /> */}
-      </body>
-    </html>
-  );
-}

@@ -1,6 +1,21 @@
+"use client";
 import Image from "next/image";
+import { useSession, useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoadingTransition() {
+   const { session } = useSession();
+  const router = useRouter();
+
+  const auth = useAuth();
+  console.log("Auth object:", auth);
+
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
       <div className="animate-pulse mb-4">

@@ -16,7 +16,7 @@ export default function EnterOtp() {
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
-
+  const [isVerifying, setIsVerifying] = useState(false);
 
   console.log("signUp", signUp);
 
@@ -40,6 +40,8 @@ export default function EnterOtp() {
 
   const verifyOtp = async () => {
     if (!isLoaded || !email) return;
+    setIsVerifying(true);
+    setError("");
   
     console.log("enter-otp login email", email)
     try {
@@ -54,8 +56,9 @@ export default function EnterOtp() {
     } catch (err) {
       console.error("Error during OTP verification:", err);
       setError(err.errors && err.errors[0]?.message || "Invalid OTP. Please try again.");
-    }
-    
+    } finally {
+      setIsVerifying(false);
+    } 
   };
 
   const handleKeyDown = (e) => {
@@ -141,7 +144,12 @@ const handleResendOtp = async () => {
     <div className="flex h-[100%] lg:h-full w-full lg:w-1/2 justify-center items-center ">
       <div className="flex flex-col justify-center items-center text-center w-full px-6 sm:px-10">
       <h1 className="text-graphite text-2xl sm:text-5xl mb-8 font-qimano">Enter OTP</h1>
-      <Otp otp={otp} setOtp={setOtp}  onKeyDown={handleKeyDown}/> {/* Use Otp component here */}
+      <Otp otp={otp} setOtp={setOtp}  onKeyDown={handleKeyDown}/> 
+      {email && (
+            <p className="text-gray-500 text-sm mb-6 font-apfel-grotezk-regular">
+              OTP has been sent to <span className="font-medium">{email}</span>
+            </p>
+      )}
        <div className="mt-4 mb-1 font-apfel-grotezk-regular">
         {resendTimer > 0 ? (
           <p className="text-gray-500 text-sm">
@@ -160,12 +168,23 @@ const handleResendOtp = async () => {
           <p className="text-green-500 text-sm mt-1">OTP resent successfully!</p>
         )}
       </div>
-
-             <button
-             onClick={verifyOtp}
-             className="w-full sm:w-[356px] h-12 bg-[#0037EB] text-white rounded-lg mt-4"
-           >
-             Verify OTP
+       <button
+            onClick={verifyOtp}
+            disabled={isVerifying}
+            className={`w-full sm:w-[356px] h-12 rounded-lg mt-4 flex items-center justify-center ${
+              isVerifying
+                ? "bg-[#809DFF] cursor-not-allowed"
+                : "bg-electric-blue hover:bg-[#002ACC]"
+            } text-white`}
+          >
+            {isVerifying ? (
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Verifying...
+              </div>
+            ) : (
+              "Verify OTP"
+            )}
           </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}     
       </div>

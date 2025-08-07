@@ -24,7 +24,11 @@ const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveVal
   }, [open]);
 
   const handleInputChange = (e) => {
-    const value = e.target.value;
+    let value = e.target.value;
+     // Capitalize the first letter
+    if (value.length > 0) {
+      value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
     setInputValue(value);
 
     if (value) {

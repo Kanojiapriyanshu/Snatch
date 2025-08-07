@@ -39,7 +39,7 @@ export default function OnboardingLayout({ children }) {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="absolute sm:top-[87%] z-50 sm:left-[43%] w-[200px] h-[74px] flex justify-center items-center gap-5 bg-white shadow-md rounded-md font-apfel-grotezk-regular">
+        <div className="absolute sm:top-[87%] z-50 sm:left-[43%] w-[200px] h-[74px] flex justify-center items-center gap-3 bg-white shadow-md rounded-md font-apfel-grotezk-regular">
         <button
             onClick={handlePrevClick}
             className="w-[72px] h-[37px] bg-white text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"

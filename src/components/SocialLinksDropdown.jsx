@@ -58,6 +58,7 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete, a
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hoveredOption, setHoveredOption] = useState(null);
   const ref = useRef(null)
+
   useEffect(() => {
     if (onChange) {
       onChange({ icon: selectedOption.icon, url });
@@ -69,6 +70,19 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete, a
       setIsDropdownOpen(true);
     }
   }, [autoOpenDropdown]);
+
+    useEffect(() => {
+    if (!isDropdownOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isDropdownOpen]);
 
   const validateUrl = (currentUrl) => {
   if (!currentUrl) {

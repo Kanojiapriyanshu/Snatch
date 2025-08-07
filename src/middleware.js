@@ -25,7 +25,8 @@ const isPublicRoute = createRouteMatcher([
   "/request-popup",
   "/api/send-email",
   "/:username/media-kit",
-  "/:username/media-kit/post"
+  "/:username/media-kit/post",
+  "/onboarding/loading"
 ]);
 
 export default clerkMiddleware(async (authFn, request) => {

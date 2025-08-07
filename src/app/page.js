@@ -17,6 +17,7 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [inputError, setInputError] = useState("");
   const { isLoaded, isSignedIn } = useUser();
+  const [isVerifying, setIsVerifying] = useState(false);
 
     useEffect(() => {
     if (isLoaded && isSignedIn) {
@@ -43,6 +44,8 @@ export default function SignUp() {
    }
 
     if (!isLoaded) return;
+    setIsVerifying(true);
+    setError("");
 
     try {
       const { createdUser } = await signUp.create({
@@ -162,11 +165,23 @@ export default function SignUp() {
             />
              {inputError && <p className="text-red-500 mt-2">{inputError}</p>}
           </div>
-          <button
+               <button
             onClick={handleVerifyEmail}
-            className="w-full sm:w-[356px] h-12 bg-[#0037EB] text-white rounded-lg mt-4"
+            disabled={isVerifying}
+            className={`w-full sm:w-[356px] h-12 rounded-lg mt-4 flex items-center justify-center ${
+              isVerifying
+                ? "bg-[#809DFF] cursor-not-allowed"
+                : "bg-electric-blue hover:bg-[#002ACC]"
+            } text-white`}
           >
-            Verify email
+            {isVerifying ? (
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Verifying...
+              </div>
+            ) : (
+              "Verify email"
+            )}
           </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
           <p className="text-gray-500 mt-2 max-w-sm text-[13px]">By signing up you have read and agree to our<Link href="/terms-and-services">

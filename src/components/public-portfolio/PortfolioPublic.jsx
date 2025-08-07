@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { useQueryClient } from "@tanstack/react-query";
 
 const PortfolioPublic = () => {
   const [carouselIndexes, setCarouselIndexes] = useState({});
@@ -15,7 +16,7 @@ const PortfolioPublic = () => {
   const [loading, setLoading] = useState(false);
   const [targetUrl, setTargetUrl] = useState('');
   const [loadingPostId, setLoadingPostId] = useState(null);
-
+  const queryClient = useQueryClient();
   // Extract username
   const pathnameParts = pathname.split("/");
   const username = pathnameParts[1] || "";
@@ -81,13 +82,52 @@ const PortfolioPublic = () => {
     });
   };
 
-  const handlePostClick = (e, mediaId, url) => {
+   // Prefetch the clicked project and its neighbors
+  const prefetchProjectAndNeighbors = async (clickedMediaId) => {
+    if (!projects || projects.length === 0) return;
+
+    const currentIndex = projects.findIndex(p => p.mediaId === clickedMediaId);
+    if (currentIndex === -1) return;
+
+    // Get indices for left, current, and right (with wrap-around)
+    const indices = [
+      currentIndex === 0 ? projects.length - 1 : currentIndex - 1, // left
+      currentIndex, // current
+      currentIndex === projects.length - 1 ? 0 : currentIndex + 1 // right
+    ];
+
+    await Promise.all(
+      indices.map(idx => {
+        const project = projects[idx];
+        if (!project) return null;
+        // Prefetch form data
+        queryClient.prefetchQuery(
+          ["postPreview", username, project.mediaId],
+          async () => {
+            const res = await fetch(`/api/public-portfolio/preview?username=${username}&postId=${project.mediaId}`);
+            return res.json();
+          }
+        );
+        // Prefetch insights
+        return queryClient.prefetchQuery(
+          ["postInsights", username, project.mediaId],
+          async () => {
+            const res = await fetch(`/api/public-portfolio/media-insights?username=${username}&postId=${project.mediaId}`);
+            return res.json();
+          }
+        );
+      })
+    );
+  };
+
+  const handlePostClick = async (e, mediaId, url) => {
     e.preventDefault();
     setLoadingPostId(mediaId);
+    await prefetchProjectAndNeighbors(mediaId);
     setTimeout(() => {
       setLoadingPostId(null);
       router.push(url);
-    }, 1500);
+    }, 1000);
   };
 
   // ✅ Loading and error states
@@ -213,7 +253,7 @@ const PortfolioPublic = () => {
                           style={{ width: 80, height: 80 }}
                         />
                       ) : (
-                        <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
+                        <span className="text-lime-yellow text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
                           Post Info & Insights ↗
                         </span>
                       )}

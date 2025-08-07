@@ -32,30 +32,39 @@ export default function EnterOtp() {
     return () => clearTimeout(timer);
   }, [resendTimer]);
 
-  const verifyOtp = async () => {
-    if (!isLoaded || !email) return;
-
-    setIsLoading(true);
-    setError("");
-
-    try {
-      await signIn.attemptFirstFactor({
-        strategy: "email_code",
-        code: otp.join(""),
-      });
-
-      await signIn.reload();
-      window.location.reload();
-    } catch (err) {
-      setError(err.message || "Invalid OTP. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (session) router.push("/dashboard");
-  }, [session, router]);
+  if (session) {
+    router.push("/dashboard");
+  }
+}, [session, router]);
+
+
+  const verifyOtp = async () => {
+  if (!isLoaded || !email) return;
+
+  setIsLoading(true);
+  setError("");
+
+  try {
+    const result = await signIn.attemptFirstFactor({
+      strategy: "email_code",
+      code: otp.join(""),
+    });
+
+    if (result.status === "complete") {
+      // No manual reload required!
+      window.location.href = "/onboarding/loading";
+    } else {
+      setError("OTP verification failed. Please try again.");
+    }
+  } catch (err) {
+    setError(err.message || "Invalid OTP. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") verifyOtp();
@@ -130,6 +139,12 @@ export default function EnterOtp() {
             Enter OTP
           </h1>
           <Otp otp={otp} setOtp={setOtp} onKeyDown={handleKeyDown} />
+          
+          {email && (
+            <p className="text-gray-500 text-sm mb-3 font-apfel-grotezk-regular">
+              OTP has been sent to <span className="font-medium">{email}</span>
+            </p>
+          )}
 
           {/* Resend */}
           <div className="mt-4 mb-1 font-apfel-grotezk-regular">
@@ -152,13 +167,23 @@ export default function EnterOtp() {
               </p>
             )}
           </div>
-
-          <button
+           <button
             onClick={verifyOtp}
             disabled={isLoading}
-            className="w-full sm:w-[356px] h-12 bg-[#0037EB] text-white rounded-lg mt-4 disabled:opacity-50"
+            className={`w-full sm:w-[356px] h-12 rounded-lg mt-4 flex items-center justify-center ${
+              isLoading
+                ? "bg-[#809DFF] cursor-not-allowed"
+                : "bg-electric-blue hover:bg-[#002ACC]"
+            } text-white`}
           >
-            {isLoading ? "Verifying..." : "Verify OTP"}
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Verifying...
+              </div>
+            ) : (
+              "Verify OTP"
+            )}
           </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>

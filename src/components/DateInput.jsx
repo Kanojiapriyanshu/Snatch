@@ -33,7 +33,6 @@ export default function DatePicker4({ value, onChange, placeholder }) {
         <div
           key={i}
           className={className}
-          data-date={dayString}
           onClick={() => handleDayClick(dayString)}
         >
           {i}
@@ -46,19 +45,12 @@ export default function DatePicker4({ value, onChange, placeholder }) {
 
   const handleDayClick = (selectedDay) => {
     setSelectedDate(selectedDay);
-  };
-
-  const updateInput = () => {
-    return selectedDate || "";
+    onChange(selectedDay); // Auto-fill the DOB field
+    setIsOpen(false); // Close datepicker automatically
   };
 
   const toggleDatepicker = () => {
     setIsOpen(!isOpen);
-  };
-
-  const handleApply = () => {
-    onChange(selectedDate); // Pass the selected date directly
-    setIsOpen(false);
   };
 
   const handleCancel = () => {
@@ -74,7 +66,6 @@ export default function DatePicker4({ value, onChange, placeholder }) {
 
   useEffect(() => {
     document.addEventListener("click", handleDocumentClick);
-
     return () => {
       document.removeEventListener("click", handleDocumentClick);
     };
@@ -88,7 +79,10 @@ export default function DatePicker4({ value, onChange, placeholder }) {
             <div className="mb-0">
               <div className="relative" ref={datepickerRef}>
                 <div className="relative flex items-center">
-                  <span onClick={toggleDatepicker} className="absolute left-0 pl-5 text-dark-5 cursor-pointer">
+                  <span
+                    onClick={toggleDatepicker}
+                    className="absolute left-0 pl-5 text-dark-5 cursor-pointer"
+                  >
                     <svg
                       className="fill-current"
                       width="20"
@@ -105,7 +99,7 @@ export default function DatePicker4({ value, onChange, placeholder }) {
                   </span>
                   <input
                     type="text"
-                    className="w-full pl-[55px] pr-4 py-2.5 border rounded focus:outline-none"
+                    className="w-[320px] 2xl:w-full pl-[55px] pr-4 py-2.5 border rounded focus:outline-none"
                     placeholder={placeholder}
                     readOnly
                     value={value}
@@ -114,45 +108,26 @@ export default function DatePicker4({ value, onChange, placeholder }) {
                 </div>
 
                 {isOpen && (
-                  <div className="absolute top-[100%] mt-2 px-8 py-2  bg-white border rounded shadow-md z-20">
+                  <div className="absolute top-[100%] mt-2 px-8 py-2 bg-white border rounded shadow-md z-20 w-56 2xl:w-full">
                     <div className="flex items-center justify-between mb-4">
-                      {/* <select
+                      <select
                         value={currentDate.getFullYear()}
                         onChange={(e) =>
                           setCurrentDate(
                             new Date(e.target.value, currentDate.getMonth())
                           )
                         }
-                        className="px-4 py-2 border rounded"
+                        className="w-20 2xl:w-36 px-2 2xl:px-4 py-2 border rounded"
                       >
-                        {Array.from({ length: 100 }, (_, i) =>
-                          new Date().getFullYear() - i
-                        ).map((year) => (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        ))}
-                      </select> */}
+                        {Array.from({ length: 2012 - 1926 + 1 }, (_, i) => 2012 - i).map(
+                          (year) => (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          )
+                        )}
+                      </select>
 
-                     <select
-                      value={currentDate.getFullYear()}
-                      onChange={(e) =>
-                        setCurrentDate(
-                          new Date(e.target.value, currentDate.getMonth())
-                        )
-                      }
-                      className="px-4 py-2 border rounded"
-                    >
-                      {Array.from(
-                        { length: 2012 - 1926 + 1 }, // Calculate the number of years from 1926 to 2012
-                        (_, i) => 2012 - i // Generate years in descending order from 2012 to 1926
-                      ).map((year) => (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      ))}
-                    </select> 
-                      
                       <select
                         value={currentDate.getMonth()}
                         onChange={(e) =>
@@ -160,7 +135,7 @@ export default function DatePicker4({ value, onChange, placeholder }) {
                             new Date(currentDate.getFullYear(), e.target.value)
                           )
                         }
-                        className="px-4 py-2 border rounded"
+                        className="w-20 2xl:w-36 px-2 2xl:px-4 py-2 border rounded"
                       >
                         {Array.from({ length: 12 }, (_, i) => (
                           <option key={i} value={i}>
@@ -171,21 +146,13 @@ export default function DatePicker4({ value, onChange, placeholder }) {
                         ))}
                       </select>
                     </div>
-                    <div className="grid grid-cols-7 gap-2">
-                      {renderCalendar()}
-                    </div>
+                    <div className="grid grid-cols-7 gap-2">{renderCalendar()}</div>
                     <div className="mt-4 flex justify-between">
                       <button
                         className="px-4 py-2 bg-gray-300 text-dark-3 rounded"
                         onClick={handleCancel}
                       >
                         Cancel
-                      </button>
-                      <button
-                        className="px-4 py-2 bg-primary text-white rounded"
-                        onClick={handleApply}
-                      >
-                        Apply
                       </button>
                     </div>
                   </div>

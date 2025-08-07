@@ -110,7 +110,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [postId, allPosts]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="w-[864px] h-[450px] text-center flex items-center justify-center mt-10 bg-white">Loading...</div>;
   if (!post) return <p>No post found.</p>;
 
   const imageUrl = post.media?.files?.[0]?.url;

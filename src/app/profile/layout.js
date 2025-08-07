@@ -125,6 +125,7 @@ const handlePortfolioClick = async () => {
         
       // Open the route in a new tab
       window.open(route, "_blank");
+    
     } else {
       console.error("Username not found in formData!");
     }

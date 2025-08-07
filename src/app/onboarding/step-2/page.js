@@ -88,14 +88,6 @@ export default function Step2() {
           onRemoveValue={(value) => handleRemoveValue("industry", value)}
         />
 
-        {/* <NormalMultiSelect  
-          label="Choose Content Type"
-          options={["Story", "Reels", "Posts"]}
-          selectedValues={formData.contentType || []}
-          onAddValue={(value) => handleAddValue("contentType", value)}
-          onRemoveValue={(value) => handleRemoveValue("contentType", value)}
-        /> */}
-
         <MultiSelectInput
           label="Choose Languages (Max 5)"
           data={[

@@ -83,7 +83,7 @@ export default function Step1() {
 
         <div className="">
   <form
-    className="mt-6 w-full 2xl:w-[70dvw] 2xl:max-w-[760px] h-[80vh] overflow-y-scroll overflow-x-hidden mx-auto  space-y-6 font-apfel-grotezk-regular"
+    className="mt-6 w-[44dvw] xl:w-[56dvw] 2xl:w-[70dvw] 2xl:max-w-[760px] h-[80vh] overflow-y-scroll overflow-x-hidden mx-auto  space-y-6 font-apfel-grotezk-regular"
     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     onSubmit={handleSubmit}
   >
@@ -92,13 +92,21 @@ export default function Step1() {
       <FormInput
         placeholder="First Name"
         value={formState.firstName}
-        onChange={(e) => updateField("firstName", e.target.value)}
+        onChange={(e) => {
+          const value = e.target.value;
+          const capitalized = value.length > 0 ? value.charAt(0).toUpperCase() + value.slice(1) : "";
+          updateField("firstName", capitalized);
+        }}
         className="w-full md:w-1/2"
       />
       <FormInput
         placeholder="Last Name"
         value={formState.lastName}
-        onChange={(e) => updateField("lastName", e.target.value)}
+        onChange={(e) => {
+          const value = e.target.value;
+          const capitalized = value.length > 0 ? value.charAt(0).toUpperCase() + value.slice(1) : "";
+          updateField("lastName", capitalized);
+        }}
         className="w-full md:w-1/2"
       />
     </div>
@@ -125,7 +133,7 @@ export default function Step1() {
       placeholder="Which city do you stay in?"
       value={formState.location}
       onSelectLocation={(loc) => {
-        updateField("location", loc.label); // or save loc.city & loc.country separately
+        updateField("location", loc.label); 
       }}
       consideration="Please select your city and country"
       className="w-full"

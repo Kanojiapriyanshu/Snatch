@@ -27,6 +27,7 @@ export default function Page() {
     }
 
     if (!isLoaded || !signIn) return;
+    setVerifying(true);
 
     try {
       // Start the sign-in process
@@ -94,6 +95,7 @@ export default function Page() {
     }
 
     if (!isLoaded || !signIn) return;
+    setVerifying(true)
 
       try {
         // Start the sign-in process
@@ -218,11 +220,23 @@ export default function Page() {
             />
             {inputError && <p className="text-red-500 mt-2">{inputError}</p>}
           </div>
-          <button
+            <button
             onClick={handleSubmit}
-            className="w-full sm:w-[356px] h-12 bg-[#0037EB] text-white rounded-lg mt-4"
+            disabled={verifying}
+            className={`w-full sm:w-[356px] h-12 rounded-lg mt-4 flex items-center justify-center ${
+              verifying
+                ? 'bg-[#809DFF] cursor-not-allowed'
+                : 'bg-electric-blue hover:bg-[#002ACC]'
+            } text-white`}
           >
-            Verify email
+            {verifying ? (
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Verifying...
+              </div>
+            ) : (
+              'Verify email'
+            )}
           </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
