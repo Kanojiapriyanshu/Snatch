@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.1.6",
     "@clerk/nextjs": "^6.7.0",
     "@google/generative-ai": "^0.24.0",
     "@lottiefiles/dotlottie-react": "^0.14.2",
