@@ -174,8 +174,23 @@ export default function SignUp() {
                 : "bg-electric-blue hover:bg-[#002ACC]"
             } text-white`}
           >
-            Click here: {userId ? "Dashboard" : "Create your account"} page
-          </Link>
+            {isVerifying ? (
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Verifying...
+              </div>
+            ) : (
+              "Verify email"
+            )}
+          </button>
+          {error && <p className="text-red-500 mt-2">{error}</p>}
+          <p className="text-gray-500 mt-2 max-w-sm text-[13px]">By signing up you have read and agree to our<Link href="/terms-and-services">
+          <span className="text-electric-blue cursor-pointer underline ml-1 mr-1">Terms of service</span>
+        </Link> 
+          and 
+        <Link href="/privacy-policy">
+          <span className="text-electric-blue cursor-pointer underline ml-1">Privacy policy</span>
+        </Link>
         </p>
 
          <div className="flex items-center my-3 w-[300px]">
@@ -191,6 +206,7 @@ export default function SignUp() {
           </div>
         </div>
       </div>
+    </div>
   );
 }
 
