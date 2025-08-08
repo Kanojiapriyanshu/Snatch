@@ -11,7 +11,7 @@ const usernameSchema = z.string().min(1, "Enter your Instagram username").regex(
   "Invalid Instagram username"
 );
 
-export default function InstagramInput({ placeholder = "Enter Instagram username", value, onChange }) {
+export default function InstagramInput({ placeholder = "Enter Instagram username*", value, onChange }) {
   const [error, setError] = useState("");
   const { updateFormData } = useFormContext();
 

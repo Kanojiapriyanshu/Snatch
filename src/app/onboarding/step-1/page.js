@@ -83,14 +83,14 @@ export default function Step1() {
 
         <div className="">
   <form
-    className="mt-6 w-[44dvw] xl:w-[56dvw] 2xl:w-[70dvw] 2xl:max-w-[760px] h-[80vh] overflow-y-scroll overflow-x-hidden mx-auto  space-y-6 font-apfel-grotezk-regular"
+    className="mt-6 w-[45dvw] 2xl:w-[70dvw] 2xl:max-w-[760px] h-[80vh] overflow-y-scroll overflow-x-hidden mx-auto  space-y-6 font-apfel-grotezk-regular"
     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     onSubmit={handleSubmit}
   >
     {/* First and Last Name */}
     <div className="flex flex-col md:flex-row gap-6">
       <FormInput
-        placeholder="First Name"
+        placeholder="First Name*"
         value={formState.firstName}
         onChange={(e) => {
           const value = e.target.value;
@@ -100,7 +100,7 @@ export default function Step1() {
         className="w-full md:w-1/2"
       />
       <FormInput
-        placeholder="Last Name"
+        placeholder="Last Name*"
         value={formState.lastName}
         onChange={(e) => {
           const value = e.target.value;
@@ -115,13 +115,13 @@ export default function Step1() {
     <div className="flex flex-col md:flex-row gap-0">
       <CustomDropdown
         options={["Male", "Female", "Other", "Prefer not to say"]}
-        placeholder="Gender"
+        placeholder="Gender*"
         onSelect={(option) => updateField("gender", option)}
         selected={formState.gender}
         className="w-full md:w-1/2"
       />
       <DateInput
-        placeholder="Date of birth"
+        placeholder="Date of birth*"
         value={formState.dateOfBirth}
         onChange={(value) => updateField("dateOfBirth", value)}
         className="w-full md:w-1/2"
@@ -130,7 +130,7 @@ export default function Step1() {
 
     {/* Location */}
     <LocationInput
-      placeholder="Which city do you stay in?"
+      placeholder="Which city do you stay in?*"
       value={formState.location}
       onSelectLocation={(loc) => {
         updateField("location", loc.label); 
@@ -150,8 +150,10 @@ export default function Step1() {
           className="w-full"
         />
         <div className="flex items-center mt-1 text-sm  font-apfel-grotezk-regular">
-          <span className="tracking-wide">Minimum <span className="font-normal tracking-wide">1,000 Instagram Followers
-            </span> required</span>
+        <span className="tracking-wide">
+  Must have an Instagram <span className="font-normal">Creator</span> or <span className="font-normal">Business</span> account with at least <span className="font-normal">1,000 followers</span>.
+</span>
+
           <span title="If you have under 1k followers, you will not be able to access snatch features once you've signed up.">
             <img src="/assets/images/info.svg" alt="info" className="w-4 h-4 ml-2 inline" />
           </span>
@@ -184,7 +186,7 @@ export default function Step1() {
     <div className="space-y-3">
       <CustomFileInput
         onFileChange={(uploadedUrl, uploadedFileName) => updateFormData({ profilePicture: uploadedUrl, profilePictureName: uploadedFileName, })}
-        placeholder="Upload a profile picture from your device"
+        placeholder="Upload a profile picture from your device*"
         iconSrc="/assets/icons/onboarding/Upload.svg"
         label="Upload picture"
         fileNameKey="profilePictureName"

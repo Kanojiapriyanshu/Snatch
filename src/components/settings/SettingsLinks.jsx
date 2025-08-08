@@ -11,21 +11,25 @@ export default function SettingsLinks() {
   const router = useRouter();
   const { signOut } = useClerk();
   const { user } = useUser();
+  const [hoveredIndex, setHoveredIndex] = useState(null);
 
   const items = [
     {
       label: "Privacy policy",
       icon: "/assets/icons/settings/privacy.svg",
+      iconHover: "/assets/icons/settings/privacy1.svg",
       href: "/privacy-policy",
     },
     {
       label: "Terms and Services",
       icon: "/assets/icons/settings/Terms.svg",
+      iconHover: "/assets/icons/settings/Terms1.svg",
       href: "/terms-and-services",
     },
     {
       label: "Cookies policy",
       icon: "/assets/icons/settings/Cookies.svg",
+      iconHover: "/assets/icons/settings/Cookies1.svg",
       href: "/cookies",
     },
     {
@@ -36,11 +40,13 @@ export default function SettingsLinks() {
     {
       label: "Delete Snatch Account",
       icon: "/assets/icons/settings/Delete.svg",
+      iconHover: "/assets/icons/settings/delete1.svg",
       href: "#",
     },
     {
       label: "Logout",
       icon: "/assets/icons/settings/logout.svg",
+      iconHover: "/assets/icons/settings/logout1.svg",
       href: "/logout",
     },
   ];
@@ -86,11 +92,18 @@ const handleDelete = async () => {
    {items.map((item, index) => (
         <div key={index}>
           <button
+          onMouseEnter={() => setHoveredIndex(index)}
+          onMouseLeave={() => setHoveredIndex(null)}
             onClick={() => handleItemClick(item.label, item.href)}
             className="w-full text-left flex items-center justify-between border-b pb-3 hover:bg-gray-100 px-2 rounded transition group"
           >
             <div className="flex items-center gap-3">
-              <Image src={item.icon} alt={item.label} width={18} height={18} />
+              <Image
+              src={hoveredIndex === index ? item.iconHover : item.icon}
+              alt={item.label}
+              width={18}
+              height={18}
+            />
               <span className="text-md text-black group-hover:text-[#0037EB] transition-colors font-apfel-grotezk-regular">
                 {item.label}
               </span>

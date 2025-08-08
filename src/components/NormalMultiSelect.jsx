@@ -40,40 +40,28 @@ const NormalMultiSelect = ({ label, options, selectedValues, onAddValue, onRemov
 
       {/* Input container */}
       <div
-        className="relative z-20 w-full rounded-md bg-transparent border border-gray-300 p-[2px] pr-8 text-graphite outline-none transition focus-within:border-electric-blue cursor-pointer"
+        className="relative z-20 w-full rounded-md bg-transparent border border-gray-300 p-[6px] pr-8 text-graphite outline-none transition focus-within:border-electric-blue cursor-pointer"
         onClick={toggleDropdown}
       >
-        <div className="flex flex-wrap items-center gap-2 min-h-[40px] " style={{ padding: "0px" }}>
+        <div className="flex flex-wrap items-center ml-1 gap-1 min-h-[40px] " style={{ padding: "0px" }}>
           {/* Display selected values here it was -z-50  made it to z-20 to make cross clickable and remove work*/}
           { Array.isArray(selectedValues) &&
             selectedValues.map((value, index) => (
               <span
                 key={`${label}-${index}`}
-                className="m-[5px] flex items-center justify-center border-[.5px] border-stroke bg-[#0037EB] bg-opacity-10 py-[7px] px-[20px] text-sm font-medium text-graphite relative z-20 rounded-md"
+                className="flex items-center px-4 py-1 text-sm text-graphite bg-[#0037EB] bg-opacity-10 rounded-md mr-2 "
               >
                 {value}
-                <span
-                  className="cursor-pointer z-20 pl-2 text-gray-500 hover:text-gray-700 absolute right-[5px] top-1/2 transform -translate-y-1/2"
+                <button
+                  type="button"
+                  className="ml-2 text-xs text-gray-500 hover:text-red-500"
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent the click from toggling the dropdown
-                    onRemoveValue(value); // Call the remove handler
+                    e.stopPropagation();
+                    onRemoveValue(value);
                   }}
                 >
-                  <svg
-                    width={12}
-                    height={12}
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M9.35355 3.35355C9.54882 3.15829 9.54882 2.84171 9.35355 2.64645C9.15829 2.45118 8.84171 2.45118 8.64645 2.64645L6 5.29289L3.35355 2.64645C3.15829 2.45118 2.84171 2.45118 2.64645 2.64645C2.45118 2.84171 2.45118 3.15829 2.64645 3.35355L5.29289 6L2.64645 8.64645C2.45118 8.84171 2.45118 9.15829 2.64645 9.35355C2.84171 9.54882 3.15829 9.54882 3.35355 9.35355L6 6.70711L8.64645 9.35355C8.84171 9.54882 9.15829 9.54882 9.35355 9.35355C9.54882 9.15829 9.54882 8.84171 9.35355 8.64645L6.70711 6L9.35355 3.35355Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </span>
+                  ✕
+                </button>
               </span>
             ))}
         </div>
@@ -100,7 +88,7 @@ const NormalMultiSelect = ({ label, options, selectedValues, onAddValue, onRemov
 
       {/* Dropdown List */}
       {isDropdownOpen && (
-        <ul className="absolute mt-2 w-full rounded-lg border border-stroke bg-[#E9E9E9] py-2 h-44 overflow-y-scroll ">
+        <ul className="absolute mt-2 w-full rounded-lg border border-stroke bg-[#E9E9E9] py-2 h-44 overflow-y-scroll z-[9999]">
           {options.map((option, idx) => (
             <li
               key={idx}

@@ -28,8 +28,8 @@ const TitleWithCounter = ({ label, value, onChange, maxWords = label === "Give i
   const currentWords = countWords(value);
 
   return (
-    <div className="p-4 border border-gray-300 rounded-lg w-[534px]">
-      <div className="flex justify-between items-center mb-2">
+    <div className="p-4 border border-gray-300 rounded-lg w-[534px] mb-3">
+      <div className="flex justify-between items-center mb-5">
         <label className="block text-md font-medium text-gray-700">{label}</label>
         <span className="text-sm text-gray-500">
           {currentWords}/{maxWords} words
@@ -41,8 +41,8 @@ const TitleWithCounter = ({ label, value, onChange, maxWords = label === "Give i
           value={value}
           onChange={handleChange}
           placeholder="Enter text here"
-          className="bg-transparent w-full p-3 rounded-md border-t-2 border-gray-200 focus:outline-none text-gray-700 text-sm font-apfel-grotezk-regular resize-none"
-          rows={2}
+          className="bg-transparent w-full p-3 rounded-md border-t-2 border-gray-200 focus:outline-none text-gray-700 text-sm font-apfel-grotezk-regular min-h-[110px] resize-none"
+          rows={4}
         />
       </div>
     </div>
