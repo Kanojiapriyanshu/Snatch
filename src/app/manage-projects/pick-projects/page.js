@@ -255,7 +255,7 @@ const renderUploadTab = () => (
         <div className="grid grid-cols-2 gap-2">
           {selectionState.uploadedFiles.map((file, index) => (
             <div key={index} className="flex flex-col justify-center items-center">
-              <div className="w-full h-full border-2 border-light-grey rounded-lg flex justify-center items-center">
+              <div className="w-full h-full  border-light-grey rounded-lg flex justify-center items-center">
                 {/* Check if the file is an image */}
                 {file.fileUrl?.match(/\.(jpeg|jpg|png|gif|webp|svg)$/i) ? (
                   <Image
@@ -298,15 +298,15 @@ const renderUploadTab = () => (
     </div>
 
     {/* Upload area */}
-    <div className="w-[70vw] h-[70vh] text-black rounded-md pt-1">
+    <div className="w-[70vw] h-[70vh] text-black rounded-md pt-1 b">
       <div className="flex gap-6 7xl:justify-center  h-full">
         <label
           htmlFor="file-upload"
-          className="cursor-pointer w-[200px] h-[200px] border-2 border-light-grey rounded-md flex justify-center items-center"
+          className="cursor-pointer w-[200px] h-[200px]  bg-gray-200 rounded-md flex justify-center items-center"
         >
           <div className="flex flex-col justify-center items-center">
           <span className="font-qimano text-xl">Upload your files</span>
-          <span className="font-apfel-grotezk-regular text-sm text-light-grey px-3">Only png, jpg, and .mp4 files <span className="mx-auto ml-10 font-apfel-grotezk-mittel">of max limit 5mb</span></span>
+          <span className="font-apfel-grotezk-regular text-sm text-gray-500 px-3">Only png, jpg, and .mp4 files <span className="mx-auto ml-10 font-apfel-grotezk-mittel">of max limit 5mb</span></span>
           <span className="mt-2 text-dark-grey text-2xl">
             <Image
               src="/assets/images/upload-folder.svg"
@@ -352,7 +352,7 @@ return (
       <div className="flex w-full border-b border-gray-300 mt-0 items-center ">
       <button
           onClick={() => handleTabClick("instagram")}
-          className={`flex-1 py-2 text-md font-semibold text-center flex items-center justify-center ${
+          className={`flex-1 py-2 text-md font-medium text-center flex items-center justify-center ${
             selectedTab === "instagram"
               ? "text-electric-blue border-b-2 border-electric-blue"
               : "text-gray-500"
@@ -368,7 +368,7 @@ return (
 
         <button
           onClick={() => handleTabClick("upload")}
-          className={`flex-1 py-2 text-md font-semibold text-center flex items-center justify-center ${
+          className={`flex-1 py-2 text-md font-medium text-center flex items-center justify-center ${
             selectedTab === "upload"
               ? "text-electric-blue border-b-2 border-electric-blue"
               : "text-gray-500"
@@ -376,7 +376,7 @@ return (
         >
         <Uploadsvg
         style={{
-          color: selectedTab === "upload" ? "blue" : "", height: "35px"
+          color: selectedTab === "upload" ? "blue" : "", height: "35px",
         }}
       />  
           Upload

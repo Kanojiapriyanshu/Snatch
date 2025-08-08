@@ -3,29 +3,32 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useClerk, useUser } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 
 export default function SettingsLinks() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [expandedItem, setExpandedItem] = useState(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
   const router = useRouter();
   const { signOut } = useClerk();
-  const { user } = useUser();
 
   const items = [
     {
       label: "Privacy policy",
       icon: "/assets/icons/settings/privacy.svg",
+      iconHover: "/assets/icons/settings/privacy1.svg",
       href: "/privacy-policy",
     },
     {
       label: "Terms and Services",
       icon: "/assets/icons/settings/Terms.svg",
+      iconHover: "/assets/icons/settings/Terms1.svg",
       href: "/terms-and-services",
     },
     {
       label: "Cookies policy",
       icon: "/assets/icons/settings/Cookies.svg",
+      iconHover: "/assets/icons/settings/Cookies1.svg",
       href: "/cookies",
     },
     {
@@ -36,11 +39,13 @@ export default function SettingsLinks() {
     {
       label: "Delete Snatch Account",
       icon: "/assets/icons/settings/Delete.svg",
+      iconHover: "/assets/icons/settings/delete1.svg",
       href: "#",
     },
     {
       label: "Logout",
       icon: "/assets/icons/settings/logout.svg",
+      iconHover: "/assets/icons/settings/logout1.svg",
       href: "/logout",
     },
   ];
@@ -48,80 +53,51 @@ export default function SettingsLinks() {
   const handleItemClick = (label, href) => {
     if (label === "Delete Snatch Account") {
       setShowDeleteModal(true);
-    } else if (label === "Logout") {
-      signOut(() => router.push("/"));
-    }else if (label === "Disconnect Facebook Account") {
-      setExpandedItem(expandedItem === label ? null : label);
+    }
+     else if (label === "Logout") {
+      setIsLoggingOut(true);
+      signOut(() => {
+        router.push("/");
+        setIsLoggingOut(false);
+      });
     } else {
       router.push(href);
     }
   };
 
-const handleDelete = async () => {
-  setShowDeleteModal(false);
-  try {
-    const res = await fetch("/api/requestDelete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: user?.id,
-        email: user?.emailAddresses?.[0]?.emailAddress,
-      }),
-    });
-
-    if (res.ok) {
-      alert("✅ Your deletion request has been submitted.");
-    } else {
-      alert("❌ Failed to submit deletion request. Please try again later or email our support team.");
-    }
-  } catch (err) {
-    console.error("Failed to notify server of account deletion", err);
-    alert("❌ An unexpected error occurred. Please contact support.");
-  }
-};
-
+  const handleDelete = () => {
+    setShowDeleteModal(false);
+    router.push("/delete-account");
+  };
 
   return (
-    <div className="space-y-2 mt-10">
-   {items.map((item, index) => (
-        <div key={index}>
-          <button
-            onClick={() => handleItemClick(item.label, item.href)}
-            className="w-full text-left flex items-center justify-between border-b pb-3 hover:bg-gray-100 px-2 rounded transition group"
-          >
-            <div className="flex items-center gap-3">
-              <Image src={item.icon} alt={item.label} width={18} height={18} />
-              <span className="text-md text-black group-hover:text-[#0037EB] transition-colors font-apfel-grotezk-regular">
-                {item.label}
-              </span>
-            </div>
-          
-            {item.label === "Disconnect Facebook Account" && (
+    <div className="space-y-4 mt-7">
+      {items.map((item, index) => (
+        <button
+          key={index}
+          onClick={() => handleItemClick(item.label, item.href)}
+          className="w-full text-left flex items-center justify-between border-b pb-3 hover:bg-gray-100 px-2 rounded transition group"
+          disabled={isLoggingOut && item.label === "Logout"}
+          onMouseEnter={() => setHoveredIndex(index)}
+          onMouseLeave={() => setHoveredIndex(null)}
+        >
+          <div className="flex items-center gap-3">
             <Image
-              src={
-                expandedItem === "Disconnect Facebook Account"
-                  ? "/assets/images/accordion.svg"
-                  : "/assets/images/accordion-up.svg"
-              }
-              alt="Toggle"
-              width={16}
-              height={16}
-              className="ml-2"
+              src={hoveredIndex === index ? item.iconHover : item.icon}
+              alt={item.label}
+              width={18}
+              height={18}
             />
-          )}
-
-          </button>
-
-          {expandedItem === "Disconnect Facebook Account" && item.label === "Disconnect Facebook Account" && (
-            <div className="pl-10 pr-4 py-2 text-sm text-graphite font-apfel-grotezk-regular">
-              <p className="mt-2 font-apfel-grotezk-regular">
-                Go to your Facebook account settings → Settings & Privacy → Settings → Business Integrations →
-                Find Snatch → Click Remove → Confirm
-              </p>
-              <button className="mt-2 text-electric-blue underline text-sm text-right">Disconnect account</button>
-            </div>
-          )}
-        </div>
+            <span className="text-md text-black group-hover:text-[#0037EB] transition-colors font-apfel-grotezk-regular">
+              {item.label}
+            </span>
+          </div>
+          {item.label === "Delete Account" ? (
+            <span className="text-gray-400 text-lg"></span>
+          ) : item.label === "Logout" && isLoggingOut ? (
+            <div className="w-5 h-5 border-2 border-[#0037EB] border-t-transparent rounded-full animate-spin"></div>
+          ) : null}
+        </button>
       ))}
 
       {showDeleteModal && (

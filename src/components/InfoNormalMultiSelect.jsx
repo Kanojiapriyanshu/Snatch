@@ -136,7 +136,7 @@ const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onR
                 onMouseLeave={() => setIsTooltipVisible(null)}
               >
                 <Image
-                  src="/assets/images/info.svg"
+                  src={isTooltipVisible === idx ? "/assets/images/info_h.svg" : "/assets/images/info.svg"}
                   alt="info"
                   width={16}
                   height={16}

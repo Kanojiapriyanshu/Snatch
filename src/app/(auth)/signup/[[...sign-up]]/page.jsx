@@ -135,7 +135,7 @@ export default function SignUp() {
             <input
               type="email"
               placeholder="Enter email address"
-              className={`w-full bg-transparent rounded-md border py-3 pl-5 text-dark-6 outline-none ${
+              className={`w-full bg-transparent rounded-md border py-3 pl-5 text-graphite outline-none ${
                 inputError ? 'border-red-500' : 'border-stroke'
               }`}
               value={email}

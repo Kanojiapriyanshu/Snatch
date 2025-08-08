@@ -81,7 +81,7 @@ export default function Step2() {
       <form className="w-full xl:w-[726px] 5xl:w-[800px] h-[80vh] overflow-y-scroll mx-auto space-y-6 font-apfel-grotezk-regular mt-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
 
         <MultiSelectInput
-          label="Choose Industry (Max 5)"
+          label="Choose Industry* (Max 5)"
           data={industryList}
           selectedValues={formData.industry || []}
           onAddValue={(value) => handleAddValue("industry", value)}
@@ -89,7 +89,7 @@ export default function Step2() {
         />
 
         <MultiSelectInput
-          label="Choose Languages (Max 5)"
+          label="Choose Languages* (Max 5)"
           data={[
             "English", "Spanish", "French", "German", "Mandarin", "Hindi", "Japanese", "Marathi", "Gujarati", "Tamil", "Telugu", "Bengali", "Portuguese", "Italian", "Russian", "Arabic", "Korean", "Vietnamese", "Indonesian", "Turkish", "Urdu", "Chinese", "Punjabi", "Malayalam", "Kannada", "Odia", "Assamese", "Maithili", "Santali", "Bhojpuri", "Nepali", "Dogri", "Manipuri", "Kashmiri", "Konkani", "Sindhi", "Tulu", "Bodo", "Santhali", "Meitei", "Khasi", "Garo", "Mizo", "Lepcha", "Sikkimese", "Bhutia"
           ]}
@@ -99,7 +99,7 @@ export default function Step2() {
         />
 
         <InfoNormalMultiSelect
-          label="Choose Compensation"
+          label="Choose Compensation*"
           options={["Gifting", "Sponsorships", "Affiliate", "Hosted", "Collaboration"]}
           selectedValues={formData.compensation || []}
           onAddValue={(value) => handleAddValue("compensation", value)}
@@ -107,7 +107,7 @@ export default function Step2() {
         />
 
         <div className="space-x-0 flex flex-col">
-          <h4 className="mb-5">Add pricing for your services</h4>
+          <h4 className="mb-5">Add pricing for your services*</h4>
           <div className="flex flex-row gap-3">
             <MoneyInput
               title="Story"

@@ -10,8 +10,8 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const [isCropping, setIsCropping] = useState(false);
-  const [isUploading, setIsUploading] = useState(false); // <-- Added for "Set" button loading
+  const [isCropping, setIsCropping] = useState(false); // Modal toggle
+  const [isProcessing, setIsProcessing] = useState(false); // Loading state for set button
   const { formData } = useFormContext();
   const fileInputRef = useRef(null);
 
@@ -45,19 +45,20 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
   };
 
   const cropImage = async () => {
-    setIsUploading(true); // Start uploading state
+    setIsProcessing(true); // Start loading
     try {
       const croppedImage = await getCroppedImage(imageSrc, croppedAreaPixels, tempFileName);
       const uploadedUrl = await cloudinaryUpload(croppedImage);
-      onFileChange(uploadedUrl, tempFileName);
-      setIsCropping(false);
+      alert("Your image has been uploaded successfully");
+      onFileChange(uploadedUrl, tempFileName); // Pass both URL and file name to parent/context
+      setIsCropping(false); // Close modal
       setImageSrc(null);
-      setTempFileName("");
-    } catch (err) {
-      console.error("Image upload failed:", err);
+      setTempFileName(""); // Clear temp state after upload
+    } catch (error) {
+      console.error("Error processing image:", error);
       alert("Failed to upload image. Please try again.");
     } finally {
-      setIsUploading(false); // End uploading state
+      setIsProcessing(false); // Stop loading
     }
   };
 
@@ -141,25 +142,18 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
                     setTempFileName("");
                   }
                 }}
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 disabled:opacity-50"
-                disabled={isUploading}
+                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+                disabled={isProcessing}
               >
                 Cancel
               </button>
               <button
                 onClick={cropImage}
-                disabled={isUploading}
-                className={`px-4 py-2 rounded-md flex items-center gap-2 ${
-                  isUploading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-gray-300 hover:bg-gray-400 disabled:opacity-50"
-                }`}
+                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 flex items-center justify-center min-w-[60px]"
+                disabled={isProcessing}
               >
-                {isUploading ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    Uploading...
-                  </>
+                {isProcessing ? (
+                  <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   "Set"
                 )}
