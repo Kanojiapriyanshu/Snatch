@@ -9,10 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DashboardContext } from "../DashboardContext";
 
 const DashboardPage = () => {
-  const [selectedLocationType, setSelectedLocationType] = useState("country");
-  const [isInstagramLinked, setIsInstagramLinked] = useState(false);
-  const [hasMinFollowers, setHasMinFollowers] = useState(true);
-  const [totalRequests, setTotalRequests] = useState(0); 
+  const [selectedLocationType, setSelectedLocationType] = useState("city");
   const pathname = usePathname();
   const username = pathname.split("/").pop();
 
@@ -187,47 +184,7 @@ const DashboardPage = () => {
           </div>
 
           {/* Location Analytics */}
-          <div className="absolute top-[22%] w-full">
-            <LocationWrapper
-              topLocations={getTopLocations()}
-              setSelectedLocationType={setSelectedLocationType}
-              selectedLocationType={selectedLocationType}
-            />
 
-            {/* Creator Circle Section */}
-            <div className="mt-1 3xl:mt-2 w-full max-w-[98%] mr-5 mx-auto bg-white rounded-xl shadow relative font-qimano overflow-hidden px-4 md:px-8 xl:px-16 py-[clamp(20px,calc(8px+5vh+1vw),100px)] min-h-[250px] xl:min-h-[90px] 2xl:min-h-[200px] 5xl:min-h-[400px] flex">
-              <div
-                className="absolute top-0 -left-12 w-80 z-30 bg-[#e7e300]"
-                style={{ transform: "rotate(-30deg)" }}
-              >
-                <p className="text-black text-center text-2xl py-2 shadow-md mr-24">Coming Soon!</p>
-              </div>
-
-              <div className="flex flex-col md:flex-row items-center justify-between gap-8 mt-10">
-                {/* Left Text */}
-                <div className="md:w-[50%] w-full text-center">
-                  <h2 className="text-2xl 3xl:text-3xl text-gray-800">Explore the Creator Circle</h2>
-                  <p className="mt-4 text-sm 3xl:text-base text-center font-apfel-grotezk-regular text-gray-700 leading-relaxed min-w-80 3xl:min-w-0">
-                    Get inspired by fellow influencers on the platform. Browse profiles,
-                    see how they&#39;re showcasing themselves, and discover fresh ways to shine.
-                  </p>
-                </div>
-
-                {/* Right Images */}
-                <div className="flex justify-center items-end relative bottom-8">
-                  <div className="w-32 h-40 rounded-xl overflow-hidden shadow-md z-10 translate-y-4 -mr-4">
-                    <Image src="/assets/images/dashboard/influencer1.svg" alt="Influencer 1" fill className="object-cover" />
-                  </div>
-                  <div className="w-32 h-44 rounded-xl overflow-hidden shadow-xl z-20 relative">
-                    <Image src="/assets/images/dashboard/influencer2.svg" alt="Influencer 2" fill className="object-cover" />
-                  </div>
-                  <div className="w-32 h-40 rounded-xl overflow-hidden shadow-md z-10 translate-y-4 -ml-4">
-                    <Image src="/assets/images/dashboard/influencer3.svg" alt="Influencer 3" fill className="object-cover" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Conditional Overlays */}

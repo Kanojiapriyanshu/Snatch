@@ -129,24 +129,26 @@ const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onR
                 className="mr-2 accent-electric-blue hover:border-electric-blue focus:ring-electric-blue border border-gray-300 transition-colors duration-150"
                 onClick={e => e.stopPropagation()} // Prevent dropdown toggle
               />
-              <span>{option}</span>
               <div
-                className="relative"
+                className="flex items-center gap-2 flex-1"
                 onMouseEnter={() => setIsTooltipVisible(idx)}
                 onMouseLeave={() => setIsTooltipVisible(null)}
               >
-                <Image
-                  src={isTooltipVisible === idx ? "/assets/images/info_h.svg" : "/assets/images/info.svg"}
-                  alt="info"
-                  width={16}
-                  height={16}
-                  className="cursor-pointer"
-                />
-                {isTooltipVisible === idx && (
-                  <div className="absolute left-full top-0 text-start px-2 pb-8 text-sm text-graphite rounded-lg whitespace-nowrap max-w-[800px] ">
-                    {getTooltipText(option)}
-                  </div>
-                )}
+                <span>{option}</span>
+                <div className="relative">
+                  <Image
+                    src={isTooltipVisible === idx ? "/assets/images/info_h.svg" : "/assets/images/info.svg"}
+                    alt="info"
+                    width={16}
+                    height={16}
+                    className="cursor-pointer"
+                  />
+                  {isTooltipVisible === idx && (
+                    <div className="absolute left-full top-0 text-start px-2 pb-8 text-sm text-graphite rounded-lg whitespace-nowrap max-w-[800px] z-10">
+                      {getTooltipText(option)}
+                    </div>
+                  )}
+                </div>
               </div>
             </li>
           ))}

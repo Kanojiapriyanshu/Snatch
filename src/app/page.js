@@ -151,7 +151,7 @@ export default function SignUp() {
       {/* Right Section for Text */}
       <div className="flex h-[100%] lg:h-full w-full lg:w-1/2 justify-center items-center ">
         <div className="flex flex-col justify-center items-center text-center w-full px-6 sm:px-10">
-          <h1 className="text-graphite text-2xl sm:text-5xl mb-8 font-qimano">Sign Up</h1>
+          <h1 className="text-graphite text-2xl sm:text-5xl mb-8 font-qimano">Create your account</h1>
           <div className="relative w-full sm:w-[356px]">
             <input
               type="email"

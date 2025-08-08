@@ -8,12 +8,14 @@ import MultiSelectInput from "@/components/MultiSelectInput";
 import MoneyInput from "@/components/MoneyInput";
 import NormalMultiSelect from "@/components/NormalMultiSelect";
 import InfoNormalMultiSelect from "@/components/InfoNormalMultiSelect";
+import PricingGuideModal from "@/components/PricingGuideModal";
 import { industryList } from "@/data/portfolio/industry";
 
 export default function Step2() {
   const { formData, updateFormData, isSaving } = useFormContext();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   
   // Add state to track form completion
   const [isFormComplete, setIsFormComplete] = useState(false);
@@ -128,10 +130,30 @@ export default function Step2() {
               onChange={(value) => updateFormData({ reels: value })}
             />
           </div>
+          <div className="mt-3 text-sm text-graphite">
+            Not sure what to charge?{' '}
+            <a
+              onClick={() => setIsPricingModalOpen(true)}
+              className="group inline-flex items-center gap-1 underline underline-offset-2 transition-colors hover:text-electric-blue cursor-pointer"
+            >
+              <span>Check our pricing guide</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-4 w-4 transition-colors"
+              >
+                <path d="M7 17L17 7M7 7h10v10" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+          </div>
         </div>
 
         <div className="bg-transparent w-full h-24"></div>
       </form>
+      <PricingGuideModal isOpen={isPricingModalOpen} onClose={() => setIsPricingModalOpen(false)} />
     </div>
   );
 }
