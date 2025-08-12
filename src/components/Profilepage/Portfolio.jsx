@@ -81,7 +81,7 @@ const Portfolio = () => {
                   key={index}
                   href={`/manage-projects/preview?activeImageId=${activeImageId}`}
                 >
-                  <div className="rounded-lg p-2 cursor-pointer hover:shadow-lg transition">
+                  <div className="rounded-lg p-2 cursor-pointer">
                     {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
                       <div className="relative w-[165px] h-[170px] group">
                         {project.children.map((child, idx) => (
@@ -143,7 +143,7 @@ const Portfolio = () => {
                       project.mediaType.endsWith(".mp4") ? (
                       <video
                         controls
-                        className="w-[165px] h-[170px] object-cover rounded-md"
+                        className="w-[165px] h-[210px] object-cover rounded-md"
                       >
                         <source src={project.mediaUrl} type="video/mp4" />
                         Your browser does not support the video tag.
@@ -154,7 +154,7 @@ const Portfolio = () => {
                         height={32}
                         src={project.mediaUrl}
                         alt={`Project ${index + 1}`}
-                        className="w-[165px] h-[170px] object-cover rounded-md"
+                        className="w-[165px] h-[210px] object-cover rounded-md"
                       />
                     )}
                   </div>

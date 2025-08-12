@@ -302,12 +302,12 @@ const renderUploadTab = () => (
       <div className="flex gap-6 7xl:justify-center  h-full">
         <label
           htmlFor="file-upload"
-          className="cursor-pointer w-[200px] h-[200px]  bg-gray-200 rounded-md flex justify-center items-center"
+          className="cursor-pointer w-[200px] h-[205px]  bg-gray-200 rounded-md flex justify-center items-center"
         >
           <div className="flex flex-col justify-center items-center">
-          <span className="font-qimano text-xl">Upload your files</span>
-          <span className="font-apfel-grotezk-regular text-sm text-gray-500 px-3">Only png, jpg, and .mp4 files <span className="mx-auto ml-10 font-apfel-grotezk-mittel">of max limit 5mb</span></span>
-          <span className="mt-2 text-dark-grey text-2xl">
+          <span className="font-qimano text-xl mt-4">Upload your files</span>
+          <span className="font-apfel-grotezk-regular text-sm text-gray-500 px-3">Only png, jpg, and .mp4 files <span className="mx-auto ml-10 font-apfel-grotezk-regular">of max limit 5mb</span></span>
+          <span className="mt-4 text-dark-grey text-2xl border-[1.6px] border-dashed border-gray-400 rounded-md p-1 m-6">
             <Image
               src="/assets/images/upload-folder.svg"
               alt="Upload Icon"
@@ -345,6 +345,7 @@ return (
         </p>
         <span className="mx-auto font-qimano ">
   {(selectionState?.instagramSelected?.length || 0) + (selectionState?.uploadedFiles?.length || 0)} / 12 Selected
+   *Minimum 4 required to continue
 </span>
 
       </div>
