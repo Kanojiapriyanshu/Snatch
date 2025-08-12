@@ -163,13 +163,13 @@ const ProjectCustomFileInput = ({
             <div className="flex gap-4 mt-4 justify-end">
               <button
                 onClick={() => setIsCropping(false)}
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+                className="px-4 py-2 rounded-md border-[1px] border-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={cropImage}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="px-4 py-2 bg-electric-blue text-white rounded-md "
               >
                 Set
               </button>

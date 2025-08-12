@@ -623,7 +623,7 @@ const handlePopupGenerate = async () => {
   <>
     {/* Backdrop */}
     <div
-      className={`fixed top-0 left-[35vw] h-full w-[65vw] z-40 bg-black/30 backdrop-blur-sm transition-opacity duration-500 ${showBrandPopup ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      className={`fixed top-0 left-[35vw] h-full w-[65vw] z-40 bg-black/10 backdrop-blur-sm transition-opacity duration-500 ${showBrandPopup ? 'opacity-70 pointer-events-auto' : 'opacity-70 pointer-events-none'}`}
       onClick={() => {
         setShowBrandPopup(false);
         setPopupAnimating(true);
@@ -632,15 +632,17 @@ const handlePopupGenerate = async () => {
     />
     {/* Sliding Popup */}
     <div
-      className="fixed top-0 left-0 z-50 h-full transition-transform duration-500"
-      style={{
-        width: '35vw',
-        minWidth: 320,
-        maxWidth: 800,
-        pointerEvents: 'auto',
-        transform: showBrandPopup ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.2s cubic-bezier(.4,0,.2,1)',
-      }}
+        className="fixed top-0 left-0 z-50 h-full"
+        style={{
+          width: '38vw',
+          minWidth: 320,
+          maxWidth: 800,
+          pointerEvents: 'auto',
+          transform: showBrandPopup ? 'translateX(0)' : 'translateX(-100%)',
+          // transition: 'transform 0.6s ease-in-out',
+          transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+        }}
+      
     >
       <div
         className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center`}
@@ -685,15 +687,15 @@ const handlePopupGenerate = async () => {
                 Tell us about the post, we&rsquo;ll do the rest!
               </h2>
               <textarea
-                className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg min-h-[100px] mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
+                className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg min-h-[300px] mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
                 placeholder="Describe your project or brand collaboration..."
                 value={popupUserInput}
                 onChange={(e) => setPopupUserInput(e.target.value)}
               />
-              <div className="flex gap-5">
+              <div className="flex gap-1 flex-nowrap">
                 {/* Skip AI & enter manually */}
                 <button
-                  className={`px-4 py-2 rounded-lg border-2 bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-md font-apfel-grotezk-regular transition`}
+                  className={`2xl:px-8 px-6 py-2 rounded-lg border-[1.5px] bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-sm font-apfel-grotezk-regular transition whitespace-nowrap flex-shrink-0`}
                   onClick={() => {
                     setShowBrandPopup(false);
                     setPopupAnimating(true);
@@ -705,11 +707,11 @@ const handlePopupGenerate = async () => {
                 </button>
                 {/* Generate my project */}
                 <button
-                  className={`px-4 py-2 rounded-lg ${
+                  className={`2xl:px-8 px-6 py-2 rounded-lg ${
                     popupGenerating
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
-                  } text-md font-apfel-grotezk-regular transition cursor-pointer`}
+                  } text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
                   onClick={handlePopupGenerate}
                   disabled={popupGenerating || !popupUserInput.trim()}
                 >
@@ -726,7 +728,7 @@ const handlePopupGenerate = async () => {
 
        <div className="absolute left-1/2 top-1/2 transform -translate-y-1/2 w-full -translate-x-1/2 flex flex-col items-center mx-auto justify-center text-center mt-3  mb-10 "> 
          <p className="text-2xl text-black font-qimano">
-          Pick content that you wish to highlight in your profile kit
+         Pick at least 4 posts that wish to highlight in your press kit
         </p>
         <p className="mx-auto text-graphite font-apfel-grotezk-regular">
           Fill in details for at least 4 projects
