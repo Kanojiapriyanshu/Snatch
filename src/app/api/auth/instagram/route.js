@@ -10,6 +10,7 @@ const REDIRECT_URI = 'https://app.snatchsocial.com/manage-projects/pick-projects
 
 
 const SCOPES = [
+  'public_profile',
   'instagram_basic',                // Basic instagram account info
   'instagram_manage_insights',      // Access to account insights
   'pages_show_list',               // Access to page list
