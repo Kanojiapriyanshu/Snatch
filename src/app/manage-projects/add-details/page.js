@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSelectedProjects } from "../context";
 import TitleWithCounter from "@/components/TitleWithCounter";
 import FormInput from "@/components/FormInput";
 import MultiSelectInput from "@/components/MultiSelectInput";
 import CustomFileInput from "@/components/CustomFileInput";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import NormalMultiSelect from "@/components/NormalMultiSelect";
 import ProjectsGrid from "@/components/ProjectsGrid";
 import { industryList, eventTypes } from "@/data/portfolio/industry";
@@ -16,6 +17,29 @@ import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
 import {generateFormDataFromUserInput} from "@/utils/generateFormDataFromUserInput";
 import { cleanAIResponse } from "@/utils/aiResponseClear";
+
+// Component that uses useSearchParams wrapped in Suspense
+function SearchParamsProvider({ setActiveTab, setActiveImageId }) {
+  const searchParams = useSearchParams();
+  
+  useEffect(() => {
+    // Get URL parameters
+    const urlActiveImageId = searchParams?.get('activeImageId');
+    const urlActiveTab = searchParams?.get('tab');
+    
+    // Set active tab if provided in URL
+    if (urlActiveTab && (urlActiveTab === 'instagram' || urlActiveTab === 'uploaded')) {
+      setActiveTab(urlActiveTab);
+    }
+    
+    // Set active image ID if provided in URL
+    if (urlActiveImageId) {
+      setActiveImageId(urlActiveImageId);
+    }
+  }, [searchParams, setActiveTab, setActiveImageId]);
+  
+  return null;
+}
 
 export default function AddDetails() {
   const {
@@ -32,7 +56,6 @@ export default function AddDetails() {
   const [activeTab, setActiveTab] = useState("instagram");
   const [carouselIndexes, setCarouselIndexes] = useState([]);
   const [activeImageId, setActiveImageId] = useState(null);
-  const searchParams = useSearchParams();
   const [insights, setInsights] = useState([]);
   const [currentFormData, setCurrentFormData] = useState([
     {
@@ -82,25 +105,7 @@ const checkOrientation = (width, height) => {
 
   useEffect(() => {
     setIsHydrated(true);
-    
-    // Get URL parameters
-    const urlActiveImageId = searchParams.get('activeImageId');
-    const urlActiveTab = searchParams.get('tab');
-    
-    console.log("URL parameters:", { urlActiveImageId, urlActiveTab });
-    
-    // Set active tab if provided in URL
-    if (urlActiveTab && (urlActiveTab === 'instagram' || urlActiveTab === 'uploaded')) {
-      setActiveTab(urlActiveTab);
-      console.log("Setting active tab from URL:", urlActiveTab);
-    }
-    
-    // Set active image ID if provided in URL
-    if (urlActiveImageId) {
-      setActiveImageId(urlActiveImageId);
-      console.log("Setting activeImageId from URL:", urlActiveImageId);
-    }
-  }, [searchParams]);
+  }, []);
 
   const isProjectFilled = (formData) => {
   if (!formData) return false;
@@ -170,15 +175,15 @@ const filledProjectsCount = (() => {
 
   // Auto-select first project's formData when no project is selected
 
+// This effect is now handled by SearchParamsProvider
 useEffect(() => {
-  // Only set activeImageId to first project if no URL parameter was provided
-  const urlActiveImageId = searchParams.get('activeImageId');
-  if (!urlActiveImageId && !activeImageId && projects?.length > 0) {
+  // Only set activeImageId to first project if no projects are selected yet
+  if (!activeImageId && projects?.length > 0) {
     const firstProjectId = projects[0].mediaId;
     setActiveImageId(firstProjectId);
     console.log("Setting initial activeImageId:", firstProjectId);
   }
-}, [projects, searchParams]);
+}, [projects, activeImageId]);
 
 // Modify the useEffect that handles form data loading:
 useEffect(() => {
@@ -606,7 +611,10 @@ const handlePopupGenerate = async () => {
 
   return (
     <div className=" flex flex-col items-start space-x-8 h-[77vh] w-full overflow-x-hidden overflow-y-hidden">
-   <div className="relative w-full h-full flex flex-col items-center top-3 justify-center">
+      <Suspense fallback={<div>Loading...</div>}>
+        <SearchParamsProvider setActiveTab={setActiveTab} setActiveImageId={setActiveImageId} />
+      </Suspense>
+      <div className="relative w-full h-full flex flex-col items-center top-3 justify-center">
     {showSuccessPopup && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
     <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
