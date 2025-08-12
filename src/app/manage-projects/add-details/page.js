@@ -699,98 +699,111 @@ const handlePopupGenerate = async () => {
   </div>
 )}
 
-{showBrandPopup && (
-  <div
-    className="fixed top-0 left-0 z-50 h-full"
-    style={{
-      width: "35vw",
-      minWidth: 320,
-      maxWidth: 800,
-      pointerEvents: "auto",
-    }}
-  >
+{(showBrandPopup || popupAnimating) && (
+  <>
+    {/* Backdrop */}
     <div
-      className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center transition-all duration-500`}
-      style={{
-        borderTopRightRadius: 32,
-        borderBottomRightRadius: 32,
-        boxShadow: "2px 0 24px rgba(0,0,0,0.08)",
-        transition: "transform 0.5s cubic-bezier(.4,0,.2,1)",
+      className={`fixed top-0 left-[35vw] h-full w-[65vw] z-40 bg-black/10 backdrop-blur-sm transition-opacity duration-500 ${showBrandPopup ? 'opacity-70 pointer-events-auto' : 'opacity-70 pointer-events-none'}`}
+      onClick={() => {
+        setShowBrandPopup(false);
+        setPopupAnimating(true);
+        setTimeout(() => setPopupAnimating(false), 500);
       }}
-    >
-     <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
-      {popupStep === 1 ? (
-        <>
-          <div className="flex justify-center mb-6">
-            <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
-          </div>
-
-          <h2 className="text-2xl text-electric-blue font-qimano mb-2 text-blue-600 text-center">
-            Was this a brand post or a personal one?
-          </h2>
-          <p className="text-center text-gray-600 mb-8 font-apfel-grotezk-regular">
-            Let us know if this post was in collaboration with a brand or something you shared independently.
-            We&rsquo;ll tailor the details accordingly.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-            <button
-              className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue  hover:bg-electric-blue hover:text-white transition"
-              onClick={() => handleBrandPopupChoice(true)}
-            >
-              It is a brand post
-            </button>
-            <button
-              className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
-              onClick={() => handleBrandPopupChoice(false)}
-            >
-              It is a personal post
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-         <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
-          <h2 className="text-2xl font-qimano text-electric-blue mb-6 mt-7 text-center">
-            Tell us about the post, we&rsquo;ll do the rest!
-          </h2>
-          <textarea
-            className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
-            rows={10}
-            placeholder="Tell us the story behind this post - what&rsquo;s it about, why did you make it and what makes it valuable for a brand to see. We will handle the rest"
-            value={popupUserInput}
-            onChange={(e) => setPopupUserInput(e.target.value)}
-          />
+    />
+    {/* Sliding Popup */}
+    <div
+        className="fixed top-0 left-0 z-50 h-full"
+        style={{
+          width: '38vw',
+          minWidth: 320,
+          maxWidth: 800,
+          pointerEvents: 'auto',
+          transform: showBrandPopup ? 'translateX(0)' : 'translateX(-100%)',
+          // transition: 'transform 0.6s ease-in-out',
+          transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+        }}
       
-      <div className="flex gap-5">
-  {/* Skip AI & enter manually */}
-  <button
-    className={`px-4 py-2 rounded-lg border-2 bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-md font-apfel-grotezk-regular transition`}
-    onClick={() => setShowBrandPopup(false)}
-    disabled={popupGenerating}
-  >
-    Skip AI & enter manually
-  </button>
-
-  {/* Generate my project */}
-  <button
-    className={`px-4 py-2 rounded-lg ${
-      popupGenerating
-        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-        : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
-    } text-md font-apfel-grotezk-regular transition cursor-pointer`}
-    onClick={handlePopupGenerate}
-    disabled={popupGenerating || !popupUserInput.trim()}
-  >
-    {popupGenerating ? "Generating..." : "Generate my project details"}
-  </button>
-</div>
-  
-        </>
-      )}
+    >
+      <div
+        className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center`}
+        style={{
+          borderTopRightRadius: 32,
+          borderBottomRightRadius: 32,
+          boxShadow: '2px 0 24px rgba(0,0,0,0.08)',
+        }}
+      >
+        <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
+          {popupStep === 1 ? (
+            <>
+              <div className="flex justify-center mb-6">
+                <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
+              </div>
+              <h2 className="text-2xl text-electric-blue font-qimano mb-2 text-blue-600 text-center">
+                Was this a brand post or a personal one?
+              </h2>
+              <p className="text-center text-gray-600 mb-8 font-apfel-grotezk-regular">
+                Let us know if this post was in collaboration with a brand or something you shared independently.
+                We&rsquo;ll tailor the details accordingly.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                <button
+                  className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue  hover:bg-electric-blue hover:text-white transition"
+                  onClick={() => handleBrandPopupChoice(true)}
+                >
+                  It is a brand post
+                </button>
+                <button
+                  className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
+                  onClick={() => handleBrandPopupChoice(false)}
+                >
+                  It is a personal post
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
+              <h2 className="text-2xl font-qimano text-electric-blue mb-6 mt-7 text-center">
+                Share the story, we&rsquo;ll shape it for your press kit.
+              </h2>
+              <textarea
+                className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg min-h-[300px] mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
+                placeholder="What&rsquo;s this content piece about? Why did you create it? What results or impact did it have? Share the backstory and we&rsquo;ll turn it into a project ready for your press kit."
+                value={popupUserInput}
+                onChange={(e) => setPopupUserInput(e.target.value)}
+              />
+              <div className="flex gap-1 flex-nowrap">
+                {/* Skip AI & enter manually */}
+                <button
+                  className={`2xl:px-8 px-6 py-2 rounded-lg border-[1.5px] bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-sm font-apfel-grotezk-regular transition whitespace-nowrap flex-shrink-0`}
+                  onClick={() => {
+                    setShowBrandPopup(false);
+                    setPopupAnimating(true);
+                    setTimeout(() => setPopupAnimating(false), 500);
+                  }}
+                  disabled={popupGenerating}
+                >
+                  Skip AI & enter manually
+                </button>
+                {/* Generate my project */}
+                <button
+                  className={`2xl:px-8 px-6 py-2 rounded-lg ${
+                    popupGenerating
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
+                  } text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
+                  onClick={handlePopupGenerate}
+                  disabled={popupGenerating || !popupUserInput.trim()}
+                >
+                  {popupGenerating ? "Generating..." : "Generate my project details"}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
-    </div>
-  </div>
+  </>
 )}
 
        <div className="absolute left-1/2 top-1/2 transform -translate-y-1/2 w-full -translate-x-1/2 flex flex-col items-center mx-auto justify-center text-center mt-3  mb-10 "> 
@@ -1029,7 +1042,7 @@ const handlePopupGenerate = async () => {
 )}
 </div>
 
-        <div className="ml-20 mt-0 flex flex-col gap-8 overflow-y-scroll overflow-x-hidden h-[70vh]  7xl:h-[80vh] 9xl:h-[80vh]   " style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="ml-20 mt-0 flex flex-col gap-8 overflow-y-scroll overflow-x-hidden h-[70vh]  7xl:h-[80vh] 9xl:h-[80vh]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <div className="flex items-center justify-between ">
 
   <span className="text-graphite font-apfel-grotezk-mittel">Was it a brand collaboration?</span>
