@@ -86,6 +86,7 @@ export default function Step2() {
           selectedValues={formData.industry || []}
           onAddValue={(value) => handleAddValue("industry", value)}
           onRemoveValue={(value) => handleRemoveValue("industry", value)}
+           allowCustom={true}
         />
 
         <MultiSelectInput

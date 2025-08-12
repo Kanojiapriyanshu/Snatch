@@ -2,6 +2,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
+import { Toaster } from "react-hot-toast";
 // import Script from "next/script";
 
 // ✅ Font setup
@@ -39,6 +40,7 @@ export default function RootLayout({ children }) {
         `}
       >
         <Providers>
+           <Toaster position="top-center" />
           {children}
         </Providers>
 

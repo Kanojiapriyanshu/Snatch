@@ -6,7 +6,7 @@ import TitleWithCounter from "@/components/TitleWithCounter";
 import FormInput from "@/components/FormInput";
 import MultiSelectInput from "@/components/MultiSelectInput";
 import CustomFileInput from "@/components/CustomFileInput";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import NormalMultiSelect from "@/components/NormalMultiSelect";
 import ProjectsGrid from "@/components/ProjectsGrid";
 import { industryList, eventTypes } from "@/data/portfolio/industry";
@@ -32,6 +32,7 @@ export default function AddDetails() {
   const [activeTab, setActiveTab] = useState("instagram");
   const [carouselIndexes, setCarouselIndexes] = useState([]);
   const [activeImageId, setActiveImageId] = useState(null);
+  const searchParams = useSearchParams();
   const [insights, setInsights] = useState([]);
   const [currentFormData, setCurrentFormData] = useState([
     {
@@ -55,11 +56,10 @@ export default function AddDetails() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [showBrandPopup, setShowBrandPopup] = useState(false)
   const [popupAnimating, setPopupAnimating] = useState(false);
-  // ...existing code...
 const [popupStep, setPopupStep] = useState(1);
 const [popupUserInput, setPopupUserInput] = useState('');
 const [popupGenerating, setPopupGenerating] = useState(false);
-const [showToast, setShowToast] = useState(false);
+const [showToast, setShowToast] = useState(true);
 const [hasConsiderations, setHasConsiderations] = useState(false);
 const [showMinProjectsPopup, setShowMinProjectsPopup] = useState(false);
 const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -82,7 +82,25 @@ const checkOrientation = (width, height) => {
 
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
+    
+    // Get URL parameters
+    const urlActiveImageId = searchParams.get('activeImageId');
+    const urlActiveTab = searchParams.get('tab');
+    
+    console.log("URL parameters:", { urlActiveImageId, urlActiveTab });
+    
+    // Set active tab if provided in URL
+    if (urlActiveTab && (urlActiveTab === 'instagram' || urlActiveTab === 'uploaded')) {
+      setActiveTab(urlActiveTab);
+      console.log("Setting active tab from URL:", urlActiveTab);
+    }
+    
+    // Set active image ID if provided in URL
+    if (urlActiveImageId) {
+      setActiveImageId(urlActiveImageId);
+      console.log("Setting activeImageId from URL:", urlActiveImageId);
+    }
+  }, [searchParams]);
 
   const isProjectFilled = (formData) => {
   if (!formData) return false;
@@ -111,38 +129,56 @@ const filledProjectsCount = (() => {
 })();
 
   // Extracting projects logic here
+  // Make sure we're using the correct tab based on URL parameter
+  useEffect(() => {
+    console.log("Active tab changed to:", activeTab);
+  }, [activeTab]);
+  
   const projects =
     activeTab === "instagram"
       ? selectionState.instagramSelected
       : selectionState.uploadedFiles;
 
-      console.log("PROJECTS ON ADD DETAILS PAGE", projects, selectionState.instagramSelected);
+  console.log("PROJECTS ON ADD DETAILS PAGE", {
+    activeTab,
+    projects,
+    instagramProjects: selectionState.instagramSelected,
+    uploadedProjects: selectionState.uploadedFiles,
+    activeImageId
+  });
 
-      useEffect(() => {
-        if (!activeImageId && projects?.length) {
-          setActiveImageId(projects[0].mediaId);
-        }
-      }, []);  
+      // This useEffect has been removed as it conflicts with the URL parameter handling
+      // The activeImageId is now set from URL parameters in the main useEffect above
       
       console.log("actieimageid for first time", activeImageId)
 
+  useEffect(() => {
+    console.log("activeImageId changed to:", activeImageId);
+  }, [activeImageId]);
+
+  // Convert activeImageId to string for comparison since URL parameters are strings
   const activeProject =
     activeImageId !== null
-      ? projects.find((project) => project.mediaId === activeImageId)
+      ? projects.find((project) => String(project.mediaId) === String(activeImageId))
       : projects[0];
+      
+  console.log("Active project selection:", {
+    activeImageId,
+    projectsMediaIds: projects.map(p => p.mediaId),
+    foundProject: activeProject?.mediaId
+  });
 
   // Auto-select first project's formData when no project is selected
 
 useEffect(() => {
-  // Set activeImageId to first project's mediaId on initial load
-  if (!activeImageId && projects?.length > 0) {
+  // Only set activeImageId to first project if no URL parameter was provided
+  const urlActiveImageId = searchParams.get('activeImageId');
+  if (!urlActiveImageId && !activeImageId && projects?.length > 0) {
     const firstProjectId = projects[0].mediaId;
     setActiveImageId(firstProjectId);
     console.log("Setting initial activeImageId:", firstProjectId);
   }
-}, [projects]);
-
-
+}, [projects, searchParams]);
 
 // Modify the useEffect that handles form data loading:
 useEffect(() => {
@@ -222,21 +258,6 @@ const areFormFieldsEmpty = (formData) => {
     return !value || (Array.isArray(value) ? value.length === 0 : value.trim() === "");
   });
 };
-
-// useEffect(() => {
-//   if (!activeProject) return;
-//   const formData = selectionState.formData.find((item) => item.key === activeProject.mediaId?.toString());
-//   if (areFormFieldsEmpty(formData)) {
-//     setTimeout(() => {
-//       setShowBrandPopup(true);
-//       setPopupStep(1); // Reset to first step
-//       setPopupAnimating(true);
-//       setTimeout(() => setPopupAnimating(false), 1000);
-//     }, 1000);
-//   } else {
-//     setShowBrandPopup(false);
-//   }
-// }, [activeProject?.mediaId]);
 
 useEffect(() => {
   if (!activeProject) return;
@@ -737,8 +758,9 @@ const handlePopupGenerate = async () => {
             Tell us about the post, we&rsquo;ll do the rest!
           </h2>
           <textarea
-            className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg min-h-[100px] mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
-            placeholder="Describe your project or brand collaboration..."
+            className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
+            rows={10}
+            placeholder="Tell us the story behind this post - what&rsquo;s it about, why did you make it and what makes it valuable for a brand to see. We will handle the rest"
             value={popupUserInput}
             onChange={(e) => setPopupUserInput(e.target.value)}
           />
@@ -894,14 +916,14 @@ const handlePopupGenerate = async () => {
 
       if (activeProject.name === "CAROUSEL_ALBUM") {
         return (
-          <div className="relative w-full h-auto">
+          <div className="relative w-full aspect-[4/6]"> {/* Set container ratio */}
             {activeProject.children.map((child, index) => (
               <div
                 key={child.id}
-                className={`transition-opacity duration-500 ${
+                className={`absolute inset-0 transition-opacity duration-500 ${
                   (carouselIndexes[activeProject.mediaId] || 0) === index
-                    ? "opacity-100"
-                    : "opacity-0"
+                    ? "opacity-100 z-10"
+                    : "opacity-0 z-0"
                 }`}
               >
                 {child.media_type === "IMAGE" ? (
@@ -909,7 +931,7 @@ const handlePopupGenerate = async () => {
                     src={child.media_url}
                     alt={`Media ${child.id}`}
                     fill
-                    className={`w-full object-cover rounded-lg  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                    className="bg-cover rounded-lg"
                     onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                       setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
                     }}
@@ -918,39 +940,48 @@ const handlePopupGenerate = async () => {
                   <video
                     src={child.media_url}
                     controls
-                    className={`w-full  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
+                    className="w-full h-full object-cover rounded-lg"
                     onLoadedMetadata={(e) => {
-                      setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
+                      setIsPortrait(
+                        checkOrientation(
+                          e.target.videoWidth,
+                          e.target.videoHeight
+                        )
+                      );
                     }}
                   />
                 )}
+
+                {activeProject.children.length > 1 && (
+                  <>
+                    <button
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
+                      onClick={() =>
+                        handleSlide(
+                          activeProject.mediaId,
+                          "prev",
+                          activeProject.children.length
+                        )
+                      }
+                    >
+                      ❮
+                    </button>
+                    <button
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
+                      onClick={() =>
+                        handleSlide(
+                          activeProject.mediaId,
+                          "next",
+                          activeProject.children.length
+                        )
+                      }
+                    >
+                      ❯
+                    </button>
+                  </>
+                )}
               </div>
             ))}
-            {/* Navigation buttons remain the same */}
-              <button
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
-              onClick={() =>
-                handleSlide(
-                  activeProject.mediaId,
-                  "prev",
-                  activeProject.children.length
-                )
-              }
-            >
-              ❮
-            </button>
-            <button
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
-              onClick={() =>
-                handleSlide(
-                  activeProject.mediaId,
-                  "next",
-                  activeProject.children.length
-                )
-              }
-            >
-              ❯
-            </button>
           </div>
         );
       }
@@ -1000,8 +1031,6 @@ const handlePopupGenerate = async () => {
   </div>
 )}
 </div>
-
-
 
         <div className="ml-20 mt-0 flex flex-col gap-8 overflow-y-scroll overflow-x-hidden h-[70vh]  7xl:h-[80vh] 9xl:h-[80vh]   " style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <div className="flex items-center justify-between ">
@@ -1128,8 +1157,8 @@ const handlePopupGenerate = async () => {
                   name="eventName"
                   value={currentFormData?.eventName || selectionState?.formData[activeProject?.mediaId]?.eventName || ""}
                   onChange={(e) => handleInputChange(e, activeImageId)}
-                    consideration={currentFormData.considerations?.eventName}
-  considerationType={currentFormData.considerations?.eventName_type}
+                  consideration={currentFormData.considerations?.eventName}
+                  considerationType={currentFormData.considerations?.eventName_type}
                 />
 
                 <NormalMultiSelect

@@ -46,7 +46,7 @@ export default function OnboardingLayout({ children }) {
           >
             Back
           </button>
-          <NextButton />
+          <NextButton  />
 
 
         </div>

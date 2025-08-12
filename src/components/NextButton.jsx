@@ -6,7 +6,7 @@ import { useAuth } from "@clerk/nextjs";
 import { handler } from "@/app/actions/onboarding";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-
+import toast from "react-hot-toast";
 const NextButton = () => {
   const [response, setResponse] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,7 +46,9 @@ const NextButton = () => {
       if (reels === 0) missingFields.push("Reels Count");
 
       if (missingFields.length > 0) {
-        alert(`Please complete the following field(s) before continuing:\n\n${missingFields.join("\n")}`);
+        toast.error(
+          `Please complete the following field(s): ${missingFields.join(", ")}`
+        );
         return;
       }
 
@@ -116,11 +118,10 @@ const NextButton = () => {
       if (!location?.trim()) missingFields.push("Location");
       if (!profilePicture) missingFields.push("Profile Picture");
 
-      // const hasAtLeastOneLink = links?.some(link => link.url?.trim());
-      // if (!hasAtLeastOneLink) missingFields.push("At least one social link");
-
       if (missingFields.length > 0) {
-        alert(`Please fill in the following required field(s):\n\n${missingFields.join("\n")}`);
+        toast.error(
+          `Please fill in the following required field(s): ${missingFields.join(", ")}`
+        );
         return;
       }
 
