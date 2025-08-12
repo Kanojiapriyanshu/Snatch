@@ -14,6 +14,8 @@ export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [selectedTab, setSelectedTab] = useState("instagram");
   const [carouselIndexes, setCarouselIndexes] = useState({});
+  const [currentPage, setCurrentPage] = useState(0);
+  const PAGE_SIZE = 20;
   const router = useRouter();
   const [media, setMedia] = useState([]);
   const { 
@@ -24,6 +26,8 @@ export default function PickProjects() {
     removeFile
   } = useSelectedProjects();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [paging, setPaging] = useState(null);
+const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   
   useEffect(() => {
@@ -38,12 +42,11 @@ export default function PickProjects() {
 
       try {
         if (code) {
-          // Call the server action to fetch media using the code
-          const mediaData = await fetchInstagramMedia(code);
-          console.log("media data", mediaData)
-          setMedia(mediaData);
+           const { media: mediaData, paging } = await fetchInstagramMedia(code);
+            setMedia(mediaData);
+            setPaging(paging);
         } else {
-          // Call the server action to fetch media from the database
+          // Call the server action to fetch media from the database have token and fetch posts from graph api
           const mediaData = await getMediaFromDatabase();
           console.log("media from database", mediaData)
           setMedia(mediaData);
@@ -59,6 +62,35 @@ export default function PickProjects() {
   if (!isHydrated) {
     return null;
   }
+
+
+const handlePrev = () => {
+  setCurrentPage((prev) => Math.max(prev - 1, 0));
+};
+
+const handleNext = async () => {
+  // If next page is already loaded, just go to it
+  if (mediaPages[currentPage + 1]) {
+    setCurrentPage((prev) => prev + 1);
+    return;
+  }
+  // If not loaded but more data exists, fetch next page
+  if (paging?.next && paging?.cursors?.after) {
+    setIsLoadingMore(true);
+    const queryParams = new URLSearchParams(window.location.search);
+    const code = queryParams.get("code");
+    try {
+      const { media: moreMedia, paging: newPaging } = await fetchInstagramMedia(code, paging.cursors.after);
+      setMedia(prev => [...prev, ...moreMedia]);
+      setPaging(newPaging);
+      setCurrentPage((prev) => prev + 1);
+    } catch (error) {
+      alert(error.message || "Failed to load more media");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
+};
 
   const handleTabClick = (tab) => setSelectedTab(tab);
 
@@ -88,9 +120,8 @@ export default function PickProjects() {
     };
 
     const handleProjectClick = () => {
-      // const totalSelected = selectionState.instagramSelected.length + selectionState.uploadedFiles.length;
 
-        const totalSelected =
+    const totalSelected =
     (selectionState?.instagramSelected?.length || 0) +
     (selectionState?.uploadedFiles?.length || 0);
 
@@ -107,14 +138,23 @@ export default function PickProjects() {
 
     const isDisabled = selectionState.instagramSelected.length + selectionState.uploadedFiles.length < 4;
     
+    function chunkArray(array, size) {
+      const result = [];
+      for (let i = 0; i < array.length; i += size) {
+        result.push(array.slice(i, i + size));
+      }
+      return result;
+    }
+    const mediaPages = chunkArray(media, PAGE_SIZE);
+    const currentMedia = mediaPages[currentPage] || [];
    
     const handleBackClick = () => {
      router.push("/profile")  
     }
 
- const handleHamburgerClick = () => {
-    setIsMenuVisible((prev) => !prev); // Toggle menu visibility
-  };
+  const handleHamburgerClick = () => {
+      setIsMenuVisible((prev) => !prev); // Toggle menu visibility
+    };
 
 
   const handleProfileClick = () => {
@@ -229,9 +269,53 @@ const renderInstagramTab = () => (
       </div>
     </div>
 
-    {/* right side rendered projects */}
-    <div className="w-[70vw] h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-    <MediaDisplay media={media} displayType="instagram"/>
+    {/* right side rendered projects graph api fetch  */}
+    <div className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+    <MediaDisplay media={currentMedia} displayType="instagram"/>
+
+    {/* {paging?.next && ( */}
+   <div className="flex justify-center font-apfel-grotezk-regular items-center space-x-2 mt-4">
+  {/* Previous Button */}
+  <button
+    onClick={handlePrev}
+    disabled={currentPage === 0}
+    className={`px-4 py-2 border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white ${
+      currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
+    }`}
+  >
+    Previous
+  </button>
+
+  {/* Page Numbers */}
+  {mediaPages.map((_, index) => (
+    <button
+      key={index}
+      onClick={() => setCurrentPage(index)}
+      className={`px-3 py-1 rounded-lg border border-gray-300 ${
+        currentPage === index
+          ? "bg-electric-blue text-white border-electric-blue"
+          : "bg-white text-black hover:bg-gray-100"
+      }`}
+    >
+      {index + 1}
+    </button>
+  ))}
+
+  {/* Next Button */}
+  <button
+    onClick={handleNext}
+    disabled={isLoadingMore || (!mediaPages[currentPage + 1] && !paging?.next)}
+    className={`px-4 py-2 border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white ${
+      (!mediaPages[currentPage + 1] && !paging?.next)
+        ? "opacity-50 cursor-not-allowed"
+        : ""
+    }`}
+  >
+    {isLoadingMore ? "Loading..." : "Next"}
+  </button>
+</div>
+
+    {/* )} */}
     </div>
 
 
@@ -473,8 +557,6 @@ return (
 
   </div>
 </div>
-
-
 
     </div>
   );

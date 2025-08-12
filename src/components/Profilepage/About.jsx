@@ -5,6 +5,7 @@ import Profilecustomfile from "./Profilecustomfile";
 import QuestionCounter from "./QuestionCounter";
 import Image from "next/image";
 import { saveQuestionsToDB, fetchProfileData, removeQuestion } from "@/utils/postQuestions";
+import { useQueryClient } from "@tanstack/react-query";
 
 const About = ({ onComplete }) => {
   const [aboutQuestions, setAboutQuestions] = useState([{ question: "", answer: "", coverImage: null, coverImageName: null }]);
@@ -18,7 +19,7 @@ const About = ({ onComplete }) => {
   });
 
   const [openIndex, setOpenIndex] = useState(null);
-
+  const queryClient = useQueryClient();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -88,24 +89,25 @@ const About = ({ onComplete }) => {
   };
 
   const handleSaveChanges = async (index, sectionKey) => {
-    try {
-      const questions = sectionKey === "about" ? aboutQuestions :
-                        sectionKey === "audience" ? audienceQuestions :
-                        brandQuestions;
+  try {
+    const questions = sectionKey === "about" ? aboutQuestions :
+                      sectionKey === "audience" ? audienceQuestions :
+                      brandQuestions;
 
-      await saveQuestionsToDB(sectionKey, [questions[index]]);
+    await saveQuestionsToDB(sectionKey, [questions[index]]);
 
-      setUnsavedChanges(prev => ({
-        ...prev,
-        [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))
-      }));
+    setUnsavedChanges(prev => ({
+      ...prev,
+      [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))
+    }));
 
-      alert("Changes saved successfully!");
-    } catch (error) {
-      console.error("Failed to save changes:", error);
-      alert("Failed to save changes. Please try again.");
-    }
-  };
+    // Invalidate aboutCompletion query so layout re-checks completion
+    queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
+  } catch (error) {
+    console.error("Failed to save changes:", error);
+    alert("Failed to save changes. Please try again.");
+  }
+};
 
   const addQuestion = (sectionKey) => {
     const newQuestion = { question: "", answer: "", coverImage: null, coverImageName: null };

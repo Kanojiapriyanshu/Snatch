@@ -83,11 +83,11 @@ const Portfolio = () => {
                 >
                   <div className="rounded-lg p-2 cursor-pointer">
                     {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
-                      <div className="relative w-[165px] h-[170px] group">
+                      <div className="relative w-[165px] h-[210px] group">
                         {project.children.map((child, idx) => (
                           <div
                             key={child.id}
-                            className={`absolute inset-0 transition-transform duration-500 ${
+                            className={`absolute h-[210px] inset-0 transition-transform duration-500 ${
                               (carouselIndexes[project.mediaId] || 0) === idx
                                 ? "translate-x-0 opacity-100"
                                 : "translate-x-50 opacity-0"
@@ -98,11 +98,11 @@ const Portfolio = () => {
                                 src={child.mediaUrl}
                                 alt={`Media ${child.mediaId}`}
                                 fill
-                                className="object-cover rounded-md"
+                                className="object-cover rounded-md h-[210px]"
                               />
                             ) : (
                               <video
-                                className="w-full h-full object-cover rounded-md"
+                                className="w-full object-cover rounded-md h-[210px]"
                                 src={child.mediaUrl}
                               />
                             )}

@@ -6,7 +6,7 @@ import TitleWithCounter from "@/components/TitleWithCounter";
 import FormInput from "@/components/FormInput";
 import MultiSelectInput from "@/components/MultiSelectInput";
 import CustomFileInput from "@/components/CustomFileInput";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import NormalMultiSelect from "@/components/NormalMultiSelect";
 import ProjectsGrid from "@/components/ProjectsGrid";
 import { industryList, eventTypes } from "@/data/portfolio/industry";
@@ -32,6 +32,7 @@ export default function AddDetails() {
   const [activeTab, setActiveTab] = useState("instagram");
   const [carouselIndexes, setCarouselIndexes] = useState([]);
   const [activeImageId, setActiveImageId] = useState(null);
+  const searchParams = useSearchParams();
   const [insights, setInsights] = useState([]);
   const [currentFormData, setCurrentFormData] = useState([
     {
@@ -55,12 +56,13 @@ export default function AddDetails() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [showBrandPopup, setShowBrandPopup] = useState(false);
   const [popupAnimating, setPopupAnimating] = useState(false);
-const [popupStep, setPopupStep] = useState(1);
-const [popupUserInput, setPopupUserInput] = useState('');
-const [popupGenerating, setPopupGenerating] = useState(false);
-const [showToast, setShowToast] = useState(false);
-const [hasConsiderations, setHasConsiderations] = useState(false);
-const [showMinProjectsPopup, setShowMinProjectsPopup] = useState(false);
+  const [popupStep, setPopupStep] = useState(1);
+  const [popupUserInput, setPopupUserInput] = useState('');
+  const [popupGenerating, setPopupGenerating] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [hasConsiderations, setHasConsiderations] = useState(false);
+  const [showMinProjectsPopup, setShowMinProjectsPopup] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false)
 
   // Add this helper function before the return statement
 const checkOrientation = (width, height) => {
@@ -80,7 +82,25 @@ const checkOrientation = (width, height) => {
 
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
+    
+    // Get URL parameters
+    const urlActiveImageId = searchParams.get('activeImageId');
+    const urlActiveTab = searchParams.get('tab');
+    
+    console.log("URL parameters:", { urlActiveImageId, urlActiveTab });
+    
+    // Set active tab if provided in URL
+    if (urlActiveTab && (urlActiveTab === 'instagram' || urlActiveTab === 'uploaded')) {
+      setActiveTab(urlActiveTab);
+      console.log("Setting active tab from URL:", urlActiveTab);
+    }
+    
+    // Set active image ID if provided in URL
+    if (urlActiveImageId) {
+      setActiveImageId(urlActiveImageId);
+      console.log("Setting activeImageId from URL:", urlActiveImageId);
+    }
+  }, [searchParams]);
 
   const isProjectFilled = (formData) => {
   if (!formData) return false;
@@ -109,38 +129,56 @@ const filledProjectsCount = (() => {
 })();
 
   // Extracting projects logic here
+  // Make sure we're using the correct tab based on URL parameter
+  useEffect(() => {
+    console.log("Active tab changed to:", activeTab);
+  }, [activeTab]);
+  
   const projects =
     activeTab === "instagram"
       ? selectionState.instagramSelected
       : selectionState.uploadedFiles;
 
-      console.log("PROJECTS ON ADD DETAILS PAGE", projects, selectionState.instagramSelected);
+  console.log("PROJECTS ON ADD DETAILS PAGE", {
+    activeTab,
+    projects,
+    instagramProjects: selectionState.instagramSelected,
+    uploadedProjects: selectionState.uploadedFiles,
+    activeImageId
+  });
 
-      useEffect(() => {
-        if (!activeImageId && projects?.length) {
-          setActiveImageId(projects[0].mediaId);
-        }
-      }, []);  
+      // This useEffect has been removed as it conflicts with the URL parameter handling
+      // The activeImageId is now set from URL parameters in the main useEffect above
       
       console.log("actieimageid for first time", activeImageId)
 
+  useEffect(() => {
+    console.log("activeImageId changed to:", activeImageId);
+  }, [activeImageId]);
+
+  // Convert activeImageId to string for comparison since URL parameters are strings
   const activeProject =
     activeImageId !== null
-      ? projects.find((project) => project.mediaId === activeImageId)
+      ? projects.find((project) => String(project.mediaId) === String(activeImageId))
       : projects[0];
+      
+  console.log("Active project selection:", {
+    activeImageId,
+    projectsMediaIds: projects.map(p => p.mediaId),
+    foundProject: activeProject?.mediaId
+  });
 
   // Auto-select first project's formData when no project is selected
 
 useEffect(() => {
-  // Set activeImageId to first project's mediaId on initial load
-  if (!activeImageId && projects?.length > 0) {
+  // Only set activeImageId to first project if no URL parameter was provided
+  const urlActiveImageId = searchParams.get('activeImageId');
+  if (!urlActiveImageId && !activeImageId && projects?.length > 0) {
     const firstProjectId = projects[0].mediaId;
     setActiveImageId(firstProjectId);
     console.log("Setting initial activeImageId:", firstProjectId);
   }
-}, [projects]);
-
-
+}, [projects, searchParams]);
 
 // Modify the useEffect that handles form data loading:
 useEffect(() => {
@@ -439,9 +477,6 @@ const isFormComplete = () => {
     if (activeProject && project.mediaId === activeProject.mediaId) {
       return "Editing";
     }
-    // const formEntry = selectionState.formData.find(
-    //   (item) => item.key === project.mediaId
-    // );
     const formEntry = Array.isArray(selectionState.formData)
     ? selectionState.formData.find((item) => item.key === project.mediaId)
     : null;
@@ -572,6 +607,51 @@ const handlePopupGenerate = async () => {
   return (
     <div className=" flex flex-col items-start space-x-8 h-[77vh] w-full overflow-x-hidden overflow-y-hidden">
    <div className="relative w-full h-full flex flex-col items-center top-3 justify-center">
+    {showSuccessPopup && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+    <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
+      
+      {/* Close Icon */}
+      <button
+        className="absolute top-4 right-4 text-gray-500 hover:text-black"
+        onClick={() => setShowSuccessPopup(false)}
+        aria-label="Close"
+      >
+        ✕
+      </button>
+
+      {/* Title */}
+      <h2 className="text-xl text-graphite mb-4 text-left font-qimano">You’re Good to Go!</h2>
+
+      <hr className="border-gray-200 mb-4" />
+
+      {/* Message */}
+      <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
+       Nice work! You’ve completed the required project details. Any unfinished ones have been saved as drafts and won’t appear in your portfolio (yet!).
+      </p>
+
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row justify-center gap-4 font-apfel-grotezk-regular">
+        <button
+          onClick={() => setShowSuccessPopup(false)}
+          className="border border-electric-blue text-electric-blue px-6 py-2 rounded-xl hover:bg-blue-50 transition"
+        >
+          Keep Editing
+        </button>
+        <button
+          onClick={() => {
+            setShowSuccessPopup(false);
+            router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
+          }}
+          className="bg-electric-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+        >
+          Save and Continue
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 {showMinProjectsPopup && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
     <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
@@ -619,111 +699,98 @@ const handlePopupGenerate = async () => {
   </div>
 )}
 
-{(showBrandPopup || popupAnimating) && (
-  <>
-    {/* Backdrop */}
+{showBrandPopup && (
+  <div
+    className="fixed top-0 left-0 z-50 h-full"
+    style={{
+      width: "35vw",
+      minWidth: 320,
+      maxWidth: 800,
+      pointerEvents: "auto",
+    }}
+  >
     <div
-      className={`fixed top-0 left-[35vw] h-full w-[65vw] z-40 bg-black/10 backdrop-blur-sm transition-opacity duration-500 ${showBrandPopup ? 'opacity-70 pointer-events-auto' : 'opacity-70 pointer-events-none'}`}
-      onClick={() => {
-        setShowBrandPopup(false);
-        setPopupAnimating(true);
-        setTimeout(() => setPopupAnimating(false), 500);
+      className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center transition-all duration-500`}
+      style={{
+        borderTopRightRadius: 32,
+        borderBottomRightRadius: 32,
+        boxShadow: "2px 0 24px rgba(0,0,0,0.08)",
+        transition: "transform 0.5s cubic-bezier(.4,0,.2,1)",
       }}
-    />
-    {/* Sliding Popup */}
-    <div
-        className="fixed top-0 left-0 z-50 h-full"
-        style={{
-          width: '38vw',
-          minWidth: 320,
-          maxWidth: 800,
-          pointerEvents: 'auto',
-          transform: showBrandPopup ? 'translateX(0)' : 'translateX(-100%)',
-          // transition: 'transform 0.6s ease-in-out',
-          transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
-        }}
-      
     >
-      <div
-        className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center`}
-        style={{
-          borderTopRightRadius: 32,
-          borderBottomRightRadius: 32,
-          boxShadow: '2px 0 24px rgba(0,0,0,0.08)',
-        }}
-      >
-        <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
-          {popupStep === 1 ? (
-            <>
-              <div className="flex justify-center mb-6">
-                <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
-              </div>
-              <h2 className="text-2xl text-electric-blue font-qimano mb-2 text-blue-600 text-center">
-                Was this a brand post or a personal one?
-              </h2>
-              <p className="text-center text-gray-600 mb-8 font-apfel-grotezk-regular">
-                Let us know if this post was in collaboration with a brand or something you shared independently.
-                We&rsquo;ll tailor the details accordingly.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                <button
-                  className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue  hover:bg-electric-blue hover:text-white transition"
-                  onClick={() => handleBrandPopupChoice(true)}
-                >
-                  It is a brand post
-                </button>
-                <button
-                  className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
-                  onClick={() => handleBrandPopupChoice(false)}
-                >
-                  It is a personal post
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
-              <h2 className="text-2xl font-qimano text-electric-blue mb-6 mt-7 text-center">
-                Tell us about the post, we&rsquo;ll do the rest!
-              </h2>
-              <textarea
-                className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg min-h-[300px] mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
-                placeholder="Describe your project or brand collaboration..."
-                value={popupUserInput}
-                onChange={(e) => setPopupUserInput(e.target.value)}
-              />
-              <div className="flex gap-1 flex-nowrap">
-                {/* Skip AI & enter manually */}
-                <button
-                  className={`2xl:px-8 px-6 py-2 rounded-lg border-[1.5px] bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-sm font-apfel-grotezk-regular transition whitespace-nowrap flex-shrink-0`}
-                  onClick={() => {
-                    setShowBrandPopup(false);
-                    setPopupAnimating(true);
-                    setTimeout(() => setPopupAnimating(false), 500);
-                  }}
-                  disabled={popupGenerating}
-                >
-                  Skip AI & enter manually
-                </button>
-                {/* Generate my project */}
-                <button
-                  className={`2xl:px-8 px-6 py-2 rounded-lg ${
-                    popupGenerating
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
-                  } text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
-                  onClick={handlePopupGenerate}
-                  disabled={popupGenerating || !popupUserInput.trim()}
-                >
-                  {popupGenerating ? "Generating..." : "Generate my project details"}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+     <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
+      {popupStep === 1 ? (
+        <>
+          <div className="flex justify-center mb-6">
+            <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
+          </div>
+
+          <h2 className="text-2xl text-electric-blue font-qimano mb-2 text-blue-600 text-center">
+            Was this a brand post or a personal one?
+          </h2>
+          <p className="text-center text-gray-600 mb-8 font-apfel-grotezk-regular">
+            Let us know if this post was in collaboration with a brand or something you shared independently.
+            We&rsquo;ll tailor the details accordingly.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            <button
+              className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue  hover:bg-electric-blue hover:text-white transition"
+              onClick={() => handleBrandPopupChoice(true)}
+            >
+              It is a brand post
+            </button>
+            <button
+              className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
+              onClick={() => handleBrandPopupChoice(false)}
+            >
+              It is a personal post
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+         <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
+          <h2 className="text-2xl font-qimano text-electric-blue mb-6 mt-7 text-center">
+            Tell us about the post, we&rsquo;ll do the rest!
+          </h2>
+          <textarea
+            className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
+            rows={10}
+            placeholder="Tell us the story behind this post - what&rsquo;s it about, why did you make it and what makes it valuable for a brand to see. We will handle the rest"
+            value={popupUserInput}
+            onChange={(e) => setPopupUserInput(e.target.value)}
+          />
+      
+      <div className="flex gap-5">
+  {/* Skip AI & enter manually */}
+  <button
+    className={`px-4 py-2 rounded-lg border-2 bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-md font-apfel-grotezk-regular transition`}
+    onClick={() => setShowBrandPopup(false)}
+    disabled={popupGenerating}
+  >
+    Skip AI & enter manually
+  </button>
+
+  {/* Generate my project */}
+  <button
+    className={`px-4 py-2 rounded-lg ${
+      popupGenerating
+        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+        : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
+    } text-md font-apfel-grotezk-regular transition cursor-pointer`}
+    onClick={handlePopupGenerate}
+    disabled={popupGenerating || !popupUserInput.trim()}
+  >
+    {popupGenerating ? "Generating..." : "Generate my project details"}
+  </button>
+</div>
+  
+        </>
+      )}
     </div>
-  </>
+    </div>
+  </div>
 )}
 
        <div className="absolute left-1/2 top-1/2 transform -translate-y-1/2 w-full -translate-x-1/2 flex flex-col items-center mx-auto justify-center text-center mt-3  mb-10 "> 
@@ -846,14 +913,14 @@ const handlePopupGenerate = async () => {
 
       if (activeProject.name === "CAROUSEL_ALBUM") {
         return (
-          <div className="relative w-full h-auto">
+          <div className="relative w-full aspect-[4/6]"> {/* Set container ratio */}
             {activeProject.children.map((child, index) => (
               <div
                 key={child.id}
-                className={`transition-opacity duration-500 ${
+                className={`absolute inset-0 transition-opacity duration-500 ${
                   (carouselIndexes[activeProject.mediaId] || 0) === index
-                    ? "opacity-100"
-                    : "opacity-0"
+                    ? "opacity-100 z-10"
+                    : "opacity-0 z-0"
                 }`}
               >
                 {child.media_type === "IMAGE" ? (
@@ -861,7 +928,7 @@ const handlePopupGenerate = async () => {
                     src={child.media_url}
                     alt={`Media ${child.id}`}
                     fill
-                    className={`w-full object-cover rounded-lg  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                    className="bg-cover rounded-lg"
                     onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                       setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
                     }}
@@ -870,39 +937,48 @@ const handlePopupGenerate = async () => {
                   <video
                     src={child.media_url}
                     controls
-                    className={`w-full  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
+                    className="w-full h-full object-cover rounded-lg"
                     onLoadedMetadata={(e) => {
-                      setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
+                      setIsPortrait(
+                        checkOrientation(
+                          e.target.videoWidth,
+                          e.target.videoHeight
+                        )
+                      );
                     }}
                   />
                 )}
+
+                {activeProject.children.length > 1 && (
+                  <>
+                    <button
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
+                      onClick={() =>
+                        handleSlide(
+                          activeProject.mediaId,
+                          "prev",
+                          activeProject.children.length
+                        )
+                      }
+                    >
+                      ❮
+                    </button>
+                    <button
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
+                      onClick={() =>
+                        handleSlide(
+                          activeProject.mediaId,
+                          "next",
+                          activeProject.children.length
+                        )
+                      }
+                    >
+                      ❯
+                    </button>
+                  </>
+                )}
               </div>
             ))}
-            {/* Navigation buttons remain the same */}
-              <button
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
-              onClick={() =>
-                handleSlide(
-                  activeProject.mediaId,
-                  "prev",
-                  activeProject.children.length
-                )
-              }
-            >
-              ❮
-            </button>
-            <button
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
-              onClick={() =>
-                handleSlide(
-                  activeProject.mediaId,
-                  "next",
-                  activeProject.children.length
-                )
-              }
-            >
-              ❯
-            </button>
           </div>
         );
       }
@@ -952,8 +1028,6 @@ const handlePopupGenerate = async () => {
   </div>
 )}
 </div>
-
-
 
         <div className="ml-20 mt-0 flex flex-col gap-8 overflow-y-scroll overflow-x-hidden h-[70vh]  7xl:h-[80vh] 9xl:h-[80vh]   " style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <div className="flex items-center justify-between ">
@@ -1088,8 +1162,8 @@ const handlePopupGenerate = async () => {
                   name="eventName"
                   value={currentFormData?.eventName || selectionState?.formData[activeProject?.mediaId]?.eventName || ""}
                   onChange={(e) => handleInputChange(e, activeImageId)}
-                    consideration={currentFormData.considerations?.eventName}
-  considerationType={currentFormData.considerations?.eventName_type}
+                  consideration={currentFormData.considerations?.eventName}
+                  considerationType={currentFormData.considerations?.eventName_type}
                 />
 
                 <NormalMultiSelect

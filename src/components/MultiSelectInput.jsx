@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
-const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveValue }) => {
+const MultiSelectInput = ({ allowCustom, label, data, selectedValues, onAddValue, onRemoveValue }) => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [open, setOpen] = useState(false);
@@ -96,20 +97,41 @@ const MultiSelectInput = ({ label, data, selectedValues, onAddValue, onRemoveVal
           onFocus={() => setOpen(true)} // <-- Add this line
         />
       </div>
-      {/* Dropdown suggestions */}
-      {open && suggestions.length > 0 && ( // <-- Change here
-        <ul className="border border-gray-300 bg-[#E9E9E9] rounded mt-2 max-h-40 overflow-y-auto">
-          {suggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              className="p-2 cursor-pointer hover:text-electric-blue"
-              onClick={() => handleAddChip(suggestion)}
-            >
-              {suggestion}
-            </li>
-          ))}
-        </ul>
-      )}
+     {open && (suggestions.length > 0 || (allowCustom && inputValue.trim())) && (
+  <ul className="border border-gray-300 bg-[#E9E9E9] rounded mt-2 max-h-40 overflow-y-auto font-apfel-grotezk-regular">
+    {suggestions.length > 0 ? (
+      suggestions.map((suggestion, index) => (
+        <li
+          key={index}
+          className="p-2 cursor-pointer hover:text-electric-blue"
+          onClick={() => handleAddChip(suggestion)}
+        >
+          {suggestion}
+        </li>
+      ))
+    ) : (
+      <>
+        {/* No results text */}
+        <li className="p-2 text-graphite">No results</li>
+        <hr className="border-gray-300" />
+
+        {/* Custom add option */}
+        {allowCustom && inputValue.trim() && (
+          <li
+            className="p-2 cursor-pointer text-graphite flex items-center gap-2"
+            onClick={() => handleAddChip(inputValue.trim())}
+          >
+            <Image src="/assets/images/add-plus.svg" width={10} height={10} alt="add" className="w-5 h-5"/>
+            <span>
+              Press <b>Enter</b> to add a custom answer
+            </span>
+          </li>
+        )}
+      </>
+    )}
+  </ul>
+)}
+
     </div>
   );
 };

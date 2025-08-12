@@ -67,4 +67,3 @@ const CustomDropdown = ({ options, placeholder, onSelect, selected }) => {
 };
 
 export default CustomDropdown;
-

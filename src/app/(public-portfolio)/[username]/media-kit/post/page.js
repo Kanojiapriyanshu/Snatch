@@ -60,14 +60,9 @@ export default function PostDetailsPage() {
     fetchPostData();
   }, [postId, username, allPosts]);
 
-  if (loading) {
-    return <div className="w-[100vw] text-center h-[60vh] flex items-center justify-center">
-      <p className="text-2xl text-electric-blue animate-pulse">Loading...</p>
-    </div>;
-  }
 
   if (!post) {
-    return <div>Post not found</div>;
+    return <div className="font-apfel-grotezk-regular">Hold on fetching your posts..</div>;
   }
 
   return <PostCard key={postId} post={post} username={username} postId={postId} allPosts={allPosts}/>;

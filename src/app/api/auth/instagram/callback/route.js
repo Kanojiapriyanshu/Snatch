@@ -8,14 +8,17 @@ import connectDb from "@/db/mongoose";
 const CLIENT_ID = '1068594868074995';
 const CLIENT_SECRET = '7aa94560586507e6c840da8105090984';
 //const REDIRECT_URI = 'https://l6r9j4st-3000.inc1.devtunnels.ms/manage-projects/pick-projects'
-//const REDIRECT_URI = 'https://wf7s4f88-3000.inc1.devtunnels.ms/manage-projects/pick-projects';
+const REDIRECT_URI = 'https://wf7s4f88-3000.inc1.devtunnels.ms/manage-projects/pick-projects';
 // const REDIRECT_URI = 'https://snatch-pi.vercel.app/manage-projects/pick-projects';
-const REDIRECT_URI = 'https://app.snatchsocial.com/manage-projects/pick-projects';
+// const REDIRECT_URI = 'https://app.snatchsocial.com/manage-projects/pick-projects';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req) {
-  const code = req.nextUrl.searchParams.get("code");
+    const { searchParams } = req.nextUrl;
+      const code = searchParams.get("code");
+  const after = searchParams.get("after") || "";
+  const limit = parseInt(searchParams.get("limit") || "15"); // default 20
   const { userId } = getAuth(req);
 
   if (!code) {
@@ -131,69 +134,21 @@ if (pagesData.error) {
 
    console.log("Updated user with Facebook page:", updatedUser);
 
-    const insightsResponse = await fetch(
-      `https://graph.facebook.com/v21.0/${selectedPage.instagramAccountId}/insights?` +
-      `metric=follower_demographics&` +
-      `period=lifetime&` +
-      `timeframe=this_week&` +
-      `breakdown=country&` +
-      `metric_type=total_value&` +
-      `access_token=${selectedPage.pageToken}`
-    );
-
-    const insightsData = await insightsResponse.json();
-    console.log("Full Response:", insightsData);
-
-    const demographicsMetric = insightsData.data?.find(
-          item => item.name === 'follower_demographics'
-        );
-
-        if (!demographicsMetric) {
-          console.warn("No follower_demographics metric found");
-        } else {
-          console.log("demographicsMetric:", JSON.stringify(demographicsMetric, null, 2));
-
-          const totalValue = demographicsMetric.total_value;
-
-  if (Array.isArray(totalValue)) {
-    totalValue.forEach((entry, index) => {
-      const { dimension_keys, results } = entry;
-
-      console.log(`Entry ${index} Dimension Keys:`, dimension_keys);
-      console.log(`Entry ${index} Results:`, results);
-
-      if (Array.isArray(dimension_keys) && Array.isArray(results)) {
-        dimension_keys.forEach((key, i) => {
-          const result = results[i];
-          console.log(`Country: ${key}, Followers: ${result}`);
-        });
-      } else {
-        console.warn("dimension_keys or results not in expected array format");
-      }
-    });
-  } else {
-    console.warn("total_value is not an array or not defined.");
-  }
-}
-
-
-    const mediaResponse = await fetch(
+        const mediaUrl =
       `https://graph.facebook.com/v21.0/${selectedPage.instagramAccountId}/media?` +
-      `fields=id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url,username&` +
-      `access_token=${selectedPage.pageToken}`
-    );
+      `fields=id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url,username` +
+      `&limit=${limit}` +
+      (after ? `&after=${after}` : ``) +
+      `&access_token=${selectedPage.pageToken}`;
 
+    const mediaResponse = await fetch(mediaUrl);
     const mediaData = await mediaResponse.json();
-    console.log("Instagram Media Data:", mediaData);
 
     if (!mediaResponse.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch Instagram media" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to fetch Instagram media" }, { status: 500 });
     }
 
-    // Enrich media data with carousel items
+    // Enrich carousel items
     const enrichedMediaData = await Promise.all(
       mediaData.data.map(async (mediaItem) => {
         if (mediaItem.media_type === "CAROUSEL_ALBUM") {
@@ -202,7 +157,6 @@ if (pagesData.error) {
             `fields=id,media_type,media_url&access_token=${selectedPage.pageToken}`
           );
           const carouselData = await carouselResponse.json();
-
           if (carouselResponse.ok && carouselData.data) {
             return { ...mediaItem, children: carouselData.data };
           }
@@ -212,11 +166,10 @@ if (pagesData.error) {
     );
 
     return NextResponse.json({
-      message: "Instagram Business/Creator account connected successfully",
-      user,
-      insights: insightsData,
-      mediaData: enrichedMediaData
+      mediaData: enrichedMediaData,
+      paging: mediaData.paging || {}
     });
+
 
   } catch (error) {
     console.error("Error:", error);

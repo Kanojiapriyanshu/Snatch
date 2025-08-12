@@ -52,7 +52,6 @@ import SvgComponent from "@/components/svg/Instagramsvg";
 
   const handleContinueEditing = () => {
     setIsModalOpen(false);
-    // Add logic for continue editing
   };
 
   const handleCloseModal = () => {
@@ -84,8 +83,6 @@ import SvgComponent from "@/components/svg/Instagramsvg";
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mediaIds: filledProjectIds })
       });
-
-      alert("Projects saved successfully!");
       if (filledProjectsCount < 4) {
         router.push("/profile?incompleteProjects=1");
       } else {
@@ -380,53 +377,72 @@ const handleHamburgerClick = () => {
 
               if (activeProject.name === "CAROUSEL_ALBUM") {
               return (
-                <div className="relative w-full h-auto">
-                    {activeProject.children.map((child, index) => (
-                                <div
-                                  key={child.id}
-                                  className={`transition-opacity duration-500 ${
-                                    (carouselIndexes[activeProject.mediaId] || 0) === index
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  }`}
-                                >
-                                  {child.media_type === "IMAGE" ? (
-                                    <Image
-                                      src={child.media_url}
-                                      alt={`Media ${child.id}`}
-                                      fill
-                                      className={`w-full object-cover rounded-lg  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
-                                      onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                                        setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-                                      }}
-                                    />
-                                  ) : (
-                                    <video
-                                      src={child.media_url}
-                                      controls
-                                      className={`w-full  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
-                                      onLoadedMetadata={(e) => {
-                                        setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
-                                      }}
-                                    />
-                                  )}
-                                </div>
-                              ))}
-                  {/* Navigation buttons */}
-                  <div className="absolute inset-0 flex items-center justify-between px-2">
-                    <button
-                      className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                      onClick={() => handleSlide(activeProject.mediaId, "prev", activeProject.children.length)}
+                <div className="relative w-full aspect-[4/6]"> {/* Set container ratio */}
+                  {activeProject.children.map((child, index) => (
+                    <div
+                      key={child.id}
+                      className={`absolute inset-0 transition-opacity duration-500 ${
+                        (carouselIndexes[activeProject.mediaId] || 0) === index
+                          ? "opacity-100 z-10"
+                          : "opacity-0 z-0"
+                      }`}
                     >
-                      ❮
-                    </button>
-                    <button
-                      className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                      onClick={() => handleSlide(activeProject.mediaId, "next", activeProject.children.length)}
-                    >
-                      ❯
-                    </button>
-                  </div>
+                      {child.media_type === "IMAGE" ? (
+                        <Image
+                          src={child.media_url}
+                          alt={`Media ${child.id}`}
+                          fill
+                          className="bg-cover rounded-lg"
+                          onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+                            setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
+                          }}
+                        />
+                      ) : (
+                        <video
+                          src={child.media_url}
+                          controls
+                          className="w-full h-full object-cover rounded-lg"
+                          onLoadedMetadata={(e) => {
+                            setIsPortrait(
+                              checkOrientation(
+                                e.target.videoWidth,
+                                e.target.videoHeight
+                              )
+                            );
+                          }}
+                        />
+                      )}
+      
+                      {activeProject.children.length > 1 && (
+                        <>
+                          <button
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
+                            onClick={() =>
+                              handleSlide(
+                                activeProject.mediaId,
+                                "prev",
+                                activeProject.children.length
+                              )
+                            }
+                          >
+                            ❮
+                          </button>
+                          <button
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
+                            onClick={() =>
+                              handleSlide(
+                                activeProject.mediaId,
+                                "next",
+                                activeProject.children.length
+                              )
+                            }
+                          >
+                            ❯
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ))}
                 </div>
               );
             }else if (activeProject.fileUrl) {
@@ -470,22 +486,34 @@ const handleHamburgerClick = () => {
            </div>
 
            <div className="w-full h-full mt-5">
-            <p className="text-2xl text-graphite font-qimano">
-              {(() => {
-                // Find the form data for the active project
-                const formData = Array.isArray(selectionState?.formData)
-                  ? selectionState.formData.find(item => String(item.key) === String(activeImageId))
-                  : null;
+            <div className="flex justify-between items-center">
+              <p className="text-2xl text-graphite font-qimano">
+                {(() => {
+                  // Find the form data for the active project
+                  const formData = Array.isArray(selectionState?.formData)
+                    ? selectionState.formData.find(item => String(item.key) === String(activeImageId))
+                    : null;
 
-                // If we have form data, show the title
-                if (formData?.titleName) {
-                  return formData.titleName;
-                }
+                  // If we have form data, show the title
+                  if (formData?.titleName) {
+                    return formData.titleName;
+                  }
 
-                // If no form data or no title, show placeholder
-                return "Title of the project";
-              })()}
-            </p>
+                  // If no form data or no title, show placeholder
+                  return "Title of the project";
+                })()}
+              </p>
+              <Image
+              src="/assets/images/edit-pencil.svg" // Your SVG file path
+              alt="Edit"
+              width={20}
+              height={20}
+              className="w-10 h-7 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() =>
+                router.push(`/manage-projects/add-details?activeImageId=${activeImageId}&tab=${activeTab}`)
+              }
+            />
+            </div>
 
             <div className="flex gap-1 flex-wrap max-w-xl mr-10">
 
@@ -727,10 +755,7 @@ const handleHamburgerClick = () => {
               </button>
         </div>
 
-          
-
-    {/* Right Buttons: Previous Step + See Previews */}
-   
+    {/* Right Buttons: Previous Step + See Previews */} 
     <div className="bg-gray-100 px-2 py-2 h-[56px] rounded-lg flex justify-between items-start gap-[8px]">
         <button className="px-2 h-[38px] border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
         Previous Step
@@ -748,7 +773,6 @@ const handleHamburgerClick = () => {
        
       </div>
       </div>
-
     </div>
   );
 }

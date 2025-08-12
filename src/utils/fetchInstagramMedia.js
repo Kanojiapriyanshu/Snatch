@@ -1,18 +1,14 @@
-export async function fetchInstagramMedia(code) {
-    try {
-      const response = await fetch(`/api/auth/instagram/callback?code=${code}`);
-      console.log("response", response);
-      const data = await response.json();
-      console.log("Instagram media data:", data);
-      if (data?.mediaData) {
-        return data.mediaData; // Return the media data
-      }
-      //  else {
-      //   throw new Error("Failed to fetch Instagram media.");
-      // }
-    } catch (error) {
-      console.error("Error fetching Instagram media:", error);
-      throw error;
+export async function fetchInstagramMedia(code, after = null) {
+  try {
+    let url = `/api/auth/instagram/callback?code=${code}`;
+    if (after) url += `&after=${after}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data?.mediaData) {
+      return { media: data.mediaData, paging: data.paging };
     }
+  } catch (error) {
+    console.error("Error fetching Instagram media:", error);
+    throw error;
   }
-  
+}

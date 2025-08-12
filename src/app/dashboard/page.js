@@ -8,7 +8,7 @@ import { useFormContext } from "../onboarding/context";
 export default function DashboardRedirect() {
   const router = useRouter();
   const { formData } = useFormContext();
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const initializeDashboard = async () => {
@@ -25,5 +25,5 @@ export default function DashboardRedirect() {
     initializeDashboard();
   }, [formData, router]);
 
-  return isLoading ? <div className="h-screen bg-smoke flex justify-center items-center font-qimano text-3xl text-electric-blue">Loading...</div> : null;
+  // return isLoading ? <div className="h-screen bg-smoke flex justify-center items-center font-qimano text-3xl text-electric-blue">Loading...</div> : null;
 }
