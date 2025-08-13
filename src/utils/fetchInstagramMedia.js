@@ -5,7 +5,7 @@ export async function fetchInstagramMedia(code, after = null) {
     const response = await fetch(url);
     const data = await response.json();
     if (data?.mediaData) {
-      return { media: data.mediaData, paging: data.paging };
+      return { media: data.mediaData, paging: data.paging, mediaCount: data.mediaCount };
     }
   } catch (error) {
     console.error("Error fetching Instagram media:", error);

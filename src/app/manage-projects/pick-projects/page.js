@@ -14,8 +14,6 @@ export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [selectedTab, setSelectedTab] = useState("instagram");
   const [carouselIndexes, setCarouselIndexes] = useState({});
-  const [currentPage, setCurrentPage] = useState(0);
-  const PAGE_SIZE = 20;
   const router = useRouter();
   const [media, setMedia] = useState([]);
   const { 
@@ -25,39 +23,46 @@ export default function PickProjects() {
     removeInstagramSelection, 
     removeFile
   } = useSelectedProjects();
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [paging, setPaging] = useState(null);
-const [isLoadingMore, setIsLoadingMore] = useState(false);
-
+ const [isMenuVisible, setIsMenuVisible] = useState(false);
+ const [paging, setPaging] = useState(null);
+ const [currentPage, setCurrentPage] = useState(0);
+ const PAGE_SIZE = 20;
+ const [isLoadingMore, setIsLoadingMore] = useState(false);
+ const [loading, setLoading] = useState(true);
+ const [totalPages, setTotaPages] = useState(0);
   
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-
-
-  useEffect(() => {
+ 
+   useEffect(() => {
     const fetchMedia = async () => {
-      const queryParams = new URLSearchParams(window.location.search);
-      const code = queryParams.get("code");
+    setLoading(true);
+    const queryParams = new URLSearchParams(window.location.search);
+    const code = queryParams.get("code");
 
-      try {
-        if (code) {
-           const { media: mediaData, paging } = await fetchInstagramMedia(code);
-            setMedia(mediaData);
-            setPaging(paging);
-        } else {
-          // Call the server action to fetch media from the database have token and fetch posts from graph api
-          const mediaData = await getMediaFromDatabase();
-          console.log("media from database", mediaData)
-          setMedia(mediaData);
-        }
-      } catch (error) {
-        alert(error.message || "An error occurred while fetching media");
+    try {
+      if (code) {
+        const { media: mediaData, paging, mediaCount } = await fetchInstagramMedia(code);
+        setMedia(mediaData);
+        setPaging(paging);
+        setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+      } else {
+        const {mediaData, mediaCount} = await getMediaFromDatabase();
+        console.log("media from database", mediaData);
+        setMedia(mediaData);
+        setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
       }
-    };
+    } catch (error) {
+      alert(error.message || "An error occurred while fetching media");
+    } finally {
+      setLoading(false); // triggers re-render with updated mediaPages
+    }
+  };
 
-    fetchMedia();
-  }, []); 
+  fetchMedia();
+}, []);
+
 
   if (!isHydrated) {
     return null;
@@ -138,15 +143,63 @@ const handleNext = async () => {
 
     const isDisabled = selectionState.instagramSelected.length + selectionState.uploadedFiles.length < 4;
     
-    function chunkArray(array, size) {
-      const result = [];
-      for (let i = 0; i < array.length; i += size) {
-        result.push(array.slice(i, i + size));
+    // chunkArray stays the same
+      function chunkArray(array, size) {
+        const result = [];
+        for (let i = 0; i < array.length; i += size) {
+          result.push(array.slice(i, i + size));
+        }
+        return result;
       }
-      return result;
-    }
-    const mediaPages = chunkArray(media, PAGE_SIZE);
-    const currentMedia = mediaPages[currentPage] || [];
+
+      const mediaPages = chunkArray(media, PAGE_SIZE);
+      const currentMedia = mediaPages[currentPage] || [];
+
+    const shouldShowPagination =
+      !loading && (mediaPages.length > 1 || paging?.next);
+
+      const handlePageClick = async (pageNumber) => {
+      // If already loaded, just set the current page
+      if (mediaPages[pageNumber]) {
+        setCurrentPage(pageNumber);
+        return;
+      }
+
+      // If not loaded, fetch page data
+      if (paging?.cursors?.after || pageNumber === 0) {
+        setIsLoadingMore(true);
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get("code");
+
+        try {
+          // Calculate the "after" cursor for this specific page
+          let afterCursor = null;
+          let tempPaging = paging;
+          let tempMedia = media;
+
+          // Loop from current last loaded page to target page
+          for (let i = mediaPages.length; i <= pageNumber; i++) {
+            const { media: newMedia, paging: newPaging } = await fetchInstagramMedia(
+              code,
+              afterCursor || tempPaging?.cursors?.after
+            );
+            tempMedia = [...tempMedia, ...newMedia];
+            tempPaging = newPaging;
+            afterCursor = newPaging?.cursors?.after;
+          }
+
+          setMedia(tempMedia);
+          setPaging(tempPaging);
+          setCurrentPage(pageNumber);
+        } catch (error) {
+          console.error("Error fetching page:", error);
+          alert(error.message || "Failed to load media");
+        } finally {
+          setIsLoadingMore(false);
+        }
+      }
+    };
+
    
     const handleBackClick = () => {
      router.push("/profile")  
@@ -272,50 +325,58 @@ const renderInstagramTab = () => (
     {/* right side rendered projects graph api fetch  */}
     <div className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
     <MediaDisplay media={currentMedia} displayType="instagram"/>
+    {shouldShowPagination && (
+  <div className="flex justify-center mt-4">
+    <div className="inline-flex items-center font-apfel-grotezk-regular bg-white rounded-lg shadow-sm px-2 py-1 space-x-1">
+      {/* Prev */}
+      <button
+        onClick={handlePrev}
+        disabled={currentPage === 0}
+        className={`flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 text-lg ${
+          currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+      >
+        ←
+      </button>
 
-    {/* {paging?.next && ( */}
-   <div className="flex justify-center font-apfel-grotezk-regular items-center space-x-2 mt-4">
-  {/* Previous Button */}
+      {/* Page numbers */}
+{Array.from({ length: totalPages }, (_, index) => (
   <button
-    onClick={handlePrev}
-    disabled={currentPage === 0}
-    className={`px-4 py-2 border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white ${
-      currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
+    key={index}
+    onClick={() => handlePageClick(index)}
+    className={`w-8 h-8 rounded-md flex items-center justify-center text-sm font-medium transition-colors ${
+      currentPage === index
+        ? "bg-electric-blue text-white"
+        : "text-gray-700 hover:bg-gray-100"
     }`}
   >
-    Previous
+    {index + 1}
   </button>
+))}
 
-  {/* Page Numbers */}
-  {mediaPages.map((_, index) => (
-    <button
-      key={index}
-      onClick={() => setCurrentPage(index)}
-      className={`px-3 py-1 rounded-lg border border-gray-300 ${
-        currentPage === index
-          ? "bg-electric-blue text-white border-electric-blue"
-          : "bg-white text-black hover:bg-gray-100"
-      }`}
-    >
-      {index + 1}
-    </button>
-  ))}
 
-  {/* Next Button */}
-  <button
-    onClick={handleNext}
-    disabled={isLoadingMore || (!mediaPages[currentPage + 1] && !paging?.next)}
-    className={`px-4 py-2 border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white ${
-      (!mediaPages[currentPage + 1] && !paging?.next)
-        ? "opacity-50 cursor-not-allowed"
-        : ""
-    }`}
-  >
-    {isLoadingMore ? "Loading..." : "Next"}
-  </button>
-</div>
+      {/* Ellipsis */}
+      {mediaPages.length > 8 && (
+        <span className="px-2 text-gray-400 select-none">...</span>
+      )}
 
-    {/* )} */}
+      {/* Next */}
+      <button
+        onClick={handleNext}
+        disabled={
+          isLoadingMore || (!mediaPages[currentPage + 1] && !paging?.next)
+        }
+        className={`flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 text-lg ${
+          !mediaPages[currentPage + 1] && !paging?.next
+            ? "opacity-50 cursor-not-allowed"
+            : ""
+        }`}
+      >
+        →
+      </button>
+    </div>
+  </div>
+)}
     </div>
 
 

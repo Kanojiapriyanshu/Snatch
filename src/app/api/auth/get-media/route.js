@@ -73,9 +73,16 @@ export async function GET(req) {
     );
 
     console.log("enrichedMediaData:", enrichedMediaData);
+       // Step 3: Get media_count
+    const countResponse = await fetch(
+      `https://graph.facebook.com/v21.0/${instagramAccountId}?fields=media_count&access_token=${instagramAccessToken}`
+    );
+    const countData = await countResponse.json();
+    const mediaCount = countData.media_count;
+
 
     // Respond with the enriched media data
-    return NextResponse.json({ mediaData: enrichedMediaData }, { status: 200 });
+    return NextResponse.json({ mediaData: enrichedMediaData, mediaCount: mediaCount }, { status: 200 });
   } catch (error) {
     console.error("Error fetching media data:", error);
     return NextResponse.json(

@@ -940,7 +940,7 @@ const handlePopupGenerate = async () => {
                 key={child.id}
                 className={`absolute inset-0 transition-opacity duration-500 ${
                   (carouselIndexes[activeProject.mediaId] || 0) === index
-                    ? "opacity-100 z-10"
+                    ? "opacity-100 z-0"
                     : "opacity-0 z-0"
                 }`}
               >
@@ -1277,7 +1277,7 @@ const handlePopupGenerate = async () => {
                 )}
 
 
-        <div className="flex justify-start items-start ">
+        <div className="flex justify-start items-start">
             <button
           className="px-2 py-1.5 w-[149px] h-[38px] text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4 flex items-center justify-between"
           onClick={handlePrevious}

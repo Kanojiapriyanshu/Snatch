@@ -99,6 +99,19 @@ const MediaDisplay = ({ media, uploadedFiles, displayType }) => {
     setPendingDelete(null);
   };
 
+    const handleSlide = (mediaId, direction, totalSlides) => {
+    setCarouselIndexes((prev) => {
+      const currentIndex = prev[mediaId] || 0;
+      const newIndex =
+        direction === "next"
+          ? (currentIndex + 1) % totalSlides
+          : currentIndex === 0
+          ? totalSlides - 1
+          : currentIndex - 1;
+      return { ...prev, [mediaId]: newIndex };
+    });
+  };
+
   return (
     <div className="mb-20 flex justify-start 7xl:justify-center">
       {/* Confirmation Popup */}

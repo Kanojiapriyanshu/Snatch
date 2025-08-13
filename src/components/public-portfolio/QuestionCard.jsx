@@ -221,7 +221,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
       onClick={handleClick}
     >
       <Image
-        src={coverImage || "/default-image.jpg"}
+        src={coverImage || "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396552/7_r6djcr.jpg"}
         alt="Preview"
         className="w-full h-full object-cover"
         width={165}

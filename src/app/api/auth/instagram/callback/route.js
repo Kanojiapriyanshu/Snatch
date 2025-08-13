@@ -10,7 +10,7 @@ const CLIENT_SECRET = '7aa94560586507e6c840da8105090984';
 //const REDIRECT_URI = 'https://l6r9j4st-3000.inc1.devtunnels.ms/manage-projects/pick-projects'
 //const REDIRECT_URI = 'https://wf7s4f88-3000.inc1.devtunnels.ms/manage-projects/pick-projects';
 // const REDIRECT_URI = 'https://snatch-pi.vercel.app/manage-projects/pick-projects';
- const REDIRECT_URI = 'https://app.snatchsocial.com/manage-projects/pick-projects';
+const REDIRECT_URI = 'https://app.snatchsocial.com/manage-projects/pick-projects';
 
 export const dynamic = 'force-dynamic';
 
@@ -165,9 +165,17 @@ if (pagesData.error) {
       })
     );
 
+   // Step: Get media_count
+    const countResponse = await fetch(
+      `https://graph.facebook.com/v21.0/${selectedPage.instagramAccountId}?fields=media_count&access_token=${selectedPage.pageToken}`
+    );
+    const countData = await countResponse.json();
+    const mediaCount = countData.media_count;
+
     return NextResponse.json({
       mediaData: enrichedMediaData,
-      paging: mediaData.paging || {}
+      paging: mediaData.paging || {}, 
+      mediaCount: mediaCount, // Include media count in the response
     });
 
 
