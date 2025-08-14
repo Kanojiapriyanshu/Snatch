@@ -295,58 +295,29 @@ const MediaDisplay = ({ media, uploadedFiles, displayType }) => {
             className="relative w-[200px] h-[200px] border border-gray-300 rounded-md overflow-x-hidden overflow-y-auto cursor-pointer"
             onClick={() => handleFileSelect(file)}
           >
-            {/* Circle on Top Left */}
             <div
               className={`absolute top-2 left-2 w-4 h-4 rounded-full flex items-center justify-center z-10 ${
                 isUploadedFileSelected(file.mediaId)
                   ? "bg-electric-blue"
                   : "bg-transparent border border-black"
               }`}
-            >
-              {/* Optional: Add text or icon inside the circle */}
-            </div>
-
-            {/* Media Content */}
-            {file.fileUrl.match(/\.(jpeg|jpg|png|gif|webp|svg)$/i) ? (
-              <img
-                src={file.fileUrl}
-                alt={file.fileName || "Uploaded File"}
-                width={200}
-                height={200}
-                className="bg-cover w-full h-full"
-              />
-            ) : file.fileUrl.match(/\.(mp4|webm|ogg|mov)$/i) ? (
-              <video
-                controls
-                className="object-cover w-full h-full"
-                src={file.fileUrl}
-              >
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <p>Unsupported file type</p>
-            )}
-
-            {/* Selected Line */}
-            {isUploadedFileSelected(file.mediaId) && (
-              <div className="absolute bottom-0 left-0 right-0 bg-electric-blue h-[35px] flex items-center justify-center font-apfel-grotezk-regular rounded-b-md">
-                <Image
-                  src="/assets/images/okay.svg"
-                  alt="okay"
-                  width={10}
-                  height={10}
-                  className="w-[15px] h-[12px] mr-7"
-                />
-                <span className="text-white -ml-5" style={{ fontWeight: 10 }}>
-                  Selected
-                </span>
-              </div>
-            )}
+            ></div>
           </div>
         ))
-      ) : (
-        <p className="font-apfel-grotezk-regular">Fetching all your posts...</p>
-      )}
+      ) : displayType === "instagram" && (!media || media.length === 0) ? (
+        <div className="flex flex-col items-center justify-center w-full col-span-full">
+          <Image
+            src="/assets/icons/sandwatch.svg"
+            alt="Loading"
+            width={52}
+            height={73}
+            className="mt-20 animate-pulse"
+          />
+          <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse text-center">
+            Hold on while we fetch your posts!
+          </p>
+        </div>
+      ) : null}
     </div>
   </div>
   );

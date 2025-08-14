@@ -70,7 +70,7 @@ const DashboardPage = () => {
 
   // Derived values
   const isInstagramLinked = instagramConnection?.connected || false;
-  const hasMinFollowers = followerData?.count >= 10;
+  const hasMinFollowers = followerData?.count >= 1000;
   const totalRequests = influencerRequests?.totalRequests || 0;
 
   const getTopLocations = () => {
@@ -182,7 +182,7 @@ const DashboardPage = () => {
         )}
 
         {isInstagramLinked && !hasMinFollowers && (
-          <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-4 mt-2 rounded-xl" style={{ height: "670px" }}>
+          <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-4 mt-2 rounded-xl" style={{ height: "660px" }}>
             <h2 className="text-3xl md:text-4xl text-[#e7e300] font-qimano mb-4">You&#39;re almost there!</h2>
             <p className="text-white mb-6 max-w-lg font-apfel-grotezk-regular">
               Once your Instagram crosses 1,000 followers, you&#39;ll get full access to Snatch&#39;s dashboard and tools.
@@ -191,7 +191,7 @@ const DashboardPage = () => {
           </div>
         )}
       </div>
-    </DashboardContext.Provider>
+     </DashboardContext.Provider>
   );
 };
 

@@ -140,6 +140,7 @@ export default function Step1() {
     />
 
 
+
     {/* Social Links */}
     <div>
       <h6 className="font-medium text-graphite">Add social links</h6>
@@ -201,5 +202,3 @@ export default function Step1() {
 
   );
 }
-
-

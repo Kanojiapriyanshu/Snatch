@@ -9,6 +9,7 @@ import { useSelectedProjects } from "../context";
 import { useRouter } from "next/navigation";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
+import InstagramPopup from "@/components/PopUp1"
 
 export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -228,6 +229,8 @@ const handleNext = async () => {
 
 const renderInstagramTab = () => (
   <div className="flex justify-center gap-10 mt-5">  
+
+  <InstagramPopup/>
 
     <div className="w-[278px] h-full bg-white text-black p-3 rounded-lg" >
       <p className="text-md font-apfel-grotezk-regular">Selected projects from Instagram</p>
@@ -486,7 +489,7 @@ return (
       
       <div className="flex flex-col mx-auto items-start text-graphite">
         <p className="text-2xl text-black font-qimano">
-          Pick content that you wish to highlight in your profile kit
+        Pick at least 4 posts that wish to highlight in your press kit.
         </p>
         <span className="mx-auto font-qimano ">
   {(selectionState?.instagramSelected?.length || 0) + (selectionState?.uploadedFiles?.length || 0)} / 12 Selected

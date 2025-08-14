@@ -83,7 +83,7 @@ export default function Step2() {
       <form className="w-full xl:w-[726px] 5xl:w-[800px] h-[80vh] overflow-y-scroll mx-auto space-y-6 font-apfel-grotezk-regular mt-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
 
         <MultiSelectInput
-          label="Choose Industry* (Max 5)"
+          label="What industries do you create content for?* (Max 5)"
           data={industryList}
           selectedValues={formData.industry || []}
           onAddValue={(value) => handleAddValue("industry", value)}

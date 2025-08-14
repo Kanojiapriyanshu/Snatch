@@ -50,7 +50,12 @@ const Profilecustomfile = ({
         className="mt-4 flex gap-8 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
         onClick={() => setIsModalOpen(true)}
       >
-        <Image src={iconSrc} alt="upload" width={30} height={20} />
+        <Image 
+          src="/assets/icons/upload-to-cloud_blue.svg" 
+          alt="upload" 
+          width={30} 
+          height={20} 
+        />
         <span className="border-r-2 border-gray-300 -ml-4 "></span>
         <span className="-ml-4 font-apfel-grotezk-regular">
           {selectedImage?.name || placeholder}

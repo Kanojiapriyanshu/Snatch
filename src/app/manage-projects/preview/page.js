@@ -260,7 +260,7 @@ const handleHamburgerClick = () => {
     <div className={`flex flex-col items-start h-[77vh] w-full space-x-8 overflow-x-hidden overflow-y-auto ${isModalOpen ? 'bg-transparent pointer-events-none' : 'bg-transparent'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
       <div className="flex flex-col mx-auto items-start">
         <p className="text-2xl text-black font-qimano">
-          Pick content that you wish to highlight in your profile kit
+        Pick at least 4 posts that wish to highlight in your press kit.
         </p>
         <p className="mx-auto h-7 text-black font-apfel-grotezk-regular">
           
