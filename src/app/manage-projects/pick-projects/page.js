@@ -230,7 +230,7 @@ const handleNext = async () => {
 const renderInstagramTab = () => (
   <div className="flex justify-center gap-10 mt-5">  
 
-  <InstagramPopup/>
+  {/* <InstagramPopup/> */}
 
     <div className="w-[278px] h-full bg-white text-black p-3 rounded-lg" >
       <p className="text-md font-apfel-grotezk-regular">Selected projects from Instagram</p>
