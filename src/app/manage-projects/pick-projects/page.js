@@ -330,7 +330,7 @@ const renderInstagramTab = () => (
     <MediaDisplay media={currentMedia} displayType="instagram"/>
     {shouldShowPagination && (
   <div className="flex justify-center mt-4">
-    <div className="inline-flex items-center font-apfel-grotezk-regular bg-white rounded-lg shadow-sm px-2 py-1 space-x-1">
+    <div className="inline-flex items-center font-apfel-grotezk-regular rounded-lg px-2 py-1 space-x-1">
       {/* Prev */}
       <button
         onClick={handlePrev}

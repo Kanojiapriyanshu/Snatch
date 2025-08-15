@@ -198,10 +198,10 @@ export default function SignUp() {
           <span className="mx-4 text-gray-500 text-sm">or</span>
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
-          <div className="mt-2 text-dark-grey">
+          <div className="mt-2 font-apfel-grotezk-regular text-lg">
             Already have an account?
             <Link href="/login">
-              <span className="text-electric-blue ml-2 cursor-pointer">Login</span>
+              <span className="text-electric-blue ml-2 cursor-pointer underline font-semibold">Login</span>
             </Link>
           </div>
         </div>

@@ -95,7 +95,7 @@ const About = ({ onComplete }) => {
                       brandQuestions;
 
     await saveQuestionsToDB(sectionKey, [questions[index]]);
-
+    alert("Questions saved successfully!")
     setUnsavedChanges(prev => ({
       ...prev,
       [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))
@@ -327,7 +327,7 @@ const About = ({ onComplete }) => {
       </Accordion>
 
       {/* Accordion 3 – Brand Connection */}
-      <Accordion title="Parternships* / What makes a brand the right fit? " isOpen={openIndex === 2} onToggle={() => toggleAccordion(2)}>
+      <Accordion title="Partnerships / What makes a brand the right fit?" isOpen={openIndex === 2} onToggle={() => toggleAccordion(2)}>
         <div className="text-gray-600 w-full overflow-y-auto h-[270px]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {brandQuestions.map((item, index) => (
             <div key={index} className="mb-4 p-2 rounded-md">

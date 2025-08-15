@@ -4,6 +4,7 @@ import {useState} from 'react';
 import { useSignIn } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import * as z from 'zod';
 
 const emailSchema = z.string().email('Please enter a valid email address'); 
@@ -239,6 +240,18 @@ export default function Page() {
             )}
           </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
+
+        <div className="flex items-center my-3 w-[300px] text-graphite">
+          <div className="flex-grow border-t border-gray-300"></div>
+          <span className="mx-4 text-gray-500 text-sm text-graphite">or</span>
+          <div className="flex-grow border-t border-gray-300"></div>
+        </div>
+          <div className="mt-2 font-apfel-grotezk-regular text-lg">
+            New on Snatch?
+            <Link href="/">
+              <span className="text-electric-blue ml-2 cursor-pointer underline font-semibold">Create an account</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

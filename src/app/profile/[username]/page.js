@@ -6,13 +6,13 @@ import About from "@/components/Profilepage/About";
 import Audience from "@/components/Profilepage/Audience";
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState("portfolio");
+  const [activeTab, setActiveTab] = useState("work");
   const [loading, setLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [portfolioComplete, setPortfolioComplete] = useState(false);
   const [aboutComplete, setAboutComplete] = useState(false);
   const [audienceComplete, setAudienceComplete] = useState(false);
-  const menuItems = ["portfolio", "about", "audience"];
+  const menuItems = ["work", "about", "audience"];
   const { userId } = useAuth();
 
   // Check if the user's Instagram account is already connected (for audience)
@@ -101,7 +101,7 @@ const Profile = () => {
   // Function to render tab content
   const renderTabContent = () => {
     switch (activeTab) {
-      case "portfolio":
+      case "work":
         return <Portfolio  />;
       case "about":
         return <About onComplete={handleAboutComplete} />;
@@ -129,7 +129,7 @@ const Profile = () => {
             onClick={() => setActiveTab(item)}
           >
             {/* Green tick if section is complete, to the left of the label */}
-            {item === "portfolio" && portfolioComplete && <GreenTick />}
+            {item === "work" && portfolioComplete && <GreenTick />}
             {item === "about" && aboutComplete && <GreenTick />}
             {item === "audience" && audienceComplete && <GreenTick />}
             <span>{item.charAt(0).toUpperCase() + item.slice(1)}</span>
