@@ -201,7 +201,7 @@ export default function SignUp() {
           <div className="mt-2 font-apfel-grotezk-regular text-lg">
             Already have an account?
             <Link href="/login">
-              <span className="text-electric-blue ml-2 cursor-pointer underline font-semibold">Login</span>
+              <span className="text-electric-blue ml-2 cursor-pointer underline font-normal">Login</span>
             </Link>
           </div>
         </div>

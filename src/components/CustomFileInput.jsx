@@ -49,7 +49,6 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
     try {
       const croppedImage = await getCroppedImage(imageSrc, croppedAreaPixels, tempFileName);
       const uploadedUrl = await cloudinaryUpload(croppedImage);
-      alert("Your image has been uploaded successfully");
       onFileChange(uploadedUrl, tempFileName); // Pass both URL and file name to parent/context
       setIsCropping(false); // Close modal
       setImageSrc(null);

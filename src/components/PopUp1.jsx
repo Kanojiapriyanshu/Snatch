@@ -1,8 +1,6 @@
 "use client";
-import { useState } from "react";
 
-export default function InstagramPopup() {
-  const [isOpen, setIsOpen] = useState(true); // initially open for demo
+export default function InstagramPopup({ isOpen = true, onClose }) {
 
   return (
     <>
@@ -11,7 +9,7 @@ export default function InstagramPopup() {
           {/* Dark background overlay */}
           <div
             className="absolute inset-0 bg-black bg-opacity-60"
-            onClick={() => setIsOpen(false)}
+            onClick={onClose}
           ></div>
 
           {/* Popup */}
@@ -25,8 +23,8 @@ export default function InstagramPopup() {
             </p>
 
             <button
-              className="bg-electric-blue text-white py-3 px-6 rounded-xl text-sm font-medium font-apfel-grotezk-regular mt-2"
-              onClick={() => alert("Start selecting posts!")}
+              className="bg-electric-blue text-white py-3 px-6 rounded-xl text-sm font-medium font-apfel-grotezk-regular mt-5"
+              onClick={onClose}
             >
               Start selecting Instagram posts for your press kit →
             </button>

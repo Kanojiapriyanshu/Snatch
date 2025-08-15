@@ -113,7 +113,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType }) => {
   };
 
   return (
-    <div className="mb-20 flex justify-start 7xl:justify-center">
+    <div className="mb-20 flex  7xl:justify-center">
       {/* Confirmation Popup */}
       {showConfirm && (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
@@ -157,13 +157,13 @@ const MediaDisplay = ({ media, uploadedFiles, displayType }) => {
 )}
 
     {/* Change this grid to a horizontal scrollable flex */}
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 max-w-screen-lg 4xl:max-w-screen-xl">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 3xl:grid-cols-5 gap-4 max-w-screen-lg 4xl:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
       {/* Instagram Media */}
       {displayType === "instagram" && media?.length > 0 ? (
         media.map((mediaItem) => (
           <div
             key={mediaItem.id}
-            className="relative w-[200px] h-[200px] border border-gray-300 rounded-md overflow-x-hidden overflow-y-auto cursor-pointer"
+            className="relative w-full h-72 border border-gray-300 rounded-md overflow-x-hidden overflow-y-auto cursor-pointer"
             onClick={() => handleSelect(mediaItem)}
           >
             {/* Circle on Top Left */}
@@ -292,7 +292,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType }) => {
         uploadedFiles.map((file) => (
           <div
             key={file.mediaId}
-            className="relative w-[200px] h-[200px] border border-gray-300 rounded-md overflow-x-hidden overflow-y-auto cursor-pointer"
+            className="relative w-full aspect-square border border-gray-300 rounded-md overflow-x-hidden overflow-y-auto cursor-pointer"
             onClick={() => handleFileSelect(file)}
           >
             <div
@@ -305,18 +305,18 @@ const MediaDisplay = ({ media, uploadedFiles, displayType }) => {
           </div>
         ))
       ) : displayType === "instagram" && (!media || media.length === 0) ? (
-        <div className="flex flex-col items-center justify-center w-full col-span-full">
-          <Image
-            src="/assets/icons/sandwatch.svg"
-            alt="Loading"
-            width={52}
-            height={73}
-            className="mt-20 animate-pulse"
-          />
-          <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse text-center">
-            Hold on while we fetch your posts!
-          </p>
-        </div>
+       <div className="col-span-full flex flex-col items-center justify-center w-full h-96 mx-auto">
+    <Image
+      src="/assets/icons/sandwatch.svg"
+      alt="Loading"
+      width={52}
+      height={73}
+      className="animate-pulse"
+    />
+    <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse text-center mt-4">
+      Hold on while we fetch your posts!
+    </p>
+  </div>
       ) : null}
     </div>
   </div>

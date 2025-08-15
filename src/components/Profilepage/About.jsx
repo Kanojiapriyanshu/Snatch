@@ -95,7 +95,7 @@ const About = ({ onComplete }) => {
                       brandQuestions;
 
     await saveQuestionsToDB(sectionKey, [questions[index]]);
-    alert("Questions saved successfully!")
+    alert("Question saved successfully!")
     setUnsavedChanges(prev => ({
       ...prev,
       [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))

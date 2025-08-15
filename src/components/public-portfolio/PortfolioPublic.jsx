@@ -21,6 +21,10 @@ const PortfolioPublic = () => {
   const pathnameParts = pathname.split("/");
   const username = pathnameParts[1] || "";
 
+  console.log("pathname: test: ", pathname);
+  console.log("isAdminView: test: ", pathname.includes("/adminview"));
+
+
   // ✅ Use React Query instead of manual fetch
   const { data: projects = [], isLoading, isError, error } = useQuery({
     queryKey: ["publicProjects", username],
@@ -161,8 +165,12 @@ const PortfolioPublic = () => {
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-4 lg:hidden">
             {projects.map((project, index) => (
               <div key={index} className="relative w-full aspect-[5/8] p-0 sm:p-2">
-                <Link
-                  href={`/${username}/media-kit/post/?postId=${project.mediaId}`}
+                 <Link
+                  href={
+                    isAdminView
+                      ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
+                      : `/${username}/media-kit/post/?postId=${project.mediaId}`
+                  }
                   className="block w-full h-full"
                 >
                   <div className="relative w-full h-full group rounded-md overflow-hidden">
@@ -243,8 +251,15 @@ const PortfolioPublic = () => {
                     )}
                     <div
                       className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30 cursor-pointer"
-                      onClick={(e) => handlePostClick(e, project.mediaId, `/${username}/media-kit/post/?postId=${project.mediaId}`)}
-                    >
+                      onClick={(e) =>
+                      handlePostClick(
+                        e,
+                        project.mediaId,
+                        isAdminView
+                          ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
+                          : `/${username}/media-kit/post/?postId=${project.mediaId}`
+                      )
+                    }>
                       {loadingPostId === project.mediaId ? (
                         <DotLottieReact
                           src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
@@ -269,7 +284,11 @@ const PortfolioPublic = () => {
             {projects.map((project, index) => (
               <div key={index} className="relative w-full aspect-[5/7]">
                 <Link
-                  href={`/${username}/media-kit/post/?postId=${project.mediaId}`}
+                  href={
+                    isAdminView
+                      ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
+                      : `/${username}/media-kit/post/?postId=${project.mediaId}`
+                  }
                   className="block w-full h-full"
                 >
                   <div className="relative w-full h-full group rounded-md overflow-hidden">
@@ -350,8 +369,15 @@ const PortfolioPublic = () => {
                     )}
                     <div
                       className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30 cursor-pointer"
-                      onClick={(e) => handlePostClick(e, project.mediaId, `/${username}/media-kit/post/?postId=${project.mediaId}`)}
-                    >
+                      onClick={(e) =>
+                      handlePostClick(
+                        e,
+                        project.mediaId,
+                        isAdminView
+                          ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
+                          : `/${username}/media-kit/post/?postId=${project.mediaId}`
+                      )
+                    }>
                       {loadingPostId === project.mediaId ? (
                         <DotLottieReact
                           src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"

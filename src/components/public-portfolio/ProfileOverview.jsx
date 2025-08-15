@@ -296,7 +296,7 @@ const priceRange = lowest === highest ? (
 
             {/* CTA Button */}
             <button className="bg-lime-yellow text-graphite font-outline text-semibold py-2 px-4 rounded mt-6 w-[370px] max-w-[370px] font-apfel-grotezk-regular" onClick={handleRequest}>
-              {isAdminView ? "Copy Portfolio Link" : "Send request"}
+              {isAdminView ? "Copy Portfolio Link" : "Get in touch"}
             </button>
           </div>
 
@@ -399,7 +399,7 @@ const priceRange = lowest === highest ? (
     className="w-full bg-[#F7EA5F] text-black font-apfel-grotezk-regular text-[22px] font-normal py-3 rounded mt-4 mb-2 text-center"
     onClick={handleRequest}
   >
-    {isAdminView ? "Copy Portfolio Link" : "Send request"}
+    {isAdminView ? "Copy Portfolio Link" : "Get in touch"}
   </button>
 </div>
 

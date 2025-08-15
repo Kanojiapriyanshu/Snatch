@@ -1,26 +1,21 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+
 
 export default function PostCard({ post, postId, username, allPosts }) {
+  const pathname = usePathname();
+  const router = useRouter();
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isPortrait, setIsPortrait] = useState(false);
-  const router = useRouter();
   const [slideDirection, setSlideDirection] = useState(null);
   const [isSliding, setIsSliding] = useState(false);
   const cardRef = useRef(null);
 
-  const checkOrientation = (width, height) => {
-    return height > width;
-  };
-
-  const currentIndex = allPosts ? allPosts.findIndex((p) => p.mediaId === postId) : -1;
-  const totalPosts = allPosts ? allPosts.length : 0;
-
-  useEffect(() => {
+    useEffect(() => {
     if (!username || !postId) {
       console.error("Missing required props:", { username, postId });
       setLoading(false);
@@ -59,7 +54,18 @@ export default function PostCard({ post, postId, username, allPosts }) {
     };
 
     fetchInsights();
-  }, [username, postId, post.media.source]);
+  }, [username, postId, post?.media?.source]);
+  
+    const isAdminView = pathname?.includes("/adminview");
+    console.log("PostCard isAdminView:", isAdminView, pathname)
+
+    const checkOrientation = (width, height) => {
+      return height > width;
+    };
+
+  const currentIndex = allPosts ? allPosts.findIndex((p) => p.mediaId === postId) : -1;
+  const totalPosts = allPosts ? allPosts.length : 0;
+
 
   const handleNavigation = (direction) => {
     if (!allPosts || allPosts.length === 0) return;
@@ -74,9 +80,6 @@ export default function PostCard({ post, postId, username, allPosts }) {
     }
 
     const nextPost = allPosts[nextIndex];
-    const pathname = window.location.pathname;
-    const isAdminView = pathname.includes('/adminview');
-    const baseUrl = `/${username}/media-kit${isAdminView ? '/adminview' : ''}/post`;
 
     if (!nextPost || !nextPost.mediaId) {
       console.error("Next post is missing mediaId", nextPost);
@@ -110,8 +113,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [postId, allPosts]);
 
-  // if (loading) return <div className="w-[864px] h-[450px] text-center flex items-center justify-center mt-10 bg-white">Loading...</div>;
-  if (!post) return <p>No post found.</p>;
+  if (!post) return <div className="font-apfel-grotezk-regular">Hold on fetching your posts..</div>;
 
   const imageUrl = post.media?.files?.[0]?.url;
   const title = post.post?.titleName || "Untitled";
@@ -128,25 +130,6 @@ export default function PostCard({ post, postId, username, allPosts }) {
 
   return (
     <div className="w-full flex flex-col items-center justify-start mt-10">
-      {/* Cross icon: fixed for desktop, absolute/scrollable for mobile */}
-      {/* <button
-        className="z-50  items-center justify-center flex
-          absolute right-1 top-2 w-7 h-7 min-w-[28px] min-h-[28px]
-          md:fixed md:right-56 md:top-11 md:w-14 md:h-14 md:min-w-[40px] md:min-h-[30px]"
-        onClick={() => {
-          // Redirect to portfolio with scrollTo=presskit
-          router.push(`/${username}/media-kit?scrollTo=presskit`);
-        }}
-        aria-label="Go to Portfolio"
-      >
-        <Image
-          src="/assets/icons/cross-mark.svg"
-          alt="Go to Portfolio"
-          width={20}
-          height={20}
-          className="w-full h-full object-contain md:w-8 md:h-9"
-        />
-      </button> */}
       {/* Main overlay background for large devices */}
       <div className="hidden md:flex fixed inset-0 w-full h-full bg-black/2 z-10 pointer-events-none" aria-hidden="true"></div>
       
@@ -399,7 +382,11 @@ export default function PostCard({ post, postId, username, allPosts }) {
             <button
               className="absolute top-0 right-0 w-12 h-12 flex items-center justify-center z-40"
               onClick={() => {
-                router.push(`/${username}/media-kit?scrollTo=presskit`);
+                if (isAdminView) {
+                  router.push(`/${username}/media-kit/adminview?scrollTo=presskit`);
+                } else {
+                  router.push(`/${username}/media-kit?scrollTo=presskit`);
+                }
               }}
               aria-label="Go to Portfolio"
             >

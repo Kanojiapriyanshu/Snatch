@@ -247,9 +247,9 @@ export default function Page() {
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
           <div className="mt-2 font-apfel-grotezk-regular text-lg">
-            New on Snatch?
+            New to Snatch?
             <Link href="/">
-              <span className="text-electric-blue ml-2 cursor-pointer underline font-semibold">Create an account</span>
+              <span className="text-electric-blue ml-2 cursor-pointer underline font-normal">Create an account</span>
             </Link>
           </div>
         </div>

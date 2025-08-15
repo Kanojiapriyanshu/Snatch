@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
 import InstagramPopup from "@/components/PopUp1"
+import { useSearchParams } from "next/navigation";
 
 export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -17,6 +18,8 @@ export default function PickProjects() {
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const router = useRouter();
   const [media, setMedia] = useState([]);
+  const searchParams = useSearchParams();
+  const [showInstagramPopup, setShowInstagramPopup] = useState(false);
   const { 
     selectionState, 
     handleFileUpload, 
@@ -31,33 +34,30 @@ export default function PickProjects() {
  const [isLoadingMore, setIsLoadingMore] = useState(false);
  const [loading, setLoading] = useState(true);
  const [totalPages, setTotaPages] = useState(0);
-  
-  useEffect(() => {
+
+   useEffect(() => {
     setIsHydrated(true);
   }, []);
- 
-   useEffect(() => {
-    const fetchMedia = async () => {
-    setLoading(true);
-    const queryParams = new URLSearchParams(window.location.search);
-    const code = queryParams.get("code");
-
+  
+useEffect(() => {
+  const fetchMedia = async () => {
+    const code = searchParams.get("code");
     try {
       if (code) {
-        const { media: mediaData, paging, mediaCount } = await fetchInstagramMedia(code);
-        setMedia(mediaData);
+        const { media, paging, mediaCount, connected } = await fetchInstagramMedia(code);
+        if (connected) setShowInstagramPopup(true); 
+        setMedia(media);
         setPaging(paging);
         setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
       } else {
-        const {mediaData, mediaCount} = await getMediaFromDatabase();
-        console.log("media from database", mediaData);
+        const { mediaData, mediaCount } = await getMediaFromDatabase();
         setMedia(mediaData);
         setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
       }
     } catch (error) {
-      alert(error.message || "An error occurred while fetching media");
+      alert(error.message || "Error fetching media");
     } finally {
-      setLoading(false); // triggers re-render with updated mediaPages
+      setLoading(false);
     }
   };
 
@@ -68,6 +68,7 @@ export default function PickProjects() {
   if (!isHydrated) {
     return null;
   }
+  
 
 
 const handlePrev = () => {
@@ -228,9 +229,7 @@ const handleNext = async () => {
   }
 
 const renderInstagramTab = () => (
-  <div className="flex justify-center gap-10 mt-5">  
-
-  {/* <InstagramPopup/> */}
+  <div className="flex justify-center gap-10 mt-5">
 
     <div className="w-[278px] h-full bg-white text-black p-3 rounded-lg" >
       <p className="text-md font-apfel-grotezk-regular">Selected projects from Instagram</p>
@@ -328,9 +327,10 @@ const renderInstagramTab = () => (
     {/* right side rendered projects graph api fetch  */}
     <div className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
     <MediaDisplay media={currentMedia} displayType="instagram"/>
-    {shouldShowPagination && (
-  <div className="flex justify-center mt-4">
-    <div className="inline-flex items-center font-apfel-grotezk-regular rounded-lg px-2 py-1 space-x-1">
+{shouldShowPagination && (
+  <div className="fixed left-1/2 -translate-y-1/2 bottom-20 5xl:bottom-24">
+    <div className="inline-flex items-center font-apfel-grotezk-regular rounded-lg px-1 py-1 space-x-1">
+      
       {/* Prev */}
       <button
         onClick={handlePrev}
@@ -343,24 +343,47 @@ const renderInstagramTab = () => (
       </button>
 
       {/* Page numbers */}
-{Array.from({ length: totalPages }, (_, index) => (
-  <button
-    key={index}
-    onClick={() => handlePageClick(index)}
-    className={`w-8 h-8 rounded-md flex items-center justify-center text-sm font-medium transition-colors ${
-      currentPage === index
-        ? "bg-electric-blue text-white"
-        : "text-gray-700 hover:bg-gray-100"
-    }`}
-  >
-    {index + 1}
-  </button>
-))}
+      {(() => {
+        const visiblePages = [];
+        let startPage = Math.max(0, currentPage - 2);
+        let endPage = Math.min(totalPages - 1, startPage + 4);
 
+        // Adjust startPage if not enough pages on the right
+        if (endPage - startPage < 4) {
+          startPage = Math.max(0, endPage - 4);
+        }
 
-      {/* Ellipsis */}
-      {mediaPages.length > 8 && (
-        <span className="px-2 text-gray-400 select-none">...</span>
+        for (let i = startPage; i <= endPage; i++) {
+          visiblePages.push(
+            <button
+              key={i}
+              onClick={() => handlePageClick(i)}
+              className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors
+                ${
+                  currentPage === i
+                    ? "text-electric-blue underline"
+                    : "text-graphite hover:text-electric-blue"
+                }`}
+            >
+              {i + 1}
+            </button>
+          );
+        }
+
+        return visiblePages;
+      })()}
+
+      {/* Ellipsis & Total Pages */}
+      {totalPages > 5 && currentPage < totalPages - 3 && (
+        <>
+          <span className="px-1 text-graphite select-none">...</span>
+          <button
+            onClick={() => handlePageClick(totalPages - 1)}
+            className="w-8 h-8 rounded-md flex items-center justify-center font-medium transition-colors text-graphite hover:text-electric-blue"
+          >
+            {totalPages}
+          </button>
+        </>
       )}
 
       {/* Next */}
@@ -380,6 +403,7 @@ const renderInstagramTab = () => (
     </div>
   </div>
 )}
+
     </div>
 
 
@@ -484,6 +508,13 @@ const renderUploadTab = () => (
 );
 
 
+const renderInstagramPopup = () => {
+    if (showInstagramPopup) {
+      return <InstagramPopup isOpen={showInstagramPopup} onClose={() => setShowInstagramPopup(false)} />;
+    }
+    return null;
+  };
+
 return (
     <div className="flex flex-col h-[77vh] max-w-[1800px] 7xl:max-w-[2500px] mx-auto bg-smoke w-full space-x-8 overflow-hidden" >
       
@@ -496,6 +527,7 @@ return (
    *Minimum 4 required to continue
 </span>
 
+   {renderInstagramPopup()}
       </div>
 
       <div className="flex w-full border-b border-gray-300 mt-0 items-center ">

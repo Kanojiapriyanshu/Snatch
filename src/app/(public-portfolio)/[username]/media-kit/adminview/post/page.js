@@ -1,5 +1,5 @@
 
-// src/app/public-portfolio/[username]/post/page.js
+// src/app/(public-portfolio)/[username]/media-kit/adminview/post/page.js
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams, useParams } from "next/navigation";
@@ -61,5 +61,5 @@ export default function PostDetailsPage() {
   }
 
 
-  return <PostCard post={post} username={username} postId={postId} allPosts={allPosts}/>;
+  return <PostCard key={postId} post={post} username={username} postId={postId} allPosts={allPosts}/>;
 }

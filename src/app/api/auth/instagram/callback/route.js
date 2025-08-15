@@ -10,15 +10,17 @@ const CLIENT_SECRET = '7aa94560586507e6c840da8105090984';
 //const REDIRECT_URI = 'https://l6r9j4st-3000.inc1.devtunnels.ms/manage-projects/pick-projects'
 //const REDIRECT_URI = 'https://wf7s4f88-3000.inc1.devtunnels.ms/manage-projects/pick-projects';
 // const REDIRECT_URI = 'https://snatch-pi.vercel.app/manage-projects/pick-projects';
-const REDIRECT_URI = 'https://app.snatchsocial.com/manage-projects/pick-projects';
+// Base redirect URI without query parameters
+const BASE_REDIRECT_URI = 'https://app.snatchsocial.com/manage-projects/pick-projects';
+//const REDIRECT_URI = BASE_REDIRECT_URI;
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req) {
-    const { searchParams } = req.nextUrl;
-      const code = searchParams.get("code");
+  const { searchParams } = req.nextUrl;
+  const code = searchParams.get("code");
   const after = searchParams.get("after") || "";
-  const limit = parseInt(searchParams.get("limit") || "15"); // default 20
+  const limit = parseInt(searchParams.get("limit") || "20"); //20
   const { userId } = getAuth(req);
 
   if (!code) {
@@ -28,113 +30,67 @@ export async function GET(req) {
   try {
     await connectDb();
 
-    // Exchange authorization code for a short-lived access token
+    // Step 1: Exchange short-lived token
     const tokenResponse = await fetch(
-      `https://graph.facebook.com/v21.0/oauth/access_token?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&client_secret=${CLIENT_SECRET}&code=${code}`,
-      { method: "GET" }
+      `https://graph.facebook.com/v21.0/oauth/access_token?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&client_secret=${CLIENT_SECRET}&code=${code}`
     );
     const tokenData = await tokenResponse.json();
-    console.log("Short-lived token data:", tokenData);
-
     if (!tokenResponse.ok || tokenData.error) {
-      return NextResponse.json(
-        { error: tokenData.error?.message || "Failed to fetch access token" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: tokenData.error?.message || "Failed to fetch access token" }, { status: 500 });
     }
-
     const { access_token: shortLivedAccessToken } = tokenData;
 
-    // Exchange for long-lived access token
+    // Step 2: Exchange for long-lived token
     const longLivedTokenResponse = await fetch(
-      `https://graph.facebook.com/v21.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&fb_exchange_token=${shortLivedAccessToken}`,
-      { method: "GET" }
+      `https://graph.facebook.com/v21.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&fb_exchange_token=${shortLivedAccessToken}`
     );
-    const longLivedTokenData = await longLivedTokenResponse.json();
-    console.log("Long-lived token data:", longLivedTokenData);
+    const { access_token: longLivedAccessToken } = await longLivedTokenResponse.json();
 
-    const { access_token: longLivedAccessToken } = longLivedTokenData;
-
-    // Fetch user's Facebook Pages directly
+    // Step 3: Fetch FB Pages
     const pagesResponse = await fetch(
       `https://graph.facebook.com/v21.0/me/accounts?fields=id,name,access_token,instagram_business_account&access_token=${longLivedAccessToken}`
     );
-    // Add this right after the pagesResponse fetch
-    console.log("Pages Response Status:", pagesResponse.status);
-    console.log("Pages Response Headers:", Object.fromEntries(pagesResponse.headers));
-
     const pagesData = await pagesResponse.json();
-
-    console.log("Raw Pages Data:", JSON.stringify(pagesData, null, 2));
-    // Add error checking
-if (pagesData.error) {
-  console.error("Facebook API Error:", pagesData.error);
-  return NextResponse.json(
-    { error: `Facebook API Error: ${pagesData.error.message}` },
-    { status: 500 }
-  );
-}
-    console.log("Pages Data:", pagesData);
-
-    if (!pagesResponse.ok || !pagesData.data || pagesData.data.length === 0) {
-      return NextResponse.json(
-        { error: "No Facebook Pages found. Please ensure you have a Facebook Page connected to your Instagram Business/Creator account." },
-        { status: 404 }
-      );
+    if (!pagesResponse.ok || !pagesData.data?.length) {
+      return NextResponse.json({ error: "No Facebook Pages found with Instagram Business account" }, { status: 404 });
     }
 
-    // Find the Facebook Page with an Instagram Business Account
+    // Step 4: Find IG Business Account
     let selectedPage = null;
     for (const page of pagesData.data) {
       const igAccountResponse = await fetch(
-        `https://graph.facebook.com/v18.0/${page.id}?fields=instagram_business_account&access_token=${longLivedAccessToken}`
+        `https://graph.facebook.com/v21.0/${page.id}?fields=instagram_business_account&access_token=${longLivedAccessToken}`
       );
       const igAccountData = await igAccountResponse.json();
-      console.log(`Instagram account data for page ${page.id}:`, igAccountData);
-
       if (igAccountData.instagram_business_account) {
         selectedPage = {
           pageId: page.id,
-          pageName: page.name,  //added for page name
+          pageName: page.name,
           pageToken: page.access_token,
           instagramAccountId: igAccountData.instagram_business_account.id
         };
-        console.log("Selected Page: to add facebookpagename", selectedPage);
         break;
       }
     }
-
     if (!selectedPage) {
-      return NextResponse.json(
-        { error: "No Instagram Business/Creator account found connected to your Facebook Pages" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "No Instagram account found" }, { status: 404 });
     }
 
-    // Save to database
-    let user = await User.findOne({ userId });
-    if (!user) {
-      return NextResponse.json(
-        { error: "User not found in database" },
-        { status: 404 }
-      );
-    }
-
-    const updatedUser = await User.findOneAndUpdate(
+    // Step 5: Save to DB
+    await User.findOneAndUpdate(
       { userId },
       {
         $set: {
           instagramAccessToken: selectedPage.pageToken,
           instagramAccountId: selectedPage.instagramAccountId,
-          facebookPageName: selectedPage.pageName,
-        },
+          facebookPageName: selectedPage.pageName
+        }
       },
       { new: true }
     );
 
-   console.log("Updated user with Facebook page:", updatedUser);
-
-        const mediaUrl =
+    // Step 6: Fetch IG Media
+    const mediaUrl =
       `https://graph.facebook.com/v21.0/${selectedPage.instagramAccountId}/media?` +
       `fields=id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url,username` +
       `&limit=${limit}` +
@@ -144,46 +100,36 @@ if (pagesData.error) {
     const mediaResponse = await fetch(mediaUrl);
     const mediaData = await mediaResponse.json();
 
-    if (!mediaResponse.ok) {
-      return NextResponse.json({ error: "Failed to fetch Instagram media" }, { status: 500 });
-    }
-
-    // Enrich carousel items
+    // Step 7: Enrich carousel items
     const enrichedMediaData = await Promise.all(
       mediaData.data.map(async (mediaItem) => {
         if (mediaItem.media_type === "CAROUSEL_ALBUM") {
           const carouselResponse = await fetch(
-            `https://graph.facebook.com/v21.0/${mediaItem.id}/children?` +
-            `fields=id,media_type,media_url&access_token=${selectedPage.pageToken}`
+            `https://graph.facebook.com/v21.0/${mediaItem.id}/children?fields=id,media_type,media_url&access_token=${selectedPage.pageToken}`
           );
           const carouselData = await carouselResponse.json();
-          if (carouselResponse.ok && carouselData.data) {
-            return { ...mediaItem, children: carouselData.data };
-          }
+          return { ...mediaItem, children: carouselData.data || [] };
         }
         return mediaItem;
       })
     );
 
-   // Step: Get media_count
+    // Step 8: Get media_count
     const countResponse = await fetch(
       `https://graph.facebook.com/v21.0/${selectedPage.instagramAccountId}?fields=media_count&access_token=${selectedPage.pageToken}`
     );
     const countData = await countResponse.json();
     const mediaCount = countData.media_count;
 
+    // Step 9: Return JSON (NO redirect)
     return NextResponse.json({
+      connected: !after, // true only on first connection
       mediaData: enrichedMediaData,
-      paging: mediaData.paging || {}, 
-      mediaCount: mediaCount, // Include media count in the response
+      paging: mediaData.paging || {},
+      mediaCount: countData.media_count
     });
 
-
   } catch (error) {
-    console.error("Error:", error);
-    return NextResponse.json(
-      { error: error.message || "An unknown error occurred" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

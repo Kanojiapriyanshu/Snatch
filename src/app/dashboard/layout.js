@@ -41,13 +41,13 @@ export default function OnboardingLayout({ children }) {
         {/* Left side: Image with Preview items-center added above to center the dashboard */}
         <div className="w-[40vw] overflow-hidden relative flex items-center justify-center bg-[#E9E9E9] h-[100vh] ">
         <Image
-  src="/assets/images/signup_background.png"
-  alt="Background Image"
-  layout="fill"
-  className="absolute top-0 pt-5 pb-4 left-0 w-full h-screen object-cover rounded-tl-[40px] rounded-bl-[40px]"
-  loading="eager"
-  priority
-/>
+        src="/assets/images/signup_background.png"
+        alt="Background Image"
+        layout="fill"
+        className="absolute top-0 pt-5 pb-4 left-0 w-full h-screen object-cover rounded-tl-[40px] rounded-bl-[40px]"
+        loading="eager"
+        priority
+      />
 
 
           <div className="relative mb-20 z-10 p-1 bg-white 2xl:p-4 py-  bg-opacity-90 rounded-lg shadow-lg grid grid-rows-1">
