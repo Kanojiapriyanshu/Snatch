@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
 import InstagramPopup from "@/components/PopUp1"
-import { useSearchParams } from "next/navigation";
 
 export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -18,7 +17,6 @@ export default function PickProjects() {
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const router = useRouter();
   const [media, setMedia] = useState([]);
-  const searchParams = useSearchParams();
   const [showInstagramPopup, setShowInstagramPopup] = useState(false);
   const { 
     selectionState, 
@@ -34,6 +32,7 @@ export default function PickProjects() {
  const [isLoadingMore, setIsLoadingMore] = useState(false);
  const [loading, setLoading] = useState(true);
  const [totalPages, setTotaPages] = useState(0);
+ const [code, setCode] = useState(null);
 
    useEffect(() => {
     setIsHydrated(true);
@@ -41,7 +40,9 @@ export default function PickProjects() {
   
 useEffect(() => {
   const fetchMedia = async () => {
-    const code = searchParams.get("code");
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    console.log("Code from URL:", code);
     try {
       if (code) {
         const { media, paging, mediaCount, connected } = await fetchInstagramMedia(code);

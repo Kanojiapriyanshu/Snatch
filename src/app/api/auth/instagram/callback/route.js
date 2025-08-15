@@ -9,10 +9,8 @@ const CLIENT_ID = '1068594868074995';
 const CLIENT_SECRET = '7aa94560586507e6c840da8105090984';
 //const REDIRECT_URI = 'https://l6r9j4st-3000.inc1.devtunnels.ms/manage-projects/pick-projects'
 //const REDIRECT_URI = 'https://wf7s4f88-3000.inc1.devtunnels.ms/manage-projects/pick-projects';
-// const REDIRECT_URI = 'https://snatch-pi.vercel.app/manage-projects/pick-projects';
-// Base redirect URI without query parameters
 const BASE_REDIRECT_URI = 'https://app.snatchsocial.com/manage-projects/pick-projects';
-//const REDIRECT_URI = BASE_REDIRECT_URI;
+const REDIRECT_URI = BASE_REDIRECT_URI;
 
 export const dynamic = 'force-dynamic';
 
