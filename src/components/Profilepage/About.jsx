@@ -1,17 +1,18 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Accordion from "./Accordion";
 import Profilecustomfile from "./Profilecustomfile";
 import QuestionCounter from "./QuestionCounter";
 import Image from "next/image";
 import { saveQuestionsToDB, fetchProfileData, removeQuestion } from "@/utils/postQuestions";
 import { useQueryClient } from "@tanstack/react-query";
+import debounce from "lodash.debounce";
 
 const About = ({ onComplete }) => {
   const [aboutQuestions, setAboutQuestions] = useState([{ question: "", answer: "", coverImage: null, coverImageName: null }]);
   const [audienceQuestions, setAudienceQuestions] = useState([{ question: "", answer: "", coverImage: null, coverImageName: null }]);
   const [brandQuestions, setBrandQuestions] = useState([{ question: "", answer: "", coverImage: null, coverImageName: null }]);
-
+  const debouncedSaveRef = useRef();
   const [unsavedChanges, setUnsavedChanges] = useState({
     about: new Set(),
     audience: new Set(),
@@ -20,6 +21,7 @@ const About = ({ onComplete }) => {
 
   const [openIndex, setOpenIndex] = useState(null);
   const queryClient = useQueryClient();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -43,6 +45,20 @@ const About = ({ onComplete }) => {
     fetchData();
   }, []);
 
+    // Check completion: at least one non-empty answer in each section
+  useEffect(() => {
+    const aboutDone = aboutQuestions.some(q => q.answer && q.answer.trim().length > 0);
+    const audienceDone = audienceQuestions.some(q => q.answer && q.answer.trim().length > 0);
+    const brandDone = brandQuestions.some(q => q.answer && q.answer.trim().length > 0);
+
+    // If all three have at least one answer, About is "complete"
+    if (aboutDone && audienceDone && brandDone) {
+      onComplete?.(true);
+    } else {
+      onComplete?.(false);
+    }
+  }, [aboutQuestions, audienceQuestions, brandQuestions, onComplete]);
+
   const updateSectionState = (sectionKey, newState) => {
     if (sectionKey === "about") setAboutQuestions(newState);
     if (sectionKey === "audience") setAudienceQuestions(newState);
@@ -53,60 +69,92 @@ const About = ({ onComplete }) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
+  const debouncedSave = useCallback(
+  debounce(async (sectionKey, index) => {
+    const questions =
+      sectionKey === "about"
+        ? aboutQuestions
+        : sectionKey === "audience"
+        ? audienceQuestions
+        : brandQuestions;
+
+    try {
+      await saveQuestionsToDB(sectionKey, [questions[index]]);
+      setUnsavedChanges((prev) => ({
+        ...prev,
+        [sectionKey]: new Set([...prev[sectionKey]].filter((i) => i !== index)),
+      }));
+      queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
+    } catch (error) {
+      console.error("Auto-save failed:", error);
+    }
+  }, 1000), // save after 1 second of no typing
+  [aboutQuestions, audienceQuestions, brandQuestions]
+);
+
+
   const handleQuestionChange = (e, index, sectionKey, defaultQuestion) => {
-    const selectedQuestion = e.target.value?.trim() || defaultQuestion;
-    const newQuestions = [...(sectionKey === "about" ? aboutQuestions : sectionKey === "audience" ? audienceQuestions : brandQuestions)];
-    newQuestions[index].question = selectedQuestion;
-    updateSectionState(sectionKey, newQuestions);
+  const selectedQuestion = e.target.value?.trim() || defaultQuestion;
+  const newQuestions = [
+    ...(sectionKey === "about"
+      ? aboutQuestions
+      : sectionKey === "audience"
+      ? audienceQuestions
+      : brandQuestions),
+  ];
+  newQuestions[index].question = selectedQuestion;
+  updateSectionState(sectionKey, newQuestions);
 
-    setUnsavedChanges(prev => ({
-      ...prev,
-      [sectionKey]: new Set(prev[sectionKey]).add(index)
-    }));
-  };
+  setUnsavedChanges((prev) => ({
+    ...prev,
+    [sectionKey]: new Set(prev[sectionKey]).add(index),
+  }));
 
-  const handleAnswerChange = (e, index, sectionKey) => {
-    const newQuestions = [...(sectionKey === "about" ? aboutQuestions : sectionKey === "audience" ? audienceQuestions : brandQuestions)];
-    newQuestions[index].answer = e.target.value;
-    updateSectionState(sectionKey, newQuestions);
+  // Trigger debounce auto-save
+  debouncedSave(sectionKey, index);
+};
 
-    setUnsavedChanges(prev => ({
-      ...prev,
-      [sectionKey]: new Set(prev[sectionKey]).add(index)
-    }));
-  };
+const handleAnswerChange = (e, index, sectionKey) => {
+  const newQuestions = [
+    ...(sectionKey === "about"
+      ? aboutQuestions
+      : sectionKey === "audience"
+      ? audienceQuestions
+      : brandQuestions),
+  ];
+  newQuestions[index].answer = e.target.value;
+  updateSectionState(sectionKey, newQuestions);
 
-  const handleCoverChange = (imageData, index, sectionKey) => {
-    const newQuestions = [...(sectionKey === "about" ? aboutQuestions : sectionKey === "audience" ? audienceQuestions : brandQuestions)];
-    newQuestions[index].coverImage = imageData.url;
-    newQuestions[index].coverImageName = imageData.name;
-    updateSectionState(sectionKey, newQuestions);
+  setUnsavedChanges((prev) => ({
+    ...prev,
+    [sectionKey]: new Set(prev[sectionKey]).add(index),
+  }));
 
-    setUnsavedChanges(prev => ({
-      ...prev,
-      [sectionKey]: new Set(prev[sectionKey]).add(index)
-    }));
-  };
+  // Trigger debounce auto-save
+  debouncedSave(sectionKey, index);
+};
 
-  const handleSaveChanges = async (index, sectionKey) => {
-  try {
-    const questions = sectionKey === "about" ? aboutQuestions :
-                      sectionKey === "audience" ? audienceQuestions :
-                      brandQuestions;
+  
+const handleCoverChange = (imageData, index, sectionKey) => {
+  const newQuestions = [
+    ...(sectionKey === "about"
+      ? aboutQuestions
+      : sectionKey === "audience"
+      ? audienceQuestions
+      : brandQuestions),
+  ];
 
-    await saveQuestionsToDB(sectionKey, [questions[index]]);
-    alert("Question saved successfully!")
-    setUnsavedChanges(prev => ({
-      ...prev,
-      [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))
-    }));
+  newQuestions[index].coverImage = imageData.url;
+  newQuestions[index].coverImageName = imageData.name;
+  updateSectionState(sectionKey, newQuestions);
 
-    // Invalidate aboutCompletion query so layout re-checks completion
-    queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
-  } catch (error) {
-    console.error("Failed to save changes:", error);
-    alert("Failed to save changes. Please try again.");
-  }
+  setUnsavedChanges((prev) => ({
+    ...prev,
+    [sectionKey]: new Set(prev[sectionKey]).add(index),
+  }));
+
+  // Trigger debounce auto-save
+  debouncedSave(sectionKey, index);
 };
 
   const addQuestion = (sectionKey) => {
@@ -131,21 +179,30 @@ const About = ({ onComplete }) => {
     updateSectionState(sectionKey, newQuestions);
   };
 
-  // Check completion: at least one non-empty answer in each section
-  useEffect(() => {
-    const aboutDone = aboutQuestions.some(q => q.answer && q.answer.trim().length > 0);
-    const audienceDone = audienceQuestions.some(q => q.answer && q.answer.trim().length > 0);
-    const brandDone = brandQuestions.some(q => q.answer && q.answer.trim().length > 0);
 
-    // If all three have at least one answer, About is "complete"
-    if (aboutDone && audienceDone && brandDone) {
-      onComplete?.(true);
-    } else {
-      onComplete?.(false);
-    }
-  }, [aboutQuestions, audienceQuestions, brandQuestions, onComplete]);
+  //   const handleSaveChanges = async (index, sectionKey) => {
+//   try {
+//     const questions = sectionKey === "about" ? aboutQuestions :
+//                       sectionKey === "audience" ? audienceQuestions :
+//                       brandQuestions;
 
-  return (
+//     await saveQuestionsToDB(sectionKey, [questions[index]]);
+//     alert("Question saved successfully!")
+//     setUnsavedChanges(prev => ({
+//       ...prev,
+//       [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))
+//     }));
+
+//     // Invalidate aboutCompletion query so layout re-checks completion
+//     queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
+//   } catch (error) {
+//     console.error("Failed to save changes:", error);
+//     alert("Failed to save changes. Please try again.");
+//   }
+// };
+
+  
+    return (
     <div className="w-full h-screen overflow-y-auto"  style={{ maxHeight: 'calc(135vh - 96px)', scrollbarWidth: 'none',       
     msOverflowStyle: 'none'}}>
       <div className="w-full max-w-5xl mx-auto p-6 overflow-y-auto flex flex-col gap-3" style={{ maxHeight: 'calc(135vh - 96px)', scrollbarWidth: 'none',       
@@ -174,7 +231,7 @@ const About = ({ onComplete }) => {
                 onSelectQuestion={(question) => handleSelectQuestion(question, index, "about")}
               />
 
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex w-[100%] items-center gap-4 mb-4">
                 <Profilecustomfile
                   onFileChange={(uploadedUrl) => handleCoverChange(uploadedUrl, index, "about")}
                   placeholder="Choose a cover picture"
@@ -187,12 +244,12 @@ const About = ({ onComplete }) => {
                   currentQuestion={item}
                 />
 
-                <button
+                {/* <button
                   onClick={() => handleSaveChanges(index, "about")}
                   className="bg-electric-blue text-white px-4 py-3 rounded-md text-sm mt-7 font-apfel-grotezk-regular"
                 >
                   Save answer
-                </button>
+                </button> */}
               </div>
 
               {index > 0 && (
@@ -271,12 +328,7 @@ const About = ({ onComplete }) => {
                   currentQuestion={item}
                 />
 
-                <button
-                  onClick={() => handleSaveChanges(index, "audience")}
-                  className="bg-electric-blue text-white px-4 py-3 rounded-md text-sm mt-7 font-apfel-grotezk-regular"
-                >
-                  Save answer
-                </button>
+              
               </div>
 
               {index > 0 && (
@@ -355,12 +407,6 @@ const About = ({ onComplete }) => {
                   currentQuestion={item}
                 />
 
-                <button
-                  onClick={() => handleSaveChanges(index, "brand")}
-                  className="bg-electric-blue text-white px-4 py-3 rounded-md text-sm mt-7 font-apfel-grotezk-regular"
-                >
-                  Save answer
-                </button>
               </div>
 
               {index > 0 && (

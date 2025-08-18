@@ -45,7 +45,7 @@ const Profilecustomfile = ({
   };
 
   return (
-    <div className="mt-4 w-32 md:w-[430px] lg:max-w-[500px]">
+    <div className="mt-4 w-32 md:w-[430px] lg:w-[565px]">
       <div
         className="mt-4 flex gap-8 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
         onClick={() => setIsModalOpen(true)}

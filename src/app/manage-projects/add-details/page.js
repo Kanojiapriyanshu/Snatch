@@ -796,10 +796,10 @@ const handlePopupGenerate = async () => {
                 {/* Generate my project */}
                 <button
                   className={`2xl:px-8 px-6 py-2 rounded-lg ${
-                    popupGenerating
+                    popupGenerating || !popupUserInput.trim()
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
-                  } text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
+                      : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue cursor-pointer"
+                  } text-sm font-apfel-grotezk-regular transition whitespace-nowrap flex-shrink-0`}
                   onClick={handlePopupGenerate}
                   disabled={popupGenerating || !popupUserInput.trim()}
                 >

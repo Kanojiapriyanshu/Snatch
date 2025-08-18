@@ -1,6 +1,6 @@
 "use client";
 
-export default function InstagramPopup({ isOpen = true, onClose }) {
+export default function InstagramPopup({ isOpen, onClose }) {
 
   return (
     <>

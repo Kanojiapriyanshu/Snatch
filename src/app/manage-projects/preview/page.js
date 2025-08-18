@@ -34,19 +34,20 @@ import SvgComponent from "@/components/svg/Instagramsvg";
   const [isPortrait, setIsPortrait] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [status, setStatus] = useState("idle"); 
   const checkOrientation = (width, height) => {
     return height > width;
   };
 
   const handleSubmit = () => {
       if (filledProjectsCount < 4) {
-    setPopupMessage(
-      "Your portfolio needs at least 4 project details to be created. Don’t worry, your progress is saved, and you can come back anytime to finish."
-    );
-  } else {
-    setPopupMessage(""); // Use default message in Popup
-  }
-    setIsModalOpen(true);
+        setPopupMessage(
+          "Your portfolio needs at least 4 project details to be created. Don’t worry, your progress is saved, and you can come back anytime to finish."
+        );
+      } else {
+        setPopupMessage(""); // Use default message in Popup
+      }
+        setIsModalOpen(true);
 
   };
 
@@ -60,6 +61,7 @@ import SvgComponent from "@/components/svg/Instagramsvg";
 
   const handleNextStep = () => {
   setIsModalOpen(false);
+  setStatus("loading"); // button shows loading state immediately
 
   // Collect all filled project mediaIds
   const filledProjectIds = [
@@ -74,15 +76,20 @@ import SvgComponent from "@/components/svg/Instagramsvg";
     })
     .map(project => project.mediaId);
 
-    console.log("SENDING FILLED PROJECT IDS TO SAVE all", filledProjectIds);
+  console.log("SENDING FILLED PROJECT IDS TO SAVE all", filledProjectIds);
 
   const finalSubmit = async () => {
     try {
-      const response = await fetch('/api/projects/final', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/projects/final", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mediaIds: filledProjectIds })
       });
+
+      if (!response.ok) throw new Error("Failed to save projects");
+
+      // setStatus("success"); 
+
       if (filledProjectsCount < 4) {
         router.push("/profile?incompleteProjects=1");
       } else {
@@ -90,9 +97,10 @@ import SvgComponent from "@/components/svg/Instagramsvg";
       }
     } catch (error) {
       console.error("Error saving projects:", error);
-      throw error;
+      setStatus("error"); 
     }
   };
+
   finalSubmit();
 };
 
@@ -760,12 +768,31 @@ const handleHamburgerClick = () => {
         <button className="px-2 h-[38px] border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
         Previous Step
       </button>
-      <button
-        className=" bg-electric-blue px-3 h-[38px] text-white rounded-lg text-md hover:bg-blue-700 transition-colors"
-        onClick={handleSubmit}
-      >
-        Complete Project Details
-      </button>
+    <button
+  className={`
+    px-3 h-[38px] rounded-lg text-md transition-colors
+    ${
+      status === "loading"
+        ? "bg-electric-blue text-white cursor-not-allowed"
+        : status === "success"
+        ? "bg-green-600 text-white"
+        : status === "error"
+        ? "bg-red-600 text-white"
+        : "bg-electric-blue text-white hover:bg-blue-700"
+    }
+  `}
+  onClick={handleNextStep}
+  disabled={status === "loading"} // prevent multiple clicks
+>
+  {status === "loading"
+    ? "Completing..."
+    : status === "success"
+    ? "Completed ✅"
+    : status === "error"
+    ? "Retry ❌"
+    : "Complete Project Details"}
+</button>
+
     </div>
 
   </div>

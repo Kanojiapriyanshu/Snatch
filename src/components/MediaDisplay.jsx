@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useSelectedProjects } from "@/app/manage-projects/context";
 
-const MediaDisplay = ({ media, uploadedFiles, displayType }) => {
+const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  }) => {
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null); 

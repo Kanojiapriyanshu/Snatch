@@ -37,32 +37,33 @@ export default function PickProjects() {
    useEffect(() => {
     setIsHydrated(true);
   }, []);
-  
+   
 useEffect(() => {
-  const fetchMedia = async () => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    console.log("Code from URL:", code);
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  if (!code) return;
+
+  const initInstagram = async () => {
     try {
-      if (code) {
-        const { media, paging, mediaCount, connected } = await fetchInstagramMedia(code);
-        if (connected) setShowInstagramPopup(true); 
-        setMedia(media);
-        setPaging(paging);
-        setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
-      } else {
-        const { mediaData, mediaCount } = await getMediaFromDatabase();
-        setMedia(mediaData);
-        setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
-      }
+      // fetch once
+      setLoading(true);
+      const { connected, media, paging, mediaCount } = await fetchInstagramMedia(code);
+
+      if (connected) setShowInstagramPopup(true); // popup shows immediately
+
+      // update state with media
+      setMedia(media);
+      setPaging(paging);
+      setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
     } catch (error) {
-      alert(error.message || "Error fetching media");
+      console.error(error);
+      alert("Error fetching Instagram media");
     } finally {
       setLoading(false);
     }
   };
 
-  fetchMedia();
+  initInstagram();
 }, []);
 
 
@@ -327,7 +328,7 @@ const renderInstagramTab = () => (
 
     {/* right side rendered projects graph api fetch  */}
     <div className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-    <MediaDisplay media={currentMedia} displayType="instagram"/>
+    <MediaDisplay media={currentMedia} displayType="instagram" showLoader={showInstagramPopup} />
 {shouldShowPagination && (
   <div className="fixed left-1/2 -translate-y-1/2 bottom-20 5xl:bottom-24">
     <div className="inline-flex items-center font-apfel-grotezk-regular rounded-lg px-1 py-1 space-x-1">
@@ -336,7 +337,7 @@ const renderInstagramTab = () => (
       <button
         onClick={handlePrev}
         disabled={currentPage === 0}
-        className={`flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 text-lg ${
+        className={`flex items-center justify-center text-lg ${
           currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
@@ -393,7 +394,7 @@ const renderInstagramTab = () => (
         disabled={
           isLoadingMore || (!mediaPages[currentPage + 1] && !paging?.next)
         }
-        className={`flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 text-lg ${
+        className={`flex items-center justify-center text-lg ${
           !mediaPages[currentPage + 1] && !paging?.next
             ? "opacity-50 cursor-not-allowed"
             : ""

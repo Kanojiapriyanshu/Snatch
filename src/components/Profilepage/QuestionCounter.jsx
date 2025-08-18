@@ -46,11 +46,11 @@ const QuestionCounter = ({
   const [isOtherSelected, setIsOtherSelected] = useState(false); // Track if "Other" is selected
 
   // Ensure that if no question is selected, default the state to the first question
-  useEffect(() => {
-    if (!selectedQuestion && !isOtherSelected) {
-      onSelectQuestion(questions[0]);
-    }
-  }, [selectedQuestion, isOtherSelected, questions, onSelectQuestion]);
+  // useEffect(() => {
+  //   if (!selectedQuestion && !isOtherSelected) {
+  //     onSelectQuestion(questions[0]);
+  //   }
+  // }, [selectedQuestion, isOtherSelected, questions, onSelectQuestion]);
 
   const handleSelect = (question, index) => {
     if (!question || question.trim() === "") {
@@ -94,8 +94,14 @@ const QuestionCounter = ({
   return (
     <div className="p-4 border border-gray-300 rounded-lg w-[564px] relative">
       <div className="flex justify-between items-center mb-2">
-        <span className="block text-md font-medium text-gray-700 font-apfel-grotezk-regular">
-          {selectedQuestion || questions[0]}
+       <span
+          className={`block text-md font-medium font-apfel-grotezk-regular ${
+            !selectedQuestion && !isOtherSelected ? "text-electric-blue" : "text-gray-700"
+          }`}
+        >
+          {isOtherSelected
+            ? "Custom Question"
+            : selectedQuestion || "Select a question*"}
         </span>
         <div
           className="flex items-center cursor-pointer text-sm text-gray-500"

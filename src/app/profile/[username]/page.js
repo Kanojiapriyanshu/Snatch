@@ -120,26 +120,42 @@ const Profile = () => {
     >
       {/* Tabs */}
       <div className="flex absolute top-10 space-x-9 border-b-2 border-gray-200  ">
-        {menuItems.map((item) => (
-          <div
-            key={item}
-            className={`relative cursor-pointer text-2xl flex items-center ${
-              activeTab === item ? "text-electric-blue" : "text-black"
-            }`}
-            onClick={() => setActiveTab(item)}
-          >
-            {/* Green tick if section is complete, to the left of the label */}
-            {item === "work" && portfolioComplete && <GreenTick />}
-            {item === "about" && aboutComplete && <GreenTick />}
-            {item === "audience" && audienceComplete && <GreenTick />}
-            <span>{item.charAt(0).toUpperCase() + item.slice(1)}</span>
-            <span
-              className={`absolute bottom-0 left-0 w-full h-[2px] bg-electric-blue transition-all duration-300 ${
-                activeTab === item ? "scale-x-100" : "scale-x-0"
-              }`}
-            ></span>
-          </div>
-        ))}
+     {menuItems.map((item) => {
+    const isActive = activeTab === item;
+    const isComplete =
+      (item === "work" && portfolioComplete) ||
+      (item === "about" && aboutComplete) ||
+      (item === "audience" && audienceComplete);
+
+    return (
+      <div
+        key={item}
+        className={`relative cursor-pointer text-2xl flex items-center
+          ${
+            isActive
+              ? "text-electric-blue" // active overrides all
+              : isComplete
+              ? "text-graphite" // complete but not active
+              : "text-[#EB3B00]" // incomplete
+          }`}
+        onClick={() => setActiveTab(item)}
+      >
+        {/* Green tick if section is complete, to the left of the label */}
+        {item === "work" && portfolioComplete && <GreenTick />}
+        {item === "about" && aboutComplete && <GreenTick />}
+        {item === "audience" && audienceComplete && <GreenTick />}
+
+        <span>{item.charAt(0).toUpperCase() + item.slice(1)}</span>
+
+        {/* underline effect */}
+        <span
+          className={`absolute bottom-0 left-0 w-full h-[2px] bg-electric-blue transition-all duration-300 ${
+            isActive ? "scale-x-100" : "scale-x-0"
+          }`}
+        ></span>
+      </div>
+    );
+  })}
       </div>
 
       <div
