@@ -1,23 +1,32 @@
-export async function getMediaFromDatabase() {
-    try {
-        const response = await fetch('/api/auth/get-media');
-        console.log("response", response);
-        const data = await response.json();
-        console.log("Instagram media data:", data);
-        if (data?.mediaData) {
-      return {
-        mediaData: data.mediaData,
-        mediaCount: data.mediaCount || 0 // default to 0 if not present
-        };
-      } else {
-        return {
-          mediaData: [],
-          mediaCount: 0
-        };
-      }
-       
-      } catch (error) {
-        console.error("Error fetching Instagram media:", error);
-        throw error;
-      }
+
+// utils/getMediaFromDatabase.ts
+export async function getMediaFromDatabase(after = null, limit= 20) {
+  try {
+    // Include cursor + limit in query string
+    const query = new URLSearchParams({ limit: limit.toString() });
+    if (after) query.append("after", after);
+
+    const response = await fetch(`/api/auth/get-media?${query.toString()}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch media: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Instagram media data from DB:", data);
+
+    return {
+      media: data?.mediaData || [],     // array of posts
+      paging: data?.paging || null,     // paging info (with cursors)
+      mediaCount: data?.mediaCount || 0
+    };
+
+  } catch (error) {
+    console.error("Error fetching Instagram media from DB:", error);
+    return {
+      media: [],
+      paging: null,
+      mediaCount: 0
+    };
+  }
 }
+

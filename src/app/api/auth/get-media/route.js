@@ -7,12 +7,13 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   try {
-    console.log("Checking token and user ID from the database...");
     await connectDb();
+    const { searchParams } = req.nextUrl;
+    const after = searchParams.get("after") || "";
+    const limit = parseInt(searchParams.get("limit") || "20");
 
-    // Authenticate the user using Clerk
+    // Clerk auth
     const { userId } = getAuth(req);
-
     if (!userId) {
       return NextResponse.json(
         { connected: false, error: "User not present! Please sign up first." },
@@ -20,9 +21,8 @@ export async function GET(req) {
       );
     }
 
-    // Find the user in the database
+    // Fetch user from DB
     const user = await User.findOne({ userId });
-
     if (!user) {
       return NextResponse.json(
         { connected: false, error: "User not found in the database." },
@@ -30,9 +30,7 @@ export async function GET(req) {
       );
     }
 
-    // Retrieve Instagram details from the user record
     const { instagramAccessToken, instagramAccountId } = user;
-
     if (!instagramAccessToken || !instagramAccountId) {
       return NextResponse.json(
         { error: "Instagram access token or account ID is missing." },
@@ -40,49 +38,49 @@ export async function GET(req) {
       );
     }
 
-    // Fetch Instagram Media
-    const mediaResponse = await fetch(
-      `https://graph.facebook.com/v17.0/${instagramAccountId}/media?fields=id,media_type,media_url,permalink,caption&access_token=${instagramAccessToken}`
-    );
+    // Fetch IG Media with pagination
+    const mediaUrl =
+      `https://graph.facebook.com/v21.0/${instagramAccountId}/media?` +
+      `fields=id,media_type,media_url,permalink,caption,timestamp,like_count,comments_count,thumbnail_url,username` +
+      `&limit=${limit}` +
+      (after ? `&after=${after}` : ``) +
+      `&access_token=${instagramAccessToken}`;
 
+    const mediaResponse = await fetch(mediaUrl);
     const mediaData = await mediaResponse.json();
 
-    if (!mediaResponse.ok) {
+    if (!mediaResponse.ok || mediaData.error) {
       return NextResponse.json(
-        { error: "Failed to fetch Instagram user media." },
+        { error: mediaData.error?.message || "Failed to fetch Instagram user media." },
         { status: 500 }
       );
     }
 
-    // Fetch children for CAROUSEL_ALBUM media types
+    // Handle carousels
     const enrichedMediaData = await Promise.all(
       mediaData.data.map(async (mediaItem) => {
         if (mediaItem.media_type === "CAROUSEL_ALBUM") {
           const carouselResponse = await fetch(
-            `https://graph.facebook.com/v17.0/${mediaItem.id}/children?fields=id,media_type,media_url&access_token=${instagramAccessToken}`
+            `https://graph.facebook.com/v21.0/${mediaItem.id}/children?fields=id,media_type,media_url&access_token=${instagramAccessToken}`
           );
-
           const carouselData = await carouselResponse.json();
-
-          if (carouselResponse.ok && carouselData.data) {
-            return { ...mediaItem, children: carouselData.data };
-          }
+          return { ...mediaItem, children: carouselData.data || [] };
         }
         return mediaItem;
       })
     );
 
-    console.log("enrichedMediaData:", enrichedMediaData);
-       // Step 3: Get media_count
+    // Get media_count
     const countResponse = await fetch(
       `https://graph.facebook.com/v21.0/${instagramAccountId}?fields=media_count&access_token=${instagramAccessToken}`
     );
     const countData = await countResponse.json();
-    const mediaCount = countData.media_count;
 
-
-    // Respond with the enriched media data
-    return NextResponse.json({ mediaData: enrichedMediaData, mediaCount: mediaCount }, { status: 200 });
+    return NextResponse.json({
+      mediaData: enrichedMediaData,
+      paging: mediaData.paging || {},
+      mediaCount: countData.media_count
+    });
   } catch (error) {
     console.error("Error fetching media data:", error);
     return NextResponse.json(

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { fetchInstagramMedia } from "@/utils/fetchInstagramMedia";
 import { getMediaFromDatabase } from "@/utils/getMediaFromDatabase";
@@ -33,6 +33,7 @@ export default function PickProjects() {
  const [loading, setLoading] = useState(true);
  const [totalPages, setTotaPages] = useState(0);
  const [code, setCode] = useState(null);
+ const containerRef = useRef(null);
 
    useEffect(() => {
     setIsHydrated(true);
@@ -41,20 +42,29 @@ export default function PickProjects() {
 useEffect(() => {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
-  if (!code) return;
 
   const initInstagram = async () => {
     try {
-      // fetch once
       setLoading(true);
-      const { connected, media, paging, mediaCount } = await fetchInstagramMedia(code);
 
-      if (connected) setShowInstagramPopup(true); // popup shows immediately
+      if (code) {
+        // FIRST-TIME USER → Handle OAuth callback
+        const { connected, media, paging, mediaCount } = await fetchInstagramMedia(code);
 
-      // update state with media
-      setMedia(media);
-      setPaging(paging);
-      setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+        if (connected) {
+          // show popup immediately on first connect
+          setShowInstagramPopup(true);
+
+          setMedia(media);
+          setPaging(paging);
+          setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+        }
+      } else {
+          const { media, paging, mediaCount } = await getMediaFromDatabase("", 20);
+          setMedia(media);
+          setPaging(paging);
+          setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+      }
     } catch (error) {
       console.error(error);
       alert("Error fetching Instagram media");
@@ -66,33 +76,60 @@ useEffect(() => {
   initInstagram();
 }, []);
 
-
   if (!isHydrated) {
     return null;
   }
   
-
+  const scrollToTop = () => {
+  if (containerRef.current) {
+    containerRef.current.scrollTo({ top: 0 });
+    }
+  };
 
 const handlePrev = () => {
   setCurrentPage((prev) => Math.max(prev - 1, 0));
+  setTimeout(() => {
+  scrollToTop();
+}, 0);
 };
 
 const handleNext = async () => {
   // If next page is already loaded, just go to it
   if (mediaPages[currentPage + 1]) {
     setCurrentPage((prev) => prev + 1);
+    scrollToTop();
     return;
   }
+
   // If not loaded but more data exists, fetch next page
   if (paging?.next && paging?.cursors?.after) {
     setIsLoadingMore(true);
+
+    // detect if user came from Instagram Auth (first-time)
     const queryParams = new URLSearchParams(window.location.search);
     const code = queryParams.get("code");
+
     try {
-      const { media: moreMedia, paging: newPaging } = await fetchInstagramMedia(code, paging.cursors.after);
-      setMedia(prev => [...prev, ...moreMedia]);
+      let moreMedia = [];
+      let newPaging = {};
+
+      if (code) {
+        // 👉 First-time user: fetch directly from Instagram API
+        const result = await fetchInstagramMedia(code, paging.cursors.after);
+        moreMedia = result.media;
+        newPaging = result.paging;
+      } else {
+        // 👉 Returning user: fetch from DB
+        const result = await getMediaFromDatabase(paging.cursors.after, 20);
+        moreMedia = result.media;
+        newPaging = result.paging;
+      }
+
+      // update state
+      setMedia((prev) => [...prev, ...moreMedia]);
       setPaging(newPaging);
       setCurrentPage((prev) => prev + 1);
+      scrollToTop();
     } catch (error) {
       alert(error.message || "Failed to load more media");
     } finally {
@@ -101,6 +138,7 @@ const handleNext = async () => {
   }
 };
 
+  
   const handleTabClick = (tab) => setSelectedTab(tab);
 
   
@@ -162,47 +200,62 @@ const handleNext = async () => {
     const shouldShowPagination =
       !loading && (mediaPages.length > 1 || paging?.next);
 
-      const handlePageClick = async (pageNumber) => {
-      // If already loaded, just set the current page
-      if (mediaPages[pageNumber]) {
-        setCurrentPage(pageNumber);
-        return;
-      }
+    const handlePageClick = async (pageNumber) => {
+  // If already loaded, just set the current page
+  if (mediaPages[pageNumber]) {
+    setCurrentPage(pageNumber);
+    scrollToTop();
+    return;
+  }
 
-      // If not loaded, fetch page data
-      if (paging?.cursors?.after || pageNumber === 0) {
-        setIsLoadingMore(true);
-        const queryParams = new URLSearchParams(window.location.search);
-        const code = queryParams.get("code");
+  // If not loaded, fetch page data
+  if (paging?.cursors?.after || pageNumber === 0) {
+    setIsLoadingMore(true);
+    const queryParams = new URLSearchParams(window.location.search);
+    const code = queryParams.get("code");
 
-        try {
-          // Calculate the "after" cursor for this specific page
-          let afterCursor = null;
-          let tempPaging = paging;
-          let tempMedia = media;
+    try {
+      // Calculate the "after" cursor for this specific page
+      let afterCursor = null;
+      let tempPaging = paging;
+      let tempMedia = media;
 
-          // Loop from current last loaded page to target page
-          for (let i = mediaPages.length; i <= pageNumber; i++) {
-            const { media: newMedia, paging: newPaging } = await fetchInstagramMedia(
-              code,
-              afterCursor || tempPaging?.cursors?.after
-            );
-            tempMedia = [...tempMedia, ...newMedia];
-            tempPaging = newPaging;
-            afterCursor = newPaging?.cursors?.after;
-          }
+      // Loop from current last loaded page to target page
+      for (let i = mediaPages.length; i <= pageNumber; i++) {
+        let newMedia, newPaging;
 
-          setMedia(tempMedia);
-          setPaging(tempPaging);
-          setCurrentPage(pageNumber);
-        } catch (error) {
-          console.error("Error fetching page:", error);
-          alert(error.message || "Failed to load media");
-        } finally {
-          setIsLoadingMore(false);
+        if (code) {
+          // First-time OAuth flow → fetch directly from Instagram
+          ({ media: newMedia, paging: newPaging } = await fetchInstagramMedia(
+            code,
+            afterCursor || tempPaging?.cursors?.after
+          ));
+        } else {
+          // Subsequent visits → fetch from DB
+          const dbResult = await getMediaFromDatabase(
+            afterCursor || tempPaging?.cursors?.after
+          );
+          newMedia = dbResult.media;
+          newPaging = dbResult.paging;
         }
+
+        tempMedia = [...tempMedia, ...newMedia];
+        tempPaging = newPaging;
+        afterCursor = newPaging?.cursors?.after;
       }
-    };
+
+      setMedia(tempMedia);
+      setPaging(tempPaging);
+      setCurrentPage(pageNumber);
+      scrollToTop();
+    } catch (error) {
+      console.error("Error fetching page:", error);
+      alert(error.message || "Failed to load media");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
+};
 
    
     const handleBackClick = () => {
@@ -327,7 +380,7 @@ const renderInstagramTab = () => (
     </div>
 
     {/* right side rendered projects graph api fetch  */}
-    <div className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+    <div ref={containerRef} className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
     <MediaDisplay media={currentMedia} displayType="instagram" showLoader={showInstagramPopup} />
 {shouldShowPagination && (
   <div className="fixed left-1/2 -translate-y-1/2 bottom-20 5xl:bottom-24">
