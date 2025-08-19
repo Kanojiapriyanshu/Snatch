@@ -139,6 +139,16 @@ export default function Step1() {
       className="w-full"
     />
 
+ {/* Upload Picture & Background */}
+ <div className="space-y-3">
+      <CustomFileInput
+        onFileChange={(uploadedUrl, uploadedFileName) => updateFormData({ profilePicture: uploadedUrl, profilePictureName: uploadedFileName, })}
+        placeholder="Upload a profile picture from your device*"
+        iconSrc="/assets/icons/onboarding/Upload.svg"
+        label="Upload picture"
+        fileNameKey="profilePictureName"
+        className="w-full"
+      />
 
 
     {/* Social Links */}
@@ -183,16 +193,7 @@ export default function Step1() {
       </div>
     </div>
 
-    {/* Upload Picture & Background */}
-    <div className="space-y-3">
-      <CustomFileInput
-        onFileChange={(uploadedUrl, uploadedFileName) => updateFormData({ profilePicture: uploadedUrl, profilePictureName: uploadedFileName, })}
-        placeholder="Upload a profile picture from your device*"
-        iconSrc="/assets/icons/onboarding/Upload.svg"
-        label="Upload picture"
-        fileNameKey="profilePictureName"
-        className="w-full"
-      />
+   
       <div className="bg-transparent w-full h-24"></div>
     </div>
   </form>

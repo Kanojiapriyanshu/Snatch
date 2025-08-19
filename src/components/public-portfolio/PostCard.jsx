@@ -11,8 +11,6 @@ export default function PostCard({ post, postId, username, allPosts }) {
   const [loading, setLoading] = useState(true);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isPortrait, setIsPortrait] = useState(false);
-  const [slideDirection, setSlideDirection] = useState(null);
-  const [isSliding, setIsSliding] = useState(false);
   const cardRef = useRef(null);
 
     useEffect(() => {
@@ -66,6 +64,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
   const currentIndex = allPosts ? allPosts.findIndex((p) => p.mediaId === postId) : -1;
   const totalPosts = allPosts ? allPosts.length : 0;
 
+  // Get base URL for navigation
+  const baseUrl = isAdminView 
+    ? `/${username}/media-kit/adminview/post`
+    : `/${username}/media-kit/post`;
 
   const handleNavigation = (direction) => {
     if (!allPosts || allPosts.length === 0) return;
@@ -86,18 +88,8 @@ export default function PostCard({ post, postId, username, allPosts }) {
       return;
     }
 
-    // Only animate on large screens
-    if (window.innerWidth >= 1024) {
-      setSlideDirection(direction === 'next' ? 'right' : 'left');
-      setIsSliding(true);
-      setTimeout(() => {
-        setIsSliding(false);
-        setSlideDirection(null);
-        router.push(`${baseUrl}/?postId=${nextPost.mediaId}`);
-      }, 400); // match transition duration
-    } else {
-      router.push(`${baseUrl}/?postId=${nextPost.mediaId}`);
-    }
+    // Navigate directly without animation
+    router.push(`${baseUrl}/?postId=${nextPost.mediaId}`);
   };
 
   useEffect(() => {
@@ -154,20 +146,13 @@ export default function PostCard({ post, postId, username, allPosts }) {
             </div>
           </button>
 
-          {/* Card with slide animation */}
+          {/* Card without animation */}
           <div
             ref={cardRef}
-            className={`w-[864px] h-[450px] p-2 bg-[#FFFFFF] rounded-lg mx-auto transition-transform duration-400 ease-in-out
-              ${isSliding && slideDirection === 'right' ? 'animate-slide-left' : ''}
-              ${isSliding && slideDirection === 'left' ? 'animate-slide-right' : ''}
-            `}
-            onAnimationEnd={() => {
-              setIsSliding(false);
-              setSlideDirection(null);
-            }}
+            className="w-[864px] h-[450px] p-2 bg-[#FFFFFF] rounded-lg mx-auto"
           >
             
-            <div className="flex gap-5 items-center mt-2">
+            <div className="flex gap-5 items-start mt-2 h-[400px]">
               {/* Media Section */}
               <div className="w-[300px] h-full pl-5 pt-5">
                 <div className={`w-[250px] ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} overflow-hidden rounded-lg flex items-center`}>
@@ -264,38 +249,43 @@ export default function PostCard({ post, postId, username, allPosts }) {
                 </div>
               </div>
 
-              {/* Details Section */}
-              <div className="w-full h-full pl-5 pr-5 mt-5">
-                <p className="text-2xl text-graphite font-qimano">{post.post?.titleName || 'Title of the project'}</p>
-                <div className="flex gap-1 flex-wrap max-w-xl mr-10">
-                  {post.post?.industries?.length > 0 ? (
-                    post.post.industries.map((industry, index) => (
-                      <span
-                        key={index}
-                        className="bg-[#0037EB]/5 text-graphite my-2 font-apfel-grotezk-regular inline-block rounded border border-transparent py-1 px-2.5 text-xs font-medium"
-                      >
-                        {industry}
-                      </span>
-                    ))
-                  ) : (
-                    <span>Industry</span>
-                  )}
+              {/* Details Section - Using flex column with fixed sections */}
+              <div className="w-full h-full pl-5 pr-5 mt-5 flex flex-col">
+                {/* Top section - Title and Industries (fixed height) */}
+                <div className="flex-shrink-0 min-h-[80px]">
+                  <p className="text-2xl text-graphite font-qimano">{post.post?.titleName || 'Title of the project'}</p>
+                  <div className="flex gap-1 flex-wrap max-w-xl mr-10">
+                    {post.post?.industries?.length > 0 ? (
+                      post.post.industries.map((industry, index) => (
+                        <span
+                          key={index}
+                          className="bg-[#0037EB]/5 text-graphite my-2 font-apfel-grotezk-regular inline-block rounded border border-transparent py-1 px-2.5 text-xs font-medium"
+                        >
+                          {industry}
+                        </span>
+                      ))
+                    ) : (
+                      <span>Industry</span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="w-full border-b-[0.5px] border-gray-300 mt-2"></div>
+                <div className="w-full border-b-[0.5px] border-gray-300 mt-2 flex-shrink-0"></div>
 
-                <div className={`flex items-center space-x-2 ${post.post?.isBrandCollaboration ? 'mt-[2rem]' : 'mt-[0]'}`}>
+                {/* Middle section - Company info and description (flexible height) */}
+                <div className="flex-grow flex flex-col justify-start mt-4">
+                  {/* Company Info Section */}
                   {post.post?.isBrandCollaboration && (
-                    <div className="brand-collaboration-section flex gap-3">
+                    <div className="brand-collaboration-section flex gap-3 mb-4">
                       <Image
                         src={post.post.companyLogo || "/assets/images/logo.svg"}
                         width={50}
                         height={50}
                         alt={post.post.companyLogo ? "Company Logo" : "Default Logo"}
-                        className="h-12 w-12 bg-cover rounded-full"
+                        className="h-12 w-12 bg-cover rounded-full flex-shrink-0"
                       />
                       {(post.post.companyName || post.post.companyLocation || post.post.eventTypes?.length > 0) && (
-                        <div className="h-12 border-l border-gray-400"></div>
+                        <div className="h-12 border-l border-gray-400 flex-shrink-0"></div>
                       )}
 
                       {(post.post.companyName || post.post.companyLocation || post.post.eventTypes?.length > 0) && (
@@ -326,33 +316,36 @@ export default function PostCard({ post, postId, username, allPosts }) {
                       )}
                     </div>
                   )}
+
+                  {/* Description */}
+                  <p className="text-graphite font-apfel-grotezk-regular mr-3">
+                    {post.post?.description || 'Description of the project'}
+                  </p>
                 </div>
 
-                <p className={`${post.post?.isBrandCollaboration ? 'text-graphite font-apfel-grotezk-regular mr-3 mt-5' : 'text-graphite font-apfel-grotezk-regular mr-3 mt-6'}`}>
-                  {post.post?.description || 'Description of the project'}
-                </p>
-
+                {/* Bottom section - Stats (fixed position at bottom) */}
                 {post.media.source === "instagram" && (
-                  <div className={`w-full border-b-[0.5px] border-gray-300 ${post.post?.isBrandCollaboration ? 'mt-8' : 'mt-36'}`}></div>
-                )}
-
-                {post.media.source === "instagram" && insights && (
-                  <div className="mt-5 flex justify-between text-graphite  w-full">
-                    {[
-                      { label: "Views", key: "views" },
-                      { label: "Likes", key: "likes" },
-                      { label: "Comments", key: "comments" },
-                      { label: "Shares", key: "shares" }
-                    ].map(({ label, key }) => (
-                      <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
-                        <div className="text-[22px] leading-none font-qimano text-graphite">
-                          {insights?.[key] ?? 0}
-                        </div>
-                        <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
-                          {label}
-                        </div>
+                  <div className="flex-shrink-0 mt-auto">
+                    <div className="w-full border-b-[0.5px] border-gray-300 mb-5"></div>
+                    {insights && (
+                      <div className="flex justify-between text-graphite w-full">
+                        {[
+                          { label: "Views", key: "views" },
+                          { label: "Likes", key: "likes" },
+                          { label: "Comments", key: "comments" },
+                          { label: "Shares", key: "shares" }
+                        ].map(({ label, key }) => (
+                          <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
+                            <div className="text-[22px] leading-none font-qimano text-graphite">
+                              {insights?.[key] ?? 0}
+                            </div>
+                            <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
+                              {label}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
                 )}
               </div>

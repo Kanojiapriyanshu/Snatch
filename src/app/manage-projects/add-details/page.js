@@ -775,11 +775,14 @@ const handlePopupGenerate = async () => {
                 Share the story, we&rsquo;ll shape it for your press kit.
               </h2>
               <textarea
-                className="w-full text-gray-700 p-4 border border-gray-300 rounded-lg min-h-[300px] mb-4 focus:outline-none focus:border-blue-600 font-apfel-grotezk-regular"
-                placeholder="What&rsquo;s this content piece about? Why did you create it? What results or impact did it have? Share the backstory and we&rsquo;ll turn it into a project ready for your press kit."
-                value={popupUserInput}
-                onChange={(e) => setPopupUserInput(e.target.value)}
-              />
+  className="w-full text-gray-900 !text-gray-800 font-apfel-grotezk-regular font-sm text-[16px] tracking-normal leading-[120%] p-4 border border-gray-300 rounded-lg min-h-[300px] mb-4 focus:outline-none focus:border-blue-600 placeholder:text-gray-500"
+  placeholder="What’s this content piece about? Why did you create it? What results or impact did it have? Share the backstory and we’ll turn it into a project ready for your press kit."
+  value={popupUserInput}
+  onChange={(e) => setPopupUserInput(e.target.value)}
+/>
+
+
+
               <div className="flex gap-1 flex-nowrap">
                 {/* Skip AI & enter manually */}
                 <button
@@ -794,12 +797,13 @@ const handlePopupGenerate = async () => {
                   Skip AI & enter manually
                 </button>
                 {/* Generate my project */}
-                <button
+               
+   <button
                   className={`2xl:px-8 px-6 py-2 rounded-lg ${
                     popupGenerating || !popupUserInput.trim()
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue cursor-pointer"
-                  } text-sm font-apfel-grotezk-regular transition whitespace-nowrap flex-shrink-0`}
+                      : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
+                  } min-w-[240px] text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
                   onClick={handlePopupGenerate}
                   disabled={popupGenerating || !popupUserInput.trim()}
                 >
@@ -871,7 +875,7 @@ const handlePopupGenerate = async () => {
           </div>
 
           <div className="mt-4 h-full  " style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} >
-            <p className="text-md">Selected Projects</p>
+            <p className="text-md">Fill details for at least 4 projects</p>
             <p className="text-light-grey text-sm">
               {activeTab === "instagram"
                 ? selectionState.instagramSelected.length

@@ -40,7 +40,7 @@ export default function SocialLinks({ formData }) {
         <span className="border-b-[0.5px] border-gray-400 mx-2 w-full"></span>
       </span>
       {/* Icons (visible on all screen sizes, justified between for mobile) */}
-      <span className="flex max-w-[300px] justify-between gap-14 lg:ml-2 lg:gap-2 lg:justify-center">
+      <span className="flex max-w-[350px] justify-between gap-14 lg:ml-2 lg:gap-2 lg:justify-center">
         {links.length > 0 ? (
           links.map((link, index) => (
             socialIcons[link.platform] && (
@@ -49,12 +49,12 @@ export default function SocialLinks({ formData }) {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gray-150 rounded flex items-center justify-center w-10 h-10"
+                className="bg-gray-150 rounded flex items-center justify-center w-12 h-14"
               >
                 <Image
                   src={socialIcons[link.platform]}
                   alt={link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}
-                  width={30}
+                  width={35}
                   height={link.platform === 'twitter' ? 20 : 25}
                 />
               </a>
@@ -64,7 +64,7 @@ export default function SocialLinks({ formData }) {
           // fallback: show all icons but disabled
           <>
             {Object.entries(socialIcons).map(([platform, icon], idx) => (
-              <span key={platform} className="bg-gray-150 rounded flex items-center justify-center w-10 h-10 opacity-50">
+              <span key={platform} className="bg-gray-150 rounded flex items-center justify-center w-12 h-14 opacity-50">
                 <Image
                   src={icon}
                   alt={platform.charAt(0).toUpperCase() + platform.slice(1)}

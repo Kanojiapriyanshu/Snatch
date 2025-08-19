@@ -146,9 +146,10 @@ const handleResendOtp = async () => {
       <h1 className="text-graphite text-2xl sm:text-5xl mb-8 font-qimano">Enter OTP</h1>
       <Otp otp={otp} setOtp={setOtp}  onKeyDown={handleKeyDown}/> 
       {email && (
-            <p className="text-gray-500 text-sm mb-6 font-apfel-grotezk-regular">
-              OTP has been sent to <span className="font-medium">{email}</span>
-            </p>
+  <p className="text-[#f7f7f7] text-sm mb-6 font-apfel-grotezk-regular">
+    OTP has been sent to{" "}
+    <span className="font-medium text-black">{email}</span>
+  </p>
       )}
        <div className="mt-4 mb-1 font-apfel-grotezk-regular">
         {resendTimer > 0 ? (
