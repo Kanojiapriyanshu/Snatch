@@ -113,7 +113,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
   };
 
   return (
-    <div className="mb-20 flex  7xl:justify-center">
+    <div className="mb-20 flex 7xl:justify-center">
       {/* Confirmation Popup */}
       {showConfirm && (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
@@ -156,14 +156,14 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
   </div>
 )}
 
-    {/* Change this grid to a horizontal scrollable flex */}
-    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 3xl:grid-cols-5 gap-4 max-w-screen-lg 4xl:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+    {/* Responsive grid with rectangular aspect ratio */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4 w-full max-w-7xl">
       {/* Instagram Media */}
       {displayType === "instagram" && media?.length > 0 ? (
         media.map((mediaItem) => (
           <div
             key={mediaItem.id}
-            className="relative w-full h-72 border border-gray-300 rounded-md overflow-x-hidden overflow-y-auto cursor-pointer"
+            className="relative w-full aspect-[4/5] border border-gray-300 rounded-md overflow-hidden cursor-pointer"
             onClick={() => handleSelect(mediaItem)}
           >
             {/* Circle on Top Left */}
@@ -182,8 +182,6 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
               <img
                 src={mediaItem.media_url}
                 alt={mediaItem.id || "Media"}
-                width={200}
-                height={200}
                 className="object-cover w-full h-full"
               />
             ) : mediaItem.media_type === "VIDEO" ? (
@@ -210,7 +208,6 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
                       <img
                         src={child.media_url}
                         alt={`Media ${child.id}`}
-                        fill
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -292,7 +289,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
         uploadedFiles.map((file) => (
           <div
             key={file.mediaId}
-            className="relative w-full aspect-square border border-gray-300 rounded-md overflow-x-hidden overflow-y-auto cursor-pointer"
+            className="relative w-full aspect-[4/5] border border-gray-300 rounded-md overflow-hidden cursor-pointer"
             onClick={() => handleFileSelect(file)}
           >
             <div
@@ -324,4 +321,3 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
 };
 
 export default MediaDisplay;
-

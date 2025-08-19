@@ -37,6 +37,7 @@ const ProfileOverview = ({ ownerId, isAdminView }) => {
   //const formData = useFetchPortfolio(ownerId);
   const { data: formData } = useFetchPortfolio(ownerId);
   const { data } = useInstagramData();
+  const [showGoBackButton, setShowGoBackButton] = useState(false);
 
   const router = useRouter()
   const pathname = usePathname(); // e.g., "/public-portfolio/snatchsocial"
@@ -87,6 +88,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   const lowest = values.length ? Math.min(...values) : 0;
   const highest = values.length ? Math.max(...values) : 0;
 
+  
   function formatNumber(value) {
     const num = Number(value); // parse string/number safely
   
@@ -187,6 +189,16 @@ const priceRange = lowest === highest ? (
             }
       }
     >
+
+<button
+        className="absolute top-4 left-4 p-2 rounded-full bg-gray-700 text-white z-50 flex items-center justify-center"
+        onClick={() => router.back()}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+      </button>
+
       <div className="container mx-auto mt- px-4 py-8 flex flex-col items-center">
         {/* Name and Location */}
         <motion.h1
@@ -415,9 +427,10 @@ const priceRange = lowest === highest ? (
       ref={pressKitRef}
     >
       <div className="container mx-auto">
-      <h2 className="text-5xl lg:text-7xl font-qimano text-[#0044FF] text-center mt-4 lg:mt-8 ml-0 mr-0 lg:ml-64 lg:mr-58 text-electric-blue">
-  Press Kit
-</h2>
+  <h2 className="text-5xl lg:text-7xl font-qimano text-[#0044FF] text-center mt-4 lg:mt-8">
+    Press Kit
+  </h2>
+
 
 
 

@@ -147,8 +147,8 @@ export default function EnterOtp() {
 
     {/* Subheading */}
     {email && (
-      <p className="text-gray-500 text-sm mb-8 font-apfel-grotezk-regular">
-        Enter the 6 digit code sent to <span className="font-medium">{email}</span>
+      <p className="text-gray-400 text-sm mb-8 font-apfel-grotezk-regular">
+        Enter the 6 digit code sent to <span className="font-medium font-graphite">{email}</span>
       </p>
     )}
 

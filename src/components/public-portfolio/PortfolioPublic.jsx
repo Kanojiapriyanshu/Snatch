@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,7 +16,10 @@ const PortfolioPublic = () => {
   const [loading, setLoading] = useState(false);
   const [targetUrl, setTargetUrl] = useState('');
   const [loadingPostId, setLoadingPostId] = useState(null);
+  const [hoveredPostId, setHoveredPostId] = useState(null);
+  const [isNavigating, setIsNavigating] = useState(false);
   const queryClient = useQueryClient();
+  
   // Extract username
   const pathnameParts = pathname.split("/");
   const username = pathnameParts[1] || "";
@@ -24,6 +27,35 @@ const PortfolioPublic = () => {
   console.log("pathname: test: ", pathname);
   console.log("isAdminView: test: ", pathname.includes("/adminview"));
 
+  // Listen for route changes to stop loading when navigation is complete
+  useEffect(() => {
+    const handleRouteChangeComplete = () => {
+      setLoadingPostId(null);
+      setIsNavigating(false);
+    };
+
+    // Listen for when the route change is complete
+    const handleBeforeUnload = () => {
+      setLoadingPostId(null);
+      setHoveredPostId(null);
+      setIsNavigating(false);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
+  // Stop loading when pathname changes (indicating successful navigation)
+  useEffect(() => {
+    if (isNavigating) {
+      setLoadingPostId(null);
+      setHoveredPostId(null);
+      setIsNavigating(false);
+    }
+  }, [pathname]);
 
   // ✅ Use React Query instead of manual fetch
   const { data: projects = [], isLoading, isError, error } = useQuery({
@@ -126,12 +158,43 @@ const PortfolioPublic = () => {
 
   const handlePostClick = async (e, mediaId, url) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    // Set loading state and prevent it from being cleared by mouse events
     setLoadingPostId(mediaId);
-    await prefetchProjectAndNeighbors(mediaId);
-    setTimeout(() => {
-      setLoadingPostId(null);
+    setIsNavigating(true);
+    setHoveredPostId(null); // Clear hover state when clicking
+    
+    try {
+      // Prefetch data
+      await prefetchProjectAndNeighbors(mediaId);
+      
+      // Navigate to the post
       router.push(url);
-    }, 1000);
+      
+      // Note: Loading state will be cleared by the useEffect when pathname changes
+    } catch (error) {
+      console.error('Error during navigation:', error);
+      // Clear loading state on error
+      setLoadingPostId(null);
+      setIsNavigating(false);
+    }
+  };
+
+  // Handle mouse enter for hover effect (only if not navigating)
+  const handleMouseEnter = (mediaId) => {
+    if (!isNavigating) {
+      setHoveredPostId(mediaId);
+    }
+  };
+
+  // Handle mouse leave - only clear hover, never clear loading during navigation
+  const handleMouseLeave = (mediaId) => {
+    // Only clear hover state, not loading state
+    if (hoveredPostId === mediaId && !isNavigating) {
+      setHoveredPostId(null);
+    }
+    // Never clear loadingPostId here if navigation is in progress
   };
 
   // ✅ Loading and error states
@@ -173,7 +236,11 @@ const PortfolioPublic = () => {
                   }
                   className="block w-full h-full"
                 >
-                  <div className="relative w-full h-full group rounded-md overflow-hidden">
+                  <div 
+                    className="relative w-full h-full group rounded-md overflow-hidden"
+                    onMouseEnter={() => handleMouseEnter(project.mediaId)}
+                    onMouseLeave={() => handleMouseLeave(project.mediaId)}
+                  >
                     {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
                       <>
                         {project.children.map((child, idx) => (
@@ -260,13 +327,19 @@ const PortfolioPublic = () => {
                           : `/${username}/media-kit/post/?postId=${project.mediaId}`
                       )
                     }>
-                      {loadingPostId === project.mediaId ? (
-                        <DotLottieReact
-                          src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
-                          loop
-                          autoplay
-                          style={{ width: 80, height: 80 }}
-                        />
+                      {(loadingPostId === project.mediaId || hoveredPostId === project.mediaId) ? (
+                        loadingPostId === project.mediaId ? (
+                          <DotLottieReact
+                            src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+                            loop
+                            autoplay
+                            style={{ width: 80, height: 80 }}
+                          />
+                        ) : (
+                          <span className="text-lime-yellow text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
+                            Post Info & Insights ↗
+                          </span>
+                        )
                       ) : (
                         <span className="text-lime-yellow text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
                           Post Info & Insights ↗
@@ -291,7 +364,11 @@ const PortfolioPublic = () => {
                   }
                   className="block w-full h-full"
                 >
-                  <div className="relative w-full h-full group rounded-md overflow-hidden">
+                  <div 
+                    className="relative w-full h-full group rounded-md overflow-hidden"
+                    onMouseEnter={() => handleMouseEnter(project.mediaId)}
+                    onMouseLeave={() => handleMouseLeave(project.mediaId)}
+                  >
                     {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
                       <>
                         {project.children.map((child, idx) => (
@@ -378,13 +455,19 @@ const PortfolioPublic = () => {
                           : `/${username}/media-kit/post/?postId=${project.mediaId}`
                       )
                     }>
-                      {loadingPostId === project.mediaId ? (
-                        <DotLottieReact
-                          src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
-                          loop
-                          autoplay
-                          style={{ width: 80, height: 80 }}
-                        />
+                      {(loadingPostId === project.mediaId || hoveredPostId === project.mediaId) ? (
+                        loadingPostId === project.mediaId ? (
+                          <DotLottieReact
+                            src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+                            loop
+                            autoplay
+                            style={{ width: 80, height: 80 }}
+                          />
+                        ) : (
+                          <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
+                            Post Info & Insights ↗
+                          </span>
+                        )
                       ) : (
                         <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
                           Post Info & Insights ↗

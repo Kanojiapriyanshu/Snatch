@@ -5,11 +5,11 @@ import Image from "next/image";
 import { clsx } from "clsx";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+
 const Questionnaire = ({ name }) => {
   const pathname = usePathname();
   const parts = pathname.split("/").filter(Boolean);
   const username = parts[0];
-
 
   // ✅ Use React Query instead of useEffect + useState
   const { data, isLoading, isError } = useQuery({
@@ -23,13 +23,11 @@ const Questionnaire = ({ name }) => {
     staleTime: 1000 * 60 * 5, // cache for 5 min
   });
 
-
   // Refs and scroll state
   const desktopScrollRef = useRef(null);
   const mobileScrollRef = useRef(null);
   const [scrollResetTrigger, setScrollResetTrigger] = useState(0);
-  const [showNavButtons, setShowNavButtons] = useState(false);
-
+  const [currentScrollIndex, setCurrentScrollIndex] = useState(0);
 
   // Build flat cards safely
   const allCards = (data || []).flatMap((item) =>
@@ -44,44 +42,48 @@ const Questionnaire = ({ name }) => {
     )
   );
 
-  // Check for overflow on desktop scroll area
-  useEffect(() => {
-    function checkOverflow() {
-      const container = desktopScrollRef.current;
-      if (container) {
-        setShowNavButtons(container.scrollWidth > container.clientWidth);
-      }
-    }
-    checkOverflow();
-    window.addEventListener('resize', checkOverflow);
-    return () => window.removeEventListener('resize', checkOverflow);
-  }, [data]);
-
   // Loading & error states
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Failed to load questions.</div>;
 
+  // Calculate navigation visibility
+  const totalCards = allCards.length;
+  const showLeftButton = currentScrollIndex > 0;
+  const showRightButton = currentScrollIndex < totalCards - 3; // Show right button if there are more than 3 cards remaining
+  const showNavButtons = totalCards > 3; // Only show navigation if more than 3 cards
 
-  // Desktop scroll
+  // Desktop scroll function - scroll by 3 cards (one full view)
   const scrollDesktop = (direction) => {
     const container = desktopScrollRef.current;
     if (container) {
-      const scrollAmount = 200;
-      container.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
+      let newIndex = currentScrollIndex;
+      
+      if (direction === "left") {
+        newIndex = Math.max(0, currentScrollIndex - 3);
+      } else {
+        newIndex = Math.min(totalCards - 3, currentScrollIndex + 3);
+      }
+      
+      setCurrentScrollIndex(newIndex);
+      
+      // Calculate scroll position with increased gap (each card is approximately 430px wide including gap)
+      const cardWidth = 430; // 370px card + 60px gap
+      const scrollPosition = newIndex * cardWidth;
+      
+      container.scrollTo({
+        left: scrollPosition,
         behavior: "smooth",
       });
     }
   };
 
-
   return (
     <div className={clsx(
-      "relative pb-1 0",
+      "relative pb-10",
       "lg:mt-10 lg:ml-2",
       "flex flex-col items-center"
     )}>
-      <h3 className="text-[45px] text-center lg:text-7xl text-2xl font-qimano text-electric-blue mb-0 ">About {name}</h3>
+      <h3 className="text-[45px] text-center lg:text-7xl text-2xl font-qimano text-electric-blue mb-0">About {name}</h3>
 
       {/* Mobile view: horizontal scroll with snap and partial next card visibility */}
       <div className="lg:hidden relative flex-grow flex justify-start w-full max-w-full mt-5">
@@ -115,66 +117,72 @@ const Questionnaire = ({ name }) => {
         )}
       </div>
 
-      {/* Desktop view: horizontal scroll */}
-     <div className="hidden lg:flex relative flex-grow justify-center">
-  {/* Left Scroll Button */}
-  {showNavButtons && (
-    <button
-      onClick={() => scrollDesktop("left")}
-      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-18"
-      aria-label="Scroll Left"
-    >
-      <div className="w-full h-full">
-        <Image
-          src="/assets/images/Lefthand.svg"
-          alt="left-arrow"
-          width={56}
-          height={56}
-          className="w-full h-full object-contain"
-        />
+      {/* Desktop view: controlled horizontal scroll showing 3.5 cards with increased gaps */}
+      <div className="hidden lg:flex relative flex-grow justify-center w-full">
+        {/* Left Scroll Button */}
+        {showNavButtons && showLeftButton && (
+          <button
+            onClick={() => scrollDesktop("left")}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-18"
+            aria-label="Scroll Left"
+          >
+            <div className="w-full h-full">
+              <Image
+                src="/assets/images/Lefthand.svg"
+                alt="left-arrow"
+                width={56}
+                height={56}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </button>
+        )}
+
+        {/* Scrollable Cards Container - Full width to allow rightmost card to reach edge */}
+        <div className="relative overflow-hidden w-full">
+          <div
+            ref={desktopScrollRef}
+            className="mt-5 lg:mt-4 pb-5 lg:pb-0 overflow-x-hidden"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            <div className="flex gap-16 w-max pl-8 pr-8">
+              {allCards.map((card) => (
+                <QuestionCard
+                  key={card.key}
+                  question={card.question}
+                  answer={card.answer}
+                  coverImage={card.coverImage}
+                  cardType={card.cardType}
+                />
+              ))}
+            </div>
+          </div>
+          
+          {/* Gradient overlay on the right to show partial 4th card - positioned closer to edge */}
+          {showNavButtons && (
+            <div className="absolute top-0 right-0 w-16 h-full  to-transparent pointer-events-none" />
+          )}
+        </div>
+
+        {/* Right Scroll Button - positioned closer to edge */}
+        {showNavButtons && showRightButton && (
+          <button
+            onClick={() => scrollDesktop("right")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-12 h-14"
+            aria-label="Scroll Right"
+          >
+            <div className="w-full h-full">
+              <Image
+                src="/assets/images/next.svg"
+                alt="right-arrow"
+                width={56}
+                height={56}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </button>
+        )}
       </div>
-    </button>
-  )}
-
-  {/* Scrollable Cards */}
-  <div
-    ref={desktopScrollRef}
-    className="mt-5 lg:mt-4 pb-5 lg:pb-0 overflow-x-auto scrollbar-hide max-w-full"
-    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-  >
-    <div className="flex gap-2 w-full sm:w-max rounded-3xl overflow-hidden px-2 justify-center">
-      {allCards.map((card) => (
-        <QuestionCard
-          key={card.key}
-          question={card.question}
-          answer={card.answer}
-          coverImage={card.coverImage}
-          cardType={card.cardType}
-        />
-      ))}
-    </div>
-  </div>
-
-  {/* Right Scroll Button */}
-  {showNavButtons && (
-    <button
-      onClick={() => scrollDesktop("right")}
-      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-12 h-14"
-      aria-label="Scroll Right"
-    >
-      <div className="w-full h-full">
-        <Image
-          src="/assets/images/next.svg"
-          alt="right-arrow"
-          width={56}
-          height={56}
-          className="w-full h-full object-contain"
-        />
-      </div>
-    </button>
-  )}
-</div>
-
     </div>
   );
 };
@@ -211,7 +219,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
     <div
       className={clsx(
         "relative flex border rounded-3xl overflow-hidden cursor-pointer shrink-0 transition-transform duration-300",
-        isMobile ? "w-[75vw] h-[490px]" : "w-[370px] h-[530px] mr-6",
+        isMobile ? "w-[75vw] h-[490px]" : "w-[370px] h-[530px]",
         isMobile && touched ? "-translate-y-4" : ""
       )}
       onMouseEnter={() => !isMobile && setHovered(true)}
@@ -230,7 +238,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
 
       {/* Overlay for 'Click to reveal' on mobile when not revealed */}
       {isMobile && !isRevealed && (
-        <div className="absolute inset-0 flex flex-col justify-center items-center bottom-20 font-qimano  bg-black/40 text-white text-[38px] ">
+        <div className="absolute inset-0 flex flex-col justify-center items-center bottom-20 font-qimano bg-black/40 text-white text-[38px]">
           <p>Click to reveal</p>
         </div>
       )}
@@ -244,7 +252,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
             ? (isRevealed ? "h-[100%]" : "h-[50%]")
             : (hovered ? "h-[100%]" : "h-[45%]")
         )}
-        style={{ minHeight: isMobile ? 0 : 240 }} // ensure enough height for spacing
+        style={{ minHeight: isMobile ? 0 : 240 }}
       >
         <Image
           src={cardType.icon}

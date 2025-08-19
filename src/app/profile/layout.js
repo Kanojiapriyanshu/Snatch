@@ -247,7 +247,7 @@ export default function OnboardingLayout({ children }) {
                 />
                 <span className="text-white ml-1">
                   {portfolioComplete && hasClickedPortfolio
-                    ? "Preview Portfolio"
+                    ? "Preview Presskit"
                     : "Create Portfolio"}
                 </span>
               </button>
