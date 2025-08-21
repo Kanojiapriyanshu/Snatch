@@ -62,11 +62,11 @@ const Header = ({ formData, data, headerOpacity, isAdminView }) => {
             <p className="text-md text-white font-apfel-grotezk-regular">avg reach</p>
           </div>
           <div className="text-center">
-            <h2 className="text-3xl font-medium font-qimano">{data?.followers}</h2>
+            <h2 className="text-3xl font-medium font-qimano">{data?.followers_count}</h2>
             <p className="text-md text-white font-apfel-grotezk-regular">followers</p>
           </div>
           <div className="text-center">
-            <h2 className="text-3xl font-medium font-qimano">{data?.posts}</h2>
+            <h2 className="text-3xl font-medium font-qimano">{data?.media_count}</h2>
             <p className="text-md text-white font-apfel-grotezk-regular">posts</p>
           </div>
         </div>

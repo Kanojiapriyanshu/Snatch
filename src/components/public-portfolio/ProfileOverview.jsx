@@ -34,6 +34,16 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const scrollY = useTransform(scrollYProgress, [0, 1], [0, 1000]);
   const containerRef = useRef(null);
   const pressKitRef = useRef(null);
+  const [igData, setIgData] = useState(null);
+
+   // Load from sessionStorage once
+  useEffect(() => {
+    const storedInstagram = sessionStorage.getItem("instagramData");
+    if (storedInstagram) {
+      setIgData(JSON.parse(storedInstagram));
+    }
+  }, []);
+
   //const formData = useFetchPortfolio(ownerId);
   // const { data: formData } = useFetchPortfolio(ownerId);
 
@@ -41,9 +51,23 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const { data: fetchedData } = useFetchPortfolio(ownerId, {
     enabled: !portfolio,
   });
+   
 
   const formData = portfolio || fetchedData;
-  const { data } = useInstagramData();
+  
+  
+  // Only fetch if no prefetched data
+  const { data: fetchedInstagramData } = useInstagramData(ownerId, {
+    enabled: !igData,
+  });
+
+  // Update state if fetched data arrives later
+  useEffect(() => {
+    if (!igData && fetchedInstagramData) {
+      setIgData(fetchedInstagramData);
+    }
+  }, [fetchedInstagramData, igData]);
+   
   const [showGoBackButton, setShowGoBackButton] = useState(false);
 
   const router = useRouter()
@@ -52,10 +76,10 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   
   const isMobile = useCheckScreenSize();
 
+   const reach     = useAnimatedNumber(Number(igData?.reach) || 0);
+  const followers = useAnimatedNumber(Number(igData?.followers_count) || 0);
+  const posts     = useAnimatedNumber(Number(igData?.media_count) || 0);
 
-  const reach = useAnimatedNumber(data?.reach);
-  const followers = useAnimatedNumber(data?.followers);
-  const posts = useAnimatedNumber(data?.posts);
 
 
 // Always define motion values, but assign static values for mobile
@@ -174,7 +198,7 @@ const priceRange = lowest === highest ? (
   return (
     <div className="flex flex-col w-full p-0 rounded-xl " ref={containerRef}>
     {/* Sticky Header (appears on scroll) */}
-    <Header formData={formData} data={data} headerOpacity={headerOpacity} isAdminView={isAdminView} />
+    <Header formData={formData} data={igData} headerOpacity={headerOpacity} isAdminView={isAdminView} />
 
     {/* Main Content */}
     <motion.div

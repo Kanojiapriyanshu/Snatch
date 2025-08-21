@@ -85,8 +85,8 @@ export const useInstagramData = () => {
 
       const result = await response.json();
       return {
-        followers: result.followers_count || 0,
-        posts: result.media_count || 0,
+        followers_count: result.followers_count || 0,
+        media_count: result.media_count || 0,
         reach: result.reach || 0,
       };
     },
