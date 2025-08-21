@@ -106,13 +106,14 @@ export default function OnboardingLayout({ children }) {
       const parsedData = JSON.parse(storedFormData);
       const username = parsedData?.username;
 
-      if (username) {
-        const isAdmin = userId === parsedData.userId;
-        const route = isAdmin
-          ? `/${username}/media-kit/adminview`
-          : `/${username}/media-kit`;
-        window.open(route, "_blank");
-      } else {
+       if (username) {
+      const isAdmin = userId === parsedData.userId;
+
+      // ✅ First open the loading page with query params
+      const loadingUrl = `/${username}/media-kit/loading?username=${username}&isAdmin=${isAdmin}&userId=${userId}`;
+
+      window.open(loadingUrl, "_blank"); // open loading page first
+    } else {
         console.error("Username not found in formData!");
       }
     } else {

@@ -28,14 +28,21 @@ const useAnimatedNumber = (target) => {
 };
 
 // Add isAdminView prop
-const ProfileOverview = ({ ownerId, isAdminView }) => {
+const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const [isMounted, setIsMounted] = useState(false);
   const { scrollYProgress } = useScroll();
   const scrollY = useTransform(scrollYProgress, [0, 1], [0, 1000]);
   const containerRef = useRef(null);
   const pressKitRef = useRef(null);
   //const formData = useFetchPortfolio(ownerId);
-  const { data: formData } = useFetchPortfolio(ownerId);
+  // const { data: formData } = useFetchPortfolio(ownerId);
+
+    // if portfolio is passed, use it; otherwise fallback to hook
+  const { data: fetchedData } = useFetchPortfolio(ownerId, {
+    enabled: !portfolio,
+  });
+
+  const formData = portfolio || fetchedData;
   const { data } = useInstagramData();
   const [showGoBackButton, setShowGoBackButton] = useState(false);
 

@@ -7,6 +7,21 @@ export default function DatePicker4({ value, onChange, placeholder }) {
 
   const datepickerRef = useRef(null);
 
+  // 👉 Format date as DD-MM-YYYY
+  const formatDate = (dateObj) => {
+    const dd = String(dateObj.getDate()).padStart(2, "0");
+    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const yyyy = dateObj.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  };
+
+  const parseDate = (str) => {
+    const [dd, mm, yyyy] = str.split("-");
+    if (!dd || !mm || !yyyy) return null;
+    const date = new Date(`${yyyy}-${mm}-${dd}`);
+    return isNaN(date.getTime()) ? null : date;
+  };
+
   const renderCalendar = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -21,7 +36,8 @@ export default function DatePicker4({ value, onChange, placeholder }) {
 
     for (let i = 1; i <= daysInMonth; i++) {
       const day = new Date(year, month, i);
-      const dayString = day.toLocaleDateString("en-US");
+      const dayString = formatDate(day);
+
       let className =
         "flex items-center justify-center cursor-pointer w-[40px] 2xl:w-[35px] h-[46px] rounded-full text-dark-3 hover:bg-primary hover:text-white";
 
@@ -33,7 +49,7 @@ export default function DatePicker4({ value, onChange, placeholder }) {
         <div
           key={i}
           className={className}
-          onClick={() => handleDayClick(dayString)}
+          onClick={() => handleDayClick(day)}
         >
           {i}
         </div>
@@ -43,10 +59,11 @@ export default function DatePicker4({ value, onChange, placeholder }) {
     return daysArray;
   };
 
-  const handleDayClick = (selectedDay) => {
-    setSelectedDate(selectedDay);
-    onChange(selectedDay); // Auto-fill the DOB field
-    setIsOpen(false); // Close datepicker automatically
+  const handleDayClick = (day) => {
+    const formatted = formatDate(day);
+    setSelectedDate(formatted);
+    onChange(formatted); // return formatted DOB
+    setIsOpen(false);
   };
 
   const toggleDatepicker = () => {
@@ -55,12 +72,24 @@ export default function DatePicker4({ value, onChange, placeholder }) {
 
   const handleCancel = () => {
     setSelectedDate(null);
+    onChange(""); // clear
     setIsOpen(false);
   };
 
   const handleDocumentClick = (e) => {
     if (datepickerRef.current && !datepickerRef.current.contains(e.target)) {
       setIsOpen(false);
+    }
+  };
+
+  // 👉 Allow manual typing (DD-MM-YYYY)
+  const handleInputChange = (e) => {
+    const typed = e.target.value;
+    onChange(typed);
+    const parsed = parseDate(typed);
+    if (parsed) {
+      setSelectedDate(formatDate(parsed));
+      setCurrentDate(parsed);
     }
   };
 
@@ -83,6 +112,7 @@ export default function DatePicker4({ value, onChange, placeholder }) {
                     onClick={toggleDatepicker}
                     className="absolute left-0 pl-5 text-dark-5 cursor-pointer"
                   >
+                    {/* calendar icon stays same */}
                     <svg
                       className="fill-current"
                       width="20"
@@ -91,18 +121,15 @@ export default function DatePicker4({ value, onChange, placeholder }) {
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <path
-                        d="M17.5 3.3125H15.8125V2.625C15.8125 2.25 15.5 1.90625 15.0937 1.90625C14.6875 1.90625 14.375 2.21875 14.375 2.625V3.28125H5.59375V2.625C5.59375 2.25 5.28125 1.90625 4.875 1.90625C4.46875 1.90625 4.15625 2.21875 4.15625 2.625V3.28125H2.5C1.4375 3.28125 0.53125 4.15625 0.53125 5.25V16.125C0.53125 17.1875 1.40625 18.0937 2.5 18.0937H17.5C18.5625 18.0937 19.4687 17.2187 19.4687 16.125V5.25C19.4687 4.1875 18.5625 3.3125 17.5 3.3125ZM2.5 4.71875H4.1875V5.34375C4.1875 5.71875 4.5 6.0625 4.90625 6.0625C5.3125 6.0625 5.625 5.75 5.625 5.34375V4.71875H14.4687V5.34375C14.4687 5.71875 14.7812 6.0625 15.1875 6.0625C15.5937 6.0625 15.9062 5.75 15.9062 5.34375V4.71875H17.5C17.8125 4.71875 18.0625 4.96875 18.0625 5.28125V7.34375H1.96875V5.28125C1.96875 4.9375 2.1875 4.71875 2.5 4.71875ZM17.5 16.6562H2.5C2.1875 16.6562 1.9375 16.4062 1.9375 16.0937V8.71875H18.0312V16.125C18.0625 16.4375 17.8125 16.6562 17.5 16.6562Z"
-                        fill=""
-                      />
+                      <path d="M17.5 3.3125H15.8125V2.625C15.8125 2.25 15.5 1.90625 15.0937 1.90625C14.6875 1.90625 14.375 2.21875 14.375 2.625V3.28125H5.59375V2.625C5.59375 2.25 5.28125 1.90625 4.875 1.90625C4.46875 1.90625 4.15625 2.21875 4.15625 2.625V3.28125H2.5C1.4375 3.28125 0.53125 4.15625 0.53125 5.25V16.125C0.53125 17.1875 1.40625 18.0937 2.5 18.0937H17.5C18.5625 18.0937 19.4687 17.2187 19.4687 16.125V5.25C19.4687 4.1875 18.5625 3.3125 17.5 3.3125ZM2.5 4.71875H4.1875V5.34375C4.1875 5.71875 4.5 6.0625 4.90625 6.0625C5.3125 6.0625 5.625 5.75 5.625 5.34375V4.71875H14.4687V5.34375C14.4687 5.71875 14.7812 6.0625 15.1875 6.0625C15.5937 6.0625 15.9062 5.75 15.9062 5.34375V4.71875H17.5C17.8125 4.71875 18.0625 4.96875 18.0625 5.28125V7.34375H1.96875V5.28125C1.96875 4.9375 2.1875 4.71875 2.5 4.71875ZM17.5 16.6562H2.5C2.1875 16.6562 1.9375 16.4062 1.9375 16.0937V8.71875H18.0312V16.125C18.0625 16.4375 17.8125 16.6562 17.5 16.6562Z" />
                     </svg>
                   </span>
                   <input
                     type="text"
                     className="w-[320px] 2xl:w-full pl-[55px] pr-4 py-2.5 border rounded focus:outline-none"
-                    placeholder={placeholder}
-                    readOnly
+                    placeholder={placeholder || "DD-MM-YYYY"}
                     value={value}
+                    onChange={handleInputChange}
                     onClick={toggleDatepicker}
                   />
                 </div>

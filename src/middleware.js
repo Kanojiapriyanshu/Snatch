@@ -10,7 +10,6 @@ const isPublicRoute = createRouteMatcher([
   "/api/auth/refreshInstagram",
   "/privacy-policy",
   "/terms-and-services",
-  "/api/public-portfolio/userinfo",
   "/api/public-portfolio/posts",
   "/api/public-portfolio/questions",
   "/api/public-portfolio/audience/allDemographics",
@@ -26,7 +25,9 @@ const isPublicRoute = createRouteMatcher([
   "/api/send-email",
   "/:username/media-kit",
   "/:username/media-kit/post",
-  "/onboarding/loading"
+  "/onboarding/loading",
+  "/:username/media-kit/loading(.*)" ,
+  "/api/public-portfolio/userinfo(.*)",
 ]);
 
 export default clerkMiddleware(async (authFn, request) => {

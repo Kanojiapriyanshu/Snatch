@@ -70,7 +70,7 @@ const DashboardPage = () => {
 
   // Derived values
   const isInstagramLinked = instagramConnection?.connected || false;
-  const hasMinFollowers = followerData?.count >= 1000;
+  const hasMinFollowers = followerData?.count >= 10;
   const totalRequests = influencerRequests?.totalRequests || 0;
 
   const getTopLocations = () => {
