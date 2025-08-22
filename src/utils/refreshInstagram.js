@@ -160,7 +160,17 @@ export async function refreshInstagramMedia(userId) {
 
           // Update basic info
           instaItem.mediaLink = data.media_url || instaItem.mediaLink;
-          instaItem.name = data.caption || instaItem.name;
+         
+          // Set media type as name for easier display
+            if (data.media_type === "IMAGE") {
+              instaItem.name = "IMAGE";
+            } else if (data.media_type === "VIDEO") {
+              instaItem.name = "VIDEO";
+            } else if (data.media_type === "CAROUSEL_ALBUM") {
+              instaItem.name = "CAROUSEL_ALBUM";
+            } else {
+              instaItem.name = data.media_type || "UNKNOWN";
+            }
 
           // Update children if CAROUSEL_ALBUM
           if (data.media_type === "CAROUSEL_ALBUM" && data.children?.data) {
