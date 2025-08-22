@@ -72,7 +72,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error(error);
-      alert("Error fetching Instagram media");
+      // alert("Error fetching Instagram media");
     } finally {
       setLoading(false);
     }
