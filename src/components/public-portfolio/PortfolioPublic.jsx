@@ -30,42 +30,37 @@ const PortfolioPublic = () => {
   console.log("isAdminView: test: ", pathname.includes("/adminview"));
 
   // Listen for route changes to stop loading when navigation is complete
+// Refresh media once when username is available
   useEffect(() => {
-    const handleRouteChangeComplete = () => {
-      setLoadingPostId(null);
-      setIsNavigating(false);
-    };
+  if (!username) return;
 
-    //refresh media posts if it expire need to have created _ at time calculate then run after 24 hrs 
-    useEffect(() => {
-    if (!username) return;
+  const refreshExpiredMedia = async () => {
+    try {
+      await fetch(`/api/auth/refreshInstagram?username=${username}`);
+      console.log("✅ Refresh call triggered for username:", username);
+    } catch (err) {
+      console.error("❌ Failed to refresh media:", err);
+    }
+  };
 
-      const refreshExpiredMedia = async () => {
-        try {
-          await fetch(`/api/auth/refreshInstagram?username=${username}`);
-          console.log("✅ Refresh call triggered for username:", username);
-        } catch (err) {
-          console.error("❌ Failed to refresh media:", err);
-        }
-      };
+  refreshExpiredMedia();
+}, [username]);
 
-          refreshExpiredMedia();
-    }, [username]);
+// Handle route change cleanup
+useEffect(() => {
+  const handleBeforeUnload = () => {
+    setLoadingPostId(null);
+    setHoveredPostId(null);
+    setIsNavigating(false);
+  };
 
+  window.addEventListener("beforeunload", handleBeforeUnload);
 
-    // Listen for when the route change is complete
-    const handleBeforeUnload = () => {
-      setLoadingPostId(null);
-      setHoveredPostId(null);
-      setIsNavigating(false);
-    };
+  return () => {
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+  };
+}, []);
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
 
   // Stop loading when pathname changes (indicating successful navigation)
   useEffect(() => {
