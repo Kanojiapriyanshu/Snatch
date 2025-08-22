@@ -53,6 +53,7 @@ const projectDraftSchema = new mongoose.Schema({
   instagramSelected: { type: [instagramSelectedSchema], default: [] }, 
   formData: { type: [formDataValueSchema], default: [] },
   updatedAt: { type: Date, default: Date.now },
+  lastRefreshedAt: { type: Date, default: Date.now },
 });
 
 
