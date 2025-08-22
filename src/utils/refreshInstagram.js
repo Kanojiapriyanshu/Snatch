@@ -1,67 +1,93 @@
-import cron from "node-cron";
 import axios from "axios";
-import dbConnect from "@/db/mongoose";
+import connectDb from "@/db/mongoose";
 import ProjectDraft from "@/models/project.model";
 import User from "@/models/user.model";
 
-// Schedule the cron job (Runs every 5 minutes)
-cron.schedule("*/5 * * * *", async () => {
-  console.log("Running cron job: Refreshing Instagram media URLs...");
-
+/**
+ * Refresh Instagram media for a given userId
+ * @param {string} userId - Clerk's userId
+ */
+export async function refreshInstagramMedia(userId) {
   try {
-    await dbConnect();
+    console.log("🚀 Starting refreshInstagramMedia...");
+    await connectDb();
 
-    const drafts = await ProjectDraft.aggregate([
-      {
-        $match: { instagramSelected: { $exists: true, $ne: [] } },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "userId",
-          as: "userData",
-        },
-      },
-      {
-        $unwind: "$userData",
-      },
-      {
-        $match: { "userData.instagramAccessToken": { $exists: true, $ne: null } },
-      },
-    ]);
+    // 🔑 Get user + their token
+    const user = await User.findOne({ userId });
+    if (!user || !user.instagramAccessToken) {
+      console.log(`⚠️ No Instagram token found for userId ${userId}`);
+      return;
+    }
+
+    const accessToken = user.instagramAccessToken;
+
+    // 🎯 Find ALL project drafts for this user
+    const drafts = await ProjectDraft.find({ userId });
+    console.log(`📦 Found ${drafts.length} drafts for user ${userId}`);
 
     if (drafts.length === 0) {
-      console.log("No drafts found with valid Instagram access.");
+      console.log("⚠️ No drafts found for this user.");
       return;
     }
 
     for (const draft of drafts) {
-      const user = draft.userData;
-      const accessToken = user.instagramAccessToken;
+      console.log(
+        `👤 Processing draft ${draft._id} with ${draft.instagramSelected.length} IG items`
+      );
 
+      // ✅ Loop all IG media items
       for (let i = 0; i < draft.instagramSelected.length; i++) {
         const instaItem = draft.instagramSelected[i];
         const mediaId = instaItem.mediaId;
 
-        const apiUrl = `https://graph.instagram.com/${mediaId}?fields=media_url&access_token=${accessToken}`;
+        if (!mediaId) continue;
+
+       const apiUrl = 
+  `https://graph.facebook.com/v21.0/${mediaId}?` +
+  `fields=id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url,username&` +
+  `access_token=${accessToken}`;
+
 
         try {
+          console.log(`🌐 Fetching fresh media for ${mediaId}`);
           const response = await axios.get(apiUrl);
+
+          // Update fresh values
           instaItem.mediaLink = response.data.media_url;
+          instaItem.children =
+            response.data.children?.data?.map((child) => ({
+              id: child.id,
+              media_type: child.media_type,
+              media_url: child.media_url,
+            })) || [];
+
+          console.log(`✅ Refreshed mediaId ${mediaId}`);
         } catch (err) {
-          console.error(`Failed to update media for mediaId ${mediaId}:`, err.message);
+          if (err.response) {
+            console.error(
+              `❌ Instagram API error for ${mediaId}:`,
+              err.response.data
+            );
+          } else {
+            console.error(`❌ Failed to update media ${mediaId}:`, err.message);
+          }
         }
       }
 
-      await ProjectDraft.updateOne(
-        { _id: draft._id },
-        { $set: { instagramSelected: draft.instagramSelected } }
-      );
+      // Save updated draft
+      try {
+        await draft.save();
+        console.log(`💾 Saved updates for draft ${draft._id}`);
+      } catch (saveErr) {
+        console.error(
+          `❌ Failed to save draft ${draft._id}:`,
+          saveErr.message
+        );
+      }
     }
 
-    console.log("✅ Instagram media URLs refreshed successfully.");
+    console.log("🎉 All Instagram media URLs refreshed successfully.");
   } catch (error) {
-    console.error("❌ Error refreshing Instagram media URLs:", error);
+    console.error("❌ Error in refreshInstagramMedia:", error);
   }
-});
+}

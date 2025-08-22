@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
 import InstagramPopup from "@/components/PopUp1"
+import { useUser } from "@clerk/nextjs";
 
 export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -34,6 +35,7 @@ export default function PickProjects() {
  const [totalPages, setTotaPages] = useState(0);
  const [code, setCode] = useState(null);
  const containerRef = useRef(null);
+ const { user, isLoaded } = useUser();
 
    useEffect(() => {
     setIsHydrated(true);
@@ -60,6 +62,9 @@ useEffect(() => {
           setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
         }
       } else {
+        console.log("USER ID SENDIGN TO API", user.id)
+         // 🔥 Call refresh API to ensure expired media is updated -> getmedia happens first since refresh takes time
+          await fetch(`/api/auth/refreshInstagram?userId=${user.id}`);
           const { media, paging, mediaCount } = await getMediaFromDatabase("", 20);
           setMedia(media);
           setPaging(paging);

@@ -8,6 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useQueryClient } from "@tanstack/react-query";
 
+//If your refresh endpoint hasn’t finished writing to the DB yet, React Query might fetch “old” or expired media the first time. Once refresh finishes, the next re-fetch (or page reload) would show the updated media.
+
 const PortfolioPublic = () => {
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const pathname = usePathname();
@@ -33,6 +35,23 @@ const PortfolioPublic = () => {
       setLoadingPostId(null);
       setIsNavigating(false);
     };
+
+    //refresh media posts if it expire need to have created _ at time calculate then run after 24 hrs 
+    useEffect(() => {
+    if (!username) return;
+
+      const refreshExpiredMedia = async () => {
+        try {
+          await fetch(`/api/auth/refreshInstagram?username=${username}`);
+          console.log("✅ Refresh call triggered for username:", username);
+        } catch (err) {
+          console.error("❌ Failed to refresh media:", err);
+        }
+      };
+
+          refreshExpiredMedia();
+    }, [username]);
+
 
     // Listen for when the route change is complete
     const handleBeforeUnload = () => {

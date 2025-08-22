@@ -44,17 +44,11 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
     }
   }, []);
 
-  //const formData = useFetchPortfolio(ownerId);
-  // const { data: formData } = useFetchPortfolio(ownerId);
-
     // if portfolio is passed, use it; otherwise fallback to hook
   const { data: fetchedData } = useFetchPortfolio(ownerId, {
     enabled: !portfolio,
   });
-   
-
   const formData = portfolio || fetchedData;
-  
   
   // Only fetch if no prefetched data
   const { data: fetchedInstagramData } = useInstagramData(ownerId, {
@@ -76,7 +70,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   
   const isMobile = useCheckScreenSize();
 
-   const reach     = useAnimatedNumber(Number(igData?.reach) || 0);
+  const reach     = useAnimatedNumber(Number(igData?.reach) || 0);
   const followers = useAnimatedNumber(Number(igData?.followers_count) || 0);
   const posts     = useAnimatedNumber(Number(igData?.media_count) || 0);
 
