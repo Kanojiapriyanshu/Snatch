@@ -92,8 +92,6 @@
 //   }
 // }
 
-
-
 // utils/refreshInstagram.js
 import axios from "axios";
 import connectDb from "@/db/mongoose";
@@ -122,56 +120,53 @@ export async function refreshInstagramMedia(userId) {
         `👤 Processing draft ${draft._id} with ${draft.instagramSelected.length} IG items`
       );
 
+      // --- Check if draft needs refresh ---
       let needsRefresh = false;
 
       for (const instaItem of draft.instagramSelected) {
-          const now = new Date();
+        const now = new Date();
+        const lastRefreshedAt = instaItem.lastRefreshedAt
+          ? new Date(instaItem.lastRefreshedAt)
+          : instaItem.createdAt || now;
 
-          // Ensure both are Date objects
-          const createdAt = instaItem.createdAt ? new Date(instaItem.createdAt) : now;
-          const lastRefreshedAt = instaItem.lastRefreshedAt
-            ? new Date(instaItem.lastRefreshedAt)
-            : createdAt;
+        const hoursSince = (now - lastRefreshedAt) / (1000 * 60 * 60);
 
-          const lastRelevantTime = lastRefreshedAt || createdAt;
-          const hoursSince = (now - lastRelevantTime) / (1000 * 60 * 60);
+        console.log(
+          `📊 Item ${instaItem.mediaId} → lastRefreshedAt=${lastRefreshedAt.toISOString()}, hoursSince=${hoursSince}`
+        );
 
-          console.log(
-            `📊 Item ${instaItem.mediaId} → lastRefreshedAt=${lastRefreshedAt.toISOString()}, hoursSince=${hoursSince}`
-          );
-
-          if (hoursSince >= 24) {
-            needsRefresh = true;
-            break;
-          }
-
-          if (!needsRefresh) {
-          console.log(`⏭️ Skipping draft ${draft._id}, refreshed < 24h ago`);
-          continue;
-          }
-
+        if (hoursSince >= 24) {
+          needsRefresh = true;
+          break;
         }
+      }
 
-      // ✅ Proceed with refreshing
-      for (let i = 0; i < draft.instagramSelected.length; i++) {
-        const instaItem = draft.instagramSelected[i];
-        const mediaId = instaItem.mediaId;
-        if (!mediaId) continue;
+      if (!needsRefresh) {
+        console.log(`⏭️ Skipping draft ${draft._id}, refreshed < 24h ago`);
+        continue; // skip entire draft
+      }
+
+      // --- Refresh all items ---
+      for (const instaItem of draft.instagramSelected) {
+        if (!instaItem.mediaId) continue;
 
         const apiUrl =
-          `https://graph.facebook.com/v21.0/${mediaId}?` +
+          `https://graph.facebook.com/v21.0/${instaItem.mediaId}?` +
           `fields=id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,thumbnail_url,username,children{media_type,media_url,id}` +
           `&access_token=${accessToken}`;
 
         try {
-          console.log(`🌐 Fetching fresh media for ${mediaId}`);
+          console.log(`🌐 Fetching fresh media for ${instaItem.mediaId}`);
           const response = await axios.get(apiUrl);
           const data = response.data;
 
+          // Update basic info
           instaItem.mediaLink = data.media_url || instaItem.mediaLink;
           instaItem.name = data.caption || instaItem.name;
 
+          // Update children if CAROUSEL_ALBUM
           if (data.media_type === "CAROUSEL_ALBUM" && data.children?.data) {
+            // Map Graph API children to schema
             instaItem.children = data.children.data.map((child) => ({
               id: child.id,
               media_type: child.media_type,
@@ -181,21 +176,27 @@ export async function refreshInstagramMedia(userId) {
             instaItem.children = [];
           }
 
-          // 🟢 Update lastRefreshedAt
+          // Update lastRefreshedAt
           instaItem.lastRefreshedAt = new Date();
 
-          console.log(`✅ Refreshed mediaId ${mediaId}`);
+          console.log(`✅ Refreshed mediaId ${instaItem.mediaId}`);
         } catch (err) {
           if (err.response) {
             console.error(
-              `❌ Instagram API error for ${mediaId}:`,
+              `❌ Instagram API error for ${instaItem.mediaId}:`,
               err.response.data
             );
           } else {
-            console.error(`❌ Failed to update media ${mediaId}:`, err.message);
+            console.error(
+              `❌ Failed to update media ${instaItem.mediaId}:`,
+              err.message
+            );
           }
         }
       }
+
+      // Tell Mongoose that instagramSelected array changed
+      draft.markModified("instagramSelected");
 
       try {
         await draft.save();
