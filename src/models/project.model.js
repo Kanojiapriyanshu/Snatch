@@ -17,7 +17,8 @@ const instagramSelectedSchema = new mongoose.Schema({
   mediaLink: { type: String, required: true },
   children: { type: [instagramChildSchema], default: [] }, // Array of children
   isDraft: { type: Boolean, default: true }, 
-  
+  createdAt: { type: Date, default: Date.now },
+ lastRefreshedAt: { type: Date, default: Date.now },
 });
 
   const formDataValueSchema = new mongoose.Schema({

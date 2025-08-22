@@ -117,12 +117,12 @@ export async function refreshInstagramMedia(userId) {
 
     for (const draft of drafts) {
       console.log(
-        `👤 Processing draft ${draft._id} with ${draft.instagramSelected.length} IG items`
+        `\n👤 Processing draft ${draft._id} with ${draft.instagramSelected.length} IG items`
       );
 
-      // --- Check if draft needs refresh ---
       let needsRefresh = false;
 
+      // Check which items need refresh
       for (const instaItem of draft.instagramSelected) {
         const now = new Date();
         const lastRefreshedAt = instaItem.lastRefreshedAt
@@ -131,22 +131,20 @@ export async function refreshInstagramMedia(userId) {
 
         const hoursSince = (now - lastRefreshedAt) / (1000 * 60 * 60);
 
-        console.log(
-          `📊 Item ${instaItem.mediaId} → lastRefreshedAt=${lastRefreshedAt.toISOString()}, hoursSince=${hoursSince}`
-        );
-
         if (hoursSince >= 24) {
+          console.log(`⏰ Item ${instaItem.mediaId} needs refresh (last refreshed ${hoursSince.toFixed(1)}h ago)`);
           needsRefresh = true;
-          break;
+        } else {
+          console.log(`✅ Item ${instaItem.mediaId} is fresh (last refreshed ${hoursSince.toFixed(1)}h ago)`);
         }
       }
 
       if (!needsRefresh) {
-        console.log(`⏭️ Skipping draft ${draft._id}, refreshed < 24h ago`);
+        console.log(`⏭️ Skipping draft ${draft._id}, all items refreshed < 24h ago`);
         continue; // skip entire draft
       }
 
-      // --- Refresh all items ---
+      // Refresh all items
       for (const instaItem of draft.instagramSelected) {
         if (!instaItem.mediaId) continue;
 
@@ -166,12 +164,15 @@ export async function refreshInstagramMedia(userId) {
 
           // Update children if CAROUSEL_ALBUM
           if (data.media_type === "CAROUSEL_ALBUM" && data.children?.data) {
-            // Map Graph API children to schema
             instaItem.children = data.children.data.map((child) => ({
               id: child.id,
               media_type: child.media_type,
               media_url: child.media_url,
             }));
+            console.log(`🔹 Updated ${instaItem.children.length} children for CAROUSEL_ALBUM ${instaItem.mediaId}:`);
+            instaItem.children.forEach((child, idx) => {
+              console.log(`   ${idx + 1}. id=${child.id}, media_type=${child.media_type}, media_url=${child.media_url}`);
+            });
           } else {
             instaItem.children = [];
           }
@@ -182,22 +183,15 @@ export async function refreshInstagramMedia(userId) {
           console.log(`✅ Refreshed mediaId ${instaItem.mediaId}`);
         } catch (err) {
           if (err.response) {
-            console.error(
-              `❌ Instagram API error for ${instaItem.mediaId}:`,
-              err.response.data
-            );
+            console.error(`❌ Instagram API error for ${instaItem.mediaId}:`, err.response.data);
           } else {
-            console.error(
-              `❌ Failed to update media ${instaItem.mediaId}:`,
-              err.message
-            );
+            console.error(`❌ Failed to update media ${instaItem.mediaId}:`, err.message);
           }
         }
       }
 
-      // Tell Mongoose that instagramSelected array changed
+      // Save draft
       draft.markModified("instagramSelected");
-
       try {
         await draft.save();
         console.log(`💾 Saved updates for draft ${draft._id}`);

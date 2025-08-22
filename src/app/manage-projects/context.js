@@ -195,6 +195,8 @@ const updateFormDataForMedia = (mediaId, newFormData) => {
 };
 
 const addInstagramSelection = (mediaLink, mediaId, name, children = []) => {
+  const timestamp = new Date();
+
   setSelectionState((prevState) => {
     const newState = {
       ...prevState,
@@ -206,11 +208,10 @@ const addInstagramSelection = (mediaLink, mediaId, name, children = []) => {
           mediaLink,
           mediaId,
           children,
+          createdAt: timestamp,  
         },
       ],
     };
-
-    const timestamp = new Date().toISOString();
 
     // Save to localStorage with updated Instagram selections
     localStorage.setItem(
@@ -220,7 +221,7 @@ const addInstagramSelection = (mediaLink, mediaId, name, children = []) => {
         instagramSelected: [
           ...(newState.instagramSelected || []),
         ],
-        updatedAt: timestamp,
+        updatedAt: timestamp.toISOString(),
       })
     );
 
@@ -230,7 +231,8 @@ const addInstagramSelection = (mediaLink, mediaId, name, children = []) => {
     return newState;
   });
 };
-  const removeInstagramSelection = async (selectionId) => {
+  
+const removeInstagramSelection = async (selectionId) => {
     setSelectionState((prevState) => {
       // Find the formData associated with the selectionId (if it exists)
       const formDataToDelete = prevState.formData.find((item) => item.key === selectionId);

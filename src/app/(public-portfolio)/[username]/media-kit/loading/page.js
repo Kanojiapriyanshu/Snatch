@@ -1,5 +1,3 @@
-
-
 //(public-portfolio)/[username]/media-kit/loading/?username={}page.js
 "use client";
 
@@ -26,8 +24,6 @@ export default function LoadingPage() {
         // 2️⃣ Fetch instagram stats
         const igRes = await fetch(`/api/public-portfolio/instagram-stats?username=${encodeURIComponent(username)}`);
         const igResult = await igRes.json();
-
-        console.log("Portfolio result:", igResult);
 
         if (portfolioResult.success) {
           // Save both into sessionStorage
