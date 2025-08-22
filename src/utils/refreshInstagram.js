@@ -124,25 +124,33 @@ export async function refreshInstagramMedia(userId) {
 
       let needsRefresh = false;
 
-      // Check if any item needs refresh
       for (const instaItem of draft.instagramSelected) {
-        const now = new Date();
-        const createdAt = instaItem.createdAt || now; // fallback to now if missing
-        const lastRefreshedAt = instaItem.lastRefreshedAt || createdAt;
+          const now = new Date();
 
-        const lastRelevantTime = lastRefreshedAt || createdAt;
-        const hoursSince = (now - lastRelevantTime) / (1000 * 60 * 60);
+          // Ensure both are Date objects
+          const createdAt = instaItem.createdAt ? new Date(instaItem.createdAt) : now;
+          const lastRefreshedAt = instaItem.lastRefreshedAt
+            ? new Date(instaItem.lastRefreshedAt)
+            : createdAt;
 
-        if (hoursSince >= 24) {
-          needsRefresh = true;
-          break;
+          const lastRelevantTime = lastRefreshedAt || createdAt;
+          const hoursSince = (now - lastRelevantTime) / (1000 * 60 * 60);
+
+          console.log(
+            `📊 Item ${instaItem.mediaId} → lastRefreshedAt=${lastRefreshedAt.toISOString()}, hoursSince=${hoursSince}`
+          );
+
+          if (hoursSince >= 24) {
+            needsRefresh = true;
+            break;
+          }
+
+          if (!needsRefresh) {
+          console.log(`⏭️ Skipping draft ${draft._id}, refreshed < 24h ago`);
+          continue;
+          }
+
         }
-      }
-
-      if (!needsRefresh) {
-        console.log(`⏭️ Skipping draft ${draft._id}, refreshed < 24h ago`);
-        continue;
-      }
 
       // ✅ Proceed with refreshing
       for (let i = 0; i < draft.instagramSelected.length; i++) {
