@@ -6,6 +6,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null); 
+  const [isMuted, setIsMuted] = useState(true);
 
   const {
     selectionState,
@@ -113,7 +114,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
   };
 
   return (
-    <div className="mb-20 flex 7xl:justify-center">
+    <div className="mb-20 flex 7xl:justify-center" onClick={() => setIsMuted((prev) => !prev)}>
       {/* Confirmation Popup */}
       {showConfirm && (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
@@ -187,6 +188,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
             ) : mediaItem.media_type === "VIDEO" ? (
               <video
                 controls
+                muted={isMuted}
                 className="object-cover w-full h-full"
                 src={mediaItem.media_url}
               >
@@ -213,6 +215,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
                     ) : (
                       <video
                         controls
+                        muted={isMuted}
                         className="w-full h-full object-cover"
                         src={child.media_url}
                       >

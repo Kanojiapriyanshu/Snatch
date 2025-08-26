@@ -121,7 +121,7 @@ export default function Step1() {
         className="w-full md:w-1/2"
       />
       <DateInput
-        placeholder="Date of birth*"
+        placeholder="Date of birth* (DD/MM/YY)"
         value={formState.dateOfBirth}
         onChange={(value) => updateField("dateOfBirth", value)}
         className="w-full md:w-1/2"

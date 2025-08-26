@@ -1,3 +1,4 @@
+//app/dashboard/[username]/page.js
 "use client";
 
 import { useState } from "react";

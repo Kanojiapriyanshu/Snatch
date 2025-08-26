@@ -44,33 +44,26 @@ const QuestionCounter = ({
   const questions = questionSets[type] || questionSets.general; // Default to "general" if type is undefined
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isOtherSelected, setIsOtherSelected] = useState(false); // Track if "Other" is selected
+  const [customQuestion, setCustomQuestion] = useState("")
+  const handleSelect = (question) => {
+  if (question === "Other") {
+    setIsOtherSelected(true);
+    setCustomQuestion("")
+    onSelectQuestion(""); // ✅ empty so user can type
+  } else {
+    setIsOtherSelected(false);
+    onSelectQuestion(question); // ✅ set proper string
+  }
+  setDropdownOpen(false);
+};
 
-  // Ensure that if no question is selected, default the state to the first question
-  // useEffect(() => {
-  //   if (!selectedQuestion && !isOtherSelected) {
-  //     onSelectQuestion(questions[0]);
-  //   }
-  // }, [selectedQuestion, isOtherSelected, questions, onSelectQuestion]);
 
-  const handleSelect = (question, index) => {
-    if (!question || question.trim() === "") {
-      question = questions[0];
-    }
+const handleQuestionChange = (e) => {
+  const value = e.target.value;
+  setCustomQuestion(value)
+  onQuestionChange(value); // ✅ send only string
+};
 
-    if (question === "Other") {
-      setIsOtherSelected(true);
-      onSelectQuestion("");
-    } else {
-      setIsOtherSelected(false);
-      onSelectQuestion(question);
-    }
-    setDropdownOpen(false);
-  };
-
-  const handleQuestionChange = (e) => {
-    console.log("onQuestionChange fired!", e.target.value);
-    onQuestionChange(e); // Pass event to parent
-  };
 
   // Helper to count words
   const countWords = (str) => {
@@ -145,7 +138,7 @@ const QuestionCounter = ({
           <input
             type="text"
             placeholder="Type your custom question..."
-            value={value}
+            value={customQuestion}
             onChange={handleQuestionChange}
             className="w-full p-2 border border-gray-300 rounded-md font-apfel-grotezk-regular focus:outline-none"
           />

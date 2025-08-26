@@ -7,20 +7,21 @@ export default function DatePicker4({ value, onChange, placeholder }) {
 
   const datepickerRef = useRef(null);
 
-  // 👉 Format date as DD-MM-YYYY
-  const formatDate = (dateObj) => {
-    const dd = String(dateObj.getDate()).padStart(2, "0");
-    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const yyyy = dateObj.getFullYear();
-    return `${dd}-${mm}-${yyyy}`;
-  };
+// 👉 Format date as DD/MM/YYYY
+const formatDate = (dateObj) => {
+  const dd = String(dateObj.getDate()).padStart(2, "0");
+  const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const yyyy = dateObj.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+};
 
-  const parseDate = (str) => {
-    const [dd, mm, yyyy] = str.split("-");
-    if (!dd || !mm || !yyyy) return null;
-    const date = new Date(`${yyyy}-${mm}-${dd}`);
-    return isNaN(date.getTime()) ? null : date;
-  };
+const parseDate = (str) => {
+  const [dd, mm, yyyy] = str.split("/");
+  if (!dd || !mm || !yyyy) return null;
+  const date = new Date(`${yyyy}-${mm}-${dd}`);
+  return isNaN(date.getTime()) ? null : date;
+};
+
 
   const renderCalendar = () => {
     const year = currentDate.getFullYear();
@@ -82,16 +83,43 @@ export default function DatePicker4({ value, onChange, placeholder }) {
     }
   };
 
-  // 👉 Allow manual typing (DD-MM-YYYY)
+      // 👉 Allow manual typing (DD/MM/YYYY) with auto-slash
   const handleInputChange = (e) => {
-    const typed = e.target.value;
-    onChange(typed);
+  let typed = e.target.value.replace(/\D/g, ""); // remove non-digits
+
+  // auto-add slashes at positions 2 and 4
+  if (typed.length > 2 && typed.length <= 4) {
+    typed = typed.slice(0, 2) + "/" + typed.slice(2);
+  } else if (typed.length > 4) {
+    typed = typed.slice(0, 2) + "/" + typed.slice(2, 4) + "/" + typed.slice(4, 8);
+  }
+
+  onChange(typed);
+
+  // Try to parse partial or full input
+  const parts = typed.split("/");
+  if (parts.length >= 2) {
+    const dd = parseInt(parts[0], 10);
+    const mm = parseInt(parts[1], 10) - 1; // months are 0-based
+    const yyyy = parts[2] ? parseInt(parts[2], 10) : currentDate.getFullYear();
+
+    // if at least day and month look valid, update calendar month/year
+    if (!isNaN(mm) && mm >= 0 && mm <= 11) {
+      setCurrentDate(new Date(yyyy, mm, dd || 1));
+    }
+  }
+
+  // If it's a complete valid date, update selectedDate
+  if (typed.length === 10) {
     const parsed = parseDate(typed);
     if (parsed) {
       setSelectedDate(formatDate(parsed));
       setCurrentDate(parsed);
     }
-  };
+  }
+};
+
+
 
   useEffect(() => {
     document.addEventListener("click", handleDocumentClick);

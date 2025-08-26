@@ -1,61 +1,229 @@
+// import Image from "next/image";
+// import { useFormContext } from "@/app/onboarding/context";
+
+// export default function Preview() {
+//  const { formData } = useFormContext(); 
+//  const story = Number(formData.story) || 0;
+//  const reel = Number(formData.reels) || 0;
+//  const post = Number(formData.post) || 0;
+
+//  // Find the lowest and highest values among story, reel, and post
+//  const values = [story, reel, post].filter((v) => v > 0);
+//  const lowest = values.length ? Math.min(...values) : 0;
+//  const highest = values.length ? Math.max(...values) : 0;
+
+//  let profileImageSrc = "/assets/images/profile_defaultOnborad.svg"; 
+
+//  if (formData.profilePicture) {
+//   profileImageSrc = formData.profilePicture;
+// }   
+
+// function formatNumber(value) {
+//   const num = Number(value); // parse string/number safely
+
+//   if (isNaN(num)) return '0'; // if not a number, fallback to '0'
+
+//   if (num >= 1000000) {
+//     return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+//   }
+//   if (num >= 1000) {
+//     return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+//   }
+//   return num.toString();
+// }
+
+// const priceRange =
+//    lowest === highest
+//      ? `₹ ${formatNumber(lowest)}`
+//      : `₹ ${formatNumber(lowest)} - ₹ ${formatNumber(highest)}`;
+
+//     return (
+//       <div className="h-[430px]  3xl:h-auto max-h-auto w-96 3xl:w-full ">
+
+//           <div className="flex gap-0 justify-center items-center flex-wrap max-w-[380px]  mx-auto">
+//                 {(formData.industry && formData.industry.length > 0
+//                     ? formData.industry
+//                     : ["Industry"] 
+//                 ).map((industry, index) => (
+//                     <span
+//                         key={index}
+//                         className="bg-dark/10 m-[3px] inline-block rounded border border-transparent py-1 px-2.5 text-sm text-graphite"
+//                     >
+//                         {industry}
+//                     </span>
+//                 ))}
+//             </div>
+
+
+//       {/* Displaying the Profile Picture  default*/}
+//       <div className="w-20 h-20 mx-auto mt-5 object-contain rounded-full overflow-hidden">
+//         <Image
+//           className="object-cover w-full h-full"
+//           width={80}
+//           height={80}
+//           alt="profile_pic"
+//           src={profileImageSrc}
+//         />
+//       </div>
+  
+//       <h2 className="text-graphite text-[28px] text-3xl text-center mt-4 font-qimano ">{(formData.firstName + " " + formData.lastName).trim() || "Your Name"}</h2>
+  
+//       <div className="flex justify-center items-center text-dark-grey ">
+//       <h6>{(`@${formData.username || ""}`).trim().toLowerCase() || "@username"}
+//       </h6>
+//       <Image
+//               width={10}
+//               height={10}
+//               src="/assets/icons/onboarding/Fullstop.svg"
+//               className="mx-1.5 w-1.5 h-1.5 "
+//               alt="separator"
+//       />
+//           <h6>{formData.gender || "Gender"}</h6>
+//           <Image
+//               width={10}
+//               height={10}
+//               src="/assets/icons/onboarding/Fullstop.svg"
+//               className="mx-1.5 w-1.5 h-1.5 "
+//               alt="separator"
+//       />
+//           <h6>{formData.location || "Location"}</h6>
+//       </div>
+
+  
+//       <div className="flex mx-auto gap-5 px-10 text-dark-grey mt-[20px] 3xl:mt-[40px] max-w-[500px] font-apfel-grotezk-regular">
+
+//         <Image 
+//         width={24}
+//         height={20}
+//         src="/assets/icons/onboarding/Language.svg"
+//         className="  "
+//         alt="languages"/>
+//          <h5 className="text-electric-blue -ml-1 font-apfel-grotezk-mittel text-md">Languages</h5>
+ 
+//           <div className="flex flex-wrap items-center gap-0 w-56 max-w-60">
+//       {formData.languages && formData.languages.length > 0 ? (
+//         formData.languages.map((item, index) => (
+//         <div key={index} className="flex items-center gap-0 text-graphite text-sm">
+//           <span>{item}</span>
+//           {index < formData.languages.length - 1 && (
+//             <Image
+//               width={10}
+//               height={10}
+//               src="/assets/icons/onboarding/Fullstop.svg"
+//               className="mx-1.5 w-1.5 h-1.5 "
+//               alt="separator"
+//             />
+//           )}
+
+//         </div>
+//       ))
+//     ) : (
+//       <span>What Languages do you know?</span>
+//     )}
+//           </div>
+
+//       </div>
+  
+//       <div className="flex mx-auto  gap-9 px-10 text-dark-grey mt-[20px] max-w-[500px] font-apfel-grotezk-regular text-md">
+//       <Image 
+//         width={24}
+//         height={20}
+//         src="/assets/icons/onboarding/Language.svg"
+//         alt="languages"/>
+//           <h5 className="text-electric-blue -ml-5 font-apfel-grotezk-mittel">Open to</h5>
+//           <div className="flex flex-wrap items-center gap-0 text-sm">
+//     {formData.compensation && formData.compensation.length > 0 ? (
+//       formData.compensation.map((item, index) => (
+//         <div key={index} className="flex items-center gap-0 text-graphite">
+//           <span>{item}</span>
+//           {index < formData.compensation.length - 1 && (
+//             <Image
+//               width={10}
+//               height={20}
+//               src="/assets/icons/onboarding/Fullstop.svg"
+//               className="mx-1.5 w-1.5 h-1.5"
+//               alt="separator"
+//             />
+//           )}
+//         </div>
+//       ))
+//     ) : (
+//       <span>What comp methods are you open to?</span>
+//     )}
+//   </div>
+        
+//       </div>
+  
+//       <div className="text-dark-grey px-10 flex flex-col justify-center items-center mt-2 3xl:mt-12">
+//        <h3 className="3xl:text-3xl text-xl font-qimano text-graphite">
+
+//         {priceRange}
+//       </h3>
+
+//        <div className="text-[12px] 3xl:text-lg ">Value per content piece</div>
+//       </div>
+
+
+//       </div>
+//     );
+//   }
+
+//ssr
 import Image from "next/image";
-import { useFormContext } from "@/app/onboarding/context";
+import connectDb from "@/db/mongoose";
+import OnboardingData from "@/models/onboarding.model";
+import User from "@/models/user.model";
 
-export default function Preview() {
- const { formData } = useFormContext(); 
- const story = Number(formData.story) || 0;
- const reel = Number(formData.reels) || 0;
- const post = Number(formData.post) || 0;
+export const dynamic = "force-dynamic"; // always fetch fresh SSR data
 
- // Find the lowest and highest values among story, reel, and post
- const values = [story, reel, post].filter((v) => v > 0);
- const lowest = values.length ? Math.min(...values) : 0;
- const highest = values.length ? Math.max(...values) : 0;
+export default async function DashboardPreview({ userId }) {
+  await connectDb();
 
- let profileImageSrc = "/assets/images/profile_defaultOnborad.svg"; 
+  if (!userId) return <div>User not found</div>;
 
- if (formData.profilePicture) {
-  profileImageSrc = formData.profilePicture;
-}   
+  const user = await User.findOne({ userId });
+  const onboarding = await OnboardingData.findOne({ userId });
 
-function formatNumber(value) {
-  const num = Number(value); // parse string/number safely
+  if (!onboarding) return <div>No onboarding data yet</div>;
 
-  if (isNaN(num)) return '0'; // if not a number, fallback to '0'
+  const story = Number(onboarding.story) || 0;
+  const reels = Number(onboarding.reels) || 0;
+  const post = Number(onboarding.post) || 0;
 
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-  }
-  return num.toString();
-}
+  const values = [story, reels, post].filter((v) => v > 0);
+  const lowest = values.length ? Math.min(...values) : 0;
+  const highest = values.length ? Math.max(...values) : 0;
 
-const priceRange =
-   lowest === highest
-     ? `₹ ${formatNumber(lowest)}`
-     : `₹ ${formatNumber(lowest)} - ₹ ${formatNumber(highest)}`;
+  const formatNumber = (value) => {
+    const num = Number(value);
+    if (isNaN(num)) return "0";
+    if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+    return num.toString();
+  };
 
-    return (
-      <div className="h-[430px]  3xl:h-auto max-h-auto w-96 3xl:w-full ">
+  const priceRange =
+    lowest === highest
+      ? `₹ ${formatNumber(lowest)}`
+      : `₹ ${formatNumber(lowest)} - ₹ ${formatNumber(highest)}`;
 
-          <div className="flex gap-0 justify-center items-center flex-wrap max-w-[380px]  mx-auto">
-                {(formData.industry && formData.industry.length > 0
-                    ? formData.industry
-                    : ["Industry"] 
-                ).map((industry, index) => (
-                    <span
-                        key={index}
-                        className="bg-dark/10 m-[3px] inline-block rounded border border-transparent py-1 px-2.5 text-sm text-graphite"
-                    >
-                        {industry}
-                    </span>
-                ))}
-            </div>
+  const profileImageSrc = onboarding.profilePicture || "/assets/images/profile_defaultOnborad.svg";
 
+  return (
+    <div className="h-[430px] 3xl:h-auto max-h-auto w-96 3xl:w-full">
+      {/* Industry Tags */}
+      <div className="flex gap-0 justify-center items-center flex-wrap max-w-[380px] mx-auto">
+        {(onboarding.industry?.length > 0 ? onboarding.industry : ["Industry"]).map((industry, idx) => (
+          <span
+            key={idx}
+            className="bg-dark/10 m-[3px] inline-block rounded border border-transparent py-1 px-2.5 text-sm text-graphite"
+          >
+            {industry}
+          </span>
+        ))}
+      </div>
 
-      {/* Displaying the Profile Picture  default*/}
+      {/* Profile Picture */}
       <div className="w-20 h-20 mx-auto mt-5 object-contain rounded-full overflow-hidden">
         <Image
           className="object-cover w-full h-full"
@@ -65,105 +233,90 @@ const priceRange =
           src={profileImageSrc}
         />
       </div>
-  
-      <h2 className="text-graphite text-[28px] text-3xl text-center mt-4 font-qimano ">{(formData.firstName + " " + formData.lastName).trim() || "Your Name"}</h2>
-  
-      <div className="flex justify-center items-center text-dark-grey ">
-      <h6>{(`@${formData.username || ""}`).trim().toLowerCase() || "@username"}
-      </h6>
-      <Image
-              width={10}
-              height={10}
-              src="/assets/icons/onboarding/Fullstop.svg"
-              className="mx-1.5 w-1.5 h-1.5 "
-              alt="separator"
-      />
-          <h6>{formData.gender || "Gender"}</h6>
-          <Image
-              width={10}
-              height={10}
-              src="/assets/icons/onboarding/Fullstop.svg"
-              className="mx-1.5 w-1.5 h-1.5 "
-              alt="separator"
-      />
-          <h6>{formData.location || "Location"}</h6>
+
+      {/* Name */}
+      <h2 className="text-graphite text-[28px] text-3xl text-center mt-4 font-qimano">
+        {(onboarding.firstName + " " + onboarding.lastName).trim() || "Your Name"}
+      </h2>
+
+      {/* Username, Gender, Location */}
+      <div className="flex justify-center items-center text-dark-grey">
+        <h6>{`@${(onboarding.username || "").toLowerCase()}` || "@username"}</h6>
+        <Image
+          width={10}
+          height={10}
+          src="/assets/icons/onboarding/Fullstop.svg"
+          className="mx-1.5 w-1.5 h-1.5"
+          alt="separator"
+        />
+        <h6>{onboarding.gender || "Gender"}</h6>
+        <Image
+          width={10}
+          height={10}
+          src="/assets/icons/onboarding/Fullstop.svg"
+          className="mx-1.5 w-1.5 h-1.5"
+          alt="separator"
+        />
+        <h6>{onboarding.location || "Location"}</h6>
       </div>
 
-  
+      {/* Languages */}
       <div className="flex mx-auto gap-5 px-10 text-dark-grey mt-[20px] 3xl:mt-[40px] max-w-[500px] font-apfel-grotezk-regular">
-
-        <Image 
-        width={24}
-        height={20}
-        src="/assets/icons/onboarding/Language.svg"
-        className="  "
-        alt="languages"/>
-         <h5 className="text-electric-blue -ml-1 font-apfel-grotezk-mittel text-md">Languages</h5>
- 
-          <div className="flex flex-wrap items-center gap-0 w-56 max-w-60">
-      {formData.languages && formData.languages.length > 0 ? (
-        formData.languages.map((item, index) => (
-        <div key={index} className="flex items-center gap-0 text-graphite text-sm">
-          <span>{item}</span>
-          {index < formData.languages.length - 1 && (
-            <Image
-              width={10}
-              height={10}
-              src="/assets/icons/onboarding/Fullstop.svg"
-              className="mx-1.5 w-1.5 h-1.5 "
-              alt="separator"
-            />
-          )}
-
-        </div>
-      ))
-    ) : (
-      <span>What Languages do you know?</span>
-    )}
-          </div>
-
-      </div>
-  
-      <div className="flex mx-auto  gap-9 px-10 text-dark-grey mt-[20px] max-w-[500px] font-apfel-grotezk-regular text-md">
-      <Image 
-        width={24}
-        height={20}
-        src="/assets/icons/onboarding/Language.svg"
-        alt="languages"/>
-          <h5 className="text-electric-blue -ml-5 font-apfel-grotezk-mittel">Open to</h5>
-          <div className="flex flex-wrap items-center gap-0 text-sm">
-    {formData.compensation && formData.compensation.length > 0 ? (
-      formData.compensation.map((item, index) => (
-        <div key={index} className="flex items-center gap-0 text-graphite">
-          <span>{item}</span>
-          {index < formData.compensation.length - 1 && (
-            <Image
-              width={10}
-              height={20}
-              src="/assets/icons/onboarding/Fullstop.svg"
-              className="mx-1.5 w-1.5 h-1.5"
-              alt="separator"
-            />
+        <Image width={24} height={20} src="/assets/icons/onboarding/Language.svg" alt="languages" />
+        <h5 className="text-electric-blue -ml-1 font-apfel-grotezk-mittel text-md">Languages</h5>
+        <div className="flex flex-wrap items-center gap-0 w-56 max-w-60">
+          {onboarding.languages && onboarding.languages.length > 0 ? (
+            onboarding.languages.map((lang, idx) => (
+              <div key={idx} className="flex items-center gap-0 text-graphite text-sm">
+                <span>{lang}</span>
+                {idx < onboarding.languages.length - 1 && (
+                  <Image
+                    width={10}
+                    height={10}
+                    src="/assets/icons/onboarding/Fullstop.svg"
+                    className="mx-1.5 w-1.5 h-1.5"
+                    alt="separator"
+                  />
+                )}
+              </div>
+            ))
+          ) : (
+            <span>What Languages do you know?</span>
           )}
         </div>
-      ))
-    ) : (
-      <span>What comp methods are you open to?</span>
-    )}
-  </div>
-        
       </div>
-  
+
+      {/* Compensation / Open To */}
+      <div className="flex mx-auto gap-9 px-10 text-dark-grey mt-[20px] max-w-[500px] font-apfel-grotezk-regular text-md">
+        <Image width={24} height={20} src="/assets/icons/onboarding/Language.svg" alt="compensation" />
+        <h5 className="text-electric-blue -ml-5 font-apfel-grotezk-mittel">Open to</h5>
+        <div className="flex flex-wrap items-center gap-0 text-sm">
+          {onboarding.compensation && onboarding.compensation.length > 0 ? (
+            onboarding.compensation.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-0 text-graphite">
+                <span>{item}</span>
+                {idx < onboarding.compensation.length - 1 && (
+                  <Image
+                    width={10}
+                    height={20}
+                    src="/assets/icons/onboarding/Fullstop.svg"
+                    className="mx-1.5 w-1.5 h-1.5"
+                    alt="separator"
+                  />
+                )}
+              </div>
+            ))
+          ) : (
+            <span>What comp methods are you open to?</span>
+          )}
+        </div>
+      </div>
+
+      {/* Price Range */}
       <div className="text-dark-grey px-10 flex flex-col justify-center items-center mt-2 3xl:mt-12">
-       <h3 className="3xl:text-3xl text-xl font-qimano text-graphite">
-
-        {priceRange}
-      </h3>
-
-       <div className="text-[12px] 3xl:text-lg ">Value per content piece</div>
+        <h3 className="3xl:text-3xl text-xl font-qimano text-graphite">{priceRange}</h3>
+        <div className="text-[12px] 3xl:text-lg">Value per content piece</div>
       </div>
-
-
-      </div>
-    );
-  }
+    </div>
+  );
+}

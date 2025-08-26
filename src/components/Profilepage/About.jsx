@@ -69,8 +69,8 @@ const About = ({ onComplete }) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const debouncedSave = useCallback(
-  debounce(async (sectionKey, index) => {
+const debouncedSave = useCallback(
+  debounce(async (sectionKey) => {
     const questions =
       sectionKey === "about"
         ? aboutQuestions
@@ -79,22 +79,20 @@ const About = ({ onComplete }) => {
         : brandQuestions;
 
     try {
-      await saveQuestionsToDB(sectionKey, [questions[index]]);
+      await saveQuestionsToDB(sectionKey, questions); // send entire section
       setUnsavedChanges((prev) => ({
         ...prev,
-        [sectionKey]: new Set([...prev[sectionKey]].filter((i) => i !== index)),
+        [sectionKey]: new Set(), // clear unsaved marks for that section
       }));
       queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
     } catch (error) {
       console.error("Auto-save failed:", error);
     }
-  }, 1000), // save after 1 second of no typing
+  }, 1000),
   [aboutQuestions, audienceQuestions, brandQuestions]
 );
 
-
-  const handleQuestionChange = (e, index, sectionKey, defaultQuestion) => {
-  const selectedQuestion = e.target.value?.trim() || defaultQuestion;
+const handleQuestionChange = (newQuestion, index, sectionKey) => {
   const newQuestions = [
     ...(sectionKey === "about"
       ? aboutQuestions
@@ -102,7 +100,7 @@ const About = ({ onComplete }) => {
       ? audienceQuestions
       : brandQuestions),
   ];
-  newQuestions[index].question = selectedQuestion;
+  newQuestions[index].question = newQuestion.trim();
   updateSectionState(sectionKey, newQuestions);
 
   setUnsavedChanges((prev) => ({
@@ -111,8 +109,9 @@ const About = ({ onComplete }) => {
   }));
 
   // Trigger debounce auto-save
-  debouncedSave(sectionKey, index);
+  debouncedSave(sectionKey);
 };
+
 
 const handleAnswerChange = (e, index, sectionKey) => {
   const newQuestions = [
@@ -131,7 +130,7 @@ const handleAnswerChange = (e, index, sectionKey) => {
   }));
 
   // Trigger debounce auto-save
-  debouncedSave(sectionKey, index);
+  debouncedSave(sectionKey);
 };
 
   
@@ -154,7 +153,7 @@ const handleCoverChange = (imageData, index, sectionKey) => {
   }));
 
   // Trigger debounce auto-save
-  debouncedSave(sectionKey, index);
+  debouncedSave(sectionKey);
 };
 
   const addQuestion = (sectionKey) => {
@@ -178,29 +177,6 @@ const handleCoverChange = (imageData, index, sectionKey) => {
     newQuestions[index].question = question || newQuestions[0]?.question || "";
     updateSectionState(sectionKey, newQuestions);
   };
-
-
-  //   const handleSaveChanges = async (index, sectionKey) => {
-//   try {
-//     const questions = sectionKey === "about" ? aboutQuestions :
-//                       sectionKey === "audience" ? audienceQuestions :
-//                       brandQuestions;
-
-//     await saveQuestionsToDB(sectionKey, [questions[index]]);
-//     alert("Question saved successfully!")
-//     setUnsavedChanges(prev => ({
-//       ...prev,
-//       [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))
-//     }));
-
-//     // Invalidate aboutCompletion query so layout re-checks completion
-//     queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
-//   } catch (error) {
-//     console.error("Failed to save changes:", error);
-//     alert("Failed to save changes. Please try again.");
-//   }
-// };
-
   
     return (
     <div className="w-full h-screen overflow-y-auto"  style={{ maxHeight: 'calc(135vh - 96px)', scrollbarWidth: 'none',       
@@ -221,7 +197,8 @@ const handleCoverChange = (imageData, index, sectionKey) => {
               <QuestionCounter
                 label={`Question ${index + 1}`}
                 value={item.question}
-                onQuestionChange={(e) => handleQuestionChange(e, index, "about", aboutQuestions)}
+                 onQuestionChange={(newValue) => handleQuestionChange(newValue, index, "about")}
+
                 onAnswerChange={(e) => handleAnswerChange(e, index, "about")}
                 maxWords={75}
                 name={`aboutQuestion_${index}`}
@@ -244,12 +221,6 @@ const handleCoverChange = (imageData, index, sectionKey) => {
                   currentQuestion={item}
                 />
 
-                {/* <button
-                  onClick={() => handleSaveChanges(index, "about")}
-                  className="bg-electric-blue text-white px-4 py-3 rounded-md text-sm mt-7 font-apfel-grotezk-regular"
-                >
-                  Save answer
-                </button> */}
               </div>
 
               {index > 0 && (
@@ -307,7 +278,8 @@ const handleCoverChange = (imageData, index, sectionKey) => {
               <QuestionCounter
                 label={`Question ${index + 1}`}
                 value={item.question}
-                onQuestionChange={(e) => handleQuestionChange(e, index, "audience", audienceQuestions)}
+                  onQuestionChange={(newValue) => handleQuestionChange(newValue, index, "audience")}
+
                 onAnswerChange={(e) => handleAnswerChange(e, index, "audience")}
                 maxWords={75}
                 name={`audienceQuestion_${index}`}
@@ -386,7 +358,7 @@ const handleCoverChange = (imageData, index, sectionKey) => {
               <QuestionCounter
                 label={`Question ${index + 1}`}
                 value={item.question}
-                onQuestionChange={(e) => handleQuestionChange(e, index, "brand", brandQuestions)}
+                onQuestionChange={(newValue) => handleQuestionChange(newValue, index, "brand")}
                 onAnswerChange={(e) => handleAnswerChange(e, index, "brand")}
                 maxWords={75}
                 name={`brandQuestion_${index}`}
@@ -464,3 +436,26 @@ const handleCoverChange = (imageData, index, sectionKey) => {
 };
 
 export default About;
+
+
+
+  //   const handleSaveChanges = async (index, sectionKey) => {
+//   try {
+//     const questions = sectionKey === "about" ? aboutQuestions :
+//                       sectionKey === "audience" ? audienceQuestions :
+//                       brandQuestions;
+
+//     await saveQuestionsToDB(sectionKey, [questions[index]]);
+//     alert("Question saved successfully!")
+//     setUnsavedChanges(prev => ({
+//       ...prev,
+//       [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))
+//     }));
+
+//     // Invalidate aboutCompletion query so layout re-checks completion
+//     queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
+//   } catch (error) {
+//     console.error("Failed to save changes:", error);
+//     alert("Failed to save changes. Please try again.");
+//   }
+// };
