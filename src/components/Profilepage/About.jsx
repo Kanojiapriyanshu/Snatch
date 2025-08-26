@@ -388,7 +388,7 @@ const handleCoverChange = (imageData, index, sectionKey) => {
           className="flex items-center text-electric-blue text-sm mt-2"
         >
           <Image
-            src="/assets/icons/settings/cross.svg"
+            src="/assets/icons/settings/Cross.svg"
             width={16}
             height={16}
             alt="Remove icon"
@@ -406,7 +406,7 @@ const handleCoverChange = (imageData, index, sectionKey) => {
           className="flex items-center text-electric-blue text-sm mt-2"
         >
           <Image
-            src="/assets/icons/settings/cross.svg"
+            src="/assets/icons/settings/Cross.svg"
             width={16}
             height={16}
             alt="Remove icon"
