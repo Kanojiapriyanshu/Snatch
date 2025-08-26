@@ -12,18 +12,25 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: "User ID is required." }, { status: 400 });
     }
 
-    const { section, questions } = await req.json();
-    if (!section || !questions || !Array.isArray(questions)) {
-      return NextResponse.json({ error: "Invalid input data" }, { status: 400 });
+
+    const {section, questions } = await req.json();
+
+    if (!userId || !section || !questions) {
+      return NextResponse.json(
+        { error: "userId, section, and questions are required" },
+        { status: 400 }
+      );
     }
 
-    // Find or create the questionnaire
+    const normalizedSection = section.toLowerCase();
+
     let userQuestionnaire = await Questionnaire.findOne({ userId });
 
     if (!userQuestionnaire) {
+      // if no questionnaire exists, create one
       userQuestionnaire = new Questionnaire({
         userId,
-        sections: [{ section, questions }],
+        sections: [{ section: normalizedSection, questions }],
       });
     } else {
       if (!userQuestionnaire.sections) {
@@ -31,30 +38,35 @@ export async function POST(req) {
       }
 
       const sectionIndex = userQuestionnaire.sections.findIndex(
-        (s) => s.section === section
+        (s) => s.section.toLowerCase() === normalizedSection
       );
 
       if (sectionIndex !== -1) {
-        // 🚀 overwrite the entire section’s questions
+        // overwrite questions if section already exists
         userQuestionnaire.sections[sectionIndex].questions = questions;
       } else {
-        // add a new section if missing
-        userQuestionnaire.sections.push({ section, questions });
+        // push new section if it doesn’t exist yet
+        userQuestionnaire.sections.push({
+          section: normalizedSection,
+          questions,
+        });
       }
     }
 
     await userQuestionnaire.save();
 
+    return NextResponse.json({
+      message: "Questionnaire updated successfully",
+      data: userQuestionnaire,
+    });
+  } catch (err) {
+    console.error("Error saving questionnaire:", err);
     return NextResponse.json(
-      { message: "Questionnaire saved successfully!", userQuestionnaire },
-      { status: 201 }
+      { error: "Internal server error" },
+      { status: 500 }
     );
-  } catch (error) {
-    console.error("Error saving questionnaire:", error);
-    return NextResponse.json({ error: "Failed to save data" }, { status: 500 });
   }
 }
-
 
 export async function GET(req) {
   try {

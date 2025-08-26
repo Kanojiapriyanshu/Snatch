@@ -90,7 +90,7 @@ const DashboardPage = () => {
     (isInstagramLinked && isFollowersLoading) ) {
     return (
       <div className="h-screen bg-smoke flex justify-center items-center font-qimano text-3xl text-electric-blue">
-        Loading........
+        Loading...
       </div>
     );
   }
