@@ -1,16 +1,15 @@
 // app/public-portfolio/[username]/post/layout.js
-
 import React from "react";
-import PostCard from "@/components/public-portfolio/PostCard";
 import Link from "next/link";
 import Image from "next/image";
+import VideoThumbnail from "@/components/VideoThumbnail";
+import CarouselThumbnail from "@/components/CarouselThumbnail"; // Add this import
 import { PostsProvider } from "@/context/PostContext";
 
 export default async function PostLayout({ children, params }) {
   const { username } = params;
   let userPosts = [];
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") || "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") || "http://localhost:3000";
 
   try {
     const res = await fetch(
@@ -47,6 +46,7 @@ export default async function PostLayout({ children, params }) {
           mediaUrl: item.mediaUrl || item.fileUrl,
           mediaId: item.mediaId,
           title: item.name,
+          thumbnailUrl: item.thumbnailUrl || null,
         })),
       ];
     }
@@ -59,10 +59,11 @@ export default async function PostLayout({ children, params }) {
       <div className="hidden md:flex w-full max-w-[1100px] max-h-[660px] bg-[#F2F2F2] rounded-2xl shadow-lg flex-col items-center justify-center mx-auto my-2 p-0">
         <PostsProvider value={{ allPosts: userPosts, username }}>
           <div className="posts-container">{children}</div>
+
           {/* More posts - hidden on mobile, visible on desktop only */}
           <div className="hidden md:block">
             <div className="mx-auto mt-3 px-4 mb-10 w-full lg:w-[864px] lg:px-0 lg:group">
-              <h3 className="text-xl font-qimano text-[#212121] mt-10 lg:pl-[px]">
+              <h3 className="text-xl font-qimano text-[#212121] mt-10">
                 More from @{username}
               </h3>
               <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 justify-center items-center lg:justify-start lg:items-start w-full lg:group">
@@ -75,20 +76,19 @@ export default async function PostLayout({ children, params }) {
                     >
                       <div className="transition-opacity duration-200 ease-in-out lg:opacity-60 lg:group-hover:opacity-10 lg:hover:opacity-100 lg:rounded-md">
                         {post.mediaType === "CAROUSEL_ALBUM" && post.children ? (
-                          <div className="relative w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] group">
-                            <Image
-                              src={post.children[0].mediaUrl}
-                              alt={`Project ${index}`}
-                              fill
-                              className="object-cover rounded-md"
-                            />
-                          </div>
-                        ) : post.mediaType?.includes("VIDEO") || post.mediaUrl?.endsWith(".mp4") ? (
-                          <video
-                            muted
-                            playsInline
-                            className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] object-cover rounded-md"
+                          <CarouselThumbnail 
+                            post={post}
+                            index={index}
+                            className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px]"
+                          />
+                        ) : post.mediaType?.includes("VIDEO") ||
+                          post.mediaUrl?.endsWith(".mp4") ? (
+                          <VideoThumbnail
                             src={post.mediaUrl}
+                            thumbnailUrl={post.thumbnailUrl}
+                            alt={`Video ${index}`}
+                            className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] rounded-md"
+                            showPlayIcon={true}
                           />
                         ) : (
                           <Image
@@ -110,7 +110,8 @@ export default async function PostLayout({ children, params }) {
           </div>
         </PostsProvider>
       </div>
-      {/* Mobile layout: keep as before */}
+
+      {/* Mobile layout */}
       <div className="md:hidden w-full bg-[#F2F2F2] flex flex-col items-center justify-start lg:justify-center">
         <PostsProvider value={{ allPosts: userPosts, username }}>
           <div className="posts-container">{children}</div>

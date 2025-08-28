@@ -40,7 +40,7 @@ function formatNumber(value) {
     return (
       <div className="h-auto max-h-[530px] py-7 ">
 
-          <div className="flex gap-0 justify-center items-center flex-wrap max-w-[480px] px-6 mx-auto">
+          <div className="flex gap-0 justify-center items-center flex-wrap max-w-[480px] px-8 mx-auto">
                 {(formData.industry && formData.industry.length > 0
                     ? formData.industry
                     : ["Industry"] 
@@ -124,34 +124,36 @@ function formatNumber(value) {
 
       </div>
   
-      <div className="flex flex-nowrap mx-auto  gap-9 px-10 text-dark-grey mt-[20px] max-w-[500px] font-apfel-grotezk-regular text-md">
-      <Image 
-        width={24}
-        height={20}
-        src="/assets/icons/onboarding/Language.svg"
-        alt="languages"/>
-          <h5 className="text-electric-blue -ml-5 font-apfel-grotezk-mittel">Open to</h5>
-          <div className="flex flex-wrap items-center gap-0 text-sm">
-    {formData.compensation && formData.compensation.length > 0 ? (
-      formData.compensation.map((item, index) => (
-        <div key={index} className="flex items-center gap-0 text-graphite">
-          <span>{item}</span>
-          {index < formData.compensation.length - 1 && (
-            <Image
-              width={10}
-              height={20}
-              src="/assets/icons/onboarding/Fullstop.svg"
-              className="mx-1.5 w-1.5 h-1.5"
-              alt="separator"
-            />
-          )}
-        </div>
-      ))
-    ) : (
-      <span>What comp methods are you open to?</span>
-    )}
-  </div>
-        
+      {/* Fixed "Open to" section with consistent height and width */}
+      <div className="flex mx-auto gap-9 px-10 text-dark-grey mt-[20px] w-[500px] max-w-[500px] font-apfel-grotezk-regular text-md h-[48px] items-start">
+      <div className="flex items-center gap-5 flex-shrink-0 w-[100px]">
+        <Image 
+          width={24}
+          height={20}
+          src="/assets/icons/onboarding/Language.svg"
+          alt="languages"/>
+        <h5 className="text-electric-blue font-apfel-grotezk-mittel whitespace-nowrap">Open to</h5>
+      </div>
+      <div className="flex flex-wrap items-start gap-0 text-sm h-[48px] overflow-hidden w-[350px]">
+        {formData.compensation && formData.compensation.length > 0 ? (
+          formData.compensation.map((item, index) => (
+            <div key={index} className="flex items-center gap-0 text-graphite">
+              <span>{item}</span>
+              {index < formData.compensation.length - 1 && (
+                <Image
+                  width={10}
+                  height={20}
+                  src="/assets/icons/onboarding/Fullstop.svg"
+                  className="mx-1.5 w-1.5 h-1.5"
+                  alt="separator"
+                />
+              )}
+            </div>
+          ))
+        ) : (
+          <span>What comp methods are you open to?</span>
+        )}
+      </div>
       </div>
   
       <div className="text-dark-grey px-10 flex flex-col justify-center items-center mt-12">

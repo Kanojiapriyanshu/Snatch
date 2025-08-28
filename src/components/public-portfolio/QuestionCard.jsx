@@ -66,7 +66,7 @@ const Questionnaire = ({ name }) => {
       
       setCurrentScrollIndex(newIndex);
       
-      // Calculate scroll position with increased gap (each card is approximately 430px wide including gap)
+      // Calculate scroll position with card width and gap
       const cardWidth = 430; // 370px card + 60px gap
       const scrollPosition = newIndex * cardWidth;
       
@@ -117,35 +117,43 @@ const Questionnaire = ({ name }) => {
         )}
       </div>
 
-      {/* Desktop view: controlled horizontal scroll showing 3.5 cards with increased gaps */}
-      <div className="hidden lg:flex relative flex-grow justify-center w-full">
+      {/* Desktop view: controlled horizontal scroll showing 3.5 cards with centered alignment */}
+      <div className="hidden lg:flex relative w-full">
         {/* Left Scroll Button */}
         {showNavButtons && showLeftButton && (
-          <button
-            onClick={() => scrollDesktop("left")}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-18"
-            aria-label="Scroll Left"
-          >
-            <div className="w-full h-full">
-              <Image
-                src="/assets/images/Lefthand.svg"
-                alt="left-arrow"
-                width={56}
-                height={56}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </button>
+         <button
+  onClick={() => scrollDesktop("left")}
+  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-20 rounded-full bg-black/20 p-2"
+  aria-label="Scroll Left"
+>
+  <div className="w-full h-full flex items-center justify-center">
+    <Image
+      src="/assets/images/Lefthand.svg"
+      alt="left-arrow"
+      width={72}
+      height={56}
+      className="object-contain"
+    />
+  </div>
+</button>
+
+
         )}
 
-        {/* Scrollable Cards Container - Full width to allow rightmost card to reach edge */}
+        {/* Scrollable Cards Container - Full width with fourth card extending to edge */}
         <div className="relative overflow-hidden w-full">
           <div
             ref={desktopScrollRef}
             className="mt-5 lg:mt-4 pb-5 lg:pb-0 overflow-x-hidden"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            <div className="flex gap-16 w-max pl-8 pr-8">
+            <div 
+              className="flex gap-16 w-max"
+              style={{
+                marginLeft: currentScrollIndex === 0 ? 'calc(50% - 591px)' : '0px',
+                transition: 'margin-left 0.3s ease'
+              }}
+            >
               {allCards.map((card) => (
                 <QuestionCard
                   key={card.key}
@@ -157,30 +165,26 @@ const Questionnaire = ({ name }) => {
               ))}
             </div>
           </div>
-          
-          {/* Gradient overlay on the right to show partial 4th card - positioned closer to edge */}
-          {showNavButtons && (
-            <div className="absolute top-0 right-0 w-16 h-full  to-transparent pointer-events-none" />
-          )}
         </div>
 
-        {/* Right Scroll Button - positioned closer to edge */}
+        {/* Right Scroll Button */}
         {showNavButtons && showRightButton && (
           <button
-            onClick={() => scrollDesktop("right")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-12 h-14"
-            aria-label="Scroll Right"
-          >
-            <div className="w-full h-full">
-              <Image
-                src="/assets/images/next.svg"
-                alt="right-arrow"
-                width={56}
-                height={56}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </button>
+  onClick={() => scrollDesktop("right")}
+  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-20 rounded-full bg-black/20 p-2"
+  aria-label="Scroll Right"
+>
+  <div className="w-full h-full flex items-center justify-center">
+    <Image
+      src="/assets/images/next.svg"
+      alt="right-arrow"
+      width={40}
+      height={56}
+      className="object-contain"
+    />
+  </div>
+</button>
+
         )}
       </div>
     </div>
