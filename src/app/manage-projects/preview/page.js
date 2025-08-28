@@ -42,7 +42,7 @@ import SvgComponent from "@/components/svg/Instagramsvg";
   const handleSubmit = () => {
       if (filledProjectsCount < 4) {
         setPopupMessage(
-          "Your portfolio needs at least 4 project details to be created. Don’t worry, your progress is saved, and you can come back anytime to finish."
+          "Your portfolio needs at least 4 project details to be created. Don't worry, your progress is saved, and you can come back anytime to finish."
         );
       } else {
         setPopupMessage(""); // Use default message in Popup
@@ -335,10 +335,10 @@ const handleHamburgerClick = () => {
           </div>
         </div>
 
-        {/* preview card */}
-        <div className="w-[864px] h-[430px] p-2 bg-white ml-28 mt-1 rounded-lg">
-          <div className="flex gap-5 ">
-           <div className="w-[300px] h-full pl-5 pt-5  ">
+        {/* Fixed dimensions preview card */}
+        <div className="w-[864px] h-[430px] p-2 bg-white ml-28 mt-1 rounded-lg flex flex-col">
+          <div className="flex gap-5 h-full">
+           <div className="w-[300px] h-full pl-5 pt-5">
 
             <div className={`w-[250px] ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} overflow-hidden rounded-lg flex items-center`}>
                    {activeImageId !== null && (
@@ -493,8 +493,9 @@ const handleHamburgerClick = () => {
       
            </div>
 
-           <div className="w-full h-full mt-5">
-            <div className="flex justify-between items-center">
+           {/* Fixed content area with consistent structure */}
+           <div className="flex-1 h-full mt-5 flex flex-col">
+            <div className="flex justify-between items-center min-h-[32px]">
               <p className="text-2xl text-graphite font-qimano">
                 {(() => {
                   // Find the form data for the active project
@@ -523,155 +524,150 @@ const handleHamburgerClick = () => {
             />
             </div>
 
-            <div className="flex gap-1 flex-wrap max-w-xl mr-10">
+            {/* Fixed height industries section */}
+            <div className="flex gap-1 flex-wrap max-w-xl mr-10 h-[40px] items-start">
+              {Array.isArray(selectionState?.formData) &&
+                selectionState.formData.find((item) => item.key === activeImageId)?.industries?.length > 0 ? (
+                  selectionState.formData
+                    .find((item) => item.key === activeImageId)
+                    ?.industries.map((industry, index) => (
+                      <span
+                        key={index}
+                        className="bg-[#0037EB]/5 text-graphite my-2 inline-block rounded border border-transparent py-1 px-2.5 text-xs font-medium"
+                      >
+                        {industry}
+                      </span>
+                    ))
+                ) : (
+                  <span>Industry</span>
+                )}
+            </div>
 
-          {Array.isArray(selectionState?.formData) &&
-            selectionState.formData.find((item) => item.key === activeImageId)?.industries?.length > 0 ? (
-              selectionState.formData
-                .find((item) => item.key === activeImageId)
-                ?.industries.map((industry, index) => (
-                  <span
-                    key={index}
-                    className="bg-[#0037EB]/5 text-graphite my-2 inline-block rounded border border-transparent py-1 px-2.5 text-xs font-medium"
-                  >
-                    {industry}
-                  </span>
-                ))
-            ) : (
-              <span>Industry</span>
-            )}
-          </div>
-
+          {/* Fixed position horizontal line */}
           <div className="w-full border-b-[0.5px] border-gray-300 mt-2"></div>
 
-          <div className={`flex items-center space-x-2 ${
-  Array.isArray(selectionState?.formData) &&
-  selectionState.formData.find(item => item.key === activeImageId)?.isBrandCollaboration
-    ? "mt-[2rem]"
-    : "mt-[0]"
-}`}>
+          {/* Fixed height brand collaboration section */}
+          <div className="min-h-[60px] flex items-start mt-4">
+            <div className="pointer-events-auto">
+                {isModalOpen && (
+                  <Popup onClose={handleCloseModal} onContinueEditing={handleCloseModal} onNextStep={handleNextStep}  message={popupMessage} />
+                )}
+            </div> 
 
-  {/* Logo */}
-  <div className="flex items-center">
+            {Array.isArray(selectionState?.formData) && (() => {
+            const selectedItem = selectionState.formData.find(item => item.key === activeImageId);
+            if (!selectedItem?.isBrandCollaboration) return null;
 
-        
-  <div className="pointer-events-auto">
-      {isModalOpen && (
-        <Popup onClose={handleCloseModal} onContinueEditing={handleCloseModal} onNextStep={handleNextStep}  message={popupMessage} />
-      )}
-  </div> 
+            // Only render the section if there's at least one piece of brand collaboration data
+            const hasAnyBrandData = selectedItem.companyLogo || 
+                                   selectedItem.companyName || 
+                                   selectedItem.eventName ||
+                                   selectedItem.companyLocation || 
+                                   (selectedItem.eventTypes?.length > 0);
 
-  {Array.isArray(selectionState?.formData) && (() => {
-  const selectedItem = selectionState.formData.find(item => item.key === activeImageId);
-  if (!selectedItem?.isBrandCollaboration) return null;
+            if (!hasAnyBrandData) return null;
 
-  // Only render the section if there's at least one piece of brand collaboration data
-  const hasAnyBrandData = selectedItem.companyLogo || 
-                         selectedItem.companyName || 
-                         selectedItem.eventName ||
-                         selectedItem.companyLocation || 
-                         (selectedItem.eventTypes?.length > 0);
+            return (
+              <div className="brand-collaboration-section flex gap-3">
+                {/* Logo section with conditional rendering */}
+                {selectedItem.isBrandCollaboration && (
+                  <>
+                    <Image
+                      src={selectedItem.companyLogo || "/assets/images/logo.svg"} // Default logo if no company logo
+                      width={50}
+                      height={50}
+                      alt={selectedItem.companyLogo ? "Company Logo" : "Default Logo"}
+                      className="h-12 w-12 bg-cover rounded-full"
+                    />
+                    {/* Only show divider if we have both logo and other details */}
+                    {(selectedItem.companyName || selectedItem.companyLocation || selectedItem.eventTypes?.length > 0) && (
+                      <div className="h-12 border-l border-gray-400"></div>
+                    )}
+                  </>
+                )}
 
-  if (!hasAnyBrandData) return null;
+                {/* Rest of the brand collaboration content */}
+                {(selectedItem.companyName || selectedItem.companyLocation || selectedItem.eventTypes?.length > 0) && (
+                  <div className="text-gray-500 text-sm space-y-1">
+                    {/* Company name and location line */}
+                    {(selectedItem.companyName || selectedItem.companyLocation) && (
+                      <p>
+                        {selectedItem.companyName && (
+                          <> <span className="text-graphite">{selectedItem.companyName}</span></>
+                        )}
+                        {selectedItem.companyLocation && (
+                          <> • {selectedItem.companyLocation}</>
+                        )}
+                      </p>
+                    )}
 
-  return (
-    <div className="brand-collaboration-section flex gap-3">
-      {/* Logo section with conditional rendering */}
-      {selectedItem.isBrandCollaboration && (
-        <>
-          <Image
-            src={selectedItem.companyLogo || "/assets/images/logo.svg"} // Default logo if no company logo
-            width={50}
-            height={50}
-            alt={selectedItem.companyLogo ? "Company Logo" : "Default Logo"}
-            className="h-12 w-12 bg-cover rounded-full"
-          />
-          {/* Only show divider if we have both logo and other details */}
-          {(selectedItem.companyName || selectedItem.companyLocation || selectedItem.eventTypes?.length > 0) && (
-            <div className="h-12 border-l border-gray-400"></div>
-          )}
-        </>
-      )}
+                    <div className="flex gap-2">
+                    {/* Event name line */}
+                    {selectedItem.eventName && (
+                      <p> <span className="text-graphite">{selectedItem.eventName}</span></p>
+                    )}
 
-      {/* Rest of the brand collaboration content */}
-      {(selectedItem.companyName || selectedItem.companyLocation || selectedItem.eventTypes?.length > 0) && (
-        <div className="text-gray-500 text-sm space-y-1">
-          {/* Company name and location line */}
-          {(selectedItem.companyName || selectedItem.companyLocation) && (
-            <p>
-              {selectedItem.companyName && (
-                <> <span className="text-graphite">{selectedItem.companyName}</span></>
-              )}
-              {selectedItem.companyLocation && (
-                <> • {selectedItem.companyLocation}</>
-              )}
-            </p>
-          )}
+                    {/* Event types line */}
+                    {selectedItem.eventTypes?.length > 0 && (
+                      <p className="">
+                        {selectedItem.eventTypes.map((eventType, index) => (
+                          <span key={index} className="px-1 -ml-2 text-sm">
+                            {index > 0 ? " | " : " • "}{eventType}
+                          </span>
+                        ))}
+                      </p>
+                    )}
+                      </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+          </div>
 
-          <div className="flex gap-2">
-          {/* Event name line */}
-          {selectedItem.eventName && (
-            <p> <span className="text-graphite">{selectedItem.eventName}</span></p>
-          )}
-
-          {/* Event types line */}
-          {selectedItem.eventTypes?.length > 0 && (
-            <p className="">
-              {selectedItem.eventTypes.map((eventType, index) => (
-                <span key={index} className="px-1 -ml-2 text-sm">
-                  {index > 0 ? " | " : " • "}{eventType}
-                </span>
-              ))}
-            </p>
-          )}
+          {/* Fixed height description section */}
+          <div className="flex-1 flex flex-col justify-between min-h-[120px]">
+            <div className="flex-1">
+              {Array.isArray(selectionState?.formData) && (() => {
+                const selectedItem = selectionState.formData.find(item => item.key === activeImageId);
+                return (
+                  <p className="text-graphite mr-3 mt-2">
+                    {selectedItem?.description || "Description of the project"}
+                  </p>
+                );
+              })()}
             </div>
-        </div>
-      )}
-    </div>
-  );
-})()}
+
+            {/* Fixed position second horizontal line */}
+            {activeTab === "instagram" && (
+              <div className="w-full border-b-[0.5px] border-gray-300 mt-4"></div>
+            )}
+
+            {/* Fixed position insights section at bottom */}
+            {activeTab === "instagram" && (
+              <div className="mt-3 pb-2">
+                {insights && insights.length > 0 ? (
+                  <div className="flex justify-between text-graphite w-full max-w-[500px]">
+                    {insights.map((item) => (
+                      <div
+                        key={item.name}
+                        className="flex flex-col items-center min-w-[40px] text-center"
+                      >
+                        <div className="text-[22px] leading-none font-qimano text-graphite">
+                          {item.values[0]?.value ?? 0}
+                        </div>
+                        <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
+                          {item.title}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-[40px]"></div> // Placeholder to maintain spacing
+                )}
+              </div>
+            )}
           </div>
-          </div>
-
-          {Array.isArray(selectionState?.formData) && (() => {
-  const selectedItem = selectionState.formData.find(item => item.key === activeImageId);
-
-  return (
-    <>
-      <p className={`${selectedItem?.isBrandCollaboration ? 'text-graphite mr-3 mt-5' : 'text-graphite mr-3 mt-6'}`}>
-        {selectedItem?.description || "Description of the project"}
-      </p>
-
-     {activeTab === "instagram" && (
-        <div
-          className={`w-full border-b-[0.5px] border-gray-300 ${
-            selectedItem?.isBrandCollaboration ? "mt-8" : "mt-36"
-          }`}
-        ></div>
-      )}
-    </>
-  );
-})()}
-
-
-          
-{activeTab === "instagram" && insights && insights.length > 0 && (
-  <div className="mt-5 flex justify-between text-graphite w-full max-w-[500px]">
-    {insights.map((item) => (
-      <div
-        key={item.name}
-        className="flex flex-col items-center min-w-[40px] text-center"
-      >
-        <div className="text-[22px] leading-none font-qimano text-graphite">
-          {item.values[0]?.value ?? 0}
-        </div>
-        <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
-          {item.title}
-        </div>
-      </div>
-    ))}
-  </div>
-)}
 
            </div>           
             
@@ -813,4 +809,3 @@ export default function Preview() {
     </Suspense>
   );
 }
-

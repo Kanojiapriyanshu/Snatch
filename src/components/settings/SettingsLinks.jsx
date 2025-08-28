@@ -35,6 +35,7 @@ export default function SettingsLinks() {
     {
       label: "Disconnect Facebook Account",
       icon: "/assets/images/disconnect.svg",
+      iconHover: "/assets/images/disconnect_h.svg",
       href: "#",
     },
     {

@@ -182,14 +182,16 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
             <div className="flex gap-6 mb-8">
               {/* Interactive Preview Card with Strap */}
               <div className="flex-shrink-0 relative">
-                {/* Preview Card Strap */}
                 
                 
                 <div
-                  className="relative border rounded-md w-[200px] h-[280px] overflow-hidden cursor-pointer mt-4"
+                  className="relative border  rounded-b-md w-[200px] h-[280px] overflow-hidden cursor-pointer mt-6"
                   onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}
                 >
+                  <div className="bg-gray-400 text-white px-4 py-1 rounded-t-md w-[200px] text-center">
+                  <span className="text-sm font-medium">Preview card</span>
+                </div>
                   <Image
                     src={selectedImage || "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740397248/10_o9u87n.jpg"}
                     alt="Preview"
@@ -231,7 +233,7 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                 {showLeftArrow && (
                   <button
                     onClick={() => handleScroll("left")}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-transparent/60 border border-gray-200 p-3 rounded-full shadow-lg z-20 hover:bg-transparent hover:shadow-xl transition-all"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-transparent/60  border-gray-200 p-3 rounded-full shadow-lg z-20 hover:bg-transparent/40 hover:shadow-xl transition-all"
                   >
                     <Image
                       src="/assets/images/forwardArrowBlack.svg"
@@ -286,7 +288,7 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                 {showRightArrow && (
                   <button
                     onClick={() => handleScroll("right")}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent/60 border border-gray-200 p-3 rounded-full shadow-lg z-20 hover:bg-transparent hover:shadow-xl transition-all"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent/60  p-3 rounded-full shadow-lg z-20 hover:bg-transparent/40 hover:shadow-xl transition-all"
                   >
                     <Image 
                       src="/assets/images/forwardArrowBlack.svg" 

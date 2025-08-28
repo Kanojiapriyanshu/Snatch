@@ -797,8 +797,7 @@ const handlePopupGenerate = async () => {
                   Skip AI & enter manually
                 </button>
                 {/* Generate my project */}
-               
-   <button
+<button
                   className={`2xl:px-8 px-6 py-2 rounded-lg ${
                     popupGenerating || !popupUserInput.trim()
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"

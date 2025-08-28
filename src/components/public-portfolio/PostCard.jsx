@@ -182,7 +182,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                             src={post.media.files[0].url}
                             controls
                             width={300}
-                            height={1200}
+                            height={460}
                             className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
                             onLoadedMetadata={(e) => {
                               setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
@@ -325,29 +325,40 @@ export default function PostCard({ post, postId, username, allPosts }) {
 
                 {/* Bottom section - Stats (fixed position at bottom) */}
                 {post.media.source === "instagram" && (
-                  <div className="flex-shrink-0 mt-auto">
-                    <div className="w-full border-b-[0.5px] border-gray-300 mb-5"></div>
-                    {insights && (
-                      <div className="flex justify-between text-graphite w-full">
-                        {[
-                          { label: "Views", key: "views" },
-                          { label: "Likes", key: "likes" },
-                          { label: "Comments", key: "comments" },
-                          { label: "Shares", key: "shares" }
-                        ].map(({ label, key }) => (
-                          <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
-                            <div className="text-[22px] leading-none font-qimano text-graphite">
-                              {insights?.[key] ?? 0}
-                            </div>
-                            <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
-                              {label}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
+  <div className="flex-shrink-0 mt-auto w-full">
+    {/* Fixed separator line */}
+    <div className="w-full border-b-[0.5px] border-gray-300 mb-3"></div>
+
+    {/* Insights section */}
+    <div className="flex justify-between text-graphite w-full min-h-[60px]">
+      {insights ? (
+        [
+          { label: "Views", key: "views" },
+          { label: "Likes", key: "likes" },
+          { label: "Comments", key: "comments" },
+          { label: "Shares", key: "shares" }
+        ].map(({ label, key }) => (
+          <div
+            className="flex flex-col items-center min-w-[40px] text-center"
+            key={key}
+          >
+            <div className="text-[22px] leading-none font-qimano text-graphite">
+              {insights?.[key] ?? 0}
+            </div>
+            <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
+              {label}
+            </div>
+          </div>
+        ))
+      ) : (
+        // keeps spacing same even without insights
+        <div className="h-[40px] w-full"></div>
+      )}
+    </div>
+  </div>
+)}
+
+
               </div>
             </div>
           </div>

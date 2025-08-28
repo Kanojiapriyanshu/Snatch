@@ -168,7 +168,7 @@ const DashboardPage = () => {
 
         {/* Conditional Overlays */}
         {!isInstagramLinked && (
-          <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-6 rounded-xl" style={{ height: "680px" }}>
+          <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center ml-1.5 mt-3 px-6 rounded-xl" style={{ height: "660px" }}>
             <h2 className="text-3xl md:text-4xl text-[#e7e300] font-qimano mb-4">Get Started</h2>
             <p className="text-white mb-6 max-w-lg font-apfel-grotezk-regular">
               For creators with 1K+ followers, Snatch allows you to directly connect your Instagram.
@@ -183,7 +183,7 @@ const DashboardPage = () => {
         )}
 
         {isInstagramLinked && !hasMinFollowers && (
-          <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-4 mt-2 rounded-xl" style={{ height: "660px" }}>
+          <div className="absolute inset-0 z-40 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center px-6 ml-1.5 mt-3 rounded-xl" style={{ height: "660px" }}>
             <h2 className="text-3xl md:text-4xl text-[#e7e300] font-qimano mb-4">You&#39;re almost there!</h2>
             <p className="text-white mb-6 max-w-lg font-apfel-grotezk-regular">
               Once your Instagram crosses 1,000 followers, you&#39;ll get full access to Snatch&#39;s dashboard and tools.
