@@ -29,7 +29,7 @@ export default async function OnboardingLayout({ children }) {
       />
 
 
-          <div className="relative mb-20 z-10 p-1 bg-white 2xl:p-4 py- bg-opacity-90 rounded-lg shadow-lg grid grid-rows-1">
+          <div className="relative mb-20 z-10">
             <DashboardPreview userId={userId} />
             <StatsCard />
           </div>

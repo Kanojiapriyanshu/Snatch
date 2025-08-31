@@ -8,7 +8,11 @@ import { useState, useEffect } from "react";
 import { useSignUp } from "@clerk/nextjs";
 import * as z from "zod";
 
+// Common TLDs (top level domain later fetch from aifai official api and validate email) list (you can expand or fetch dynamically)
+const tlds = ["com", "net", "org", "io", "in", "co", "us", "uk", "gov", "edu"];
+
 const emailSchema = z.string().email("Please enter a valid email address");
+
 export default function SignUp() {
   const router = useRouter();
   const { signUp } = useSignUp();
@@ -34,59 +38,71 @@ export default function SignUp() {
   }
 
 
+  // Final validation on submit
   const handleVerifyEmail = async () => {
-  //Revalidate email on submission
-
-   const validation = emailSchema.safeParse(email);
-   if(!validation.success){
-    setError(validation.error.issues[0].message);
-    return;
-   }
+    const validation = emailSchema.safeParse(email);
+    if (!validation.success) {
+      setError(validation.error.issues[0].message);
+      return;
+    }
 
     if (!isLoaded) return;
     setIsVerifying(true);
     setError("");
 
     try {
-      const { createdUser } = await signUp.create({
-        email_address: email, 
+      await signUp.create({
+        email_address: email,
       });
 
-      // Prepare the email address for OTP verification
       await signUp.prepareEmailAddressVerification();
 
-      // Navigate to OTP entry page
       router.push(`/signup/enter-otp?email=${email}`);
-    }   catch (err) {
-  console.error("Sign-in error:", err);
-
-  // Get the first error from Clerk (it's an array)
-  const clerkError = err?.errors?.[0];
-
-  // Use error code to set a custom message
-  if (clerkError?.code === "form_identifier_not_found") {
-    setError("This email is not registered. Please create an account.");
-  } else if (clerkError?.code === "form_param_format_invalid") {
-    setError("Please enter a valid email address.");
-  } else {
-    // Fall back to Clerk's own message or a default
-    setError(clerkError?.message || "Something went wrong. Please try again.");
-  }
-}
+    } catch (err) {
+      console.error("Sign-in error:", err);
+      const clerkError = err?.errors?.[0];
+      if (clerkError?.code === "form_identifier_not_found") {
+        setError("This email is not registered. Please create an account.");
+      } else if (clerkError?.code === "form_param_format_invalid") {
+        setError("Please enter a valid email address.");
+      } else {
+        setError(clerkError?.message || "Something went wrong. Please try again.");
+      }
+    }
   };
 
-  function handleInputChange(e) {
-    const value = e.target.value;
-    setEmail(value);
 
-    // Validate email input in real-time
-    const validation = emailSchema.safeParse(value);
-    if (!validation.success) {
-      setInputError(validation.error.issues[0].message);
-    } else {
-      setInputError('');
+    // Live validation on input
+   function handleInputChange(e) {
+  const value = e.target.value;
+  setEmail(value);
+  setInputError("");
+
+  // Always check multiple @ right away
+  if ((value.match(/@/g) || []).length > 1) {
+    setInputError("Email cannot contain multiple @ symbols");
+    return;
+  }
+
+  // Only validate domain + TLD once "." appears
+  if (value.includes("@")) {
+    const [_, domain] = value.split("@");
+
+    if (domain && domain.includes(".")) {
+      const parts = domain.split(".");
+      const lastPart = parts[parts.length - 1];
+
+      // If still typing TLD (like ".c"), don't validate yet
+      if (lastPart.length < 2) return;
+
+      // Full validation (schema handles domain/TLD)
+      const validation = emailSchema.safeParse(value);
+      if (!validation.success) {
+        setInputError(validation.error.issues[0].message);
+      }
     }
   }
+}
 
   const handleKeyDown = (e) => {
     // Check if the Enter key is pressed

@@ -7,7 +7,7 @@ const ProjectsGrid = ({
   activeTab,
   onProjectClick,
   showStatus = true,
-  containerClassName = "grid grid-cols-2 gap-2 mt-4 overflow-y-scroll overflow-x-hidden max-h-[40vh]",
+  containerClassName = "grid grid-cols-2 gap-2 mt-4 overflow-y-scroll overflow-x-hidden max-h-[45vh] 5xl:max-h-[55vh]",
 }) => {
   const [carouselIndexes, setCarouselIndexes] = useState({});
 

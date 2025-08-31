@@ -64,7 +64,7 @@ export default function Profile({ portfolioComplete, aboutComplete, audienceComp
               key={item}
               className={`relative cursor-pointer text-2xl flex items-center
                 ${
-                  isActive
+                  isActive && isComplete
                     ? "text-electric-blue"
                     : isComplete
                     ? "text-graphite"

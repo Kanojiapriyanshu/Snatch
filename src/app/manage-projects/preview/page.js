@@ -359,7 +359,7 @@ const handleHamburgerClick = () => {
                           alt={activeProject.name}
                           width={300}
                           height={1200}
-                          className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} bg-cover rounded-lg`}
+                          className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
                           onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                             setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
                           }}
@@ -400,7 +400,7 @@ const handleHamburgerClick = () => {
                           src={child.media_url}
                           alt={`Media ${child.id}`}
                           fill
-                          className="bg-cover rounded-lg"
+                          className="object-cover rounded-lg"
                           onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                             setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
                           }}
@@ -462,7 +462,7 @@ const handleHamburgerClick = () => {
                                                 alt={activeProject.fileName}
                                                 width={200}
                                                 height={150}
-                                                className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} bg-cover rounded-lg`}
+                                                className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
                                                 onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                                                   setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
                                                 }}

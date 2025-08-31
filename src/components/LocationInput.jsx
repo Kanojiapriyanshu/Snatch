@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useFormContext } from '@/app/onboarding/context';
+import React, { useState, useEffect } from "react";
+import { useFormContext } from "@/app/onboarding/context";
 
 const LocationInput = ({ value, onSelectLocation, consideration, ...props }) => {
   const { formData, updateFormData } = useFormContext?.() || {};
-  // Use context value if available, fallback to prop
-  const contextLocation = formData?.location || '';
-  const [query, setQuery] = useState(contextLocation || value || '');
+  const contextLocation = formData?.location || "";
+  const [query, setQuery] = useState(contextLocation || value || "");
   const [suggestions, setSuggestions] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
 
-  // Keep input in sync with context (for refresh/persist)
+  // Keep input synced with context
   useEffect(() => {
     if (contextLocation && contextLocation !== query) {
       setQuery(contextLocation);
@@ -17,9 +16,9 @@ const LocationInput = ({ value, onSelectLocation, consideration, ...props }) => 
     // eslint-disable-next-line
   }, [contextLocation]);
 
-  let borderColor = isFocused ? 'border-electric-blue' : 'border-gray-300';
+  let borderColor = isFocused ? "border-electric-blue" : "border-gray-300";
 
-  // Fetch suggestions from Photon
+  // Fetch suggestions
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (query.length >= 2) {
@@ -27,48 +26,78 @@ const LocationInput = ({ value, onSelectLocation, consideration, ...props }) => 
       } else {
         setSuggestions([]);
       }
-    }, 20);
+    }, 50); // increased delay for fewer requests
     return () => clearTimeout(timeout);
   }, [query]);
 
-const fetchLocations = async (q) => {
-  try {
-    const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=15`);
-    const data = await res.json();
+  const fetchLocations = async (q) => {
+    try {
+      const res = await fetch(
+        `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=15`
+      );
+      const data = await res.json();
 
-    // Only consider features that are of type "city" or "town"
-    const filtered = data.features.filter((f) =>
-      ['city', 'town'].includes(f.properties.osm_value) && f.properties.name
-    );
+      const allowedTypes = [
+        "city",
+        "town",
+        "village",
+        "hamlet",
+        "municipality",
+        "locality",
+      ];
 
-    // Deduplicate using "city-country" key
-    const uniqueMap = new Map();
-    filtered.forEach((f) => {
-      const city = f.properties.name;
-      const country = f.properties.country;
-      const key = `${city.toLowerCase()},${country.toLowerCase()}`;
-      if (!uniqueMap.has(key)) {
-        uniqueMap.set(key, {
-          id: f.properties.osm_id,
-          city,
-          country,
-          label: `${city}, ${country}`,
-        });
-      }
-    });
+      let filtered = data.features.filter(
+        (f) => allowedTypes.includes(f.properties.osm_value) && f.properties.name
+      );
 
-    setSuggestions([...uniqueMap.values()]);
-  } catch (err) {
-    console.error('Location fetch failed:', err);
-  }
-};
+      // Deduplicate by "city-country"
+      const uniqueMap = new Map();
+      filtered.forEach((f) => {
+        const city = f.properties.name;
+        const country = f.properties.country;
+        const key = `${city.toLowerCase()},${country.toLowerCase()}`;
+        if (!uniqueMap.has(key)) {
+          uniqueMap.set(key, {
+            id: f.properties.osm_id,
+            city,
+            country,
+            label: `${city}, ${country}`,
+          });
+        }
+      });
 
+      let results = [...uniqueMap.values()];
+      const lowerQ = q.toLowerCase();
 
+      // Prioritize results if query matches country
+      results.sort((a, b) => {
+        const aMatch =
+          a.country.toLowerCase().includes(lowerQ) ||
+          a.label.toLowerCase().includes(lowerQ);
+        const bMatch =
+          b.country.toLowerCase().includes(lowerQ) ||
+          b.label.toLowerCase().includes(lowerQ);
+
+        // put exact country matches above substring matches
+        if (a.country.toLowerCase() === lowerQ && b.country.toLowerCase() !== lowerQ) {
+          return -1;
+        }
+        if (b.country.toLowerCase() === lowerQ && a.country.toLowerCase() !== lowerQ) {
+          return 1;
+        }
+
+        return bMatch - aMatch;
+      });
+
+      setSuggestions(results);
+    } catch (err) {
+      console.error("Location fetch failed:", err);
+    }
+  };
 
   const handleSelect = (loc) => {
     setQuery(loc.label);
     setSuggestions([]);
-    // Save to context and DB
     if (updateFormData) updateFormData({ location: loc.label });
     if (onSelectLocation) onSelectLocation(loc);
   };
@@ -80,27 +109,29 @@ const fetchLocations = async (q) => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setTimeout(() => setIsFocused(false), 150)} // delay to allow click
+        onBlur={() => setTimeout(() => setIsFocused(false), 150)}
         className={`w-full bg-transparent rounded-md border py-[10px] px-5 outline-none transition 
           ${borderColor} disabled:cursor-default disabled:bg-gray-2`}
-        placeholder="Start typing city or country..."
+        placeholder="Which city are you from? (e.g: Mumbai, India)"
         autoComplete="off"
       />
 
-        {isFocused && suggestions.length > 0 && (
-        <ul className="absolute z-10 mt-2 w-full bg-[#E9E9E9] border border-gray-300 rounded max-h-40 overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {suggestions.map((loc) => (
+      {isFocused && suggestions.length > 0 && (
+        <ul
+          className="absolute z-10 mt-2 w-full bg-[#E9E9E9] border border-gray-300 rounded max-h-40 overflow-y-auto"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {suggestions.map((loc) => (
             <li
-                key={loc.id}
-                className="p-2 cursor-pointer hover:text-electric-blue"
-                onMouseDown={() => handleSelect(loc)} // use onMouseDown to prevent blur before select
+              key={loc.id}
+              className="p-2 cursor-pointer hover:text-electric-blue"
+              onMouseDown={() => handleSelect(loc)}
             >
-                {loc.label}
+              {loc.label}
             </li>
-            ))}
+          ))}
         </ul>
-        )}
-
+      )}
     </div>
   );
 };

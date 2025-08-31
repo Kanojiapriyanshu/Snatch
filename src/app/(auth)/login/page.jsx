@@ -75,18 +75,37 @@ export default function Page() {
 }
   }
 
-  function handleInputChange(e) {
-    const value = e.target.value;
-    setEmail(value);
+      // Live validation on input
+   function handleInputChange(e) {
+  const value = e.target.value;
+  setEmail(value);
+  setInputError("");
 
-    // Validate email input in real-time
-    const validation = emailSchema.safeParse(value);
-    if (!validation.success) {
-      setInputError(validation.error.issues[0].message);
-    } else {
-      setInputError('');
+  // Always check multiple @ right away
+  if ((value.match(/@/g) || []).length > 1) {
+    setInputError("Email cannot contain multiple @ symbols");
+    return;
+  }
+
+  // Only validate domain + TLD once "." appears
+  if (value.includes("@")) {
+    const [_, domain] = value.split("@");
+
+    if (domain && domain.includes(".")) {
+      const parts = domain.split(".");
+      const lastPart = parts[parts.length - 1];
+
+      // If still typing TLD (like ".c"), don't validate yet
+      if (lastPart.length < 2) return;
+
+      // Full validation (schema handles domain/TLD)
+      const validation = emailSchema.safeParse(value);
+      if (!validation.success) {
+        setInputError(validation.error.issues[0].message);
+      }
     }
   }
+}
 
   const handleVerifyEmail = async () => {
     const validation = emailSchema.safeParse(email);

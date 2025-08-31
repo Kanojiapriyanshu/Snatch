@@ -128,6 +128,14 @@ const parseDate = (str) => {
     };
   }, []);
 
+  const handleKeyDown = (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault(); // stop form submission
+    setIsOpen(false);   // close calendar
+  }
+};
+
+
   return (
     <section className="bg-white w-1/2 -ml-2">
       <div className="container">
@@ -155,10 +163,11 @@ const parseDate = (str) => {
                   <input
                     type="text"
                     className="w-[320px] 2xl:w-full pl-[55px] pr-4 py-2.5 border rounded focus:outline-none"
-                    placeholder={placeholder || "DD-MM-YYYY"}
+                    placeholder={placeholder || "DD/MM/YYYY"}
                     value={value}
                     onChange={handleInputChange}
                     onClick={toggleDatepicker}
+                    onKeyDown={handleKeyDown}
                   />
                 </div>
 

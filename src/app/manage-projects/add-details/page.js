@@ -478,26 +478,46 @@ const isFormComplete = () => {
    router.push("/manage-projects/pick-projects");
   }
 
-  const getProjectStatus = (project) => {
-    if (activeProject && project.mediaId === activeProject.mediaId) {
-      return "Editing";
-    }
-    const formEntry = Array.isArray(selectionState.formData)
-    ? selectionState.formData.find((item) => item.key === project.mediaId)
-    : null;
-    if (formEntry) {
-      const isComplete = requiredFields.every((field) => !!formEntry[field]);
-      console.log("iscomplete project", isComplete)
-      return isComplete ? "Done" : "Draft";
-    }
-    return "Draft";
-  };
+const getProjectStatus = (project) => {
+  // Active project should always show "Editing"
+  if (activeProject && project.mediaId === activeProject.mediaId) {
+    return "Editing";
+  }
 
-  // Map projects to add a status property
-  const computedProjects = projects.map(project => ({
-    ...project,
-    status: getProjectStatus(project),
-  }));
+  // Find saved form data for this project
+  const formEntry = Array.isArray(selectionState.formData)
+    ? selectionState.formData.find((item) => item.key === project.mediaId.toString())
+    : null;
+
+  if (!formEntry) {
+    return "Draft"; // no form started yet
+  }
+
+  // Build required fields dynamically
+  const baseFields = ["titleName", "description", "industries"];
+  const companyFields = ["companyName", "companyLocation"];
+  const fieldsToCheck = [...baseFields];
+  if (formEntry.isBrandCollaboration) {
+    fieldsToCheck.push(...companyFields);
+  }
+
+  // Check if all required fields are filled
+  const isComplete = fieldsToCheck.every((field) => {
+    const value = formEntry[field];
+    if (!value) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === "string") return value.trim() !== "";
+    return true;
+  });
+
+  return isComplete ? "Done" : "Draft";
+};
+
+const computedProjects = projects.map(project => ({
+  ...project,
+  status: getProjectStatus(project),
+}));
+
 
 const handlePrevious = () => {
   const currentIndex = projects.findIndex(project => project.mediaId === activeImageId);
@@ -781,8 +801,6 @@ const handlePopupGenerate = async () => {
   onChange={(e) => setPopupUserInput(e.target.value)}
 />
 
-
-
               <div className="flex gap-1 flex-nowrap">
                 {/* Skip AI & enter manually */}
                 <button
@@ -797,7 +815,7 @@ const handlePopupGenerate = async () => {
                   Skip AI & enter manually
                 </button>
                 {/* Generate my project */}
-<button
+                <button
                   className={`2xl:px-8 px-6 py-2 rounded-lg ${
                     popupGenerating || !popupUserInput.trim()
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -914,7 +932,7 @@ const handlePopupGenerate = async () => {
             alt={activeProject.name}
             width={1080}
             height={1080}
-            className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}  object-cover rounded-lg`}
+            className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
             onLoadingComplete={({ naturalWidth, naturalHeight }) => {
               setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
             }}
@@ -952,7 +970,7 @@ const handlePopupGenerate = async () => {
                     src={child.media_url}
                     alt={`Media ${child.id}`}
                     fill
-                    className="bg-cover rounded-lg"
+                    className="object-cover rounded-lg"
                     onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                       setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
                     }}
