@@ -63,7 +63,7 @@ const ProjectsGrid = ({
                         src={child.media_url}
                         alt={`Media ${child.id}`}
                         fill
-                        className="bg-cover rounded-md"
+                        className="object-cover rounded-md"
                       />
                     ) : (
                       <video
@@ -95,7 +95,7 @@ const ProjectsGrid = ({
                 alt={project.name || project.fileName}
                 width={200}
                 height={150}
-                className="bg-cover h-36 rounded-md"
+                className="object-cover h-full w-full rounded-md"
               />
             ) : (
               <div className="w-full h-full rounded-lg flex justify-center items-center">
@@ -106,7 +106,7 @@ const ProjectsGrid = ({
                       alt={project.name || project.fileName}
                       width={200}
                       height={150}
-                      className="bg-cover h-36 rounded-md"
+                      className="object-cover h-36 rounded-md"
                     />
                   ) : (
                     <video

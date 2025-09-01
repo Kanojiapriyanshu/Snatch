@@ -62,7 +62,7 @@ body {
 
 .custom-scrollbar {
   scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #555 transparent; /* Firefox */
+  scrollbar-color: #CBCBCB transparent; /* Firefox */
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -75,7 +75,7 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #555; /* dark grey thumb */
+  background-color: #CBCBCB; /* dark grey thumb */
   border-radius: 9999px;  /* rounded pill style */
   border: none;
 }

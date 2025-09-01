@@ -112,7 +112,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="h-screen  flex flex-col justify-center lg:flex-row overflow-hidden ">
+    <div className="h-screen  flex flex-col justify-center lg:flex-row overflow-hidden font-apfel-grotezk-regular ">
       {/* Left Section for Image */}
       <div className="lg:px-10 lg:py-9 xl:px-10 xl:py-9 2xl:px-10  relative lg:w-1/2 h-screen">
       <Image
@@ -168,7 +168,7 @@ export default function SignUp() {
       <div className="flex h-[100%] lg:h-full w-full lg:w-1/2 justify-center items-center ">
         <div className="flex flex-col justify-center items-center text-center w-full px-6 sm:px-10">
           <h1 className="text-graphite text-2xl sm:text-5xl mb-8 font-qimano">Create your account</h1>
-          <div className="relative w-full sm:w-[356px]">
+          <div className="relative w-full sm:w-[356px] font-apfel-grotezk-regular">
             <input
               type="email"
               placeholder="Enter email address"
@@ -196,11 +196,11 @@ export default function SignUp() {
                 Verifying...
               </div>
             ) : (
-              "Verify email"
+              <p className="font-apfel-grotezk-regular">Verify email</p>
             )}
           </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
-          <p className="text-gray-500 mt-2 max-w-sm text-[13px]">By signing up you have read and agree to our<Link href="/terms-and-services">
+          <p className="text-gray-500 mt-2 max-w-sm text-[13px] font-apfel-grotezk-regular tracking-wide">By signing up you have read and agree to our<Link href="/terms-and-services">
           <span className="text-electric-blue cursor-pointer underline ml-1 mr-1">Terms of service</span>
         </Link> 
           and 
