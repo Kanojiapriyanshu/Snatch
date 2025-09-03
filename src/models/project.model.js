@@ -15,6 +15,7 @@ const instagramSelectedSchema = new mongoose.Schema({
   name: { type: String, required: true },
   mediaId: { type: String, required: true },
   mediaLink: { type: String, required: true },
+  caption: { type: String, default: "" },   // ✅ NEW FIELD
   children: { type: [instagramChildSchema], default: [] }, // Array of children
   isDraft: { type: Boolean, default: true }, 
   createdAt: { type: Date, default: Date.now },

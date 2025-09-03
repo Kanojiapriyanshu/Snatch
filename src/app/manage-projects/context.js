@@ -84,59 +84,6 @@ export function SelectedProjectsProvider({ children }) {
     setIsBrandCollaboration(prev => !prev);
   }, []);
 
-// const updateFormDataForMedia = (mediaId, newFormData) => {
-//   if (!mediaId) return;
-
-//   setSelectionState((prevState) => {
-//     console.log("Updating formData for mediaId:", mediaId);
-//     console.log("Previous state:", prevState);
-
-//     // Ensure formData is an array
-//     const currentFormData = Array.isArray(prevState.formData) ? prevState.formData : [];
-
-//     // Check if entry already exists
-//     const existingIndex = currentFormData.findIndex(item => item.key === mediaId);
-    
-//     // Create updated form data array
-//     let newFormDataArray;
-//     if (existingIndex >= 0) {
-//       // Update existing entry
-//       newFormDataArray = currentFormData.map((item, index) => 
-//         index === existingIndex 
-//           ? { ...item, ...newFormData, key: mediaId }
-//           : item
-//       );
-//     } else {
-//       // Add new entry
-//       newFormDataArray = [
-//         ...currentFormData,
-//         { ...newFormData, key: mediaId }
-//       ];
-//     }
-
-//     const newState = {
-//       ...prevState,
-//       formData: newFormDataArray
-//     };
-
-//     // Save to localStorage and database
-//     const timestamp = new Date().toISOString();
-//     const stateToSave = {
-//       ...newState,
-//       updatedAt: timestamp
-//     };
-
-//     localStorage.setItem(`selectionState_${userId}`, JSON.stringify(stateToSave));
-//     saveDraftToDatabase(stateToSave);
-
-
-//     console.log("Updated state:", newState);
-//     return newState;
-//   });
-// };
-
-// Add Instagram selection without map key
-
 const updateFormDataForMedia = (mediaId, newFormData) => {
   if (!mediaId) {
     console.error("No mediaId provided to updateFormDataForMedia");
@@ -194,7 +141,7 @@ const updateFormDataForMedia = (mediaId, newFormData) => {
   });
 };
 
-const addInstagramSelection = (mediaLink, mediaId, name, children = []) => {
+const addInstagramSelection = (mediaLink, mediaId, name, caption = "", children = []) => {
   const timestamp = new Date();
 
   setSelectionState((prevState) => {
@@ -207,30 +154,29 @@ const addInstagramSelection = (mediaLink, mediaId, name, children = []) => {
           name,
           mediaLink,
           mediaId,
-          children,
+          caption,
+          children: Array.isArray(children) 
+            ? children 
+            : (children?.data ? children.data : []),  // ✅ Normalize here
           createdAt: timestamp,  
         },
       ],
     };
 
-    // Save to localStorage with updated Instagram selections
     localStorage.setItem(
       `selectionState_${userId}`,
       JSON.stringify({
         ...newState,
-        instagramSelected: [
-          ...(newState.instagramSelected || []),
-        ],
         updatedAt: timestamp.toISOString(),
       })
     );
 
-    // Auto-save to MongoDB
     saveDraftToDatabase({ ...newState, updatedAt: timestamp });
 
     return newState;
   });
 };
+
   
 const removeInstagramSelection = async (selectionId) => {
     setSelectionState((prevState) => {
@@ -379,131 +325,4 @@ const removeInstagramSelection = async (selectionId) => {
 
 
 
-
-
-
-  // Add Instagram selection
-  // const addInstagramSelection = (mediaLink, mediaId, name, children = []) => {
-  //   setSelectionState((prevState) => {
-  //     const newState = {
-  //       ...prevState,
-  //       instagramSelected: [
-  //         ...(prevState.instagramSelected || []),
-  //         {
-  //           id: Date.now(),
-  //           name,
-  //           mediaLink,
-  //           mediaId,
-  //           children,
-  //         },
-  //       ],
-  //     };
-
-  //     const timestamp = new Date().toISOString();
-
-  //     // Save to localStorage
-  //     localStorage.setItem(
-  //       `selectionState_${userId}`,
-  //       JSON.stringify({ ...newState, updatedAt: timestamp })
-  //     );
-
-  //     // Auto-save to MongoDB
-  //     saveDraftToDatabase({ ...newState, updatedAt: timestamp });
-
-  //     return newState;
-  //   });
-  // };
-
-
-  //without dymanic map data addInstagramSelection
-  // const removeInstagramSelection = async (selectionId) => {
-  //   setSelectionState((prevState) => {
-  //     // Find the index of the formData object with the matching key (selectionId)
-  //     const formDataIndex = prevState.formData.findIndex((item) => item.key === selectionId);
-  
-  //     // Log for debugging
-  //     console.log("Form data to delete:", prevState.formData[formDataIndex], selectionId);
-  
-  //     // Filter out the deleted instagramSelected item
-  //     const newInstagramSelected = prevState.instagramSelected.filter((selection) => {
-  //       return selection.mediaId !== selectionId;
-  //     });
-  //     console.log("New instagramSelected:", newInstagramSelected);
-  
-  //     // Create the new state without the deleted instagramSelected and its formData
-  //     const newState = {
-  //       ...prevState,
-  //       instagramSelected: newInstagramSelected,
-  //       formData: prevState.formData.filter((item, index) => index !== formDataIndex), // Remove the item at the found index
-  //     };
-  
-  //     const timestamp = new Date().toISOString();
-  
-  //     // Save to localStorage
-  //     localStorage.setItem(
-  //       `selectionState_${userId}`,
-  //       JSON.stringify({ ...newState, updatedAt: timestamp })
-  //     );
-  
-  //     // Auto-save to MongoDB
-  //     saveDraftToDatabase({ ...newState, updatedAt: timestamp });
-  
-  //     return newState;
-  //   });
-  
-  //   // Optionally, you can also explicitly delete the formData from the database
-  //   try {
-  //     await deleteFormDataFromDatabase(selectionId); // Call a function to delete formData from the database
-  //   } catch (error) {
-  //     console.error("Failed to delete formData from the database:", error);
-  //   }
-  // };
-  
-
-
-  // const removeInstagramSelection = async (selectionId) => {
-  //   setSelectionState((prevState) => {
-  //     // Find the formData associated with the selectionId (if it exists)
-  //     const formDataToDelete = prevState.formData?.[selectionId];
-
-  //     console.log("Form data to delete: remove instgarm", formDataToDelete, selectionId);
-  
-  //     // Filter out the deleted instagramSelected item with logging
-  //     const newInstagramSelected = prevState.instagramSelected.filter((selection) => {
-  //       console.log("Evaluating selection.id:", selection.id, "against selectionId:", selectionId);
-  //       return selection.mediaId !== selectionId;
-  //     });
-  //     console.log("New instagramSelected:", newInstagramSelected);
-  
-  //     // Create the new state without the deleted instagramSelected and its formData
-  //     const newState = {
-  //       ...prevState,
-  //       instagramSelected: newInstagramSelected,
-  //       formData: {
-  //         ...prevState.formData,
-  //         [selectionId]: undefined, // Remove the formData for the deleted selection
-  //       },
-  //     };
-  
-  //     const timestamp = new Date().toISOString();
-  
-  //     // Save to localStorage
-  //     localStorage.setItem(
-  //       `selectionState_${userId}`,
-  //       JSON.stringify({ ...newState, updatedAt: timestamp })
-  //     );
-  
-  //     // Auto-save to MongoDB
-  //     saveDraftToDatabase({ ...newState, updatedAt: timestamp });
-  
-  //     return newState;
-  //   });
-  
-  //   // Optionally, you can also explicitly delete the formData from the database
-  //   try {
-  //     await deleteFormDataFromDatabase(selectionId); // Call a function to delete formData from the database
-  //   } catch (error) {
-  //     console.error("Failed to delete formData from the database:", error);
-  //   }
-  // };
 

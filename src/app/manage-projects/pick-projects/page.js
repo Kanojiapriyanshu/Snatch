@@ -277,7 +277,7 @@ const handleNext = async () => {
   };
 
   const handleNextClick = () => {
-    router.push("/manage-projects/pick-projects");
+    router.push("/dashboard");
   };
 
   const handleDashboardClick = () => {

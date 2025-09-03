@@ -82,6 +82,7 @@ const onboardingDataSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
+    hasCompletedOnboarding: { type: Boolean, default: false },
     updatedAt: {
       type: Date,
       default: Date.now

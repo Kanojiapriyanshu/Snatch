@@ -55,7 +55,7 @@ export default function OnboardingToolbar() {
   // Button handlers
   const handleHamburgerClick = () => setIsMenuVisible((prev) => !prev);
   const handleProfileClick = () => router.push("/onboarding/step-1");
-  const handleNextClick = () => router.push("/manage-projects/pick-projects");
+  const handleNextClick = () => router.push("/dashboard");
   const handleDashboardClick = () => router.push("/dashboard");
   const handleSettingClick = () => router.push("/settings");
 

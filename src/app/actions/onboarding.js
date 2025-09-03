@@ -30,7 +30,8 @@ export async function handler({ userId, formData }) {
         { userId },
         {
           ...cleanFormData,
-          isDraft: false
+          isDraft: false, 
+          hasCompletedOnboarding: true
         },
         { 
           new: true,

@@ -4,19 +4,19 @@ import { useState, useEffect, Suspense } from "react";
 import { useSelectedProjects } from "../context";
 import TitleWithCounter from "@/components/TitleWithCounter";
 import FormInput from "@/components/FormInput";
-import MultiSelectInput from "@/components/MultiSelectInput";
-import CustomFileInput from "@/components/CustomFileInput";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import NormalMultiSelect from "@/components/NormalMultiSelect";
-import ProjectsGrid from "@/components/ProjectsGrid";
 import { industryList, eventTypes } from "@/data/portfolio/industry";
 import { fetchMediaInsights } from "@/utils/fetchMediaInsights";
-import ProjectCustomFileInput from "@/components/ProjectCustomFileInput";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
 import {generateFormDataFromUserInput} from "@/utils/generateFormDataFromUserInput";
 import { cleanAIResponse } from "@/utils/aiResponseClear";
+import ProjectsGrid from "@/components/ProjectsGrid";
+import MultiSelectInput from "@/components/MultiSelectInput";
+import NormalMultiSelect from "@/components/NormalMultiSelect";
+import ProjectCustomFileInput from "@/components/ProjectCustomFileInput";
+
 
 // Component that uses useSearchParams wrapped in Suspense
 function SearchParamsProvider({ setActiveTab, setActiveImageId }) {
@@ -44,10 +44,7 @@ function SearchParamsProvider({ setActiveTab, setActiveImageId }) {
 export default function AddDetails() {
   const {
     selectionState,
-    handleFileUpload,
     updateFormDataForMedia,
-    handleCompanyLogoUpload,
-    toggleIsBrandCollaboration 
   } = useSelectedProjects();
 
   const router = useRouter();
@@ -86,6 +83,7 @@ export default function AddDetails() {
   const [hasConsiderations, setHasConsiderations] = useState(false);
   const [showMinProjectsPopup, setShowMinProjectsPopup] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
+  const [popupUserInputs, setPopupUserInputs] = useState({});
 
   // Add this helper function before the return statement
 const checkOrientation = (width, height) => {
@@ -152,10 +150,7 @@ const filledProjectsCount = (() => {
     activeImageId
   });
 
-      // This useEffect has been removed as it conflicts with the URL parameter handling
       // The activeImageId is now set from URL parameters in the main useEffect above
-      
-      console.log("actieimageid for first time", activeImageId)
 
   useEffect(() => {
     console.log("activeImageId changed to:", activeImageId);
@@ -166,6 +161,9 @@ const filledProjectsCount = (() => {
     activeImageId !== null
       ? projects.find((project) => String(project.mediaId) === String(activeImageId))
       : projects[0];
+
+  const activeCaption = activeProject?.caption
+  const activeMediaLink = activeProject?.mediaLink
       
   console.log("Active project selection:", {
     activeImageId,
@@ -249,6 +247,15 @@ useEffect(() => {
   }
 }, [activeImageId, selectionState?.formData]);
 
+useEffect(() => {
+  if (activeImageId && popupUserInputs[activeImageId]) {
+    // restore previously saved prompt
+    setPopupUserInput(popupUserInputs[activeImageId]);
+  } else {
+    setPopupUserInput("");
+  }
+}, [activeImageId, showBrandPopup]);
+
 
 const areFormFieldsEmpty = (formData) => {
   if (!formData) return true;
@@ -319,8 +326,6 @@ if (!isHydrated) {
     return null;
 }
 
-
-
 const handleProjectClick = async (mediaId) => {
   if (mediaId === activeImageId) return;
   setActiveImageId(mediaId);
@@ -333,6 +338,14 @@ const handleProjectClick = async (mediaId) => {
     // Clear insights for uploaded files
     setInsights([]);
   }
+};
+
+const handlePromptChange = (val) => {
+  setPopupUserInput(val);
+  setPopupUserInputs((prev) => ({
+    ...prev,
+    [activeImageId]: val,
+  }));
 };
 
 
@@ -547,7 +560,7 @@ const handleNext = () => {
   };
 
   const handleNextClick = () => {
-    router.push("/manage-projects/pick-projects");
+    router.push("/dashboard");
   };
 
   const handleDashboardClick = () => {
@@ -680,160 +693,260 @@ const handlePopupGenerate = async () => {
   </div>
 )}
 
-{showMinProjectsPopup && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-    <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
-      
-      {/* Close Icon */}
-      <button
-        className="absolute top-4 right-4 text-gray-500 hover:text-black"
-        onClick={() => setShowMinProjectsPopup(false)}
-        aria-label="Close"
-      >
-        ✕
-      </button>
+      {showMinProjectsPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
+            
+            {/* Close Icon */}
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-black"
+              onClick={() => setShowMinProjectsPopup(false)}
+              aria-label="Close"
+            >
+              ✕
+            </button>
 
-      {/* Title */}
-      <h2 className="text-xl sm:text-2xl font-[Georgia] text-black mb-4 text-left font-qimano">Disclaimer</h2>
+            {/* Title */}
+            <h2 className="text-xl sm:text-2xl font-[Georgia] text-black mb-4 text-left font-qimano">Disclaimer</h2>
 
-      <hr className="border-gray-200 mb-4" />
+            <hr className="border-gray-200 mb-4" />
 
-      {/* Message */}
-      <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
-        You need at least <strong>4 projects</strong> to create your portfolio. Until then, previews will look incomplete. Your progress will be saved, but your profile won&apos;t be shareable just yet.
-      </p>
+            {/* Message */}
+            <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
+              You need at least <strong>4 projects</strong> to create your portfolio. Until then, previews will look incomplete. Your progress will be saved, but your profile won&apos;t be shareable just yet.
+            </p>
 
-      {/* Buttons */}
-      <div className="flex flex-col sm:flex-row justify-center gap-4 font-apfel-grotezk-regular">
-        <button
-          onClick={() => setShowMinProjectsPopup(false)}
-          className="border border-electric-blue text-electric-blue px-6 py-2 rounded-xl hover:bg-blue-50 transition"
-        >
-          Keep Editing
-        </button>
-        <button
-          onClick={() => {
-    setShowMinProjectsPopup(true);
-    setTimeout(() => {
-      setShowMinProjectsPopup(false);
-      router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
-    }, 2000);}}
-          className="bg-electric-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
-        >
-          Save and Continue
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-{(showBrandPopup || popupAnimating) && (
-  <>
-    {/* Backdrop */}
-    <div
-      className={`fixed top-0 left-[35vw] h-full w-[65vw] z-40 bg-black/10 backdrop-blur-sm transition-opacity duration-500 ${showBrandPopup ? 'opacity-70 pointer-events-auto' : 'opacity-70 pointer-events-none'}`}
-      onClick={() => {
-        setShowBrandPopup(false);
-        setPopupAnimating(true);
-        setTimeout(() => setPopupAnimating(false), 500);
-      }}
-    />
-    {/* Sliding Popup */}
-    <div
-        className="fixed top-0 left-0 z-50 h-full"
-        style={{
-          width: '38vw',
-          minWidth: 320,
-          maxWidth: 800,
-          pointerEvents: 'auto',
-          transform: showBrandPopup ? 'translateX(0)' : 'translateX(-100%)',
-          // transition: 'transform 0.6s ease-in-out',
-          transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
-        }}
-      
-    >
-      <div
-        className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center`}
-        style={{
-          borderTopRightRadius: 32,
-          borderBottomRightRadius: 32,
-          boxShadow: '2px 0 24px rgba(0,0,0,0.08)',
-        }}
-      >
-        <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
-          {popupStep === 1 ? (
-            <>
-              <div className="flex justify-center mb-6">
-                <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
-              </div>
-              <h2 className="text-2xl text-electric-blue font-qimano mb-2 text-blue-600 text-center">
-                Was this a brand post or a personal one?
-              </h2>
-              <p className="text-center text-gray-600 mb-8 font-apfel-grotezk-regular">
-                Let us know if this post was in collaboration with a brand or something you shared independently.
-                We&rsquo;ll tailor the details accordingly.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                <button
-                  className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue  hover:bg-electric-blue hover:text-white transition"
-                  onClick={() => handleBrandPopupChoice(true)}
-                >
-                  It is a brand post
-                </button>
-                <button
-                  className="w-full text-md sm:w-auto px-4 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
-                  onClick={() => handleBrandPopupChoice(false)}
-                >
-                  It is a personal post
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <Image src="/assets/images/aiLogo.svg" className="w-28 h-10" width={10} height={10} alt="AI Logo" />
-              <h2 className="text-2xl font-qimano text-electric-blue mb-6 mt-7 text-center">
-                Share the story, we&rsquo;ll shape it for your press kit.
-              </h2>
-              <textarea
-  className="w-full text-gray-900 !text-gray-800 font-apfel-grotezk-regular font-sm text-[16px] tracking-normal leading-[120%] p-4 border border-gray-300 rounded-lg min-h-[300px] mb-4 focus:outline-none focus:border-blue-600 placeholder:text-gray-500"
-  placeholder="What’s this content piece about? Why did you create it? What results or impact did it have? Share the backstory and we’ll turn it into a project ready for your press kit."
-  value={popupUserInput}
-  onChange={(e) => setPopupUserInput(e.target.value)}
-/>
-
-              <div className="flex gap-1 flex-nowrap">
-                {/* Skip AI & enter manually */}
-                <button
-                  className={`2xl:px-8 px-6 py-2 rounded-lg border-[1.5px] bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-sm font-apfel-grotezk-regular transition whitespace-nowrap flex-shrink-0`}
-                  onClick={() => {
-                    setShowBrandPopup(false);
-                    setPopupAnimating(true);
-                    setTimeout(() => setPopupAnimating(false), 500);
-                  }}
-                  disabled={popupGenerating}
-                >
-                  Skip AI & enter manually
-                </button>
-                {/* Generate my project */}
-                <button
-                  className={`2xl:px-8 px-6 py-2 rounded-lg ${
-                    popupGenerating || !popupUserInput.trim()
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
-                  } min-w-[240px] text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
-                  onClick={handlePopupGenerate}
-                  disabled={popupGenerating || !popupUserInput.trim()}
-                >
-                  {popupGenerating ? "Generating..." : "Generate my project details"}
-                </button>
-              </div>
-            </>
-          )}
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 font-apfel-grotezk-regular">
+              <button
+                onClick={() => setShowMinProjectsPopup(false)}
+                className="border border-electric-blue text-electric-blue px-6 py-2 rounded-xl hover:bg-blue-50 transition"
+              >
+                Keep Editing
+              </button>
+              <button
+                onClick={() => {
+          setShowMinProjectsPopup(true);
+          setTimeout(() => {
+            setShowMinProjectsPopup(false);
+            router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
+          }, 2000);}}
+                className="bg-electric-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+              >
+                Save and Continue
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </>
-)}
+      )}
+
+      {(showBrandPopup || popupAnimating) && (
+        <>
+          {/* Backdrop */}
+          <div
+            className={`fixed top-0 left-[35vw] h-full w-[65vw] z-40 bg-black/10 backdrop-blur-sm transition-opacity duration-500 ${showBrandPopup ? 'opacity-70 pointer-events-auto' : 'opacity-70 pointer-events-none'}`}
+            onClick={() => {
+              setShowBrandPopup(false);
+              setPopupAnimating(true);
+              setTimeout(() => setPopupAnimating(false), 500);
+            }}
+          />
+          {/* Sliding Popup */}
+          <div
+              className="fixed top-0 left-0 z-50 h-full"
+              style={{
+                width: '38vw',
+                minWidth: 320,
+                maxWidth: 800,
+                pointerEvents: 'auto',
+                transform: showBrandPopup ? 'translateX(0)' : 'translateX(-100%)',
+                // transition: 'transform 0.6s ease-in-out',
+                transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
+              }}
+            
+          >
+            <div
+              className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center`}
+              style={{
+                borderTopRightRadius: 32,
+                borderBottomRightRadius: 32,
+                boxShadow: '2px 0 24px rgba(0,0,0,0.08)',
+              }}
+            >
+              <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
+                {popupStep === 1 ? (
+               <>
+                {/* Logo */}
+                <div className="flex justify-center mb-6">
+                  <Image
+                    src="/assets/images/aiLogo.svg"
+                    className="w-28 h-10"
+                    width={10}
+                    height={10}
+                    alt="AI Logo"
+                  />
+                </div>
+
+                {/* Question Heading */}
+                <h2 className="text-2xl text-center text-graphite font-qimano mb-6 leading-snug">
+                  Was this in collaboration with a brand or something you shared independently?
+                </h2>
+
+                {/* Image + Caption Card */}
+                {activeCaption && (
+                  <div className="mb-8 p-3 bg-gray-100 rounded-lg w-full flex items-start gap-3 text-dark-grey text-sm">
+                    {activeMediaLink && (
+                      <Image
+                        src={activeMediaLink}
+                        alt="Project media"
+                        width={48}
+                        height={48}
+                        className="rounded-md w-18 h-12 object-cover flex-shrink-0"
+                      />
+                    )}
+                    <span className="flex-1">
+                      {activeCaption.length > 150
+                        ? activeCaption.slice(0, 150) + "..."
+                        : activeCaption}
+                    </span>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                  <button
+                    className="w-full sm:w-auto px-6 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
+                    onClick={() => handleBrandPopupChoice(true)}
+                  >
+                    It is a brand post
+                  </button>
+                  <button
+                    className="w-full sm:w-auto px-6 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
+                    onClick={() => handleBrandPopupChoice(false)}
+                  >
+                    It is a personal post
+                  </button>
+                </div>
+              </>
+                ) : (
+                  <>
+                {/* Logo */}
+                <div className="flex items-center mr-10" >
+                <Image
+                  src="/assets/images/aiLogo.svg"
+                  className="w-14 h-7"
+                  width={10}
+                  height={10}
+                  alt="AI Logo"
+                />
+
+                {/* Heading */}
+                <h2 className="text-[22px] font-qimano text-electric-blue mb-6 mt-7 text-center">
+                  Tell us about the post, we&rsquo;ll do the rest!
+                </h2>
+                </div>
+                {/* Image + Caption Card */}
+                {activeCaption && (
+                  <div className="w-full">
+                    <div className="mb-4 p-3 bg-gray-100 rounded-lg w-full flex items-center gap-3 text-dark-grey text-sm">
+                      {activeMediaLink && (
+                        <Image
+                          src={activeMediaLink}
+                          alt="Project media"
+                          width={40}
+                          height={40}
+                          className="rounded-md w-18 h-12 object-cover flex-shrink-0"
+                        />
+                      )}
+                      <span>
+                        {activeCaption.length > 150
+                          ? activeCaption.slice(0, 150) + "..."
+                          : activeCaption}
+                      </span>
+                    </div>
+
+                    {/* Checkbox */}
+                    <label className="flex items-center gap-2 text-graphite text-sm mb-1 font-apfel-grotezk-regular">
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 text-dark-grey "
+                        checked={popupUserInput === activeCaption}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setPopupUserInput(activeCaption);
+                          } else {
+                            setPopupUserInput("");
+                          }
+                        }}
+                      />
+                      Use the caption as your prompt
+                    </label>
+                  </div>
+                )}
+
+                {/* Textarea with dynamic placeholder */}
+                <div className="relative w-full">
+                <textarea
+                  className="mt-5 w-full text-graphite font-apfel-grotezk-regular text-[16px] tracking-normal leading-[120%] p-4 border border-gray-300 rounded-lg min-h-[200px] mb-4 focus:outline-none focus:border-blue-600 placeholder:text-dark-grey"
+                  value={popupUserInput}
+                  // onChange={(e) => setPopupUserInput(e.target.value)}
+                  onChange={(e) => handlePromptChange(e.target.value)}
+                />
+                {/* Custom Placeholder Overlay */}
+                {!popupUserInput && (
+                  <div className="absolute top-8 left-4 right-4 text-dark-grey whitespace-pre-line pointer-events-none font-apfel-grotezk-regular text-[16px] tracking-normal">
+                    {isBrandCollaboration ? (
+                      <>
+                        <p className="mb-1">Share the key details of this collaboration:</p>
+                        <ul className="list-disc list-inside -mt-1">
+                          <li>The brand name</li>
+                          <li>Where it took place</li>
+                          <li>What the event or campaign was about</li>
+                          <li>How you added your magic to it</li>
+                        </ul>
+                      </>
+                    ) : (
+                      <p>
+                        Tell us what this post is about. What inspired you to make it, and why
+                        do you think it matters to your audience?
+                      </p>
+                    )}
+                  </div>
+                )}
+                </div>
+                {/* Buttons */}
+                <div className="flex gap-1 flex-nowrap">
+                  <button
+                    className={`2xl:px-8 px-6 py-2 rounded-lg border-[1.5px] bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-sm font-apfel-grotezk-regular transition whitespace-nowrap flex-shrink-0`}
+                    onClick={() => {
+                      setShowBrandPopup(false);
+                      setPopupAnimating(true);
+                      setTimeout(() => setPopupAnimating(false), 500);
+                    }}
+                    disabled={popupGenerating}
+                  >
+                    Skip AI & enter manually
+                  </button>
+                  <button
+                    className={`2xl:px-8 px-6 py-2 rounded-lg ${
+                      popupGenerating || !popupUserInput.trim()
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
+                    } min-w-[240px] text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
+                    onClick={handlePopupGenerate}
+                    disabled={popupGenerating || !popupUserInput.trim()}
+                  >
+                    {popupGenerating ? "Generating..." : "Generate my project details"}
+                  </button>
+                </div>
+              </>
+
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
        <div className="absolute left-1/2 top-1/2 transform -translate-y-1/2 w-full -translate-x-1/2 flex flex-col items-center mx-auto justify-center text-center mt-3  mb-10 "> 
          <p className="text-2xl text-black font-qimano">

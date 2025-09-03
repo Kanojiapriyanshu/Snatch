@@ -169,7 +169,7 @@ export default function SocialLinksDropdown({ initialData, onChange, onDelete, a
       {error && <p className="mt-2 text-red-500 text-sm">{error}</p>}
       {/* Dropdown List - Full Width of Input */}
       {isDropdownOpen && (
-        <ul className="absolute mt-2 w-full rounded-lg border border-stroke bg-[#E2E2E2] py-2 z-10">
+        <ul className="absolute mt-2 w-full rounded-lg border border-stroke bg-[#E2E2E2] py-2 z-50">
           {SOCIAL_OPTIONS.map((option, index) => (
             <React.Fragment key={option.value}>
               <li

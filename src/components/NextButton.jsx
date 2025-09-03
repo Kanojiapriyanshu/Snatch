@@ -7,6 +7,7 @@ import { handler } from "@/app/actions/onboarding";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+
 const NextButton = () => {
   const [response, setResponse] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -50,6 +50,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
         mediaItem.media_url,
         mediaItem.id,
         mediaItem.media_type,
+        mediaItem.caption || "",   // ✅ Pass caption
         mediaItem.children.map((child) => ({
           id: child.id,
           media_url: child.media_url,
@@ -60,7 +61,8 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
       addInstagramSelection(
         mediaItem.media_url,
         mediaItem.id,
-        mediaItem.media_type
+        mediaItem.media_type,
+        mediaItem.caption || ""   // ✅ Pass caption
       );
     }
   };

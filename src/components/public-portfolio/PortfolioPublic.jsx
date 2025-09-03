@@ -31,20 +31,61 @@ const PortfolioPublic = () => {
 
   // Listen for route changes to stop loading when navigation is complete
 // Refresh media once when username is available
-  useEffect(() => {
+//   useEffect(() => {
+//   if (!username) return;
+
+//   const refreshExpiredMedia = async () => {
+//     try {
+//       await fetch(`/api/auth/refreshInstagram?username=${username}`);
+//       console.log("✅ Refresh call triggered for username:", username);
+//     } catch (err) {
+//       console.error("❌ Failed to refresh media:", err);
+//     }
+//   };
+
+//   refreshExpiredMedia();
+// }, [username]);
+
+// Refresh media once when username is available
+useEffect(() => {
   if (!username) return;
 
   const refreshExpiredMedia = async () => {
     try {
+      console.log("⏳ Refresh call triggered for username:", username);
       await fetch(`/api/auth/refreshInstagram?username=${username}`);
-      console.log("✅ Refresh call triggered for username:", username);
+
+      // 🔄 Wait until DB has fresh media
+      let attempts = 0;
+      let freshFound = false;
+
+      while (attempts < 5 && !freshFound) {
+        const res = await fetch(`/api/public-portfolio/posts?username=${username}`);
+        const data = await res.json();
+
+        if (data?.success && data.instagram?.length > 0) {
+          freshFound = true;
+          // ✅ Tell React Query to re-fetch and update UI
+          queryClient.invalidateQueries(["publicProjects", username]);
+          console.log("✅ Media refreshed and UI updated");
+          break;
+        }
+
+        attempts++;
+        await new Promise((res) => setTimeout(res, 5000)); // wait 2s before retry
+      }
+
+      if (!freshFound) {
+        console.warn("⚠️ Refresh finished but no fresh media detected in DB");
+      }
     } catch (err) {
       console.error("❌ Failed to refresh media:", err);
     }
   };
 
   refreshExpiredMedia();
-}, [username]);
+}, [username, queryClient]);
+
 
 // Handle route change cleanup
 useEffect(() => {

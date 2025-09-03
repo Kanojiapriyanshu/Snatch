@@ -48,29 +48,6 @@ export default function Step2() {
       [field]: formData[field].filter((item) => item !== value),
     });
   };
-  
-
-  // Handle form submission
-  const handleSubmit = async () => {
-    if (!isFormComplete) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Save final form data
-      await fetch('/api/onboarding/complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      router.push('/dashboard');
-
-    } catch (error) {
-      console.error('Error completing onboarding:', error);
-      setIsSubmitting(false);
-    }
-  };
 
   // Show loading transition when submitting
   if (isSubmitting) {

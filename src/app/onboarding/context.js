@@ -1,3 +1,4 @@
+//onboarding/context.js
 "use client";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import debounce from "lodash/debounce"; // Add this dependency
@@ -29,6 +30,7 @@ export const FormProvider = ({ children }) => {
     story: 0,
     reels: 0,
     dateOfBirth: "",
+    hasCompletedOnboarding: false
   });
 
   const [isSaving, setIsSaving] = useState(false);
