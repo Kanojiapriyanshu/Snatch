@@ -795,16 +795,28 @@ const handlePopupGenerate = async () => {
                 {/* Image + Caption Card */}
                 {activeCaption && (
                   <div className="mb-8 p-3 bg-gray-100 rounded-lg w-full flex items-start gap-3 text-dark-grey text-sm">
-                    {activeMediaLink && (
-                      <Image
-                        src={activeMediaLink}
-                        alt="Project media"
-                        width={48}
-                        height={48}
-                        className="rounded-md w-18 h-12 object-cover flex-shrink-0"
-                      />
-                    )}
-                    <span className="flex-1">
+                  {activeMediaLink && (
+                 <div className="relative w-[32px] h-[48px] rounded-md overflow-hidden flex-shrink-0">
+                  {/(\.mp4|\.webm|\.ogg)(\?|$)/i.test(activeMediaLink) ? (
+                    <video
+                      src={activeMediaLink}
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={activeMediaLink}
+                      alt="Project media"
+                      fill
+                      className="object-cover"
+                    />
+                  )}
+                </div>
+
+                  )}
+
+                    <span className="font-apfel-grotezk-regular">
                       {activeCaption.length > 150
                         ? activeCaption.slice(0, 150) + "..."
                         : activeCaption}
@@ -848,17 +860,28 @@ const handlePopupGenerate = async () => {
                 {/* Image + Caption Card */}
                 {activeCaption && (
                   <div className="w-full">
-                    <div className="mb-4 p-3 bg-gray-100 rounded-lg w-full flex items-center gap-3 text-dark-grey text-sm">
-                      {activeMediaLink && (
-                        <Image
-                          src={activeMediaLink}
-                          alt="Project media"
-                          width={40}
-                          height={40}
-                          className="rounded-md w-18 h-12 object-cover flex-shrink-0"
-                        />
-                      )}
-                      <span>
+                    <div className="mb-4 p-3 bg-gray-100 rounded-lg w-full flex gap-3 text-dark-grey text-sm">
+                    {activeMediaLink && (
+                  <div className="relative w-[32px] h-[48px] rounded-md overflow-hidden flex-shrink-0">
+                  {/(\.mp4|\.webm|\.ogg)(\?|$)/i.test(activeMediaLink) ? (
+                    <video
+                      src={activeMediaLink}
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={activeMediaLink}
+                      alt="Project media"
+                      fill
+                      className="object-cover"
+                    />
+                  )}
+                </div>
+
+                  )}
+                      <span className=" font-apfel-grotezk-regular">
                         {activeCaption.length > 150
                           ? activeCaption.slice(0, 150) + "..."
                           : activeCaption}
