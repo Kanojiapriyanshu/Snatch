@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/settings/Header";
-import Menu from "@/components/settings/Menu";
+import DashboardToolbar from "@/components/DashboardToolbar";
 import SettingsLinks from "@/components/settings/SettingsLinks";
 import Image from "next/image";
 
@@ -148,8 +148,8 @@ useEffect(() => {
         </div>
       </main>
 
-      <div className="fixed bottom-4 left-0 right-0 flex justify-center z-40">
-        <Menu />
+      <div className="fixed bottom-24 left-0 right-0 flex justify-center z-40">
+        <DashboardToolbar isInstagramLinked={true} />
       </div>
     </div>
   );

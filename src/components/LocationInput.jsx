@@ -109,7 +109,19 @@ const LocationInput = ({ value, onSelectLocation, consideration, ...props }) => 
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+        onBlur={() => {
+          setTimeout(() => {
+            setIsFocused(false);
+
+            // Auto-select first suggestion if available and no exact match chosen
+            if (suggestions.length > 0 && query.trim() !== suggestions[0].label) {
+              const first = suggestions[0];
+              setQuery(first.label);
+              if (updateFormData) updateFormData({ location: first.label });
+              if (onSelectLocation) onSelectLocation(first);
+            }
+          }, 150);
+        }}
         className={`w-full bg-transparent rounded-md border py-[10px] px-5 outline-none transition 
           ${borderColor} disabled:cursor-default disabled:bg-gray-2`}
         placeholder="Which city are you from? (e.g: Mumbai, India)"

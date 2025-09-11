@@ -707,19 +707,19 @@ const handleHamburgerClick = () => {
                     <ul className="flex flex-col p-3 gap-2">
                       <li
                         onClick={handleDashboardClick}
-                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                       >
                         Dashboard
                       </li>
                       <li
                         onClick={handleSettingClick}
-                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                       >
                         Settings
                       </li>
                       <li
                         onClick={handleProfileClick}
-                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                       >
                         Profile
                       </li>

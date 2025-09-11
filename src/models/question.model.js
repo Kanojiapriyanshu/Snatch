@@ -22,6 +22,7 @@ const questionnaireSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
+    unique: true,
   },
   sections: [sectionSchema], // Array of sections
 });

@@ -39,26 +39,31 @@ export const fetchProfileData = async () => {
 };
 
 
-export const saveQuestionsToDB = async (section, questions) => {
-    try {
-      const response = await fetch("/api/profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ section, questions }),
-      });
-  
-      if (!response.ok) throw new Error("Failed to save");
-  
-      return await response.json(); 
-    } catch (error) {
-      console.error("Error saving questionnaire:", error);
-      throw error;
-    }
-  };
+export const saveQuestionToDB = async (section, question) => {
+  try {
+    const payload = {
+      section,
+      questionId: question._id, // Only present for updates
+      question,
+    };
+    const response = await fetch("/api/profile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-  export const removeQuestion = async (questionId, sectionKey, updateSectionState) => {
+    if (!response.ok) throw new Error("Failed to save");
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error saving questionnaire:", error);
+    throw error;
+  }
+};
+
+export const removeQuestion = async (questionId, sectionKey, updateSectionState) => {
     try {
       const response = await fetch("/api/profile", {
         method: "DELETE",
@@ -83,4 +88,3 @@ export const saveQuestionsToDB = async (section, questions) => {
       alert("Failed to delete question. Please try again.");
     }
   };
-  

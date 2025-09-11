@@ -659,13 +659,13 @@ return (
       {isMenuVisible && (
         <div className="absolute top-[-220%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
           <ul className="flex flex-col p-3 gap-2">
-            <li onClick={handleDashboardClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">
+            <li onClick={handleDashboardClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
               Dashboard
             </li>
-            <li onClick={handleSettingClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">
+            <li onClick={handleSettingClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
               Settings
             </li>
-            <li onClick={handleProfileClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">
+            <li onClick={handleProfileClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
               Profile
             </li>
           </ul>

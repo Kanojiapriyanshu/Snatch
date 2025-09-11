@@ -130,31 +130,12 @@ const filledProjectsCount = (() => {
     return isProjectFilled(formData);
   }).length;
 })();
-
-  // Extracting projects logic here
-  // Make sure we're using the correct tab based on URL parameter
-  useEffect(() => {
-    console.log("Active tab changed to:", activeTab);
-  }, [activeTab]);
   
   const projects =
     activeTab === "instagram"
       ? selectionState.instagramSelected
       : selectionState.uploadedFiles;
 
-  console.log("PROJECTS ON ADD DETAILS PAGE", {
-    activeTab,
-    projects,
-    instagramProjects: selectionState.instagramSelected,
-    uploadedProjects: selectionState.uploadedFiles,
-    activeImageId
-  });
-
-      // The activeImageId is now set from URL parameters in the main useEffect above
-
-  useEffect(() => {
-    console.log("activeImageId changed to:", activeImageId);
-  }, [activeImageId]);
 
   // Convert activeImageId to string for comparison since URL parameters are strings
   const activeProject =
@@ -162,15 +143,10 @@ const filledProjectsCount = (() => {
       ? projects.find((project) => String(project.mediaId) === String(activeImageId))
       : projects[0];
 
+  // const isFirstProject = activeProject === projects[0]; // check if it’s the first project
   const activeCaption = activeProject?.caption
   const activeMediaLink = activeProject?.mediaLink
-      
-  console.log("Active project selection:", {
-    activeImageId,
-    projectsMediaIds: projects.map(p => p.mediaId),
-    foundProject: activeProject?.mediaId
-  });
-
+  
   // Auto-select first project's formData when no project is selected
 
 // This effect is now handled by SearchParamsProvider
@@ -453,24 +429,22 @@ const handleToggle = () => {
     }
   };
  
-const isFormComplete = () => {
-  if (!activeImageId) return false;
+  const isFormComplete = (project) => {
+  if (!project?.mediaId) return false;
 
-  console.log("Checking form completion for activeImageId:", activeImageId);
-  console.log("Current form data:", currentFormData);
-  console.log("Selection state form data:", selectionState.formData);
+  const projectKey = String(project.mediaId);
 
-  // Get the form data either from current form data or selection state
-  const formData = currentFormData.key === activeImageId.toString() 
-    ? currentFormData 
-    : selectionState.formData.find((item) => item.key === activeImageId.toString());
+  // Get the form data for this specific project
+  const formData = currentFormData.key === projectKey
+    ? currentFormData
+    : selectionState.formData.find((item) => item.key === projectKey);
 
   if (!formData) {
-    console.log("No form data found for activeImageId:", activeImageId);
+    console.log("No form data found for project:", projectKey);
     return false;
   }
 
-  // Check if all required fields are filled
+  // Check required fields
   const fieldsToCheck = [...requiredFields];
   if (formData.isBrandCollaboration) {
     fieldsToCheck.push("companyName", "companyLocation");
@@ -483,9 +457,11 @@ const isFormComplete = () => {
     return isValid;
   });
 
-  console.log("Form completion result:", areRequiredFieldsFilled);
   return areRequiredFieldsFilled;
 };
+
+// ✅ Check if ANY project is complete
+const isAnyProjectCompleted = projects.some((project) => isFormComplete(project));
 
   const handleBackClick = () => {
    router.push("/manage-projects/pick-projects");
@@ -745,11 +721,6 @@ const handlePopupGenerate = async () => {
           {/* Backdrop */}
           <div
             className={`fixed top-0 left-[35vw] h-full w-[65vw] z-40 bg-black/10 backdrop-blur-sm transition-opacity duration-500 ${showBrandPopup ? 'opacity-70 pointer-events-auto' : 'opacity-70 pointer-events-none'}`}
-            onClick={() => {
-              setShowBrandPopup(false);
-              setPopupAnimating(true);
-              setTimeout(() => setPopupAnimating(false), 500);
-            }}
           />
           {/* Sliding Popup */}
           <div
@@ -842,6 +813,14 @@ const handlePopupGenerate = async () => {
               </>
                 ) : (
                   <>
+                {/* Go Back Button */}
+                <button
+                  className="absolute top-6 left-6 flex items-center text-electric-blue text-base font-apfel-grotezk-regular"
+                  onClick={() => setPopupStep(1)}
+                >
+                  <span className="mr-2">←</span> Go Back
+                </button>
+
                 {/* Logo */}
                 <div className="flex items-center mr-10" >
                 <Image
@@ -917,7 +896,7 @@ const handlePopupGenerate = async () => {
                 />
                 {/* Custom Placeholder Overlay */}
                 {!popupUserInput && (
-                  <div className="absolute top-8 left-4 right-4 text-dark-grey whitespace-pre-line pointer-events-none font-apfel-grotezk-regular text-[16px] tracking-normal">
+                  <div className="absolute top-8 left-4 right-4 text-dark-grey whitespace-pre-line pointer-events-none font-apfel-grotezk-regular text-[16px] tracking-normal ">
                     {isBrandCollaboration ? (
                       <>
                         <p className="mb-1">Share the key details of this collaboration:</p>
@@ -1413,19 +1392,19 @@ const handlePopupGenerate = async () => {
                     <ul className="flex flex-col p-3 gap-2">
                       <li
                         onClick={handleDashboardClick}
-                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                       >
                         Dashboard
                       </li>
                       <li
                         onClick={handleSettingClick}
-                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                       >
                         Settings
                       </li>
                       <li
                         onClick={handleProfileClick}
-                        className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                       >
                         Profile
                       </li>
@@ -1474,17 +1453,17 @@ const handlePopupGenerate = async () => {
   >
     Previous Step
   </button>
-  <button
-    className={`px-4 h-[38px] rounded-lg ${
-      isFormComplete()
-        ? "bg-electric-blue text-white hover:bg-blue-700"
-        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-    } rounded transition-colors`}
-    onClick={handlePreviewClick}
-    disabled={!isFormComplete()}
-  >
-    Preview
-  </button>
+
+<button
+  className={`px-4 h-[38px] rounded-lg transition-colors
+    ${!isAnyProjectCompleted ? "bg-gray-400 text-gray-200 cursor-not-allowed" : "bg-electric-blue text-white hover:bg-blue-700"}
+  `}
+  onClick={handlePreviewClick}
+  disabled={!isAnyProjectCompleted}
+>
+  Preview
+</button>
+
      </div>
 
     </div>

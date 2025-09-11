@@ -4,7 +4,7 @@ import Accordion from "./Accordion";
 import Profilecustomfile from "./Profilecustomfile";
 import QuestionCounter from "./QuestionCounter";
 import Image from "next/image";
-import { saveQuestionsToDB, fetchProfileData, removeQuestion } from "@/utils/postQuestions";
+import { saveQuestionToDB, fetchProfileData, removeQuestion } from "@/utils/postQuestions";
 import { useQueryClient } from "@tanstack/react-query";
 import debounce from "lodash.debounce";
 
@@ -69,92 +69,75 @@ const About = ({ onComplete }) => {
     setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-const debouncedSave = useCallback(
-  debounce(async (sectionKey) => {
-    const questions =
-      sectionKey === "about"
-        ? aboutQuestions
-        : sectionKey === "audience"
-        ? audienceQuestions
-        : brandQuestions;
+  // in About.jsx
+const debouncedSave = useRef(
+  debounce(async (sectionKey, index, question) => {
+    if (!question || !question.question?.trim()) return;
 
     try {
-      await saveQuestionsToDB(sectionKey, questions); // send entire section
-      setUnsavedChanges((prev) => ({
-        ...prev,
-        [sectionKey]: new Set(), // clear unsaved marks for that section
-      }));
+      const res = await saveQuestionToDB(sectionKey, question);
+
+      if (!question._id && res?.data) {
+        const updatedSection = res.data.sections.find(s => s.section === sectionKey);
+        const match = updatedSection?.questions.find(
+          q => q.question?.trim().toLowerCase() === question.question?.trim().toLowerCase()
+        );
+
+        if (match) {
+          updateSectionState(sectionKey, (prev) => {
+            const newQuestions = [...prev];
+            newQuestions[index]._id = match._id;
+            return newQuestions;
+          });
+        }
+      }
+
       queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
     } catch (error) {
       console.error("Auto-save failed:", error);
     }
-  }, 1000),
-  [aboutQuestions, audienceQuestions, brandQuestions]
-);
+  }, 2000) // shorter debounce is fine
+).current;
+
+// helper functions
+const getSectionState = (sectionKey) => {
+  if (sectionKey === "about") return aboutQuestions;
+  if (sectionKey === "audience") return audienceQuestions;
+  if (sectionKey === "brand") return brandQuestions;
+  return [];
+};
+
+
 
 const handleQuestionChange = (newQuestion, index, sectionKey) => {
-  const newQuestions = [
-    ...(sectionKey === "about"
-      ? aboutQuestions
-      : sectionKey === "audience"
-      ? audienceQuestions
-      : brandQuestions),
-  ];
+  const newQuestions = [...getSectionState(sectionKey)];
   newQuestions[index].question = newQuestion.trim();
   updateSectionState(sectionKey, newQuestions);
 
-  setUnsavedChanges((prev) => ({
-    ...prev,
-    [sectionKey]: new Set(prev[sectionKey]).add(index),
-  }));
-
-  // Trigger debounce auto-save
-  debouncedSave(sectionKey);
+  debouncedSave(sectionKey, index, newQuestions[index]);
 };
 
-
 const handleAnswerChange = (e, index, sectionKey) => {
-  const newQuestions = [
-    ...(sectionKey === "about"
-      ? aboutQuestions
-      : sectionKey === "audience"
-      ? audienceQuestions
-      : brandQuestions),
-  ];
+  const newQuestions = [...getSectionState(sectionKey)];
   newQuestions[index].answer = e.target.value;
   updateSectionState(sectionKey, newQuestions);
 
-  setUnsavedChanges((prev) => ({
-    ...prev,
-    [sectionKey]: new Set(prev[sectionKey]).add(index),
-  }));
-
-  // Trigger debounce auto-save
-  debouncedSave(sectionKey);
+  debouncedSave(sectionKey, index, newQuestions[index]);
 };
 
-  
 const handleCoverChange = (imageData, index, sectionKey) => {
-  const newQuestions = [
-    ...(sectionKey === "about"
-      ? aboutQuestions
-      : sectionKey === "audience"
-      ? audienceQuestions
-      : brandQuestions),
-  ];
-
+  const newQuestions = [...getSectionState(sectionKey)];
   newQuestions[index].coverImage = imageData.url;
   newQuestions[index].coverImageName = imageData.name;
   updateSectionState(sectionKey, newQuestions);
 
-  setUnsavedChanges((prev) => ({
-    ...prev,
-    [sectionKey]: new Set(prev[sectionKey]).add(index),
-  }));
-
-  // Trigger debounce auto-save
-  debouncedSave(sectionKey);
+  debouncedSave(sectionKey, index, newQuestions[index]);
 };
+
+const handleBlur = (sectionKey, index) => {
+  debouncedSave.flush();
+};
+
 
   const addQuestion = (sectionKey) => {
     const newQuestion = { question: "", answer: "", coverImage: null, coverImageName: null };
@@ -206,6 +189,7 @@ const handleCoverChange = (imageData, index, sectionKey) => {
                 type="about"
                 selectedQuestion={item.question}
                 onSelectQuestion={(question) => handleSelectQuestion(question, index, "about")}
+                onBlur={() => handleBlur("about", index)}
               />
 
               <div className="flex w-[100%] items-center gap-4 mb-4">
@@ -287,6 +271,7 @@ const handleCoverChange = (imageData, index, sectionKey) => {
                 type="audience"
                 selectedQuestion={item.question}
                 onSelectQuestion={(question) => handleSelectQuestion(question, index, "audience")}
+                onBlur={() => handleBlur("audience", index)}
               />
 
               <div className="flex items-center gap-4 mb-4">
@@ -366,6 +351,7 @@ const handleCoverChange = (imageData, index, sectionKey) => {
                 type="brand"
                 selectedQuestion={item.question}
                 onSelectQuestion={(question) => handleSelectQuestion(question, index, "brand")}
+                onBlur={() => handleBlur("brand", index)}
               />
 
               <div className="flex items-center gap-4 mb-4">
@@ -438,24 +424,3 @@ const handleCoverChange = (imageData, index, sectionKey) => {
 export default About;
 
 
-
-  //   const handleSaveChanges = async (index, sectionKey) => {
-//   try {
-//     const questions = sectionKey === "about" ? aboutQuestions :
-//                       sectionKey === "audience" ? audienceQuestions :
-//                       brandQuestions;
-
-//     await saveQuestionsToDB(sectionKey, [questions[index]]);
-//     alert("Question saved successfully!")
-//     setUnsavedChanges(prev => ({
-//       ...prev,
-//       [sectionKey]: new Set([...prev[sectionKey]].filter(i => i !== index))
-//     }));
-
-//     // Invalidate aboutCompletion query so layout re-checks completion
-//     queryClient.invalidateQueries({ queryKey: ["aboutCompletion"] });
-//   } catch (error) {
-//     console.error("Failed to save changes:", error);
-//     alert("Failed to save changes. Please try again.");
-//   }
-// };

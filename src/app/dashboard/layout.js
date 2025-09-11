@@ -7,11 +7,20 @@ import { FormProvider } from "../onboarding/context";
 import DashboardToolbar from "@/components/DashboardToolbar";
 import { currentUser } from "@clerk/nextjs/server";
 import connectDb from "@/db/mongoose";
-import OnboardingData from "@/models/onboarding.model";
+import User from "@/models/user.model";
 
 export default async function OnboardingLayout({ children }) {
    const user = await currentUser();
   const userId = user?.id;
+
+  let isInstagramLinked = false;
+
+  if (userId) {
+    await connectDb();
+    const dbUser = await User.findOne({ userId });
+    isInstagramLinked = !!(dbUser?.instagramAccessToken && dbUser?.instagramAccountId);
+  }
+
 
   return (
     <FormProvider>
@@ -36,7 +45,7 @@ export default async function OnboardingLayout({ children }) {
         </div>
 
         {/* Toolbar */}
-        <DashboardToolbar isInstagramLinked={true} />
+        <DashboardToolbar isInstagramLinked={isInstagramLinked} />
 
         {/* Right: Form */}
         <div className="w-[60vw] max-w-[80%] flex flex-col bg-[#E9E9E9] h-[100vh]">

@@ -1,39 +1,46 @@
 // components/Profile.js
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Portfolio from "@/components/Profilepage/Portfolio";
 import About from "@/components/Profilepage/About";
 import Audience from "@/components/Profilepage/Audience";
+import { useSearchParams } from "next/navigation";
 
 export default function Profile({ portfolioComplete, aboutComplete, audienceComplete }) {
-  const [activeTab, setActiveTab] = useState("work");
-  const menuItems = ["work", "about", "audience"];
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState("projects");
+  const menuItems = ["projects", "about", "audience"];
 
-  console.log("SSR props in Profile:", { portfolioComplete, aboutComplete, audienceComplete });
-
+    // 🔹 Sync state with query param
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   // ✅ Green tick
-  // const GreenTick = () => (
-  //   <span className="inline-flex items-center mr-2">
-  //     <svg
-  //       width="15"
-  //       height="15"
-  //       viewBox="0 0 15 15"
-  //       fill="none"
-  //       xmlns="http://www.w3.org/2000/svg"
-  //     >
-  //       <path
-  //         d="M6.06683 8.19967L4.6335 6.76634C4.51127 6.64412 4.35572 6.58301 4.16683 6.58301C3.97794 6.58301 3.82238 6.64412 3.70016 6.76634C3.57794 6.88856 3.51683 7.04412 3.51683 7.23301C3.51683 7.4219 3.57794 7.57745 3.70016 7.69967L5.60016 9.59967C5.7335 9.73301 5.88905 9.79967 6.06683 9.79967C6.24461 9.79967 6.40016 9.73301 6.5335 9.59967L10.3002 5.83301C10.4224 5.71079 10.4835 5.55523 10.4835 5.36634C10.4835 5.17745 10.4224 5.0219 10.3002 4.89967C10.1779 4.77745 10.0224 4.71634 9.8335 4.71634C9.64461 4.71634 9.48905 4.77745 9.36683 4.89967L6.06683 8.19967ZM7.00016 13.6663C6.07794 13.6663 5.21127 13.4913 4.40016 13.1413C3.58905 12.7913 2.8835 12.3163 2.2835 11.7163C1.6835 11.1163 1.2085 10.4108 0.858496 9.59967C0.508496 8.78856 0.333496 7.9219 0.333496 6.99967C0.333496 6.07745 0.508496 5.21079 0.858496 4.39967C1.2085 3.58856 1.6835 2.88301 2.2835 2.28301C2.8835 1.68301 3.58905 1.20801 4.40016 0.858008C5.21127 0.508008 6.07794 0.333008 7.00016 0.333008C7.92238 0.333008 8.78905 0.508008 9.60016 0.858008C10.4113 1.20801 11.1168 1.68301 11.7168 2.28301C12.3168 2.88301 12.7918 3.58856 13.1418 4.39967C13.4918 5.21079 13.6668 6.07745 13.6668 6.99967C13.6668 7.9219 13.4918 8.78856 13.1418 9.59967C12.7918 10.4108 12.3168 11.1163 11.7168 11.7163C11.1168 12.3163 10.4113 12.7913 9.60016 13.1413C8.78905 13.4913 7.92238 13.6663 7.00016 13.6663Z"
-  //         fill="#14AE5C"
-  //       />
-  //     </svg>
-  //   </span>
-  // );
+  const GreenTick = () => (
+    <span className="inline-flex items-center mr-2">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 15 15"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M6.06683 8.19967L4.6335 6.76634C4.51127 6.64412 4.35572 6.58301 4.16683 6.58301C3.97794 6.58301 3.82238 6.64412 3.70016 6.76634C3.57794 6.88856 3.51683 7.04412 3.51683 7.23301C3.51683 7.4219 3.57794 7.57745 3.70016 7.69967L5.60016 9.59967C5.7335 9.73301 5.88905 9.79967 6.06683 9.79967C6.24461 9.79967 6.40016 9.73301 6.5335 9.59967L10.3002 5.83301C10.4224 5.71079 10.4835 5.55523 10.4835 5.36634C10.4835 5.17745 10.4224 5.0219 10.3002 4.89967C10.1779 4.77745 10.0224 4.71634 9.8335 4.71634C9.64461 4.71634 9.48905 4.77745 9.36683 4.89967L6.06683 8.19967ZM7.00016 13.6663C6.07794 13.6663 5.21127 13.4913 4.40016 13.1413C3.58905 12.7913 2.8835 12.3163 2.2835 11.7163C1.6835 11.1163 1.2085 10.4108 0.858496 9.59967C0.508496 8.78856 0.333496 7.9219 0.333496 6.99967C0.333496 6.07745 0.508496 5.21079 0.858496 4.39967C1.2085 3.58856 1.6835 2.88301 2.2835 2.28301C2.8835 1.68301 3.58905 1.20801 4.40016 0.858008C5.21127 0.508008 6.07794 0.333008 7.00016 0.333008C7.92238 0.333008 8.78905 0.508008 9.60016 0.858008C10.4113 1.20801 11.1168 1.68301 11.7168 2.28301C12.3168 2.88301 12.7918 3.58856 13.1418 4.39967C13.4918 5.21079 13.6668 6.07745 13.6668 6.99967C13.6668 7.9219 13.4918 8.78856 13.1418 9.59967C12.7918 10.4108 12.3168 11.1163 11.7168 11.7163C11.1168 12.3163 10.4113 12.7913 9.60016 13.1413C8.78905 13.4913 7.92238 13.6663 7.00016 13.6663Z"
+          fill="#14AE5C"
+        />
+      </svg>
+    </span>
+  );
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "work":
+      case "projects":
         return <Portfolio />;
       case "about":
         return <About />;
@@ -55,7 +62,7 @@ export default function Profile({ portfolioComplete, aboutComplete, audienceComp
         {menuItems.map((item) => {
           const isActive = activeTab === item;
           const isComplete =
-            (item === "work" && portfolioComplete) ||
+            (item === "projects" && portfolioComplete) ||
             (item === "about" && aboutComplete) ||
             (item === "audience" && audienceComplete);
 
@@ -73,7 +80,7 @@ export default function Profile({ portfolioComplete, aboutComplete, audienceComp
               onClick={() => setActiveTab(item)}
             >
               {/* Green tick if complete */}
-              {/* {isComplete && <GreenTick />} */}
+              {isComplete && <GreenTick />}
 
               <span>{item.charAt(0).toUpperCase() + item.slice(1)}</span>
 

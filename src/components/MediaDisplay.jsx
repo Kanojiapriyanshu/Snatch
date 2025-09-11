@@ -6,7 +6,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null); 
-  const [isMuted, setIsMuted] = useState(true);
+  const [mutedStates, setMutedStates] = useState({});
 
   const {
     selectionState,
@@ -115,8 +115,16 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
     });
   };
 
+  const toggleMute = (id) => {
+  setMutedStates((prev) => ({
+    ...prev,
+    [id]: !prev[id], // toggle this specific video
+  }));
+};
+
+
   return (
-    <div className="mb-20 flex 7xl:justify-center" onClick={() => setIsMuted((prev) => !prev)}>
+    <div className="mb-20 flex 7xl:justify-center" >
       {/* Confirmation Popup */}
       {showConfirm && (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
@@ -188,14 +196,12 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
                 className="object-cover w-full h-full"
               />
             ) : mediaItem.media_type === "VIDEO" ? (
-              <video
-                controls
-                muted={isMuted}
-                className="object-cover w-full h-full"
-                src={mediaItem.media_url}
-              >
-                Your browser does not support the video tag.
-              </video>
+            <video
+              controls
+              muted={mutedStates[mediaItem.id] ?? true} // default true
+              className="object-cover w-full h-full"
+              src={mediaItem.media_url}
+            />
             ) : mediaItem.media_type === "CAROUSEL_ALBUM" &&
               mediaItem.children ? (
               <div className="relative w-full h-full">
@@ -217,7 +223,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
                     ) : (
                       <video
                         controls
-                        muted={isMuted}
+                        muted={mutedStates[child.id] ?? true} 
                         className="w-full h-full object-cover"
                         src={child.media_url}
                       >

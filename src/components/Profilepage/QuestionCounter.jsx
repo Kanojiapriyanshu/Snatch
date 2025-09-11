@@ -11,6 +11,7 @@ const QuestionCounter = ({
   answerValue,
   selectedQuestion,
   onSelectQuestion,
+  onBlur
 }) => {
   const questionSets = {
     general: [
@@ -100,6 +101,7 @@ const handleQuestionChange = (e) => {
             placeholder="Type your custom question..."
             value={customQuestion}
             onChange={handleQuestionChange}
+            onBlur={onBlur}   // ✅ trigger save on blur
             className="w-full bg-transparent p-0 border-none font-apfel-grotezk-regular focus:outline-none text-md text-gray-700"
             autoFocus
           />
@@ -166,6 +168,7 @@ const handleQuestionChange = (e) => {
           name={name}
           value={answerValue}
           onChange={handleAnswerChange}
+          onBlur={onBlur}
           placeholder="Enter your response here..."
           className="bg-transparent w-full px-0 py-2 rounded-md font-apfel-grotezk-regular border-gray-200 focus:outline-none text-gray-700 text-sm resize-none"
           rows={2}

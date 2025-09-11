@@ -92,29 +92,23 @@ function LayoutContent({ children }) {
 
               {/* Dropdown Menu */}
               {isMenuVisible && (
-                <div className="absolute top-[-280%] left-[-50px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50">
+                <div className="absolute top-[-200%] left-[-50px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50">
                   <ul className="flex flex-col p-3 gap-2">
                     <li
                       onClick={() => handleMenuClick("/dashboard")}
-                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                     >
                       Dashboard
                     </li>
                     <li
                       onClick={() => handleMenuClick("/settings")}
-                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                     >
                       Settings
                     </li>
                     <li
-                      onClick={() => handleMenuClick("/explore")}
-                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                    >
-                      Explore
-                    </li>
-                    <li
                       onClick={() => handleMenuClick("/profile")}
-                      className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
                     >
                       Profile
                     </li>

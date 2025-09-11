@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
+import { all } from "axios";
 
 export default function OnboardingToolbar() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [showPresskitMenu, setShowPresskitMenu] = useState(false);
   const router = useRouter();
   const { userId, isLoaded, isSignedIn } = useAuth();
   const queryClient = useQueryClient();
@@ -29,6 +31,7 @@ export default function OnboardingToolbar() {
   });
   const aboutComplete = !!aboutData?.complete;
 
+
   const { data: audienceData } = useQuery({
     queryKey: ["audienceCompletion"],
     queryFn: async () => (await fetch("/api/auth/check-instagram-connection")).json(),
@@ -44,7 +47,9 @@ export default function OnboardingToolbar() {
   const hasClickedPortfolio = !!viewedData?.hasViewedPortfolio;
 
   const allComplete = portfolioComplete && aboutComplete && audienceComplete;
-  const isRed = filledCount < 4;
+  
+  const presskitIncomplete = !portfolioComplete || !aboutComplete;
+  const isRed = filledCount < 4 
 
   if (!isLoaded) return <div className="flex justify-center items-center h-screen"></div>;
   if (!isSignedIn) {
@@ -79,12 +84,12 @@ export default function OnboardingToolbar() {
   return (
     <div
       className={`fixed top-[85%] left-[50%] translate-x-[-50%] ${
-        isRed ? "w-[430px]" : "w-[630px]"
+        allComplete ? "w-[545px]" : "w-[560px]"
       } h-[74px] flex justify-center items-center gap-3 shadow-md bg-white rounded-md z-20 p-5 font-apfel-grotezk-regular`}
     >
       <button
-        onClick={handleNextClick}
-        className="w-[115px] h-[56px] text-electric-blue text-2xl font-semibold text-center"
+        onClick={handleDashboardClick}
+        className="w-[145px] h-[56px] text-electric-blue text-2xl font-semibold text-center"
       >
         <Image
           src="/assets/images/snatch.svg"
@@ -97,7 +102,7 @@ export default function OnboardingToolbar() {
 
       <button
         onClick={handleHamburgerClick}
-        className="w-[61px] h-[56px] bg-gray-100 text-electric-blue rounded-md mx-auto font-medium hover:bg-transparent relative"
+        className="w-[71px] h-[56px] bg-gray-100 text-electric-blue rounded-md mx-auto font-medium hover:bg-transparent relative"
       >
         <Image
           className="mx-auto w-8"
@@ -109,12 +114,11 @@ export default function OnboardingToolbar() {
       </button>
 
       {isMenuVisible && (
-        <div className="absolute top-[-280%] left-[-50px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50">
+        <div className="absolute top-[-210%] left-[-50px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50">
           <ul className="flex flex-col p-3 gap-2">
-            <li onClick={handleDashboardClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">Dashboard</li>
-            <li onClick={handleSettingClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">Settings</li>
-            <li onClick={() => alert("Explore clicked")} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">Explore</li>
-            <li onClick={handleProfileClick} className="cursor-pointer text-electric-blue hover:bg-gray-100 rounded-md p-2">Profile</li>
+            <li onClick={handleDashboardClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">Dashboard</li>
+            <li onClick={handleSettingClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">Settings</li>
+            <li onClick={handleProfileClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">Profile</li>
           </ul>
         </div>
       )}
@@ -124,23 +128,65 @@ export default function OnboardingToolbar() {
           isRed ? "w-[370px]" : "w-[499px]"
         } h-[56px] gap-2 bg-gray-100 flex justify-between items-center rounded-md p-2`}
       >
+         {/* Edit press kit */}
+      <div className="relative">
         <button
-          onClick={handleProfileClick}
-          className="px-2 py-2 bg-transparent text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
+          onClick={() => setShowPresskitMenu((prev) => !prev)}
+          className={ `px-5 py-2 rounded-md border font-medium transition ${
+            presskitIncomplete
+              ? "text-[#EB3B00] border-[#EB3B00] hover:bg-[#EB3B00]/10"
+              : "text-electric-blue border-electric-blue"
+          }`}
         >
-          Edit Profile
+          {presskitIncomplete ? (
+            "Complete press kit"
+          ) : (
+            <div className="flex items-center gap-2">
+              <Image
+                src="/assets/images/edit-pencil.svg"
+                alt="Edit"
+                width={16}
+                height={16}
+                className="w-5 h-5"
+              />
+             <p> Edit press kit </p>
+            </div>
+          )}
         </button>
 
-        <button
-          className={`px-2 py-2 border rounded-md font-medium transition ${
-            isRed
-              ? "bg-white text-[#EB3B00] border-[#EB3B00]"
-              : "bg-transparent text-electric-blue border-electric-blue hover:bg-electric-blue hover:text-white"
-          }`}
-          onClick={handleNextClick}
-        >
-          Manage Projects
-        </button>
+        {showPresskitMenu && (
+          <div className="absolute bottom-12 right-0 w-[220px] bg-white shadow-lg rounded-md border border-light-grey z-50">
+            <ul className="flex flex-col p-3 gap-2">
+                <li
+                onClick={() => router.push("?tab=about")}
+                className={`cursor-pointer rounded-md p-2 ${
+                  !aboutComplete
+                    ? "text-[#EB3B00]"
+                    : "text-graphite hover:text-electric-blue hover:bg-gray-100"
+                }`}
+              >
+                 {aboutComplete ? "Edit about details" : "Complete about details"}
+              </li>
+              <li
+                onClick={() => router.push("/manage-projects/pick-projects")}
+                className={`cursor-pointer rounded-md p-2 ${
+                  !portfolioComplete
+                    ? "text-[#EB3B00]"
+                    : "text-graphite hover:text-electric-blue hover:bg-gray-100"
+                }`}
+              >
+                 {portfolioComplete ? "Edit project details" : "Complete project details"}
+              </li>
+              <li
+                onClick={() => router.push("/onboarding/step-1")}
+                className={"cursor-pointer rounded-md p-2 text-graphite hover:text-electric-blue hover:bg-gray-100"}
+              >
+                Edit profile details
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
 
         {!isRed && (
           <button
