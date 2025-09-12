@@ -39,6 +39,11 @@ export default function PickProjects() {
 
    useEffect(() => {
     setIsHydrated(true);
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+       if (code) {
+      setShowInstagramPopup(true); // show popup instantly
+    }
   }, []);
    
 useEffect(() => {
@@ -55,7 +60,7 @@ useEffect(() => {
 
         if (connected) {
           // show popup immediately on first connect
-          setShowInstagramPopup(true);
+          // setShowInstagramPopup(true);
 
           setMedia(media);
           setPaging(paging);

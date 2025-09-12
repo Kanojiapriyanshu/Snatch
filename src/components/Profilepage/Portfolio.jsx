@@ -6,6 +6,7 @@ import Link from "next/link";
 const Portfolio = () => {
   const [projects, setProjects] = useState([]);
   const [carouselIndexes, setCarouselIndexes] = useState({});
+  const [mutedStates, setMutedStates] = useState({}); 
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -53,6 +54,11 @@ const Portfolio = () => {
 
     fetchProjects();
   }, []);
+
+   const toggleMute = (e, id) => {
+    e.stopPropagation();
+    setMutedStates((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const handleSlide = (e, mediaId, direction, totalSlides) => {
     e.stopPropagation();
@@ -102,6 +108,9 @@ const Portfolio = () => {
                               />
                             ) : (
                               <video
+                                controls
+                                 disablePictureInPicture
+                                controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
                                 className="w-full object-cover rounded-md h-[210px]"
                                 src={child.mediaUrl}
                               />
@@ -143,6 +152,10 @@ const Portfolio = () => {
                       project.mediaType.endsWith(".mp4") ? (
                       <video
                         controls
+                        disablePictureInPicture
+                        controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
+                        muted={mutedStates[project.id] ?? true} 
+                        src={project.mediaUrl}
                         className="w-[165px] h-[210px] object-cover rounded-md"
                       >
                         <source src={project.mediaUrl} type="video/mp4" />

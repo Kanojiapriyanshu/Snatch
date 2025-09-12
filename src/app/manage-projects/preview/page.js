@@ -372,6 +372,8 @@ const handleHamburgerClick = () => {
                         <video
                           src={activeProject.mediaLink}
                           controls
+                          disablePictureInPicture
+                          controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
                           width={300}
                           height={1200}
                           className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
@@ -409,6 +411,8 @@ const handleHamburgerClick = () => {
                         <video
                           src={child.media_url}
                           controls
+                          disablePictureInPicture
+                          controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
                           className="w-full h-full object-cover rounded-lg"
                           onLoadedMetadata={(e) => {
                             setIsPortrait(

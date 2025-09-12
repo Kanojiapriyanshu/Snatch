@@ -1060,6 +1060,8 @@ const handlePopupGenerate = async () => {
           <video
             src={activeProject.mediaLink}
             controls
+            disablePictureInPicture
+            controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
             className={`w-full  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
             onLoadedMetadata={(e) => {
               setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
@@ -1094,6 +1096,8 @@ const handlePopupGenerate = async () => {
                   <video
                     src={child.media_url}
                     controls
+                    disablePictureInPicture
+                    controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
                     className="w-full h-full object-cover rounded-lg"
                     onLoadedMetadata={(e) => {
                       setIsPortrait(

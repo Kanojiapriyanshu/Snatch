@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const SendRequestPopup = ({ onClose, username }) => {
+const SendRequestPopup = ({ username, profilePicture }) => {
   const [form, setForm] = useState({
     brandName: "",
     role: "",
@@ -14,6 +15,7 @@ const SendRequestPopup = ({ onClose, username }) => {
   const [discussionCount, setDiscussionCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,7 +65,8 @@ const SendRequestPopup = ({ onClose, username }) => {
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-[90%] max-w-xl shadow-xl relative border border-gray-200 min-h-[500px] flex flex-col justify-center">
         {/* Close icon */}
-        <button className="absolute top-4 right-4" onClick={onClose}>
+        <button className="absolute top-4 right-4" onClick={() => {
+        router.push(`/${username}/media-kit`);}} >
           <Image
             src="/assets/icons/settings/Cross.svg"
             alt="Close"
@@ -90,7 +93,7 @@ const SendRequestPopup = ({ onClose, username }) => {
               Send request to :&nbsp;
               <span className="inline-flex items-center gap-2 text-[#0037eb] align-middle">
                 <Image
-                  src="/assets/images/popupImg.svg"
+                  src={profilePicture}
                   alt="Profile"
                   width={30}
                   height={30}

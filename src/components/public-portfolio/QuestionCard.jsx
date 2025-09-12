@@ -141,11 +141,17 @@ const Questionnaire = ({ name }) => {
         )}
 
         {/* Scrollable Cards Container - Full width with fourth card extending to edge */}
-        <div className="relative overflow-hidden w-full">
+        <div className="relative  w-full">
           <div
             ref={desktopScrollRef}
-            className="mt-5 lg:mt-4 pb-5 lg:pb-0 overflow-x-hidden"
+            className="mt-5 lg:mt-4 pb-5 lg:pb-0 overflow-x-scroll scrollbar-hide "
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              onScroll={(e) => {
+              const scrollLeft = e.currentTarget.scrollLeft;
+              const cardWidth = 430; // same as in scrollDesktop
+              const index = Math.round(scrollLeft / cardWidth);
+              setCurrentScrollIndex(index);
+            }}
           >
             <div 
               className="flex gap-16 w-max"

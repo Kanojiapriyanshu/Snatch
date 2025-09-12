@@ -157,6 +157,22 @@ export default function OnboardingToolbar() {
         {showPresskitMenu && (
           <div className="absolute bottom-12 right-0 w-[220px] bg-white shadow-lg rounded-md border border-light-grey z-50">
             <ul className="flex flex-col p-3 gap-2">
+              <li
+                onClick={() => router.push("/onboarding/step-1")}
+                className={"cursor-pointer rounded-md p-2 text-graphite hover:text-electric-blue hover:bg-gray-100"}
+              >
+                Edit profile details
+              </li>
+               <li
+                onClick={() => router.push("/manage-projects/pick-projects")}
+                className={`cursor-pointer rounded-md p-2 ${
+                  !portfolioComplete
+                    ? "text-[#EB3B00]"
+                    : "text-graphite hover:text-electric-blue hover:bg-gray-100"
+                }`}
+              >
+                 {portfolioComplete ? "Edit project details" : "Complete project details"}
+              </li>
                 <li
                 onClick={() => router.push("?tab=about")}
                 className={`cursor-pointer rounded-md p-2 ${
@@ -167,22 +183,7 @@ export default function OnboardingToolbar() {
               >
                  {aboutComplete ? "Edit about details" : "Complete about details"}
               </li>
-              <li
-                onClick={() => router.push("/manage-projects/pick-projects")}
-                className={`cursor-pointer rounded-md p-2 ${
-                  !portfolioComplete
-                    ? "text-[#EB3B00]"
-                    : "text-graphite hover:text-electric-blue hover:bg-gray-100"
-                }`}
-              >
-                 {portfolioComplete ? "Edit project details" : "Complete project details"}
-              </li>
-              <li
-                onClick={() => router.push("/onboarding/step-1")}
-                className={"cursor-pointer rounded-md p-2 text-graphite hover:text-electric-blue hover:bg-gray-100"}
-              >
-                Edit profile details
-              </li>
+
             </ul>
           </div>
         )}

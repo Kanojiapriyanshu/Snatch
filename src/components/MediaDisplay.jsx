@@ -198,6 +198,8 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
             ) : mediaItem.media_type === "VIDEO" ? (
             <video
               controls
+              disablePictureInPicture
+              controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
               muted={mutedStates[mediaItem.id] ?? true} // default true
               className="object-cover w-full h-full"
               src={mediaItem.media_url}
@@ -222,7 +224,9 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
                       />
                     ) : (
                       <video
-                        controls
+                         controls
+                         disablePictureInPicture
+                        controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
                         muted={mutedStates[child.id] ?? true} 
                         className="w-full h-full object-cover"
                         src={child.media_url}
