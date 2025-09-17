@@ -97,7 +97,7 @@ const SendRequestPopup = ({ username, profilePicture }) => {
                   alt="Profile"
                   width={30}
                   height={30}
-                  className="rounded-full"
+                  className="rounded-full w-7 h-7"
                 />
                 {username}
                 <Image

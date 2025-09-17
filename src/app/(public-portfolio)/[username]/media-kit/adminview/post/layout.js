@@ -71,7 +71,7 @@ export default async function PostLayout({ children, params }) {
                   userPosts.map((post, index) => (
                     <Link
                       key={index}
-                      href={`/${username}/media-kit/post/?postId=${post.mediaId}`}
+                      href={`/${username}/media-kit/adminview/post/?postId=${post.mediaId}`}
                       className="block lg:relative"
                     >
                       <div className="transition-opacity duration-200 ease-in-out lg:opacity-60 lg:group-hover:opacity-10 lg:hover:opacity-100 lg:rounded-md">

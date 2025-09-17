@@ -27,7 +27,8 @@ import SvgComponent from "@/components/svg/Instagramsvg";
   const [activeTab, setActiveTab] = useState(initialTab);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  //const isBrandCollaboration = searchParams.get('isBrandCollaboration');
+
+  // const isBrandCollaboration = searchParams.get('isBrandCollaboration');
 
   const requiredFields = ["titleName", "description", "industries"];
   // Add these near the top of PreviewContent function
@@ -489,8 +490,8 @@ const handleHamburgerClick = () => {
                                         );
                                       }
             
-                  return null;
-                })()
+                                  return null;
+                                })()
               )}
               </div>
 
@@ -551,86 +552,99 @@ const handleHamburgerClick = () => {
           <div className="w-full border-b-[0.5px] border-gray-300 mt-2"></div>
 
           {/* Fixed height brand collaboration section */}
-          <div className="min-h-[60px] flex items-start mt-4">
-            <div className="pointer-events-auto">
-                {isModalOpen && (
-                  <Popup onClose={handleCloseModal} onContinueEditing={handleCloseModal} onNextStep={handleNextStep}  message={popupMessage} />
-                )}
-            </div> 
+           {isBrandCollaboration && Array.isArray(selectionState?.formData) && (() => {
+            // <div className="min-h-[60px] flex items-start mt-4">
+            // <div className="pointer-events-auto">
+            //     {isModalOpen && (
+            //       <Popup onClose={handleCloseModal} onContinueEditing={handleCloseModal} onNextStep={handleNextStep}  message={popupMessage} />
+            //     )}
+            // </div> 
+            const selectedItem = selectionState.formData.find(
+              (item) => item.key === activeImageId
+            );
 
-            {Array.isArray(selectionState?.formData) && (() => {
-            const selectedItem = selectionState.formData.find(item => item.key === activeImageId);
-            if (!selectedItem?.isBrandCollaboration) return null;
+            if (!selectedItem) return null;
 
-            // Only render the section if there's at least one piece of brand collaboration data
-            const hasAnyBrandData = selectedItem.companyLogo || 
-                                   selectedItem.companyName || 
-                                   selectedItem.eventName ||
-                                   selectedItem.companyLocation || 
-                                   (selectedItem.eventTypes?.length > 0);
+            const hasAnyBrandData =
+              selectedItem.companyLogo ||
+              selectedItem.companyName ||
+              selectedItem.eventName ||
+              selectedItem.companyLocation ||
+              (selectedItem.eventTypes?.length > 0);
 
-            if (!hasAnyBrandData) return null;
+            if (!selectedItem.isBrandCollaboration || !hasAnyBrandData) return null;
 
-            return (
-              <div className="brand-collaboration-section flex gap-3">
-                {/* Logo section with conditional rendering */}
-                {selectedItem.isBrandCollaboration && (
-                  <>
+              return (
+                <div className="brand-collaboration-section flex gap-3 mt-10">
+                  {/* Logo */}
+                  {selectedItem.companyLogo ? (
                     <Image
-                      src={selectedItem.companyLogo || "/assets/images/logo.svg"} // Default logo if no company logo
+                      src={selectedItem.companyLogo}
                       width={50}
                       height={50}
-                      alt={selectedItem.companyLogo ? "Company Logo" : "Default Logo"}
+                      alt="Company Logo"
                       className="h-12 w-12 bg-cover rounded-full"
                     />
-                    {/* Only show divider if we have both logo and other details */}
-                    {(selectedItem.companyName || selectedItem.companyLocation || selectedItem.eventTypes?.length > 0) && (
-                      <div className="h-12 border-l border-gray-400"></div>
-                    )}
-                  </>
-                )}
+                  ) : (
+                    <Image
+                      src="/assets/images/logo.svg"
+                      width={50}
+                      height={50}
+                      alt="Default Logo"
+                      className="h-12 w-12 bg-cover rounded-full"
+                    />
+                  )}
 
-                {/* Rest of the brand collaboration content */}
-                {(selectedItem.companyName || selectedItem.companyLocation || selectedItem.eventTypes?.length > 0) && (
-                  <div className="text-gray-500 text-sm space-y-1">
-                    {/* Company name and location line */}
-                    {(selectedItem.companyName || selectedItem.companyLocation) && (
-                      <p>
-                        {selectedItem.companyName && (
-                          <> <span className="text-graphite">{selectedItem.companyName}</span></>
+                  {/* Divider */}
+                  {(selectedItem.companyName ||
+                    selectedItem.companyLocation ||
+                    selectedItem.eventTypes?.length > 0) && (
+                    <div className="h-12 border-l border-gray-400"></div>
+                  )}
+
+                  {/* Content */}
+                  {(selectedItem.companyName ||
+                    selectedItem.companyLocation ||
+                    selectedItem.eventTypes?.length > 0) && (
+                    <div className="text-gray-500 text-sm space-y-1">
+                      {/* Company name + location */}
+                      {(selectedItem.companyName || selectedItem.companyLocation) && (
+                        <p>
+                          {selectedItem.companyName && (
+                            <span className="text-graphite">{selectedItem.companyName}</span>
+                          )}
+                          {selectedItem.companyLocation && <> • {selectedItem.companyLocation}</>}
+                        </p>
+                      )}
+
+                      <div className="flex gap-2">
+                        {/* Event name */}
+                        {selectedItem.eventName && (
+                          <p>
+                            <span className="text-graphite">{selectedItem.eventName}</span>
+                          </p>
                         )}
-                        {selectedItem.companyLocation && (
-                          <> • {selectedItem.companyLocation}</>
+
+                        {/* Event types */}
+                        {selectedItem.eventTypes?.length > 0 && (
+                          <p>
+                            {selectedItem.eventTypes.map((eventType, index) => (
+                              <span key={index} className="px-1 -ml-2 text-sm">
+                                {index > 0 ? " | " : " • "}
+                                {eventType}
+                              </span>
+                            ))}
+                          </p>
                         )}
-                      </p>
-                    )}
-
-                    <div className="flex gap-2">
-                    {/* Event name line */}
-                    {selectedItem.eventName && (
-                      <p> <span className="text-graphite">{selectedItem.eventName}</span></p>
-                    )}
-
-                    {/* Event types line */}
-                    {selectedItem.eventTypes?.length > 0 && (
-                      <p className="">
-                        {selectedItem.eventTypes.map((eventType, index) => (
-                          <span key={index} className="px-1 -ml-2 text-sm">
-                            {index > 0 ? " | " : " • "}{eventType}
-                          </span>
-                        ))}
-                      </p>
-                    )}
                       </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-          </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}          
 
           {/* Fixed height description section */}
-          <div className="flex-1 flex flex-col justify-between min-h-[120px]">
+          <div className="flex-1 flex flex-col justify-between min-h-[120px] mt-3">
             <div className="flex-1">
               {Array.isArray(selectionState?.formData) && (() => {
                 const selectedItem = selectionState.formData.find(item => item.key === activeImageId);
@@ -649,7 +663,7 @@ const handleHamburgerClick = () => {
 
             {/* Fixed position insights section at bottom */}
             {activeTab === "instagram" && (
-              <div className="mt-3 pb-2">
+              <div className="mt-3 pb-7 -ml-2">
                 {insights && insights.length > 0 ? (
                   <div className="flex justify-between text-graphite w-full max-w-[500px]">
                     {insights.map((item) => (
@@ -678,126 +692,126 @@ const handleHamburgerClick = () => {
           </div>
         </div>
 
-<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  bg-white rounded-lg w-[823px] h-[74px] px-4 py-1.5 shadow-lg z-50 ">
-  <div className="flex items-center gap-[9px] w-full h-full">
-    {/* Logo + Hamburger */}
-          <div className="flex w-[175px] h-[56px] gap-[8px] items-center ">
-               <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold  text-center px-2">
-                           <Image 
-                            src="/assets/images/snatch.svg"
-                            width={40}
-                            height={40}
-                            alt="snatchlogo"
-                            className=" w-32 h-10"
-                          />
-                        </button>
-                <button
-                      onClick={handleHamburgerClick}
-                      className="w-[61px] h-[56px]  text-electric-blue bg-gray-100  rounded-md mx-auto font-medium hover:bg-transparent relative"
-                    >
-                      <Image
-                        className="mx-auto w-8"
-                        src="/assets/icons/onboarding/Hamburger.svg"
-                        alt="hamburger"
-                        width={20}
-                        height={20}
-                      />
-              </button>
-          </div>
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  bg-white rounded-lg w-[823px] h-[74px] px-4 py-1.5 shadow-lg z-50 ">
+        <div className="flex items-center gap-[9px] w-full h-full">
+          {/* Logo + Hamburger */}
+                <div className="flex w-[175px] h-[56px] gap-[8px] items-center ">
+                    <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold  text-center px-2">
+                                <Image 
+                                  src="/assets/images/snatch.svg"
+                                  width={40}
+                                  height={40}
+                                  alt="snatchlogo"
+                                  className=" w-32 h-10"
+                                />
+                              </button>
+                      <button
+                            onClick={handleHamburgerClick}
+                            className="w-[61px] h-[56px]  text-electric-blue bg-gray-100  rounded-md mx-auto font-medium hover:bg-transparent relative"
+                          >
+                            <Image
+                              className="mx-auto w-8"
+                              src="/assets/icons/onboarding/Hamburger.svg"
+                              alt="hamburger"
+                              width={20}
+                              height={20}
+                            />
+                    </button>
+                </div>
 
-          {/* Dropdown Menu */}
-                {isMenuVisible && (
-                  <div className="absolute top-[-220%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
-                    <ul className="flex flex-col p-3 gap-2">
-                      <li
-                        onClick={handleDashboardClick}
-                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                      >
-                        Dashboard
-                      </li>
-                      <li
-                        onClick={handleSettingClick}
-                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                      >
-                        Settings
-                      </li>
-                      <li
-                        onClick={handleProfileClick}
-                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                      >
-                        Profile
-                      </li>
-                    </ul>
-                  </div>
-                )}
+                {/* Dropdown Menu */}
+                      {isMenuVisible && (
+                        <div className="absolute top-[-220%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+                          <ul className="flex flex-col p-3 gap-2">
+                            <li
+                              onClick={handleDashboardClick}
+                              className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                            >
+                              Dashboard
+                            </li>
+                            <li
+                              onClick={handleSettingClick}
+                              className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                            >
+                              Settings
+                            </li>
+                            <li
+                              onClick={handleProfileClick}
+                              className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                            >
+                              Profile
+                            </li>
+                          </ul>
+                        </div>
+                      )}
 
-        <div className="flex justify-start items-start">
-            <button
-          className="px-2 py-1.5 w-[149px] h-[38px] text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4 flex items-center justify-between"
-          onClick={handlePrevious}
-          disabled={projects.length <= 1}
-        >
-           <Image
-            src="/assets/images/projectsLeftarrow.svg"
-            alt="back arrow"
-            width={14}
-            height={14}
-            className="w-[14px] h-[14px]"
-          />
-          <span className="text-md">Previous Project</span>
-        </button>
-        
-            <button
-                className="px-2 py-1.5 w-[119px] h-[38px] flex items-center justify-between text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
-                onClick={handleNext}
+              <div className="flex justify-start items-start">
+                  <button
+                className="px-2 py-1.5 w-[149px] h-[38px] text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4 flex items-center justify-between"
+                onClick={handlePrevious}
                 disabled={projects.length <= 1}
               >
-                  <span className="text-md">Next Project</span>
-                   <Image
-                          src="/assets/images/projectRightarrow.svg"
-                          alt="back arrow"
-                          width={14}
-                          height={14}
-                          className="w-[14px] h-[14px]"
-                  />
+                <Image
+                  src="/assets/images/projectsLeftarrow.svg"
+                  alt="back arrow"
+                  width={14}
+                  height={14}
+                  className="w-[14px] h-[14px]"
+                />
+                <span className="text-md">Previous Project</span>
               </button>
-        </div>
+              
+                  <button
+                      className="px-2 py-1.5 w-[119px] h-[38px] flex items-center justify-between text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
+                      onClick={handleNext}
+                      disabled={projects.length <= 1}
+                    >
+                        <span className="text-md">Next Project</span>
+                        <Image
+                                src="/assets/images/projectRightarrow.svg"
+                                alt="back arrow"
+                                width={14}
+                                height={14}
+                                className="w-[14px] h-[14px]"
+                        />
+                    </button>
+              </div>
 
-    {/* Right Buttons: Previous Step + See Previews */} 
-    <div className="bg-gray-100 px-2 py-2 h-[56px] rounded-lg flex justify-between items-start gap-[8px]">
-        <button className="px-2 h-[38px] border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
-        Previous Step
+          {/* Right Buttons: Previous Step + See Previews */} 
+          <div className="bg-gray-100 px-2 py-2 h-[56px] rounded-lg flex justify-between items-start gap-[8px]">
+              <button className="px-2 h-[38px] border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
+              Previous Step
+            </button>
+          <button
+        className={`
+          px-3 h-[38px] rounded-lg text-md transition-colors
+          ${
+            status === "loading"
+              ? "bg-electric-blue text-white cursor-not-allowed"
+              : status === "success"
+              ? "bg-green-600 text-white"
+              : status === "error"
+              ? "bg-red-600 text-white"
+              : "bg-electric-blue text-white hover:bg-blue-700"
+          }
+        `}
+        onClick={handleNextStep}
+        disabled={status === "loading"} // prevent multiple clicks
+      >
+        {status === "loading"
+          ? "Completing..."
+          : status === "success"
+          ? "Completed ✅"
+          : status === "error"
+          ? "Retry ❌"
+          : "Complete Project Details"}
       </button>
-    <button
-  className={`
-    px-3 h-[38px] rounded-lg text-md transition-colors
-    ${
-      status === "loading"
-        ? "bg-electric-blue text-white cursor-not-allowed"
-        : status === "success"
-        ? "bg-green-600 text-white"
-        : status === "error"
-        ? "bg-red-600 text-white"
-        : "bg-electric-blue text-white hover:bg-blue-700"
-    }
-  `}
-  onClick={handleNextStep}
-  disabled={status === "loading"} // prevent multiple clicks
->
-  {status === "loading"
-    ? "Completing..."
-    : status === "success"
-    ? "Completed ✅"
-    : status === "error"
-    ? "Retry ❌"
-    : "Complete Project Details"}
-</button>
 
-    </div>
+          </div>
 
-  </div>
-</div>
-       
+        </div>
+      </div>
+            
       </div>
       </div>
     </div>

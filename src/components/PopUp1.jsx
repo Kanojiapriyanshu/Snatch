@@ -4,7 +4,7 @@ export default function InstagramPopup({ isOpen, onClose }) {
 
   return (
     <>
-      {isOpen && (
+      {isOpen&& (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           {/* Dark background overlay */}
           <div
@@ -13,7 +13,7 @@ export default function InstagramPopup({ isOpen, onClose }) {
           ></div>
 
           {/* Popup */}
-          <div className="relative bg-white rounded-lg shadow-lg p-8 max-w-md w-full z-10 text-center">
+          <div className="relative bg-white rounded-lg shadow-lg p-8 max-w-lg w-full z-10 text-center">
             <h2 className="text-2xl font-qimano mb-2 text-graphite text-left">You made it!</h2>
             <hr className="my-1 border-gray-300" />
             <p className="text-graphite mt-2 font-apfel-grotezk-regular text-left">

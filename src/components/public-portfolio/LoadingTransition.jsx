@@ -13,7 +13,7 @@ const LoadingTransition = () => {
         />
       </div>
       <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse mx-auto">
-        Fetching Portfolio of your favorite influencers...
+        You're going live... This one’s worth the wait 👀
       </p>
     </div>
   );

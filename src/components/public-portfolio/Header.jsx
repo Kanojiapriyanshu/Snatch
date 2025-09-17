@@ -36,7 +36,7 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
 
   return (
     <motion.div
-      className="fixed top-1 left-2 w-[97.9%] z-20 py-2 mt-2 mx-2 lg:flex items-center rounded-3xl backdrop-blur-3xl bg-[#7f7f7f]/70"
+      className="fixed top-1 left-2 w-[97.9%] z-20 py-2 mt-2 mx-2 lg:flex items-center rounded-3xl backdrop-blur-3xl bg-[#7f7f7f]/80"
       style={{
         opacity: headerOpacity,
         height: "80px",

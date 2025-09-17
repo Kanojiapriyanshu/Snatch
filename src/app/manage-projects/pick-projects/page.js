@@ -588,9 +588,9 @@ return (
         Pick at least 4 posts that wish to highlight in your press kit.
         </p>
         <span className="mx-auto font-qimano ">
-  {(selectionState?.instagramSelected?.length || 0) + (selectionState?.uploadedFiles?.length || 0)} / 12 Selected
-   *Minimum 4 required to continue
-</span>
+        <span className="text-electric-blue text-xl">{(selectionState?.instagramSelected?.length || 0) + (selectionState?.uploadedFiles?.length || 0)} / 12</span> Selected
+        *Minimum 4 required to continue
+      </span>
 
    {renderInstagramPopup()}
       </div>

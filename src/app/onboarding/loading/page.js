@@ -28,7 +28,7 @@ export default function LoadingTransition() {
         />
       </div>
       <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse text-center">
-        Snatching opportunities for you...
+        Welcome to Snatch! We’re setting things up for you…
       </p>
     </div>
   );

@@ -153,7 +153,9 @@ export default function Step1() {
 
     {/* Social Links */}
     <div>
-      <h6 className="font-medium text-graphite">Add social links</h6>
+      <h6 className="font-medium text-graphite flex items-center gap-1">
+        Add social links
+      </h6>
       <div className="mt-3">
         <InstagramInput
           value={formState.instagram}
@@ -162,8 +164,8 @@ export default function Step1() {
         />
         <div className="flex items-center mt-1 text-sm  font-apfel-grotezk-regular">
         <span className="tracking-wide">
-  Must have an Instagram <span className="font-normal">Creator</span> or <span className="font-normal">Business</span> account with at least <span className="font-normal">1,000 followers</span>.
-</span>
+          Must have an Instagram <span className="font-normal">Creator</span> or <span className="font-normal">Business</span> account with at least <span className="font-normal">1,000 followers</span>.
+        </span>
 
           <span title="If you have under 1k followers, you will not be able to access snatch features once you've signed up.">
             <img src="/assets/images/info.svg" alt="info" className="w-4 h-4 ml-2 inline" />
@@ -188,7 +190,7 @@ export default function Step1() {
             <img src="/assets/icons/onboarding/Plusicon.svg" alt="Add" width={20} height={30} />
           </span>
           <div className="w-[1px] h-6 bg-stroke mx-3"></div>
-          <span className="text-graphite opacity-60 select-none">Add another social link</span>
+          <span className="text-graphite opacity-60 select-none">Add another social link (optional)</span>
         </div>
       </div>
     </div>
