@@ -71,7 +71,7 @@ const DashboardPage = () => {
 
   // Derived values
   const isInstagramLinked = instagramConnection?.connected || false;
-  const hasMinFollowers = followerData?.count >= 10;
+  const hasMinFollowers = followerData?.count >= 0;
   const totalRequests = influencerRequests?.totalRequests || 0;
 
   const getTopLocations = () => {
@@ -108,11 +108,11 @@ const DashboardPage = () => {
 
   return (
     <DashboardContext.Provider value={{ isInstagramLinked }}>
-      <div className="mt-2 relative p-3">
+      <div className="mt-2 relative p-3 h-full ">
         {/* Blur wrapper when conditions are not met */}
         <div className={`${(!isInstagramLinked || !hasMinFollowers) ? "blur-sm pointer-events-none select-none" : ""}`}>
           {/* Top Analytics Cards */}
-          <div className="mb-[430px] 3xl:mb-[490px] flex gap-3">
+          <div className="absolute top-3 w-[98.3%] h-36 flex gap-3">
             <DashboardCardwrapper count={analytics.totalVisitors} label="Profile Visits" />
             <DashboardCardwrapper count={totalRequests} label="Request Received" />
             <DashboardCardwrapper
@@ -122,16 +122,18 @@ const DashboardPage = () => {
             />
           </div>
 
-          {/* Location Analytics */}
-          <div className="absolute top-[22%] w-full">
-            <LocationWrapper
+            {/* Location Analytics */}
+          <div className="absolute top-36 w-full">
+            <div className="w-[98.3%]">
+              <LocationWrapper
               topLocations={getTopLocations()}
               setSelectedLocationType={setSelectedLocationType}
               selectedLocationType={selectedLocationType}
             />
+            </div>
 
             {/* Creator Circle Section */}
-            <div className="mt-1 3xl:mt-2 w-full max-w-[98%] mr-5 mx-auto bg-white rounded-xl shadow relative font-qimano overflow-hidden px-4 md:px-8 xl:px-16 py-[clamp(20px,calc(8px+5vh+1vw),100px)] min-h-[250px] xl:min-h-[90px] 2xl:min-h-[200px] 5xl:min-h-[400px] flex">
+            <div className="mt-1 3xl:mt-2 w-[98.4%] mr-5 bg-white rounded-xl shadow relative font-qimano overflow-hidden px-4 md:px-8 xl:px-16 py-[clamp(20px,calc(8px+5vh+1vw),100px)] min-h-[250px] xl:min-h-[90px] 2xl:min-h-[200px] 5xl:min-h-[600%] flex">
               <div
                 className="absolute top-0 -left-12 w-80 z-30 bg-[#e7e300]"
                 style={{ transform: "rotate(-30deg)" }}
@@ -164,6 +166,8 @@ const DashboardPage = () => {
               </div>
             </div>
           </div>
+
+       
         </div>
 
         {/* Conditional Overlays */}

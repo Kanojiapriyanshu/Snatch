@@ -25,7 +25,7 @@ export default async function OnboardingLayout({ children }) {
   return (
     <FormProvider>
 
-      <div className="flex justify-center  h-[100vh] max-w-[100%] w-[100%] relative bg-[#E9E9E9] ">
+      <div className="flex justify-center gap-3 h-[100vh] max-w-[100%] w-[100%] relative bg-[#E9E9E9] ">
         {/* Left side: Image with Preview items-center added above to center the dashboard */}
         <div className="w-[40vw] overflow-hidden relative flex items-center justify-center bg-[#E9E9E9] h-[100vh] left-3 ">
         <Image
@@ -48,8 +48,8 @@ export default async function OnboardingLayout({ children }) {
         <DashboardToolbar isInstagramLinked={isInstagramLinked} />
 
         {/* Right: Form */}
-        <div className="w-[60vw] max-w-[80%] flex flex-col bg-[#E9E9E9] h-[100vh]">
-          <div className="h-[100vh] w-[60vw] max-w-[98%]">{children}</div>
+        <div className="w-[60vw] max-w-[80%] flex flex-col bg-[#E9E9E9] h-[100vh] overflow-hidden">
+          <div className="h-[100vh] max-w-[100%]">{children}</div>
         </div>
       </div>
     </FormProvider>

@@ -83,7 +83,7 @@ export default function OnboardingToolbar() {
 
   return (
     <div
-      className={`fixed top-[85%] left-[50%] translate-x-[-50%] ${
+      className={`fixed top-[88%] left-[50%] translate-x-[-50%] ${
         allComplete ? "w-[545px]" : "w-[560px]"
       } h-[74px] flex justify-center items-center gap-3 shadow-md bg-white rounded-md z-20 p-5 font-apfel-grotezk-regular`}
     >

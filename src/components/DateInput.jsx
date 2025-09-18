@@ -137,9 +137,9 @@ const parseDate = (str) => {
 
 
   return (
-    <section className="bg-white w-1/2 -ml-2">
+    <section className="bg-white w-1/2 -ml-3">
       <div className="container">
-        <div className="flex w-[395px]">
+        <div className="flex w-[400px]">
           <div className="w-full px-4">
             <div className="mb-0">
               <div className="relative" ref={datepickerRef}>

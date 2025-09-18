@@ -30,7 +30,7 @@ const CustomDropdown = ({ options, placeholder, onSelect, selected }) => {
   };
 
   return (
-    <div ref={ref} className="relative w-[369px]">
+    <div ref={ref} className="relative w-[48.4%]">
       {/* Display selected option or placeholder */}
       <div
        className={`rounded-lg border border-stroke bg-transparent py-[10px] px-5 cursor-pointer ${

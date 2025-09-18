@@ -83,7 +83,7 @@ export default function Step1() {
 
         <div className="">
   <form
-    className="mt-6 w-[45dvw] 2xl:w-[70dvw] 2xl:max-w-[760px] h-[80vh] overflow-y-scroll overflow-x-hidden mx-auto  space-y-6 font-apfel-grotezk-regular"
+    className="mt-6 w-[45dvw] 2xl:w-[70dvw] 2xl:max-w-[760px] h-[80vh] overflow-y-scroll overflow-x-hidden space-y-6 font-apfel-grotezk-regular"
     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     onSubmit={handleSubmit}
   >

@@ -20,7 +20,7 @@ const LocationCard = ({
   }, [selectedLocationType, topLocations]);
 
   return (
-    <div className="w-[57.5vw] h-[27vh] bg-white rounded-md flex justify-between px-2 space-x-1 font-qimano">
+    <div className=" h-[27vh] bg-white rounded-md flex justify-between px-2 space-x-1 font-qimano">
       {/* Left Section */}
       <div className="flex flex-row w-[50%] h-[90%] mt-2 ml-3">
         <div className="flex flex-col justify-center items-center mx-auto">

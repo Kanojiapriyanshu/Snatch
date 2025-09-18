@@ -14,14 +14,14 @@ export default async function OnboardingLayout({ children }) {
 
   return (
     <FormProvider>
-      <div className="flex h-screen bg-white">
-        {/* Left: Preview */}
-          <div className="w-[900px] 3xl:w-[45vw] overflow-hidden relative flex items-center justify-center bg-white h-[100vh]">
+      <div className="flex h-screen bg-white max-w-[100%] w-[100%] relative">
+        {/* Left: Preview w-[42vw]  */}
+          <div className="w-[39.7vw] overflow-hidden relative flex items-center justify-center bg-white h-[100vh] left-3">
           <Image
             src="/assets/images/signup_background.png"
             alt="Background Image"
             fill
-            className="absolute p-6 rounded-md top-0 left-0 w-full h-full object-left-bottom"
+            className="absolute top-0 pt-5 pb-4 left-0 w-full h-screen object-cover rounded-tl-[40px] rounded-bl-[40px]"
             priority
           />
 
@@ -36,8 +36,8 @@ export default async function OnboardingLayout({ children }) {
         <OnboardingToolbar />
 
         {/* Right: Form */}
-       <div className="w-[900px] flex flex-col flex-grow justify-center items-center bg-white">
-          <div className="w-[100vw] 3xl:max-w-3xl max-w-2xl">{children}</div>
+       <div className=" w-[60vw] max-w-[80%] flex flex-col flex-grow justify-center items-center bg-white">
+          <div className="w-[100vw] 3xl:max-w-3xl max-w-2xl ">{children}</div>
         </div>
       </div>
     </FormProvider>
