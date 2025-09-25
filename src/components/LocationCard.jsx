@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import useFontSize from "@/hooks/useFontSize";
 
 const LocationCard = ({
   topLocations,
@@ -8,7 +9,12 @@ const LocationCard = ({
   setSelectedLocationType,
 }) => {
   const [filteredLocations, setFilteredLocations] = useState([]);
-
+    // font sizes with smooth scaling (adjust values if needed)
+  const headingSize = useFontSize(24, 30, 1100, 1920); // "Top 3 Locations"
+  const buttonSize = useFontSize(15, 18, 1100, 1920); // filter buttons
+  const locationSize = useFontSize(20, 28, 1100, 1920); // city/state/country
+  const percentageSize = useFontSize(14, 18, 1100, 1920); // %
+  const emptyMessageSize = useFontSize(14, 18, 1100, 1920); // fallback message
   //Update location data based on selected filter
   useEffect(() => {
     const getFilteredData = () => {
@@ -31,12 +37,13 @@ const LocationCard = ({
             src="/assets/icons/dashboard/email.svg"
             alt="email"
           />
-          <p className="text-2xl">Top 3 Locations</p>
+          <p style={{ fontSize: headingSize }}>Top 3 Locations</p>
           <div className="flex gap-5 mt-3">
             {["country", "state", "city"].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setSelectedLocationType(filter)}
+                style={{ fontSize: buttonSize }}
                 className={`w-[72px] h-[37px] ${
                   selectedLocationType === filter
                     ? "bg-electric-blue text-white"
@@ -56,7 +63,8 @@ const LocationCard = ({
     filteredLocations.map((item, index) => (
       <div
         key={item.id || index}
-        className={`flex flex-row w-[96%] h-[48px] text-[20px] items-center  ${
+        style={{ fontSize: locationSize }}
+        className={`flex flex-row w-[96%] h-[48px] items-center  ${
           index !== filteredLocations.length - 1 ? 'border-b border-gray-200' : ''
         }`}
       >
@@ -66,12 +74,13 @@ const LocationCard = ({
           <span className="text-graphite font-qimano ">{item.location || 'N/A'}</span>
         </div>
         {/* Percentage on the right */}
-        <span className="text-blue-600 w-[50px] text-right font-medium">{item.percentage+"%" || '0%'}</span>
+        <span  style={{ fontSize: percentageSize }} className="text-blue-600 w-[50px] text-right font-medium">{item.percentage+"%" || '0%'}</span>
       </div>
     ))
   ) : (
     <div className="flex flex-col items-center justify-center h-full h-90 text-gray-500 mr-20 mt-[20px]">
-    <p className="text-center text-lg font-apfel-grotezk-regular">Share your portfolio to unlock 
+    <p style={{ fontSize: emptyMessageSize }}
+ className="text-center font-apfel-grotezk-regular">Share your portfolio to unlock 
       <p>location insights as soon as</p> 
       <p>people start viewing it.</p></p>
     </div>

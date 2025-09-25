@@ -185,11 +185,11 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                 
                 
                 <div
-                  className="relative border  rounded-b-md w-[200px] h-[280px] overflow-hidden cursor-pointer mt-6"
+                  className="relative border  rounded-b-md w-[230px] h-[280px] overflow-hidden cursor-pointer mt-6"
                   onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}
                 >
-                  <div className="bg-gray-400 text-white px-4 py-1 rounded-t-md w-[200px] text-center">
+                  <div className="bg-gray-400 text-white px-4 py-1 rounded-t-md w-[100%] text-center">
                   <span className="text-sm font-medium">Preview card</span>
                 </div>
                   <Image
@@ -201,7 +201,7 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                   /> 
                   <div
                     className={clsx(
-                      `absolute left-0 bottom-0 w-full flex flex-col items-center justify-center transition-all duration-300 rounded-t-md p-4`,
+                      `absolute left-0 bottom-0 w-full flex flex-col items-center justify-center transition-all duration-300 rounded-t-md py-4 p-2`,
                       cardType.bg,
                       cardType.text,
                       hovered ? "h-[100%]" : "h-[50%]"
@@ -213,13 +213,13 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                       alt="about-icon" 
                       height={40} 
                       width={40} 
-                      className="w-10 h-10 mb-4" 
+                      className="w-10 h-10 mb-2" 
                     />
                     <p className={clsx("text-center font-qimano text-sm", cardType.text)}>
                       {question}
                     </p>
                     {hovered && (
-                      <p className={clsx("text-xs text-center font-apfel-grotezk-regular mt-4 px-2", cardType.text)}>
+                      <p className={clsx("text-[10px] text-center font-apfel-grotezk-regular mt-2 px-2", cardType.text)}>
                         {answer}
                       </p>
                     )}
@@ -261,7 +261,7 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                       key={index}
                       onClick={() => handleImageSelect(image)}
                       className={clsx(
-                        "cursor-pointer rounded-md overflow-hidden flex-shrink-0 w-[200px] h-[280px] transition-all duration-200 hover:scale-105 relative",
+                        "cursor-pointer rounded-md overflow-hidden flex-shrink-0 w-[220px] h-[280px] transition-all duration-200 hover:scale-105 relative",
                         (tempSelectedImage?.url === image || selectedImage === image)
                           ? "border-2 border-electric-blue"
                           : "border-0"

@@ -335,7 +335,7 @@ useEffect(() => {
                                   project.children.length
                                 )
                               }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 ml-1 z-30"
+                              className="bg-black/50 text-white rounded-full w-6 h-6 ml-1 z-0"
                             >
                               ❮
                             </button>
@@ -348,7 +348,7 @@ useEffect(() => {
                                   project.children.length
                                 )
                               }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 mr-1 z-30"
+                              className="bg-black/50 text-white rounded-full w-6 h-6 mr-1 z-0"
                             >
                               ❯
                             </button>
@@ -372,7 +372,7 @@ useEffect(() => {
                       />
                     )}
                     <div
-                      className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30 cursor-pointer"
+                      className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-10 cursor-pointer"
                       onClick={(e) =>
                       handlePostClick(
                         e,
@@ -463,7 +463,7 @@ useEffect(() => {
                                   project.children.length
                                 )
                               }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 ml-1 z-30"
+                              className="bg-black/50 text-white rounded-full w-6 h-6 ml-1 -z-10"
                             >
                               ❮
                             </button>
@@ -476,7 +476,7 @@ useEffect(() => {
                                   project.children.length
                                 )
                               }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 mr-1 z-30"
+                              className="bg-black/50 text-white rounded-full w-6 h-6 mr-1 -z-10"
                             >
                               ❯
                             </button>
@@ -500,7 +500,7 @@ useEffect(() => {
                       />
                     )}
                     <div
-                      className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-30 cursor-pointer"
+                      className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-10 cursor-pointer"
                       onClick={(e) =>
                       handlePostClick(
                         e,

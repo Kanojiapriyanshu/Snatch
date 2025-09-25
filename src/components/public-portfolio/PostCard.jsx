@@ -135,7 +135,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
             aria-label="Previous"
             style={{ minWidth: 56, minHeight: 56 }}
           >
-            <div className="w-17 h-17 flex items-center justify-center">
+            <div className="w-17 h-17 flex flex-col -space-y-6 items-center justify-center">
               <Image
                 src="/assets/images/Lefthand.svg"
                 alt="Previous"
@@ -143,6 +143,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                 height={56}
                 className="w-full h-full object-contain"
               />
+              <p className="text-electric-blue font-apfel-grotezk-regular">Prev</p>
             </div>
           </button>
 
@@ -153,101 +154,114 @@ export default function PostCard({ post, postId, username, allPosts }) {
           >
             
             <div className="flex gap-5 items-start mt-2 h-[400px]">
-              {/* Media Section */}
-              <div className="w-[300px] h-full pl-5 pt-5">
-                <div className={`w-[250px] ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} overflow-hidden rounded-lg flex items-center`}>
-                  {(() => {
-                    if (!post) {
-                      return <p className="text-graphite flex justify-center items-center h-[50vh]">No post selected</p>;
-                    }
-                    if (post.media?.type === "IMAGE") {
-                      return (
-                        <div className="relative w-[300px]">
-                          <Image
-                            src={post.media.files[0].url}
-                            alt={post.media.files[0].name || 'Image'}
-                            width={300}
-                            height={1200}
-                            className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} bg-cover rounded-lg`}
-                            onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                              setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-                            }}
-                          />
-                        </div>
-                      );
-                    } else if (post.media?.type === "VIDEO") {
-                      return (
-                        <div className="relative p-0 w-[300px]">
-                          <video
-                            src={post.media.files[0].url}
-                            controls
-                            width={300}
-                            height={460}
-                            className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
-                            onLoadedMetadata={(e) => {
-                              setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
-                            }}
-                          />
-                        </div>
-                      );
-                    } else if (post.media?.type === "CAROUSEL" && post.media.files?.length > 0) {
-                      return (
-                        <div className="relative w-full">
-                          <div className="w-full overflow-hidden rounded-lg">
-                            {post.media.files.map((file, index) => (
-                              <div
-                                key={index}
-                                className={`transition-opacity duration-500 w-full ${carouselIndex === index ? "opacity-100" : "opacity-0 absolute inset-0"}`}
-                              >
-                                {file.type === "IMAGE" ? (
-                                  <Image
-                                    src={file.url}
-                                    alt={`Carousel image ${index + 1}`}
-                                    width={300}
-                                    height={400}
-                                    className="w-full h-auto object-contain rounded-lg"
-                                    onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                                      setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-                                    }}
-                                  />
-                                ) : file.type === "VIDEO" ? (
-                                  <video
-                                    controls
-                                    className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
-                                    onLoadedMetadata={(e) => {
-                                      setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
-                                    }}
-                                  >
-                                    <source src={file.url} type="video/mp4" />
-                                  </video>
-                                ) : null}
-                              </div>
-                            ))}
-                          </div>
-                          {/* Navigation buttons for carousel */}
-                          <div className="absolute inset-0 flex items-center justify-between px-2">
-                            <button
-                              className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                              onClick={() => setCarouselIndex(carouselIndex === 0 ? post.media.files.length - 1 : carouselIndex - 1)}
-                              aria-label="Previous carousel item"
+          {/* Media Section */}
+          <div className="w-[300px] h-full pl-5 pt-5">
+            <div className="w-[250px]">
+              {(() => {
+                if (!post) {
+                  return (
+                    <p className="text-graphite flex justify-center items-center h-[50vh]">
+                      No post selected
+                    </p>
+                  );
+                }
+
+                // Shared wrapper with fixed aspect ratio
+                const Wrapper = ({ children }) => (
+                  <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg  bg-white">
+                    {children}
+                  </div>
+                );
+
+                if (post.media?.type === "IMAGE") {
+                  return (
+                    <Wrapper>
+                      <Image
+                        src={post.media.files[0].url}
+                        alt={post.media.files[0].name || "Image"}
+                        fill
+                        className="object-fit rounded-lg"
+                        sizes="250px"
+                      />
+                    </Wrapper>
+                  );
+                } else if (post.media?.type === "VIDEO") {
+                  return (
+                    <Wrapper>
+                      <video
+                        src={post.media.files[0].url}
+                        disablePictureInPicture
+                        controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
+                        controls
+                        className="w-full h-full object-fit rounded-lg"
+                      />
+                    </Wrapper>
+                  );
+                } else if (post.media?.type === "CAROUSEL" && post.media.files?.length > 0) {
+                  return (
+                    <Wrapper>
+                      {post.media.files.map((file, index) => (
+                        <div
+                          key={index}
+                          className={`absolute inset-0 transition-opacity duration-500 rounded-lg ${
+                            carouselIndex === index ? "opacity-100" : "opacity-0"
+                          }`}
+                        >
+                          {file.type === "IMAGE" ? (
+                            <Image
+                              src={file.url}
+                              alt={`Carousel image ${index + 1}`}
+                              fill
+                              className="object-fit rounded-lg"
+                              sizes="250px"
+                            />
+                          ) : file.type === "VIDEO" ? (
+                            <video
+                              controls
+                              disablePictureInPicture
+                              controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
+                              className="w-full h-full object-fit rounded-lg"
                             >
-                              ❮
-                            </button>
-                            <button
-                              className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                              onClick={() => setCarouselIndex(carouselIndex === post.media.files.length - 1 ? 0 : carouselIndex + 1)}
-                              aria-label="Next carousel item"
-                            >
-                              ❯
-                            </button>
-                          </div>
+                              <source src={file.url} type="video/mp4" />
+                            </video>
+                          ) : null}
                         </div>
-                      );
-                    }
-                    return null;
-                  })()}
-                </div>
-              </div>
+                      ))}
+
+                      {/* Carousel navigation */}
+                      <div className="absolute inset-0 flex items-center justify-between px-2">
+                        <button
+                          className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                          onClick={() =>
+                            setCarouselIndex(
+                              carouselIndex === 0
+                                ? post.media.files.length - 1
+                                : carouselIndex - 1
+                            )
+                          }
+                        >
+                          ❮
+                        </button>
+                        <button
+                          className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                          onClick={() =>
+                            setCarouselIndex(
+                              carouselIndex === post.media.files.length - 1
+                                ? 0
+                                : carouselIndex + 1
+                            )
+                          }
+                        >
+                          ❯
+                        </button>
+                      </div>
+                    </Wrapper>
+                  );
+                }
+                return null;
+              })()}
+            </div>
+          </div>
 
               {/* Details Section - Using flex column with fixed sections */}
               <div className="w-full h-full pl-5 pr-5 mt-5 flex flex-col">
@@ -370,7 +384,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
             aria-label="Next"
             style={{ minWidth: 56, minHeight: 56 }}
           >
-            <div className="w-17 h-17 flex items-center justify-center">
+            <div className="w-17 h-17 flex flex-col -space-y-6 items-center justify-center">
               <Image
                 src="/assets/images/Righthand.svg"
                 alt="Next"
@@ -378,6 +392,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                 height={56}
                 className="w-full h-full object-contain"
               />
+               <p className="text-electric-blue font-apfel-grotezk-regular">Next</p>
             </div>
           </button>
 
@@ -399,7 +414,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                 alt="Go to Portfolio"
                 width={28}
                 height={28}
-                className="w-7 h-7 object-contain"
+                className="w-10 h-10 object-contain"
               />
             </button>
           </div>

@@ -123,7 +123,7 @@ const Questionnaire = ({ name }) => {
         {showNavButtons && showLeftButton && (
          <button
   onClick={() => scrollDesktop("left")}
-  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-20 rounded-full bg-black/20 p-2"
+  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-16 rounded-3xl bg-white p-2"
   aria-label="Scroll Left"
 >
   <div className="w-full h-full flex items-center justify-center">
@@ -177,7 +177,7 @@ const Questionnaire = ({ name }) => {
         {showNavButtons && showRightButton && (
           <button
   onClick={() => scrollDesktop("right")}
-  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-20 rounded-full bg-black/20 p-2"
+  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 transition-transform hover:scale-110 w-20 h-16 rounded-3xl bg-white p-2"
   aria-label="Scroll Right"
 >
   <div className="w-full h-full flex items-center justify-center">

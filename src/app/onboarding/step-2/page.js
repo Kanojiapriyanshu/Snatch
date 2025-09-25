@@ -112,7 +112,7 @@ export default function Step2() {
             Not sure what to charge?{' '}
             <a
               onClick={() => setIsPricingModalOpen(true)}
-              className="group inline-flex items-center gap-1 text-electric-blue underline underline-offset-2 transition-colors hover:text-electric-blue cursor-pointer"
+              className="group inline-flex items-center gap-1 text-electric-blue hover:text-dark-electric-blue underline underline-offset-2 transition-colors cursor-pointer"
             >
               <span>Check our pricing guide</span>
               <svg

@@ -634,7 +634,13 @@ const handlePopupGenerate = async () => {
         onClick={() => setShowSuccessPopup(false)}
         aria-label="Close"
       >
-        ✕
+         <Image
+        src="/assets/icons/cross-mark.svg"
+        alt="Go to Portfolio"
+        width={28}
+        height={28}
+        className="w-7 h-7 object-contain"
+      />
       </button>
 
       {/* Title */}
@@ -1025,10 +1031,10 @@ const handlePopupGenerate = async () => {
        
   <div className=" flex ">
     
-<div className="w-[258px] ml-20 mt-0 relative  ">
+<div className="w-[258px] ml-16 mt-0 relative  ">
 
 {/* Media and Insights Container */}
-<div className="w-[250px] h-auto overflow-hidden rounded-lg  flex items-center">
+<div className="3xl:w-[250px] w-[80%] h-auto overflow-hidden rounded-lg  flex items-center">
   <div className="w-full rounded-lg overflow-hidden">
     {/* Media Display */}
     {(activeImageId !== null || projects.length > 0) && (() => {
@@ -1190,7 +1196,7 @@ const handlePopupGenerate = async () => {
 )}
 </div>
 
-        <div className="ml-20 mt-0 flex flex-col gap-8 overflow-y-scroll overflow-x-hidden h-[70vh]  7xl:h-[80vh] 9xl:h-[80vh]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="-ml-8 3xl:ml-20 mt-0 flex flex-col gap-8 overflow-y-scroll overflow-x-hidden h-[70vh]  7xl:h-[80vh] 9xl:h-[80vh]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <div className="flex items-center justify-between ">
 
   <span className="text-graphite font-apfel-grotezk-mittel">Was it a brand collaboration?</span>

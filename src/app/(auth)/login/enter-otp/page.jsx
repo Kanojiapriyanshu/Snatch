@@ -99,7 +99,7 @@ export default function EnterOtp() {
   return (
     <div className="h-screen flex flex-col justify-center lg:flex-row overflow-hidden">
       {/* Left Section */}
-      <div className="lg:px-10 lg:py-9 xl:px-10 xl:py-9 2xl:px-10 relative lg:w-1/2 h-screen">
+      <div className="lg:px-10 lg:py-9 xl:px-10 xl:py-9 2xl:px-10 lg:absolute lg:right-1/2 lg:w-1/2 h-screen">
         <Image
           src="/assets/images/signup_background.png"
           alt="Signup Background"
@@ -137,80 +137,85 @@ export default function EnterOtp() {
       </div>
 
       {/* Right Section */}
-      <div className="flex h-full w-full lg:w-1/2 justify-center items-center">
-  <div className="flex flex-col justify-center items-center text-center w-full px-6 sm:px-10">
-    
-    {/* Heading */}
-    <h1 className="text-4xl sm:text-5xl font-qimano mb-2">
-      OTP Verification
-    </h1>
+      <div className="lg:absolute flex flex-col h-screen w-full lg:w-1/2 justify-center items-center">
+        <div className=" lg:relative lg:left-1/2 lg:mt-32 flex  flex-col justify-center items-center text-center w-full px-6 sm:px-10">
+          
+          {/* Heading */}
+          <h1 className="text-4xl sm:text-5xl font-qimano mb-2">
+            OTP Verification
+          </h1>
 
-    {/* Subheading */}
-    {email && (
-      <p className="text-gray-400 text-sm mb-8 font-apfel-grotezk-regular">
-        Enter the 6 digit code sent to <span className="font-medium font-graphite">{email}</span>
-      </p>
-    )}
+          {/* Subheading */}
+          {email && (
+            <p className="text-gray-400 text-sm mb-8 font-apfel-grotezk-regular">
+              Enter the 6 digit code sent to <span className="font-medium font-graphite">{email}</span>
+            </p>
+          )}
 
-    {/* OTP Input */}
-    <Otp otp={otp} setOtp={setOtp} onKeyDown={handleKeyDown} />
+          {/* OTP Input */}
+          <Otp otp={otp} setOtp={setOtp} onKeyDown={handleKeyDown} />
 
-    {/* Resend Section */}
-    <div className="mt-4 font-apfel-grotezk-regular text-sm">
-      {resendTimer > 0 ? (
-        <p className="text-gray-500">
-          Didn’t receive the code? <span className="font-medium text-gray-700">Resend OTP</span> in {resendTimer}s
-        </p>
-      ) : (
-        <p>
-          Didn’t receive the code?{" "}
+          {/* Resend Section */}
+          <div className="mt-4 font-apfel-grotezk-regular text-sm">
+            {resendTimer > 0 ? (
+              <p className="text-gray-500">
+                Didn’t receive the code? <span className="font-medium text-gray-700">Resend OTP</span> in {resendTimer}s
+              </p>
+            ) : (
+              <p>
+                Didn’t receive the code?{" "}
+                <button
+                  onClick={handleResendOtp}
+                  disabled={isResending}
+                  className="text-electric-blue hover:underline disabled:text-gray-400 font-medium"
+                >
+                  {isResending ? "Resending..." : "Resend OTP"}
+                </button>
+              </p>
+            )}
+            {resendSuccess && (
+              <p className="text-green-500 text-sm mt-1">
+                OTP resent successfully!
+              </p>
+            )}
+          </div>
+
+          {/* Verify Email Button */}
           <button
-            onClick={handleResendOtp}
-            disabled={isResending}
-            className="text-electric-blue hover:underline disabled:text-gray-400 font-medium"
+            onClick={verifyOtp}
+            disabled={isLoading}
+            className={`w-full sm:w-[356px] h-12 rounded-lg mt-6 flex items-center justify-center text-white text-base font-medium ${
+              isLoading
+                ? "bg-[#BFCFFF] cursor-not-allowed"
+                : "bg-electric-blue hover:bg-[#002ACC]"
+            }`}
           >
-            {isResending ? "Resending..." : "Resend OTP"}
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Verifying...
+              </div>
+            ) : (
+              "Verify Email"
+            )}
           </button>
-        </p>
-      )}
-      {resendSuccess && (
-        <p className="text-green-500 text-sm mt-1">
-          OTP resent successfully!
-        </p>
-      )}
-    </div>
 
-    {/* Verify Email Button */}
-    <button
-      onClick={verifyOtp}
-      disabled={isLoading}
-      className={`w-full sm:w-[356px] h-12 rounded-lg mt-6 flex items-center justify-center text-white text-base font-medium ${
-        isLoading
-          ? "bg-[#BFCFFF] cursor-not-allowed"
-          : "bg-electric-blue hover:bg-[#002ACC]"
-      }`}
-    >
-      {isLoading ? (
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          Verifying...
+          {/* Change email link */}
+          <button
+            onClick={handleChangeEmail}
+            className="mt-4 text-electric-blue text-sm hover:underline"
+          >
+            Change the email address
+          </button>
+
+          {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
-      ) : (
-        "Verify Email"
-      )}
-    </button>
 
-    {/* Change email link */}
-    <button
-      onClick={handleChangeEmail}
-      className="mt-4 text-electric-blue text-sm hover:underline"
-    >
-      Change the email address
-    </button>
+          <p className="text-md lg:relative lg:left-1/2 lg:-bottom-5 lg:mt-10 max-w-80 text-center font-apfel-grotezk-regular">Tip: Can't find the OTP email? Check the <span className="text-electric-blue">Promotions section</span></p>
+      
+      </div>
 
-    {error && <p className="text-red-500 mt-2">{error}</p>}
-  </div>
-</div>
+    
 
     </div>
   );

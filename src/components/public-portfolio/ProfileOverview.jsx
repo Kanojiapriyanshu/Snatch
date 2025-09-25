@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useLayoutEffect } from "react"
 import { motion, useScroll, useTransform, useMotionTemplate, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
-import { FormProvider } from "@/app/onboarding/context";
 import { useFetchPortfolio, useInstagramData, useCheckScreenSize } from "@/utils/public-portfolio/portfolio";
 import Header from "./Header";
 import Image from "next/image" 
@@ -80,7 +79,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   
   const isMobile = useCheckScreenSize();
 
-const reach     = useAnimatedNumber(Number(igData?.reach) || 0);
+  const reach     = useAnimatedNumber(Number(igData?.reach) || 0);
   const followers = useAnimatedNumber(Number(igData?.followers_count) || 0);
   const posts     = useAnimatedNumber(Number(igData?.media_count) || 0);
 
@@ -681,7 +680,7 @@ const priceRange = lowest === highest ? (
         ref={pressKitRef}
       >
         <div className="container mx-auto">
-          <h2 className="text-5xl lg:text-7xl font-qimano text-[#0044FF] text-center mt-4 lg:mt-24 ml-8">
+          <h2 className="text-5xl lg:text-7xl font-qimano text-[#0044FF] text-center mt-4 lg:mt-24">
             Press Kit
           </h2>
 

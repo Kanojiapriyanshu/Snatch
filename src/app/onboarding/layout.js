@@ -28,7 +28,8 @@ function LayoutContent({ children }) {
 
   return (
     <div className="max-w-screen h-screen max-h-screen mx-auto">
-      <div className="flex h-screen">
+       {/* adding w percentage here keeps padding right side on evry screen */}
+      <div className="flex h-screen 2xl:w-[85%] 4xl:w-[100%]">
         {/* Left side: Image with Preview */}
         <div className="w-1/2 lg:h-[100vh] xl:h-[100vh] relative flex items-center justify-center bg-white">
           <Image
@@ -150,8 +151,8 @@ function LayoutContent({ children }) {
 
 
         {/* Right side: Form */}
-        <div className="w-1/2 grid grid-cols-1 bg-white">
-          <div className="w-[100vw] max-w-xl">{children}</div>
+        <div className="w-[40%] grid grid-cols-1 bg-white">
+          <div className="">{children}</div>
         </div>
       </div>
     </div>

@@ -79,9 +79,9 @@ export default function Step1() {
   return (
 
     <div>
-        <h2 className="text-3xl mt-10 font-qimano">Let&apos;s get Started !</h2>
+    <h2 className="text-3xl mt-10 font-qimano">Let&apos;s get Started !</h2>
 
-        <div className="">
+    <div className="">
   <form
     className="mt-6 w-[45dvw] 2xl:w-[70dvw] 2xl:max-w-[760px] h-[80vh] overflow-y-scroll overflow-x-hidden space-y-6 font-apfel-grotezk-regular"
     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}

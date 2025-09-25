@@ -337,7 +337,7 @@ const handleHamburgerClick = () => {
         </div>
 
         {/* Fixed dimensions preview card */}
-        <div className="w-[864px] h-[430px] p-2 bg-white ml-28 mt-1 rounded-lg flex flex-col">
+        <div className="3xl:w-[864px] w-[750px] h-[430px] p-2 bg-white ml-16 mt-1 rounded-lg flex flex-col">
           <div className="flex gap-5 h-full">
            <div className="w-[300px] h-full pl-5 pt-5">
 

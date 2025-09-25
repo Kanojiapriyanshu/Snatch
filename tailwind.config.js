@@ -16,6 +16,7 @@ module.exports = {
         'dark-grey': 'var(--dark-grey)',
         blue: 'var(--blue)',
         brown: 'var(--brown)',
+        'dark-electric-blue': 'var(--dark-electric-blue)',
       },
       screens: {     
         // '2xl': '1700px', // Adjust this to a larger width

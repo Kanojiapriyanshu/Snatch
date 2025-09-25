@@ -26,7 +26,7 @@ export default async function OnboardingLayout({ children }) {
           />
 
          
-          <div className="relative mb-20 z-10 ">
+          <div className="relative z-10 ">
              <DashboardPreview userId={userId} />
             <StatsCard />
           </div>

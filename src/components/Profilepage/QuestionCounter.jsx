@@ -119,7 +119,7 @@ const handleQuestionChange = (e) => {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            fill="currentColor"
+            fill="#0037EB"
             className={`w-4 h-4 transform transition-transform ${
               dropdownOpen ? "rotate-180" : ""
             }`}
@@ -173,7 +173,7 @@ const handleQuestionChange = (e) => {
           className="bg-transparent w-full px-0 py-2 rounded-md font-apfel-grotezk-regular border-gray-200 focus:outline-none text-gray-700 text-sm resize-none"
           rows={2}
         />
-        <span className="absolute bottom-2 right-3 text-xs text-gray-500">
+        <span className="absolute -bottom-3.5 right-2 text-xs text-gray-500">
           {countWords(answerValue)}/{maxWords} words
         </span>
       </div>
