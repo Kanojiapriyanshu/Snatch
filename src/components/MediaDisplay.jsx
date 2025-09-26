@@ -224,8 +224,8 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
                       />
                     ) : (
                       <video
-                         controls
-                         disablePictureInPicture
+                        controls
+                        disablePictureInPicture
                         controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
                         muted={mutedStates[child.id] ?? true} 
                         className="w-full h-full object-cover"
@@ -301,21 +301,45 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
           </div>
         ))
       ) : displayType === "uploaded" && uploadedFiles?.length > 0 ? (
-        uploadedFiles.map((file) => (
-          <div
-            key={file.mediaId}
-            className="relative w-full aspect-[4/5] border border-gray-300 rounded-md overflow-hidden cursor-pointer"
-            onClick={() => handleFileSelect(file)}
-          >
-            <div
-              className={`absolute top-2 left-2 w-4 h-4 rounded-full flex items-center justify-center z-10 ${
-                isUploadedFileSelected(file.mediaId)
-                  ? "bg-electric-blue"
-                  : "bg-transparent border border-black"
-              }`}
-            ></div>
+       uploadedFiles.map((file) => (
+      <div
+        key={file.mediaId}
+        className="relative w-[200px] aspect-[4/5] border border-gray-300 rounded-md overflow-hidden cursor-pointer"
+        onClick={() => handleFileSelect(file)}
+      >
+        {/* File Image */}
+        <img
+          src={file.fileUrl} // matches your uploaded object
+          alt={file.fileName || "uploaded file"}
+          className="w-full h-full object-cover"
+        />
+
+        {/* Selection Circle */}
+        <div
+          className={`absolute top-2 left-2 w-4 h-4 rounded-full flex items-center justify-center z-10 ${
+            isUploadedFileSelected(file.mediaId)
+              ? "bg-electric-blue"
+              : "bg-transparent border border-black"
+          }`}
+        ></div>
+
+        {/* Selected Overlay Line */}
+        {isUploadedFileSelected(file.mediaId) && (
+          <div className="absolute bottom-0 left-0 right-0 bg-electric-blue h-[35px] flex items-center justify-center font-apfel-grotezk-regular">
+            <Image
+              src="/assets/images/okay.svg"
+              alt="okay"
+              width={10}
+              height={10}
+              className="w-[15px] h-[12px] mr-7"
+            />
+            <span className="text-white -ml-5" style={{ fontWeight: 10 }}>
+              Selected
+            </span>
           </div>
-        ))
+        )}
+      </div>
+    ))
       ) : displayType === "instagram" && (!media || media.length === 0) ? (
        <div className="col-span-full flex flex-col items-center justify-center w-full h-96 mx-auto">
     <Image

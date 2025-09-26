@@ -183,8 +183,6 @@ const handleNext = async () => {
     (selectionState?.uploadedFiles?.length || 0);
 
       const canGoToAddDetails = totalSelected >= 4;
-
-      console.log("Total selected:", totalSelected);
       
       if (totalSelected >= 4) {
         router.push("/manage-projects/add-details");
@@ -539,7 +537,7 @@ const renderUploadTab = () => (
       <div className="flex gap-6 7xl:justify-center  h-full">
         <label
           htmlFor="file-upload"
-          className="cursor-pointer w-[200px] h-[205px]  bg-gray-200 rounded-md flex justify-center items-center"
+          className="cursor-pointer w-[200px] h-[250px] aspect-[4/5]  bg-gray-200 rounded-md flex justify-center items-center"
         >
           <div className="flex flex-col justify-center items-center">
           <span className="font-qimano text-xl mt-4">Upload your files</span>
