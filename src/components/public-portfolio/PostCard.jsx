@@ -105,7 +105,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [postId, allPosts]);
 
-  if (!post) return <div className="font-apfel-grotezk-regular">Hold on fetching your posts..</div>;
+  if (!post)  return <div className="font-qimano h-[480px]  flex items-center text-md lg:text-2xl animate-pulse text-electric-blue">Hold on while we fetch the post!</div>;
 
   const imageUrl = post.media?.files?.[0]?.url;
   const title = post.post?.titleName || "Untitled";

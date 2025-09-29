@@ -44,17 +44,18 @@ export default function SocialLinks({ formData }) {
   }
 
   return (
-    <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex justify-center lg:justify-center items-center">
+    <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex justify-center lg:justify-center items-center lg:px-4">
       {/* Visible only on lg screens */}
-      <span className="hidden lg:inline font-apfel-grotezk-regular ml-4">
+      <span className="hidden lg:inline font-apfel-grotezk-regular ">
         My social media
       </span>
-      <span className="hidden lg:flex items-center w-full  7xl:w-[1250px]  ">
+
+      <span className="hidden lg:flex items-center w-full  7xl:w-[1250px] lg:px-3  ">
         <span className="border-b-[0.5px] border-gray-400 w-full"></span>
       </span>
 
       {/* Icons */}
-      <span className="flex max-w-[350px] justify-between gap-4 lg:ml-2 lg:gap-2 lg:justify-center">
+      <span className="flex max-w-[320px] justify-between gap-4  lg:gap-3 lg:justify-center">
         {links.length > 0 ? (
           links.map((link, index) => {
             const Icon = iconComponents[link.platform];
@@ -66,7 +67,7 @@ export default function SocialLinks({ formData }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-11 h-12 rounded-md flex items-center justify-center 
-                             bg-gray-200 text-electric-blue 
+                             bg-[#f7f7f7] text-electric-blue 
                              hover:bg-electric-blue hover:text-white 
                              transition-colors duration-200 hover:scale-105"
                 >

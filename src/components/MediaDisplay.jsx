@@ -15,6 +15,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
     removeFile,
     addFile,
   } = useSelectedProjects();
+  const MAX_SELECTION = 12;
 
   // Check if a media item is selected
   const isMediaSelected = (mediaId) =>
@@ -32,6 +33,16 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
 
   // Toggle select/deselect for Instagram media
   const handleSelect = (mediaItem) => {
+    const totalSelected =
+    (selectionState.instagramSelected?.length || 0) +
+    (selectionState.uploadedFiles?.length || 0);
+
+      // Otherwise, check the limit
+    if (totalSelected >= MAX_SELECTION) {
+      alert(`You can select up to ${MAX_SELECTION} projects only.`);
+      return;
+    }
+    
     if (isMediaSelected(mediaItem.id)) {
         const hasFormData = selectionState.formData?.some(
       (item) => item.key === String(mediaItem.id)

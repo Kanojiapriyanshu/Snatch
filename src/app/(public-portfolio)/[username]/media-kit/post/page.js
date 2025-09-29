@@ -62,7 +62,7 @@ export default function PostDetailsPage() {
 
 
   if (!post) {
-    return <div className="font-apfel-grotezk-regular">Hold on fetching your posts..</div>;
+    return <div className="font-qimano h-[480px]  flex items-center text-md lg:text-2xl animate-pulse text-electric-blue">Hold on while we fetch the post!</div>;
   }
 
   return <PostCard key={postId} post={post} username={username} postId={postId} allPosts={allPosts}/>;

@@ -1,15 +1,17 @@
-// app/public-portfolio/[username]/post/layout.js
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import VideoThumbnail from "@/components/VideoThumbnail";
-import CarouselThumbnail from "@/components/CarouselThumbnail"; // Add this import
-import { PostsProvider } from "@/context/PostContext";
 
-export default async function PostLayout({ children, params }) {
+// app/public-portfolio/[username]/media-kit/adminview/post/layout.js
+import React from "react";
+import { PostsProvider } from "@/context/PostContext";
+import MorePosts from "@/components/public-portfolio/MorePosts";
+
+export default async function PostLayout({ children, params, searchParams }) {
   const { username } = params;
+  const selectedPostId = searchParams?.postId?.toString();
   let userPosts = [];
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") || "http://localhost:3000";
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
+    "http://localhost:3000";
 
   try {
     const res = await fetch(
@@ -42,11 +44,12 @@ export default async function PostLayout({ children, params }) {
           };
         }),
         ...data.uploaded.map((item) => ({
-          mediaType: item.mediaType || item.fileName,
-          mediaUrl: item.mediaUrl || item.fileUrl,
-          mediaId: item.mediaId,
-          title: item.name,
-          thumbnailUrl: item.thumbnailUrl || null,
+         mediaType: item.mediaType || (item.fileName?.endsWith('.mp4') ? 'VIDEO' : 'IMAGE'),
+          mediaUrl: item.fileUrl || item.mediaUrl,
+          // Fix: Ensure mediaId is converted to string for comparison
+          mediaId: String(item.mediaId || item.id),
+          title: item.name || item.fileName,
+          thumbnailUrl: item.thumbnailUrl
         })),
       ];
     }
@@ -56,62 +59,19 @@ export default async function PostLayout({ children, params }) {
 
   return (
     <div className="w-full min-h-screen bg-[#D9D9D9] flex flex-col items-center justify-center">
+      {/* Desktop Layout */}
       <div className="hidden md:flex w-full max-w-[1100px] max-h-[660px] bg-[#F2F2F2] rounded-2xl shadow-lg flex-col items-center justify-center mx-auto my-2 p-0">
         <PostsProvider value={{ allPosts: userPosts, username }}>
           <div className="posts-container">{children}</div>
 
-          {/* More posts - hidden on mobile, visible on desktop only */}
+          {/* More posts */}
           <div className="hidden md:block">
-            <div className="mx-auto mt-3 px-4 mb-10 w-full lg:w-[864px] lg:px-0 lg:group">
-              <h3 className="text-xl font-qimano text-[#212121] mt-10">
-                More from @{username}
-              </h3>
-              <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 justify-center items-center lg:justify-start lg:items-start w-full lg:group">
-                {userPosts.length > 0 ? (
-                  userPosts.map((post, index) => (
-                    <Link
-                      key={index}
-                      href={`/${username}/media-kit/adminview/post/?postId=${post.mediaId}`}
-                      className="block lg:relative"
-                    >
-                      <div className="transition-opacity duration-200 ease-in-out lg:opacity-60 lg:group-hover:opacity-10 lg:hover:opacity-100 lg:rounded-md">
-                        {post.mediaType === "CAROUSEL_ALBUM" && post.children ? (
-                          <CarouselThumbnail 
-                            post={post}
-                            index={index}
-                            className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px]"
-                          />
-                        ) : post.mediaType?.includes("VIDEO") ||
-                          post.mediaUrl?.endsWith(".mp4") ? (
-                          <VideoThumbnail
-                            src={post.mediaUrl}
-                            thumbnailUrl={post.thumbnailUrl}
-                            alt={`Video ${index}`}
-                            className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] rounded-md"
-                            showPlayIcon={true}
-                          />
-                        ) : (
-                          <Image
-                            width={180}
-                            height={180}
-                            src={post.mediaUrl}
-                            alt={`Project ${index}`}
-                            className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] object-cover rounded-md"
-                          />
-                        )}
-                      </div>
-                    </Link>
-                  ))
-                ) : (
-                  <p>No other posts available.</p>
-                )}
-              </div>
-            </div>
+          <MorePosts userPosts={userPosts} username={username} isAdmin={true} />
           </div>
         </PostsProvider>
       </div>
 
-      {/* Mobile layout */}
+      {/* Mobile Layout */}
       <div className="md:hidden w-full bg-[#F2F2F2] flex flex-col items-center justify-start lg:justify-center">
         <PostsProvider value={{ allPosts: userPosts, username }}>
           <div className="posts-container">{children}</div>
