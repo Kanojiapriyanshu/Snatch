@@ -220,7 +220,8 @@ export default function PostCard({ post, postId, username, allPosts }) {
                               controls
                               disablePictureInPicture
                               controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-                              className="w-full h-full object-fit rounded-lg"
+                              className="object-fit rounded-lg"
+                             
                             >
                               <source src={file.url} type="video/mp4" />
                             </video>
@@ -469,8 +470,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
                           />
                         ) : file.type === "VIDEO" ? (
                           <video
-                            controls
-                            className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                             controls
+                              disablePictureInPicture
+                              controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
+                             className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
                             onLoadedMetadata={(e) => {
                               setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
                             }}
@@ -503,8 +506,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
                 </div>
               ) : post.media?.type === "VIDEO" ? (
                 <video
-                  controls
                   className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                  controls
+                  disablePictureInPicture
+                  controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
                   onLoadedMetadata={(e) => {
                     setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
                   }}
