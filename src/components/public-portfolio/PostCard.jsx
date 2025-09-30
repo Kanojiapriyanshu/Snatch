@@ -55,7 +55,6 @@ export default function PostCard({ post, postId, username, allPosts }) {
   }, [username, postId, post?.media?.source]);
   
     const isAdminView = pathname?.includes("/adminview");
-    console.log("PostCard isAdminView:", isAdminView, pathname)
 
     const checkOrientation = (width, height) => {
       return height > width;
@@ -180,7 +179,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
                         src={post.media.files[0].url}
                         alt={post.media.files[0].name || "Image"}
                         fill
-                        className="object-fit rounded-lg"
+                        // className="object-fit rounded-lg"
+                         className={`rounded-lg object-cover ${
+                          isPortrait ? "w-full h-full" : " "
+                        }`}
                         sizes="250px"
                       />
                     </Wrapper>
@@ -190,10 +192,13 @@ export default function PostCard({ post, postId, username, allPosts }) {
                     <Wrapper>
                       <video
                         src={post.media.files[0].url}
+                        controls
                         disablePictureInPicture
                         controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-                        controls
-                        className="w-full h-full object-fit rounded-lg"
+                        // className=" object-fit rounded-lg"
+                         className={`rounded-lg object-cover ${
+                        isPortrait ? "w-full h-full" : ""
+                      }`}
                       />
                     </Wrapper>
                   );
@@ -212,7 +217,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
                               src={file.url}
                               alt={`Carousel image ${index + 1}`}
                               fill
-                              className="object-fit rounded-lg"
+                              // className="object-fit rounded-lg"
+                              className={`rounded-lg object-cover ${
+                          isPortrait ? "w-full h-full" : " "
+                        }`}
                               sizes="250px"
                             />
                           ) : file.type === "VIDEO" ? (
@@ -220,8 +228,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
                               controls
                               disablePictureInPicture
                               controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-                              className="object-fit rounded-lg"
-                             
+                              // className=" object-fit rounded-lg"
+                              className={`rounded-lg object-cover ${
+                          isPortrait ? "w-full h-full" : " "
+                        }`}    
                             >
                               <source src={file.url} type="video/mp4" />
                             </video>
@@ -470,10 +480,10 @@ export default function PostCard({ post, postId, username, allPosts }) {
                           />
                         ) : file.type === "VIDEO" ? (
                           <video
-                             controls
-                              disablePictureInPicture
-                              controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-                             className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
+                            controls
+                            disablePictureInPicture
+                            controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
+                            className={`w-full h-auto object-contain rounded-lg ${isPortrait ? 'aspect-[4/6]' : 'h-auto'}`}
                             onLoadedMetadata={(e) => {
                               setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
                             }}
