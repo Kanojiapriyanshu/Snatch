@@ -167,7 +167,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
 
                 // Shared wrapper with fixed aspect ratio
                 const Wrapper = ({ children }) => (
-                  <div className="relative w-full aspect-[4/5] overflow-hidden rounded-lg  bg-white">
+                  <div className="relative w-full h-[385px] overflow-hidden rounded-lg  bg-white">
                     {children}
                   </div>
                 );
