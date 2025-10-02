@@ -16,35 +16,3 @@ const DashboardCard = ({count,label}) => {
 }
 
 export default DashboardCard
-
-
-// import React from "react";
-// import useFontSize from "@/hooks/useFontSize"; // import the hook
-
-// const DashboardCard = ({ count, label }) => {
-//   // scale values (tweak numbers as needed)
-//   const countSize = useFontSize(28, 58, 1100, 1920); // count scales from 28px → 56px
-//   const labelSize = useFontSize(22, 28, 1100, 1920); // label scales from 16px → 24px
-
-//   return (
-//     <div className="w-full h-full py-4 bg-white rounded-md relative font-qimano flex-auto">
-//       {/* Count */}
-//       <h5
-//         className="absolute top-0 right-4 font-medium"
-//         style={{ fontSize: countSize }}
-//       >
-//         {count}
-//       </h5>
-
-//       {/* Label */}
-//       <h3
-//         className="absolute top-[70%] left-2"
-//         style={{ fontSize: labelSize }}
-//       >
-//         {label}
-//       </h3>
-//     </div>
-//   );
-// };
-
-// export default DashboardCard;

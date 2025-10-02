@@ -57,7 +57,7 @@ export default function DashboardClient({ onboarding, priceRange }) {
 
       {/* Username, Gender, Location */}
       <div
-        className="flex justify-center items-center text-dark-grey tracking-tighter -mt-1"
+        className="flex justify-center items-center text-dark-grey -mt-1 text-sm 5xl:text-[100%]"
         style={{ fontSize: subHeadingFont }}
       >
         <span>
@@ -81,85 +81,84 @@ export default function DashboardClient({ onboarding, priceRange }) {
         <span>{onboarding.location || "Location"}</span>
       </div>
 
-      {/* Languages */}
-      <div
-        className="flex flex-col sm:flex-row sm:items-start sm:gap-10 mt-6 font-apfel-grotezk-regular text-dark-grey max-w-[360px] 5xl:max-w-[420px] mx-auto"
-        style={{ fontSize: bodyFont }}
-      >
-        
-        <h5
-          className="text-electric-blue font-apfel-grotezk-mittel whitespace-nowrap flex gap-2"
-          style={{ fontSize: sectionHeadingFont }}
-        >
-          <Image
-            width={24}
-            height={20}
-            src="/assets/icons/onboarding/Language.svg"
-            alt="languages"
-          />
-          Languages
-        </h5>
 
-        <div style={{ fontSize: bodyFont }} className="flex flex-wrap items-center justify-center sm:justify-start text-graphite ">
-          {onboarding.languages && onboarding.languages.length > 0 ? (
-            onboarding.languages.map((lang, idx) => (
-              <div key={idx} className="flex items-center">
-                <span>{lang}</span>
-                {idx < onboarding.languages.length - 1 && (
-                  <Image
-                    width={10}
-                    height={10}
-                    src="/assets/icons/onboarding/Fullstop.svg"
-                    className="mx-1.5 w-1.5 h-1.5"
-                    alt="separator"
-                  />
-                )}
-              </div>
-            ))
-          ) : (
-            <span>What languages do you know?</span>
-          )}
-        </div>
-        
-      </div>
+        {/* Languages */}
+        <div style={{ fontSize: bodyFont }} className="flex sm:flex-row gap-5 5xl:gap-8 mt-6 font-apfel-grotezk-regular text-dark-grey max-w-[360px] mx-auto">
+          {/* Label column */}
+          <h5  style={{ fontSize: sectionHeadingFont }} className={`w-24 shrink-0 text-electric-blue font-apfel-grotezk-mittel text-[clamp(1rem,1vw+1rem,1rem)] flex gap-2 whitespace-nowrap ${
+              onboarding.languages && onboarding.languages.length > 3 ? "mb-5" : "mb-0"
+            }`}>
+            <Image
+              width={24}
+              height={20}
+              src="/assets/icons/onboarding/Language.svg"
+              alt="languages"
+            />
+            Languages
+          </h5>
 
-      {/* Open To */}
-      <div
-        className="flex flex-col sm:flex-row sm:items-start sm:gap-16 mt-4 font-apfel-grotezk-regular text-dark-grey max-w-[360px] 5xl:max-w-[420px] mx-auto"
-      >
-        <h5
-          className="text-electric-blue font-apfel-grotezk-mittel whitespace-nowrap flex gap-2"
-          style={{ fontSize: sectionHeadingFont }}
-        >
-          <Image
-            width={24}
-            height={20}
-            src="/assets/images/openTo.svg"
-            alt="languages"
-          />
-          Open to
-        </h5>
-        <div style={{ fontSize: bodyFont }} className="flex flex-wrap items-center justify-center sm:justify-start text-graphite ">
-          {onboarding.compensation && onboarding.compensation.length > 0 ? (
-            onboarding.compensation.map((item, idx) => (
-              <div key={idx} className="flex items-center">
-                <span>{item}</span>
-                {idx < onboarding.compensation.length - 1 && (
-                  <Image
-                    width={10}
-                    height={10}
-                    src="/assets/icons/onboarding/Fullstop.svg"
-                    className="mx-1.5 w-1.5 h-1.5"
-                    alt="separator"
-                  />
-                )}
-              </div>
-            ))
-          ) : (
-            <span>What comp methods are you open to?</span>
-          )}
+          {/* Values column */}
+          <div  className="flex flex-wrap items-center text-[clamp(1rem,1vw+1rem,1rem)] text-graphite ">
+            {onboarding.languages?.length > 0 ? (
+              onboarding.languages.map((lang, idx) => (
+                <div key={idx} className="flex items-center ">
+                  <span>{lang}</span>
+                  {idx < onboarding.languages.length - 1 && (
+                    <Image
+                      width={10}
+                      height={10}
+                      src="/assets/icons/onboarding/Fullstop.svg"
+                      className="mx-1.5 w-1.5 h-1.5"
+                      alt="separator"
+                    />
+                  )}
+                </div>
+              ))
+            ) : (
+              <span>What languages do you know?</span>
+            )}
+          </div>
         </div>
-      </div>
+
+        {/* Open To */}
+        <div className="flex sm:flex-row gap-4 mt-4 font-apfel-grotezk-regular text-dark-grey max-w-[360px] mx-auto">
+          {/* Label column */}
+          <h5 style={{ fontSize: sectionHeadingFont }}  className={`w-24 shrink-0 text-electric-blue font-apfel-grotezk-mittel text-[clamp(1rem,1vw+1rem,1rem)] flex gap-2 whitespace-nowrap ${
+              onboarding.compensation && onboarding.compensation.length > 3 ? "mb-5" : "mb-0"
+            }`}>
+            <Image
+              width={24}
+              height={20}
+              src="/assets/images/openTo.svg"
+              alt="open to"
+              className="w-4"
+            />
+            Open to
+          </h5>
+
+          {/* Values column */}
+          <div className="flex flex-wrap items-center text-[clamp(1rem,1vw+1rem,1rem)] text-graphite">
+            {onboarding.compensation?.length > 0 ? (
+              onboarding.compensation.map((item, idx) => (
+                <div key={idx} className="flex items-center">
+                  <span>{item}</span>
+                  {idx < onboarding.compensation.length - 1 && (
+                    <Image
+                      width={10}
+                      height={10}
+                      src="/assets/icons/onboarding/Fullstop.svg"
+                      className="mx-1.5 w-1.5 h-1.5"
+                      alt="separator"
+                    />
+                  )}
+                </div>
+              ))
+            ) : (
+              <span>What comp methods are you open to?</span>
+            )}
+          </div>
+        </div>
+
 
       {/* Price Range */}
       <div className="text-dark-grey px-10 flex flex-col justify-center items-center mt-2 3xl:mt-8">

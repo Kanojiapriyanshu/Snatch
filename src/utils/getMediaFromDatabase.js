@@ -6,7 +6,11 @@ export async function getMediaFromDatabase(after = null, limit= 20) {
     const query = new URLSearchParams({ limit: limit.toString() });
     if (after) query.append("after", after);
 
-    const response = await fetch(`/api/auth/get-media?${query.toString()}`);
+    //const response = await fetch(`/api/auth/get-media?${query.toString()}`);
+    const response = await fetch(`/api/auth/get-media?${query.toString()}`, {
+      cache: "no-store",
+    });
+
     if (!response.ok) {
       throw new Error(`Failed to fetch media: ${response.status}`);
     }

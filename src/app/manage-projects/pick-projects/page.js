@@ -36,6 +36,8 @@ export default function PickProjects() {
  const [code, setCode] = useState(null);
  const containerRef = useRef(null);
  const { user, isLoaded } = useUser();
+ const [hasInitialized, setHasInitialized] = useState(false);
+
 
    useEffect(() => {
     setIsHydrated(true);
@@ -46,45 +48,54 @@ export default function PickProjects() {
     }
   }, []);
    
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+    if (hasInitialized) return; 
+    setHasInitialized(true);          // Lock it so it won’t repeat
 
-  const initInstagram = async () => {
-    try {
-      setLoading(true);
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-      if (code) {
-        // FIRST-TIME USER → Handle OAuth callback
-        const { connected, media, paging, mediaCount } = await fetchInstagramMedia(code);
+    const initInstagram = async () => {
+      try {
+        setLoading(true);
 
-        if (connected) {
-          // show popup immediately on first connect
-          // setShowInstagramPopup(true);
+        if (code) {
+          // FIRST-TIME USER → Handle OAuth callback
+          const { connected, media, paging, mediaCount } = await fetchInstagramMedia(code);
+
+          if (connected) {
+            setMedia(media);
+            setPaging(paging);
+            setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+          }
+        } else {
+          const refreshRes = await fetch(`/api/auth/refreshInstagram?userId=${user.id}`);  // can no-cache here too, if needed
+
+          if (!refreshRes.ok) {
+            console.error("Failed to refresh Instagram media");
+          }
+
+          //2️⃣ Then fetch from DB (always after refresh completes)
+          const { media, paging, mediaCount } = await getMediaFromDatabase(
+            "",
+            PAGE_SIZE
+          );
 
           setMedia(media);
           setPaging(paging);
-          setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+          setTotaPages(Math.ceil(mediaCount / PAGE_SIZE))
         }
-      } else {
-        console.log("USER ID SENDIGN TO API", user.id)
-         // 🔥 Call refresh API to ensure expired media is updated -> getmedia happens first since refresh takes time
-          await fetch(`/api/auth/refreshInstagram?userId=${user.id}`);
-          const { media, paging, mediaCount } = await getMediaFromDatabase("", 20);
-          setMedia(media);
-          setPaging(paging);
-          setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+      } catch (error) {
+        console.error(error);
+        // alert("Error fetching Instagram media");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-      // alert("Error fetching Instagram media");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  initInstagram();
-}, []);
+    initInstagram();
+  }, [isLoaded, user, hasInitialized]);
 
   if (!isHydrated) {
     return null;

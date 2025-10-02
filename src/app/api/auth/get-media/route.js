@@ -1,3 +1,4 @@
+//app/api/auth/get-media/route.js
 import { NextResponse } from "next/server";
 import User from "@/models/user.model";
 import { getAuth } from "@clerk/nextjs/server";
@@ -5,6 +6,7 @@ import connectDb from "@/db/mongoose";
 
 export const dynamic = "force-dynamic";
 
+//right side project show fetch from graph api in pick - projects
 export async function GET(req) {
   try {
     await connectDb();
@@ -14,6 +16,7 @@ export async function GET(req) {
 
     // Clerk auth
     const { userId } = getAuth(req);
+
     if (!userId) {
       return NextResponse.json(
         { connected: false, error: "User not present! Please sign up first." },
@@ -46,7 +49,12 @@ export async function GET(req) {
       (after ? `&after=${after}` : ``) +
       `&access_token=${instagramAccessToken}`;
 
-    const mediaResponse = await fetch(mediaUrl);
+      const mediaResponse = await fetch(mediaUrl, {
+      cache: "no-store", // ⚠️ Force fresh fetch, no caching
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      }
+    });
     const mediaData = await mediaResponse.json();
 
     if (!mediaResponse.ok || mediaData.error) {

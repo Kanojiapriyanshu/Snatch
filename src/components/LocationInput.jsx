@@ -12,13 +12,21 @@ const LocationInput = ({ value, onSelectLocation, ...props }) => {
   // Track whether value came from typing or autofill
   const userTypingRef = useRef(false);
 
+  // Sync query with contextLocation whenever it changes
+    useEffect(() => {
+      if (!userTypingRef.current) {
+        setQuery(contextLocation || "");
+      }
+    }, [contextLocation]);
+
+
   // When Chrome autofills: input has value, but userTypingRef = false
-  useEffect(() => {
-    if (query && !userTypingRef.current && query.length >= 2) {
-      // Fetch suggestions and auto-select first if no exact match
-      fetchLocations(query, true);
-    }
-  }, [query]);
+    useEffect(() => {
+      if (query && !userTypingRef.current && query.length >= 2) {
+        // Fetch suggestions and auto-select first if no exact match
+        fetchLocations(query, true);
+      }
+    }, [query]);
 
   // Fetch suggestions normally when user types
   useEffect(() => {
