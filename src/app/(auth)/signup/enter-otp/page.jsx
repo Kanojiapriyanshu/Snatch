@@ -33,6 +33,8 @@ export default function EnterOtp() {
     return () => clearTimeout(timer);
   }, [resendTimer]);
 
+  // So the benefit of the debounce is specifically to avoid invalid_action errors (caused by session/timing issues), while better error handling helps you show the user why it failed.
+  
   const verifyOtp = async () => {
     if (!isLoaded || !email) return;
     setIsLoading(true);
@@ -198,7 +200,7 @@ export default function EnterOtp() {
           {/* Change email link */}
           <button
             onClick={handleChangeEmail}
-            className="mt-4 text-electric-blue text-sm hover:underline"
+            className="mt-4 text-electric-blue text-sm underline"
           >
             Change the email address
           </button>

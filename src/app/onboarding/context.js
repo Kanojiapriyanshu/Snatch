@@ -1,6 +1,6 @@
 //onboarding/context.js
 "use client";
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext, useEffect, useRef } from "react";
 import debounce from "lodash/debounce"; // Add this dependency
 import { useAuth } from "@clerk/nextjs";
 
@@ -26,16 +26,16 @@ export const FormProvider = ({ children }) => {
     contentType: [],
     languages: [],
     compensation: [],
-    post: 0,
-    story: 0,
-    reels: 0,
+    post: "",
+    story: "",
+    reels: "",
     dateOfBirth: "",
     hasCompletedOnboarding: false
   });
 
   const [isSaving, setIsSaving] = useState(false);
   const { userId } = useAuth(); // Get userId from Clerk
-
+  const locationEnsureRef = useRef(null); // shared ref
   // Fetch data on initial load or when userId changes
   useEffect(() => {
     const fetchData = async () => {
@@ -136,7 +136,7 @@ export const FormProvider = ({ children }) => {
   };
 
   return (
-    <FormContext.Provider value={{ formData, updateFormData, isSaving, userId }}>
+    <FormContext.Provider value={{ formData, updateFormData, isSaving, userId, locationEnsureRef }}>
       {children}
     </FormContext.Provider>
   );

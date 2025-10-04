@@ -116,42 +116,38 @@ const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onR
       {/* Dropdown List */}
       {isDropdownOpen && (
         <ul className="absolute mt-2 w-full rounded-lg border border-stroke bg-[#E9E9E9] py-2 z-50">
-          {options.map((option, idx) => (
-            <li
-              key={idx}
-              className="px-5 py-2 text-graphite hover:text-electric-blue cursor-pointer flex items-center gap-2"
-              onClick={(e) => { e.stopPropagation(); handleOptionSelect(option); }}
-            >
-              <input
-                type="checkbox"
-                checked={selectedValues.includes(option)}
-                onChange={() => handleOptionSelect(option)}
-                className="mr-2 accent-electric-blue hover:border-electric-blue focus:ring-electric-blue border border-gray-300 transition-colors duration-150"
-                onClick={e => e.stopPropagation()} // Prevent dropdown toggle
-              />
-              <div
-                className="flex items-center gap-2 flex-1"
-                onMouseEnter={() => setIsTooltipVisible(idx)}
-                onMouseLeave={() => setIsTooltipVisible(null)}
-              >
-                <span>{option}</span>
-                <div className="relative">
-                  <Image
-                    src={isTooltipVisible === idx ? "/assets/images/info_h.svg" : "/assets/images/info.svg"}
-                    alt="info"
-                    width={16}
-                    height={16}
-                    className="cursor-pointer"
-                  />
-                  {isTooltipVisible === idx && (
-                    <div className="absolute left-full top-0 text-start px-2 pb-8 text-sm text-graphite rounded-lg whitespace-nowrap max-w-[800px] z-10">
-                      {getTooltipText(option)}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </li>
-          ))}
+        {options.map((option, idx) => (
+  <li
+    key={idx}
+    className="px-5 py-2 text-graphite hover:text-electric-blue cursor-pointer flex items-center gap-2"
+    onClick={(e) => { e.stopPropagation(); handleOptionSelect(option); }}
+    onMouseEnter={() => setIsTooltipVisible(idx)}
+    onMouseLeave={() => setIsTooltipVisible(null)}
+  >
+    <input
+      type="checkbox"
+      checked={selectedValues.includes(option)}
+      onChange={() => handleOptionSelect(option)}
+      className="mr-2 accent-electric-blue hover:border-electric-blue focus:ring-electric-blue border border-gray-300 transition-colors duration-150"
+      onClick={e => e.stopPropagation()} // Prevent dropdown toggle
+    />
+    <span>{option}</span>
+    <div className="relative">
+      <Image
+        src={isTooltipVisible === idx ? "/assets/images/info_h.svg" : "/assets/images/info.svg"}
+        alt="info"
+        width={16}
+        height={16}
+        className="cursor-pointer"
+      />
+      {isTooltipVisible === idx && (
+        <div className="absolute left-full top-0 text-start px-2 pb-8 text-sm text-graphite rounded-lg whitespace-nowrap max-w-[800px] z-10">
+          {getTooltipText(option)}
+        </div>
+      )}
+    </div>
+  </li>
+))}
         </ul>
       )}
     </div>

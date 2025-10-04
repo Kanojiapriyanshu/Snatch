@@ -203,7 +203,7 @@ export default function EnterOtp() {
           {/* Change email link */}
           <button
             onClick={handleChangeEmail}
-            className="mt-4 text-electric-blue text-sm hover:underline"
+            className="mt-4 text-electric-blue text-sm underline"
           >
             Change the email address
           </button>

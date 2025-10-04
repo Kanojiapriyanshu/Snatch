@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useFormContext } from "@/app/onboarding/context";
 
-const LocationInput = ({ value, onSelectLocation, ...props }) => {
+const LocationInput = ({ value, onSelectLocation, onEnsureValid, ...props }) => {
   const { formData, updateFormData } = useFormContext?.() || {};
   const contextLocation = formData?.location || "";
 
@@ -9,37 +9,38 @@ const LocationInput = ({ value, onSelectLocation, ...props }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
 
-  // Track whether value came from typing or autofill
   const userTypingRef = useRef(false);
 
-  // Sync query with contextLocation whenever it changes
-    useEffect(() => {
-      if (!userTypingRef.current) {
-        setQuery(contextLocation || "");
-      }
-    }, [contextLocation]);
+  // inside LocationInput
+const ensureValidLocation = async () => {
+  if (query && query.length >= 2) {
+    await fetchLocations(query, true); // will auto-select first suggestion if needed
+  }
+};
 
+// expose to parent
+useEffect(() => {
+  if (onEnsureValid) onEnsureValid(ensureValidLocation);
+}, [query, onEnsureValid]);
 
-  // When Chrome autofills: input has value, but userTypingRef = false
-    useEffect(() => {
-      if (query && !userTypingRef.current && query.length >= 2) {
-        // Fetch suggestions and auto-select first if no exact match
-        fetchLocations(query, true);
-      }
-    }, [query]);
-
-  // Fetch suggestions normally when user types
   useEffect(() => {
-    if (!userTypingRef.current) return; // skip autofill detection here
+    if (!userTypingRef.current) {
+      setQuery(contextLocation || "");
+    }
+  }, [contextLocation]);
 
+  useEffect(() => {
+    if (query && !userTypingRef.current && query.length >= 2) {
+      fetchLocations(query, true);
+    }
+  }, [query]);
+
+  useEffect(() => {
+    if (!userTypingRef.current) return;
     const timeout = setTimeout(() => {
-      if (query.length >= 2) {
-        fetchLocations(query, false);
-      } else {
-        setSuggestions([]);
-      }
+      if (query.length >= 2) fetchLocations(query, false);
+      else setSuggestions([]);
     }, 250);
-
     return () => clearTimeout(timeout);
   }, [query]);
 
@@ -50,14 +51,7 @@ const LocationInput = ({ value, onSelectLocation, ...props }) => {
       );
       const data = await res.json();
 
-      const allowedTypes = [
-        "city",
-        "town",
-        "village",
-        "hamlet",
-        "municipality",
-        "locality",
-      ];
+      const allowedTypes = ["city","town","village","hamlet","municipality","locality"];
 
       let filtered = data.features.filter(
         (f) => allowedTypes.includes(f.properties.osm_value) && f.properties.name
@@ -82,13 +76,8 @@ const LocationInput = ({ value, onSelectLocation, ...props }) => {
       setSuggestions(results);
 
       if (autofillCheck && results.length > 0) {
-        // Only auto-apply if autofill didn't exactly match any suggestion
-        const exactMatch = results.some(
-          (r) => r.label.toLowerCase() === q.trim().toLowerCase()
-        );
-        if (!exactMatch) {
-          handleSelect(results[0]);
-        }
+        // Always auto-apply first suggestion if Chrome autofill
+        handleSelect(results[0]);
       }
     } catch (err) {
       console.error("Location fetch failed:", err);
@@ -102,30 +91,35 @@ const LocationInput = ({ value, onSelectLocation, ...props }) => {
     if (onSelectLocation) onSelectLocation(loc);
   };
 
+  // expose ensureValidLocation to parent
+  useEffect(() => {
+    if (onEnsureValid) {
+      onEnsureValid(() => fetchLocations(query, true));
+    }
+  }, [query, onEnsureValid]);
+
   return (
     <div className="w-full relative">
       <input
         {...props}
         value={query}
         onChange={(e) => {
-          userTypingRef.current = true; // mark as manual typing
+          userTypingRef.current = true;
           setQuery(e.target.value);
         }}
         onFocus={() => {
-          userTypingRef.current = false; // reset typing tracker
+          userTypingRef.current = false;
           setIsFocused(true);
+          if (query && query.length >= 2) fetchLocations(query, true);
         }}
         onBlur={() => {
           setTimeout(() => {
             setIsFocused(false);
-            // For manual typing: if blurred & no exact match → auto-pick first
             if (userTypingRef.current && suggestions.length > 0) {
               const exactMatch = suggestions.some(
                 (r) => r.label.toLowerCase() === query.trim().toLowerCase()
               );
-              if (!exactMatch) {
-                handleSelect(suggestions[0]);
-              }
+              if (!exactMatch) handleSelect(suggestions[0]);
             }
           }, 150);
         }}
@@ -133,7 +127,7 @@ const LocationInput = ({ value, onSelectLocation, ...props }) => {
           isFocused ? "border-electric-blue" : "border-gray-300"
         } disabled:cursor-default disabled:bg-gray-2`}
         placeholder="Which city are you from? (e.g: Mumbai, India)"
-        autoComplete="on" // let Chrome autofill
+        autoComplete="on"
       />
 
       {isFocused && suggestions.length > 0 && (

@@ -1,7 +1,7 @@
 //onboarding/step-1/page.js
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import { useFormContext } from "../context";
 import { useRouter } from "next/navigation";
 import CustomDropdown from "@/components/CustomDropdown";
@@ -15,7 +15,7 @@ import InfoTooltip from '@/components/InfoTooltip';
 import LocationInput from "@/components/LocationInput";
 
 export default function Step1() {
-  const { formData, updateFormData, isSaving } = useFormContext();
+  const { formData, updateFormData, isSaving, locationEnsureRef } = useFormContext();
   const router = useRouter();
   const [formState, setFormState] = useState({
     username: "",
@@ -31,8 +31,6 @@ export default function Step1() {
   });
 
   const [numLinks, setNumLinks] = useState(formData?.length || 0);
-
-  console.log("saving", isSaving) //undefined
 
   useEffect(() => {
     // Synchronize formState with formData when formData updates
@@ -136,6 +134,7 @@ export default function Step1() {
         updateField("location", loc.label); 
       }}
       consideration="Please select your city and country"
+      onEnsureValid={(fn) => { locationEnsureRef.current = fn }}
       className="w-full"
     />
 

@@ -13,7 +13,7 @@ const NextButton = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const { formData } = useFormContext();
+  const { formData, locationEnsureRef } = useFormContext();
   const { userId } = useAuth();
   const queryClient = useQueryClient();
 
@@ -22,6 +22,11 @@ const NextButton = () => {
       alert("User ID is missing. Please log in.");
       return;
     }
+    // ensure location is valid before checking missing fields
+    if (locationEnsureRef.current) {
+      await locationEnsureRef.current(); // ✅ auto-select first suggestion if needed
+    }
+
 
     if (pathname === "/onboarding/step-2") {
       const {

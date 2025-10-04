@@ -2,7 +2,7 @@
 
 import { FormProvider, useFormContext } from "./context";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef} from "react";
 import Preview from "@/components/Preview";
 import { useRouter, usePathname } from "next/navigation";
 import NextButton from "@/components/NextButton";
@@ -12,8 +12,28 @@ function LayoutContent({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const menuRef = useRef(null);
   
   const toggleMenu = () => setIsMenuVisible((prev) => !prev);
+
+   // ✅ Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuVisible(false);
+      }
+    }
+
+    if (isMenuVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuVisible]);
 
   const handleMenuClick = (route) => {
     setIsMenuVisible(false);
@@ -62,7 +82,7 @@ function LayoutContent({ children }) {
       {formData.hasCompletedOnboarding ? (
         <>
           {pathname === "/onboarding/step-1" ? (
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" ref={menuRef}>
               {/* Snatch Button */}
               <button
                 onClick={() => router.push("/dashboard")}
