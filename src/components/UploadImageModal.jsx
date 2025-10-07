@@ -1,15 +1,20 @@
+"use client";
+
 import React, { useState, useRef, useEffect } from "react";
 import { fetchProfileData } from "@/utils/postQuestions";
 import Image from "next/image";
 import clsx from "clsx";
+import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import cloudinaryUpload from "@/utils/cloudinaryUpload";
 
 // Mapping object for image names
 const imageNameMapping = {
-  "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396552/7_r6djcr.jpg": "Sunlit Studio",
+  "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396552/7_r6djcr.jpg": "Bold Edge",
   "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740392519/3_koofyi.jpg": "Urban Coffee Shop",
   "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396410/4_fcsbyd.jpg": "Modern Workspace",
   "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396474/2_svbihw.jpg": "Creative Corner",
-  "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740397248/10_o9u87n.jpg": "Minimalist Desktop",
+  "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740397248/10_o9u87n.jpg": "Bold Edge",
 };
 
 export default function UploadImageModal({ isOpen, onClose, onImageSelect, type, questionIndex }) {
@@ -31,6 +36,15 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
+  const [isCropping, setIsCropping] = useState(false);
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const [pendingFileName, setPendingFileName] = useState("");
+  const [pendingImageSrc, setPendingImageSrc] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const fileInputRef = useRef(null);
+  const imgRef = useRef(null);
   const scrollRef = useRef(null);
 
   const fetchData = async () => {
@@ -83,7 +97,6 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
       fetchData();
       setTempSelectedImage(null);
       setShowLeftArrow(false);
-      // Check if right arrow should be shown on initial load
       setTimeout(() => {
         if (scrollRef.current) {
           const { scrollWidth, clientWidth } = scrollRef.current;
@@ -92,6 +105,88 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
       }, 100);
     }
   }, [isOpen]);
+
+  // ===================== FILE SELECTION & CROPPING =====================
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setPendingImageSrc(reader.result);
+      setPendingFileName(file.name);
+      setIsCropping(true);
+    };
+  };
+
+  const onImageLoad = (e) => {
+    const { width, height } = e.currentTarget;
+    const initialCrop = centerCrop(
+      makeAspectCrop({ unit: "%", width: 50 }, 1, width, height),
+      width,
+      height
+    );
+    setCrop(initialCrop);
+  };
+
+  const cropImage = async () => {
+    if (!completedCrop || !imgRef.current) return;
+    setIsProcessing(true);
+
+    const canvas = document.createElement("canvas");
+    const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
+    const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
+    canvas.width = completedCrop.width;
+    canvas.height = completedCrop.height;
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(
+      imgRef.current,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      completedCrop.width,
+      completedCrop.height
+    );
+
+    // Convert to file
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const file = new File([blob], pendingFileName, { type: "image/jpeg" });
+
+      // Upload to Cloudinary (replace with your upload function)
+      const uploadedUrl = await cloudinaryUpload(file);
+
+      // Set as background for preview card
+      setSelectedImage(uploadedUrl);
+      setTempSelectedImage({ url: uploadedUrl, name: pendingFileName });
+
+      // Reset crop modal
+      setIsCropping(false);
+      setPendingImageSrc(null);
+      setPendingFileName("");
+      setCompletedCrop(null);
+      setIsProcessing(false);
+    }, "image/jpeg");
+  };
+
+  const uploadToCloudinary = async (file) => {
+    // Example using fetch, replace with your actual Cloudinary upload logic
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "your_preset_here"); // replace with your preset
+    const res = await fetch("https://api.cloudinary.com/v1_1/your_cloud_name_here/image/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    return data.secure_url;
+  };
+  // =====================================================================
 
   const handleImageSelect = (image) => {
     const imageName = imageNameMapping[image] || "Selected Image";
@@ -102,14 +197,14 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
   const checkScrollPosition = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setShowLeftArrow(scrollLeft > 5); // Show left arrow when scrolled more than 5px
+      setShowLeftArrow(scrollLeft > 5);
       setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5);
     }
   };
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
-      const scrollAmount = 220; // Increased for better navigation
+      const scrollAmount = 220;
       const currentScroll = scrollRef.current.scrollLeft;
       const newScroll = direction === "left" 
         ? Math.max(0, currentScroll - scrollAmount)
@@ -119,8 +214,6 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
         left: newScroll,
         behavior: "smooth",
       });
-      
-      // Check scroll position after animation completes
       setTimeout(checkScrollPosition, 300);
     }
   };
@@ -134,9 +227,7 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
   const cardType = typeColors[type] || typeColors.about;
   const predefinedImages = imagesByType || [];
 
-  const handleClose = () => {
-    onClose();
-  };
+  const handleClose = () => onClose();
 
   const handleConfirmUpload = () => {
     if (tempSelectedImage) {
@@ -153,15 +244,16 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-          <style jsx>{`
-            .scrollbar-hide::-webkit-scrollbar {
-              display: none;
-            }
-            .scrollbar-hide {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-          `}</style>
+            <style jsx>{`
+              .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+              }
+              .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+            `}</style>
+
             {/* Modal Header */}
             <div className="flex justify-between items-center mb-6">
               <div className="flex flex-col">
@@ -173,32 +265,19 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
               </button>
             </div>
 
-            {/* Image Collection */}
-            <div className="flex items-center mb-6">
-              <p className="font-qimano text-graphite">Choose from our collection</p>
-              <div className="flex-1 ml-4 border-t border-gray-200"></div>
-            </div>
-
+            {/* Image Collection & Upload */}
             <div className="flex gap-6 mb-8">
-              {/* Interactive Preview Card with Strap */}
+              {/* Preview Card */}
               <div className="flex-shrink-0 relative">
-                
-                
                 <div
-                  className="relative border  rounded-b-md w-[230px] h-[280px] overflow-hidden cursor-pointer mt-6"
+                  className="relative border rounded-md w-[230px] h-[280px] overflow-hidden cursor-pointer mt-6"
                   onMouseEnter={() => setHovered(true)}
                   onMouseLeave={() => setHovered(false)}
+                  style={{ backgroundImage: `url(${selectedImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
                 >
                   <div className="bg-gray-400 text-white px-4 py-1 rounded-t-md w-[100%] text-center">
-                  <span className="text-sm font-medium">Preview card</span>
-                </div>
-                  <Image
-                    src={selectedImage || "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740397248/10_o9u87n.jpg"}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                    width={200}
-                    height={280}
-                  /> 
+                    <span className="text-sm font-medium">Preview card</span>
+                  </div>
                   <div
                     className={clsx(
                       `absolute left-0 bottom-0 w-full flex flex-col items-center justify-center transition-all duration-300 rounded-t-md py-4 p-2`,
@@ -206,7 +285,6 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                       cardType.text,
                       hovered ? "h-[100%]" : "h-[50%]"
                     )}
-                    
                   >
                     <Image 
                       src={iconSrc || "/assets/images/aboutIcon.svg"} 
@@ -227,13 +305,47 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                 </div>
               </div>
 
+              {/* Upload area */}
+              <div className="w-[20%] mt-5 text-black rounded-md pt-1">
+                <div className="flex gap-6 h-full">
+                  <label
+                    htmlFor="file-upload"
+                    className="cursor-pointer w-[200px] h-[280px] aspect-[4/5] bg-gray-200 rounded-md flex justify-center items-center"
+                  >
+                    <div className="flex flex-col justify-center items-center">
+                      <span className="font-qimano text-xl mt-4">Upload your files</span>
+                      <span className="font-apfel-grotezk-regular text-sm text-gray-500 px-3">Only png, jpg, and .mp4 files of max limit 5mb</span>
+                      <span className="mt-4 text-dark-grey text-2xl border-[1.6px] border-dashed border-gray-400 rounded-md p-1 m-6">
+                        <Image
+                          src="/assets/images/upload-folder.svg"
+                          alt="Upload Icon"
+                          width={44}
+                          height={44}
+                          className="h-20 w-[200px]"
+                          loading="eager"
+                          priority
+                        />
+                      </span>
+                    </div>
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    multiple={false}
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                  />
+                </div>
+              </div>
+
               {/* Scrollable Image Row */}
               <div className="relative flex-1 overflow-hidden mt-4">
-                {/* Left Scroll Button - Only show when scrolled right */}
                 {showLeftArrow && (
                   <button
                     onClick={() => handleScroll("left")}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-transparent/60  border-gray-200 p-3 rounded-full shadow-lg z-20 hover:bg-transparent/40 hover:shadow-xl transition-all"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-transparent/60 border-gray-200 p-3 rounded-full shadow-lg z-20 hover:bg-transparent/40 hover:shadow-xl transition-all"
                   >
                     <Image
                       src="/assets/images/forwardArrowBlack.svg"
@@ -244,16 +356,10 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                     />
                   </button>
                 )}
-
                 <div
                   ref={scrollRef}
                   className="flex overflow-hidden space-x-4 px-3 py-2"
-                  style={{ 
-                    scrollbarWidth: "none", 
-                    msOverflowStyle: "none",
-                    overflowX: "hidden",
-                    touchAction: "pan-y pinch-zoom"
-                  }}
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none", overflowX: "hidden", touchAction: "pan-y pinch-zoom" }}
                   onScroll={checkScrollPosition}
                 >
                   {[...uploadedImages, ...predefinedImages].map((image, index) => (
@@ -274,7 +380,6 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                         width={200}
                         height={280}
                       />
-                      {/* Selected banner */}
                       {(tempSelectedImage?.url === image || selectedImage === image) && (
                         <div className="absolute bottom-0 left-0 right-0 bg-electric-blue text-white py-2 text-center">
                           <span className="text-sm font-semibold">Selected</span>
@@ -284,11 +389,10 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                   ))}
                 </div>
 
-                {/* Right Scroll Button */}
                 {showRightArrow && (
                   <button
                     onClick={() => handleScroll("right")}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent/60  p-3 rounded-full shadow-lg z-20 hover:bg-transparent/40 hover:shadow-xl transition-all"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent/60 p-3 rounded-full shadow-lg z-20 hover:bg-transparent/40 hover:shadow-xl transition-all"
                   >
                     <Image 
                       src="/assets/images/forwardArrowBlack.svg" 
@@ -305,17 +409,58 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
             <div className="flex justify-center">
               <button
                 onClick={handleConfirmUpload}
-                disabled={!tempSelectedImage}
+                // disabled={!tempSelectedImage}
                 className={clsx(
-                  "px-8 py-3 text-white rounded-md flex justify-center items-center transition-colors font-apfel-grotezk-regular text-lg",
-                  tempSelectedImage 
-                    ? "bg-electric-blue hover:bg-electric-blue/90" 
-                    : "bg-gray-400 cursor-not-allowed"
+                  "px-8 py-3 text-white rounded-md flex justify-center items-center transition-colors font-apfel-grotezk-regular text-lg bg-electric-blue hover:bg-electric-blue/90",
                 )}
               >
                 Confirm Upload
               </button>
             </div>
+
+            {/* Crop Modal */}
+            {isCropping && pendingImageSrc && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 font-apfel-grotezk-regular">
+                <div className="bg-white p-6 rounded-lg w-[500px] max-h-[90%] overflow-auto">
+                  <div className="relative w-full h-[90%]">
+                  <ReactCrop
+                  crop={crop}
+                  onChange={(c) => setCrop(c)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                  aspect={4 / 5}  // rectangle aspect ratio
+                  minWidth={40}
+                >
+                  <img
+                    ref={imgRef}
+                    alt="Crop source"
+                    src={pendingImageSrc}
+                    onLoad={onImageLoad}
+                  />
+                </ReactCrop>
+
+                  </div>
+                  <div className="flex gap-4 mt-4 justify-start">
+                    <button
+                      onClick={() => {
+                        setIsCropping(false);
+                        setPendingImageSrc(null);
+                        setPendingFileName("");
+                      }}
+                      className="px-4 py-2 bg-[#f7f7f7] text-electric-blue border border-electric-blue rounded-md"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={cropImage}
+                      disabled={isProcessing}
+                      className="px-4 py-2 bg-electric-blue text-white rounded-md"
+                    >
+                      {isProcessing ? "Uploading..." : "Set"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

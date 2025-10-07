@@ -57,7 +57,7 @@ const Profilecustomfile = ({
           height={20} 
         />
         <span className="border-r-2 border-gray-300 -ml-4 "></span>
-        <span className="-ml-4 font-apfel-grotezk-regular">
+        <span className="-ml-4 font-apfel-grotezk-regular mt-1">
           {selectedImage?.name || placeholder}
         </span>
       </div>

@@ -2,20 +2,22 @@ import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { useFormContext } from "@/app/onboarding/context";
 import cloudinaryUpload from "@/utils/cloudinaryUpload";
-import Cropper from "react-easy-crop";
+import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKey }) => {
   const [tempFileName, setTempFileName] = useState("");
   const [imageSrc, setImageSrc] = useState(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
   const [isCropping, setIsCropping] = useState(false); // Modal toggle
-  const [isProcessing, setIsProcessing] = useState(false); // Loading state for set button
-  const { formData } = useFormContext();
+  const [isProcessing, setIsProcessing] = useState(false); // Loading state for Set button
+  const imgRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  const uploadedImage = formData[iconSrc === "/assets/icons/onboarding/Upload.svg" ? "profilePicture" : "backgroundPicture"];
+  const { formData } = useFormContext();
+  const uploadedImage =
+    formData[iconSrc === "/assets/icons/onboarding/Upload.svg" ? "profilePicture" : "backgroundPicture"];
   const uploadedFileName = formData[fileNameKey];
 
   useEffect(() => {
@@ -40,52 +42,69 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
     }
   };
 
-  const onCropComplete = (_, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
+  const onImageLoad = (e) => {
+    const { width, height } = e.currentTarget;
+    // initialize a centered crop with 1:1 aspect ratio
+    const crop = centerCrop(
+      makeAspectCrop({ unit: "%", width: 50 }, 1, width, height),
+      width,
+      height
+    );
+    setCrop(crop);
   };
 
   const cropImage = async () => {
-    setIsProcessing(true); // Start loading
+    if (!completedCrop || !imgRef.current) return;
+    setIsProcessing(true);
+
     try {
-      const croppedImage = await getCroppedImage(imageSrc, croppedAreaPixels, tempFileName);
+      const croppedImage = await getCroppedImage(
+        imgRef.current,
+        completedCrop,
+        tempFileName
+      );
       const uploadedUrl = await cloudinaryUpload(croppedImage);
-      onFileChange(uploadedUrl, tempFileName); // Pass both URL and file name to parent/context
-      setIsCropping(false); // Close modal
+      onFileChange(uploadedUrl, tempFileName);
+      setIsCropping(false);
       setImageSrc(null);
-      setTempFileName(""); // Clear temp state after upload
+      setTempFileName("");
     } catch (error) {
       console.error("Error processing image:", error);
       alert("Failed to upload image. Please try again.");
     } finally {
-      setIsProcessing(false); // Stop loading
+      setIsProcessing(false);
     }
   };
 
-  const getCroppedImage = (imageSrc, croppedAreaPixels, originalFileName) => {
+  const getCroppedImage = (image, crop, originalFileName) => {
     return new Promise((resolve) => {
-      const image = new window.Image();
-      image.src = imageSrc;
-      image.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = croppedAreaPixels.width;
-        canvas.height = croppedAreaPixels.height;
-        ctx.drawImage(
-          image,
-          croppedAreaPixels.x,
-          croppedAreaPixels.y,
-          croppedAreaPixels.width,
-          croppedAreaPixels.height,
-          0,
-          0,
-          croppedAreaPixels.width,
-          croppedAreaPixels.height
-        );
-        canvas.toBlob((blob) => {
+      const canvas = document.createElement("canvas");
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
+      canvas.width = crop.width;
+      canvas.height = crop.height;
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(
+        image,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        crop.width,
+        crop.height
+      );
+
+      canvas.toBlob(
+        (blob) => {
           const file = new File([blob], originalFileName, { type: "image/jpeg" });
           resolve(file);
-        }, "image/jpeg");
-      };
+        },
+        "image/jpeg",
+        1
+      );
     });
   };
 
@@ -107,7 +126,9 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
           <Image src={iconSrc} alt="upload" width={30} height={20} />
         )}
         <div className="w-[1px] h-10 bg-stroke"></div>
-        <span className="flex items-center">{uploadedFileName || placeholder}</span>
+        <span className="flex items-center">
+          {uploadedFileName || placeholder}
+        </span>
       </div>
 
       <input
@@ -121,38 +142,43 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
       {isCropping && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg w-[500px] max-h-[90%] overflow-auto">
-            <div className="relative w-full h-[300px] md:h-[400px]">
-              <Cropper
-                image={imageSrc}
+            <div className="relative w-full h-full md:h-full">
+              <ReactCrop
                 crop={crop}
-                zoom={zoom}
-                aspect={4 / 3}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
+                onChange={(c) => setCrop(c)}
+                onComplete={(c) => setCompletedCrop(c)}
+                aspect={1} // force square crop, remove if you want free aspect
+                minWidth={50}
+              >
+                <img
+                  ref={imgRef}
+                  alt="Crop source"
+                  src={imageSrc}
+                  onLoad={onImageLoad}
+                />
+              </ReactCrop>
             </div>
-            <div className="flex gap-4 mt-4">
+            <div className="flex gap-3 mt-4">
               <button
                 onClick={() => {
-                  if (!isUploading) {
+                  if (!isProcessing) {
                     setIsCropping(false);
                     setImageSrc(null);
                     setTempFileName("");
                   }
                 }}
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+                className="px-4 py-2 bg-[#f7f7f7] text-electric-blue rounded-md border border-electric-blue"
                 disabled={isProcessing}
               >
                 Cancel
               </button>
               <button
                 onClick={cropImage}
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 flex items-center justify-center min-w-[60px]"
+                className="px-4 py-2 bg-electric-blue border text-white rounded-md flex items-center justify-center min-w-[60px]"
                 disabled={isProcessing}
               >
                 {isProcessing ? (
-                  <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   "Set"
                 )}

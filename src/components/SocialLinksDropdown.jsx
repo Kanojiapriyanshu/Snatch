@@ -13,6 +13,7 @@ const SOCIAL_OPTIONS = [
     pattern:
       /^https:\/\/(www\.)?facebook\.com\/(?!pages\/)([a-zA-Z0-9.]+|(profile\.php\?id=\d+))$/,
     errorMessage: "Invalid Facebook profile URL",
+    placeholderLabel: "Facebook",
   },
   {
     value: "x",
@@ -21,6 +22,7 @@ const SOCIAL_OPTIONS = [
     hoverIcon: "/assets/images/X_logo_h.svg",
     pattern: /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+$/,
     errorMessage: "Invalid X (Twitter) profile URL",
+    placeholderLabel: "X",
   },
   {
     value: "linkedin",
@@ -29,6 +31,7 @@ const SOCIAL_OPTIONS = [
     hoverIcon: "/assets/images/linkedin_logo_h.svg",
     pattern: /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+$/,
     errorMessage: "Invalid LinkedIn profile URL",
+    placeholderLabel: "Linkedin",
   },
   {
     value: "youtube",
@@ -38,6 +41,7 @@ const SOCIAL_OPTIONS = [
     pattern:
       /^https:\/\/(www\.)?youtube\.com\/(user\/[a-zA-Z0-9_-]+|channel\/[a-zA-Z0-9_-]+|\@[a-zA-Z0-9._-]+)$/,
     errorMessage: "Invalid YouTube profile URL",
+    placeholderLabel: "Youtube",
   },
 ];
 
@@ -168,7 +172,7 @@ export default function SocialLinksDropdown({
         {/* URL Input */}
         <input
           type="url"
-          placeholder="Enter Social Link URL"
+          placeholder={`Enter ${selectedOption.placeholderLabel || selectedOption.label} URL (Optional)`}
           className={`flex-grow pl-2 bg-transparent text-graphite outline-none transition placeholder:text-dark-grey ${
             error ? "border-red-500" : ""
           }`}

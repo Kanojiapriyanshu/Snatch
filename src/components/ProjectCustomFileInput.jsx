@@ -2,8 +2,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { useSelectedProjects } from "@/app/manage-projects/context";
-import cloudinaryUpload from "@/utils/cloudinaryUpload";
-import Cropper from "react-easy-crop";
+import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 const ProjectCustomFileInput = ({
   placeholder,
@@ -12,119 +12,135 @@ const ProjectCustomFileInput = ({
   onFileChange,
   activeImageId,
 }) => {
-  const [fileName, setFileName] = useState("");
-  const [imageSrc, setImageSrc] = useState(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [confirmedFileName, setConfirmedFileName] = useState("");
+  const [pendingFileName, setPendingFileName] = useState("");
+  const [pendingImageSrc, setPendingImageSrc] = useState(null);
+  const [confirmedImageSrc, setConfirmedImageSrc] = useState(null);
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false); // ✅ loader state
+
   const fileInputRef = useRef(null);
+  const imgRef = useRef(null);
 
-  const { handleCompanyLogoUpload, updateFormDataForMedia, selectionState } = useSelectedProjects();
+  const { handleCompanyLogoUpload, updateFormDataForMedia, selectionState } =
+    useSelectedProjects();
 
-    useEffect(() => {
+  useEffect(() => {
     if (!activeImageId) return;
-    // Find the formData entry for the current activeImageId
+
     const formDataEntry = Array.isArray(selectionState.formData)
-      ? selectionState.formData.find(item => item.key === activeImageId.toString())
+      ? selectionState.formData.find(
+          (item) => item.key === activeImageId.toString()
+        )
       : null;
 
-    if (formDataEntry?.companyLogoFileName) {
-      setFileName(formDataEntry.companyLogoFileName);
-    } else {
-      setFileName("");
-    }
-
-    if (formDataEntry?.companyLogo) {
-      setImageSrc(formDataEntry.companyLogo); // Show logo preview
-    } else {
-      setImageSrc(null);
-    }
+    setConfirmedFileName(formDataEntry?.companyLogoFileName || "");
+    setConfirmedImageSrc(formDataEntry?.companyLogo || null);
   }, [activeImageId, selectionState.formData]);
 
-  const handleButtonClick = () => {
-    fileInputRef.current.click();
-  };
+  const handleButtonClick = () => fileInputRef.current.click();
 
   const handleFileChange = (event) => {
     if (event.target.files) {
       const selectedFile = event.target.files[0];
-      setFileName(selectedFile.name); // Set the file name (e.g., "girl.png")
-
-      // Update formData with the new file name
-      updateFormDataForMedia(activeImageId, {
-        companyLogoFileName: selectedFile.name,
-      });
-
       const reader = new FileReader();
       reader.readAsDataURL(selectedFile);
       reader.onload = () => {
-        setImageSrc(reader.result); // Load image for cropping
-        setIsCropping(true); // Open cropping modal
+        setPendingImageSrc(reader.result);
+        setIsCropping(true);
+        setPendingFileName(selectedFile.name);
       };
     }
   };
 
-  const onCropComplete = (_, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
+  const onImageLoad = (e) => {
+    const { width, height } = e.currentTarget;
+    const initialCrop = centerCrop(
+      makeAspectCrop({ unit: "%", width: 50 }, 1, width, height),
+      width,
+      height
+    );
+    setCrop(initialCrop);
   };
 
   const cropImage = async () => {
-    const croppedImage = await getCroppedImage(imageSrc, croppedAreaPixels, fileName);
-    const uploadedUrl = await handleCompanyLogoUpload(croppedImage);
+    if (!completedCrop || !imgRef.current) return;
 
-    // Update the formData for the specific activeImageId
-    updateFormDataForMedia(activeImageId, {
-      companyLogo: uploadedUrl,
-      companyLogoFileName: fileName, // Save the file name in formData
-    });
+    setIsProcessing(true); // start loader
 
-    onFileChange(uploadedUrl); // Pass the uploaded URL to the parent component
-    setIsCropping(false); // Close modal
-    setImageSrc(null);
+    const croppedImage = await getCroppedImage(
+      imgRef.current,
+      completedCrop,
+      pendingFileName
+    );
+
+    try {
+      const uploadedUrl = await handleCompanyLogoUpload(
+        croppedImage,
+        activeImageId
+      );
+
+      updateFormDataForMedia(activeImageId, {
+        companyLogo: uploadedUrl,
+        companyLogoFileName: pendingFileName,
+      });
+
+      onFileChange(uploadedUrl);
+
+      setConfirmedImageSrc(uploadedUrl);
+      setConfirmedFileName(pendingFileName);
+      setIsCropping(false);
+      setPendingImageSrc(null);
+      setPendingFileName("");
+    } catch (error) {
+      console.error("Upload failed:", error);
+    } finally {
+      setIsProcessing(false); // stop loader
+    }
   };
 
-  const getCroppedImage = (imageSrc, croppedAreaPixels, originalFileName) => {
+  const getCroppedImage = (image, crop, originalFileName) => {
     return new Promise((resolve) => {
-      const image = new window.Image();
-      image.src = imageSrc;
-      image.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
+      const canvas = document.createElement("canvas");
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
 
-        canvas.width = croppedAreaPixels.width;
-        canvas.height = croppedAreaPixels.height;
+      canvas.width = crop.width;
+      canvas.height = crop.height;
 
-        ctx.drawImage(
-          image,
-          croppedAreaPixels.x,
-          croppedAreaPixels.y,
-          croppedAreaPixels.width,
-          croppedAreaPixels.height,
-          0,
-          0,
-          croppedAreaPixels.width,
-          croppedAreaPixels.height
-        );
+      const ctx = canvas.getContext("2d");
 
-        canvas.toBlob((blob) => {
-          const file = new File([blob], originalFileName, { type: "image/jpeg" });
-          resolve(file);
-        }, "image/jpeg");
-      };
+      ctx.drawImage(
+        image,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        crop.width,
+        crop.height
+      );
+
+      canvas.toBlob((blob) => {
+        const file = new File([blob], originalFileName, { type: "image/jpeg" });
+        resolve(file);
+      }, "image/jpeg");
     });
   };
 
   return (
-   <div className="mt-0">
+    <div className="mt-0">
       {/* Upload Container */}
       <div
         className="mt-0 flex items-center gap-4 cursor-pointer rounded-md border border-stroke px-5 py-3 text-dark-grey outline-none transition hover:border-primary active:border-primary"
         onClick={handleButtonClick}
       >
-        {imageSrc ? (
+        {confirmedImageSrc ? (
           <img
-            src={imageSrc}
+            src={confirmedImageSrc}
             alt="Logo Preview"
             className="w-8 h-8 rounded-full object-cover border"
           />
@@ -132,7 +148,7 @@ const ProjectCustomFileInput = ({
           <Image src={iconSrc} alt="upload" width={30} height={30} />
         )}
         <span className="text-sm text-gray-700">
-          {fileName || placeholder}
+          {confirmedFileName || placeholder}
         </span>
       </div>
 
@@ -146,32 +162,48 @@ const ProjectCustomFileInput = ({
       />
 
       {/* Crop Modal */}
-      {isCropping && (
+      {isCropping && pendingImageSrc && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg w-[500px] max-h-[90%] overflow-auto">
-            <div className="relative w-full h-[300px] md:h-[400px]">
-              <Cropper
-                image={imageSrc}
+            <div className="relative w-full h-[90%]">
+              <ReactCrop
                 crop={crop}
-                zoom={zoom}
-                aspect={4 / 3}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
+                onChange={(c) => setCrop(c)}
+                onComplete={(c) => setCompletedCrop(c)}
+                aspect={1}
+                minWidth={40}
+                circularCrop={true}
+              >
+                <img
+                  ref={imgRef}
+                  alt="Crop source"
+                  src={pendingImageSrc}
+                  onLoad={onImageLoad}
+                />
+              </ReactCrop>
             </div>
-            <div className="flex gap-4 mt-4 justify-end">
+            <div className="flex gap-4 mt-4 justify-start">
               <button
-                onClick={() => setIsCropping(false)}
-                className="px-4 py-2 rounded-md border-[1px] border-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
+                onClick={() => {
+                  setIsCropping(false);
+                  setPendingImageSrc(null);
+                  setPendingFileName("");
+                }}
+                className="px-4 py-2 rounded-md border-[1px] border-electric-blue bg-[#f7f7f7] text-electric-blue transition-colors"
+                disabled={isProcessing} // prevent cancel while uploading
               >
                 Cancel
               </button>
               <button
                 onClick={cropImage}
-                className="px-4 py-2 bg-electric-blue text-white rounded-md "
+                className="px-4 py-2 bg-electric-blue border text-white rounded-md flex items-center justify-center min-w-[60px]"
+                disabled={isProcessing}
               >
-                Set
+                {isProcessing ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  "Set"
+                )}
               </button>
             </div>
           </div>

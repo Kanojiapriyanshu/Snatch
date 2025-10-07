@@ -83,6 +83,19 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const followers = useAnimatedNumber(Number(igData?.followers_count) || 0);
   const posts     = useAnimatedNumber(Number(igData?.media_count) || 0);
 
+  function formatNumber(num) {
+  if (num >= 1_000_000_000) {
+    return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, "") + "B";
+  }
+  if (num >= 1_000_000) {
+    return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+  }
+  if (num >= 1_000) {
+    return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+  }
+  return num.toString();
+}
+
   // Track scroll position
   useEffect(() => {
     const handleScroll = () => {
@@ -207,7 +220,6 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   const values = [story, reel, post].filter((v) => v > 0);
   const lowest = values.length ? Math.min(...values) : 0;
   const highest = values.length ? Math.max(...values) : 0;
-
   
   function formatNumber(value) {
     const num = Number(value); // parse string/number safely
@@ -563,7 +575,7 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{reach}</motion.span>
+        <motion.span>{formatNumber(reach)}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">avg reach</p>
     </motion.div>
@@ -572,7 +584,7 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{followers}</motion.span>
+        <motion.span>{formatNumber(followers)}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">followers</p>
     </motion.div>
@@ -581,7 +593,7 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{posts}</motion.span>
+        <motion.span>{formatNumber(posts)}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">posts</p>
     </motion.div>
