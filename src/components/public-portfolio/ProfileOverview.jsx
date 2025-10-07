@@ -575,7 +575,7 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{formatNumber(reach)}</motion.span>
+        <motion.span>{reach}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">avg reach</p>
     </motion.div>
@@ -584,7 +584,7 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{formatNumber(followers)}</motion.span>
+        <motion.span>{followers}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">followers</p>
     </motion.div>
@@ -593,7 +593,7 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{formatNumber(posts)}</motion.span>
+        <motion.span>{posts}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">posts</p>
     </motion.div>
