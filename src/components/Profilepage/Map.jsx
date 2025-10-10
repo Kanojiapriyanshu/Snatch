@@ -70,7 +70,7 @@ const SimpleWorldMap = ({apiEndpoint}) => {
 
 <div className="mt-[50px]">
 {topCountries.map((country, index) => (
-  <div key={index} className="flex justify-between items-center border-b border-gray-300 py-3 font-apfel-grotesk-regular ml-3 mr-2">
+  <div key={index} className="flex justify-between items-center border-b border-gray-300 py-3 font-apfel-grotezk-regular ml-3 mr-2">
     <span className="flex gap-5">
     <span className="text-gray-500 text-sm flex items-center">0{index + 1}</span>
     <span className=" font-medium text-md  font-apfel-grotezk-regular"
@@ -78,7 +78,7 @@ const SimpleWorldMap = ({apiEndpoint}) => {
     >{country.name}</span>
       </span>
     
-    <span className="text-electric-blue text-sm " style={{ fontFamily: "Open Sans" }}>{country.percentage}%</span>
+    <span className="text-electric-blue text-sm ">{country.percentage}%</span>
   </div>
 ))}
 </div>

@@ -1,8 +1,9 @@
-// app/layout.tsx
+// app/layout.js
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
+import { ClerkProvider } from "@clerk/nextjs";
 // import Script from "next/script";
 
 // ✅ Font setup
@@ -30,6 +31,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    <ClerkProvider>
     <html lang="en">
       <body
         className={`
@@ -46,6 +48,7 @@ export default function RootLayout({ children }) {
 
       </body>
     </html>
+    </ClerkProvider>
   );
 }
 

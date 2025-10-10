@@ -172,7 +172,7 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
               >
                 Cancel
               </button>
-              <button
+              {/* <button
                 onClick={cropImage}
                 className="px-4 py-2 bg-electric-blue border text-white rounded-md flex items-center justify-center min-w-[60px]"
                 disabled={isProcessing}
@@ -182,6 +182,13 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
                 ) : (
                   "Set"
                 )}
+              </button> */}
+               <button
+                onClick={cropImage}
+                disabled={isProcessing}
+                className="px-4 py-2 bg-electric-blue text-white rounded-md flex items-center justify-center min-w-[60px]"
+              >
+                {isProcessing ? "Uploading..." : "Upload"}
               </button>
             </div>
           </div>

@@ -1,5 +1,5 @@
+//components/NextButton.jsx
 "use client";
-
 import { useRouter, usePathname } from "next/navigation";
 import { useFormContext } from "@/app/onboarding/context";
 import { useAuth } from "@clerk/nextjs";
@@ -22,10 +22,14 @@ const NextButton = () => {
       alert("User ID is missing. Please log in.");
       return;
     }
-    // ensure location is valid before checking missing fields
-    if (locationEnsureRef.current) {
-      await locationEnsureRef.current(); // ✅ auto-select first suggestion if needed
-    }
+
+    // // Ensure location is valid and synced before validation
+    //   if (locationEnsureRef.current) {
+    //     await locationEnsureRef.current();
+
+    //     // Wait a tick to allow React state/context to update formData.location
+    //     await new Promise((resolve) => setTimeout(resolve, 100));
+    //   }
 
 
     if (pathname === "/onboarding/step-2") {
@@ -60,48 +64,61 @@ const NextButton = () => {
 
       try {
         setIsSubmitting(true);
-        router.push("/onboarding/loading"); // Show loading page while submitting
+        router.push('/onboarding/loading')
 
-        const data = await handler({ userId, formData });
+        const res = await fetch("/api/onboarding", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, formData }),
+        });
+
+        const data = await res.json();
         setResponse(data);
 
-        if (data.success && (data.status === 201 || data.status === 400)) {
-          // Prefetch dashboard data in parallel
-          await Promise.all([
-            queryClient.prefetchQuery({
-              queryKey: ["analytics", formData.username],
-              queryFn: async () => {
-                const res = await fetch(`/api/analytics?username=${formData.username}`);
-                if (!res.ok) throw new Error("Failed to fetch analytics");
-                return res.json();
-              },
-            }),
-            queryClient.prefetchQuery({
-              queryKey: ["instagramConnection", formData.username],
-              queryFn: async () => {
-                const res = await fetch("/api/auth/check-instagram-connection");
-                return res.json();
-              },
-            }),
-            queryClient.prefetchQuery({
-              queryKey: ["influencerRequests", formData.username],
-              queryFn: async () => {
-                const res = await fetch(`/api/influencer-requests?username=${formData.username}`);
-                return res.json();
-              },
-            }),
-          ]);
-
-          await new Promise((resolve) => setTimeout(resolve, 2000)); // Optional smooth transition
-          router.push(`/dashboard/${formData.username}`);
-        } else {
-          throw new Error("Unexpected response from server.");
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to submit onboarding");
         }
+
+        if (!data.success) {
+          throw new Error(data.message || "Unexpected server response");
+        }
+
+        // Prefetch dashboard queries
+        await Promise.all([
+          queryClient.prefetchQuery({
+            queryKey: ["analytics", formData.username],
+            queryFn: async () => {
+              const r = await fetch(`/api/analytics?username=${formData.username}`);
+              if (!r.ok) throw new Error("Failed to fetch analytics");
+              return r.json();
+            },
+          }),
+          queryClient.prefetchQuery({
+            queryKey: ["instagramConnection", formData.username],
+            queryFn: async () => {
+              const r = await fetch("/api/auth/check-instagram-connection");
+              return r.json();
+            },
+          }),
+          queryClient.prefetchQuery({
+            queryKey: ["influencerRequests", formData.username],
+            queryFn: async () => {
+              const r = await fetch(`/api/influencer-requests?username=${formData.username}`);
+              return r.json();
+            },
+          }),
+        ]);
+
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Optional smooth transition
+        // Only navigate after everything succeeds
+        router.push(`/dashboard/${formData.username}`);
       } catch (error) {
-        console.error("Error completing onboarding:", error.response || error);
-        alert("An error occurred while submitting your data. Please try again.");
+        console.error("Error completing onboarding:", error);
+        console.error("An error occurred while submitting your data. Please try again.");
+      } finally {
         setIsSubmitting(false);
       }
+
     } 
     
     else if (pathname === "/onboarding/step-1") {
@@ -111,8 +128,8 @@ const NextButton = () => {
         gender,
         dateOfBirth,
         location,
+        instagram,
         profilePicture,
-        links,
       } = formData;
 
       const missingFields = [];
@@ -122,6 +139,7 @@ const NextButton = () => {
       if (!gender) missingFields.push("Gender");
       if (!dateOfBirth) missingFields.push("Date of Birth");
       if (!location?.trim()) missingFields.push("Location");
+      if (!instagram?.trim()) missingFields.push("Instagram  username is mandatory");
       if (!profilePicture) missingFields.push("Profile Picture");
 
       if (missingFields.length > 0) {
@@ -150,3 +168,6 @@ const NextButton = () => {
 };
 
 export default NextButton;
+
+
+// FOR FIRST TIME, IT TOOK ME FROM STEP-2  TO LOADING TO STEP-1 THEN AFTER 2 SECS TO DASHBOARD  -> BECUASE STEP-2 FIELDS ARE STILL EMPTY

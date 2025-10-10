@@ -22,4 +22,4 @@ export const industryList = [
     "Web Design & Development", "Wine & Spirits", 
   ];
 
-  export const eventTypes = ["Conference", "Workshop", "Webinar", "Networking", "Product Launch", "Brand Activation", "Store Opening", "Exclusive Brand Experience", "Networking", "Industry Conference","Panel Livestream", "Virtual Event", "Podcast or Interview ", "Workshop or Training Session"];
+  export const eventTypes = ["Conference (industry event, networking, speaking)", "Product Launch (new product, launch party, first look)", "Brand Promotion (ad campaign, pop-up, product promotion)", "Store Opening (new shop or flagship opening)", "Exclusive Experience (invite-only trip, dinner, event)", "Virtual Event / Livestream (online launch, IG Live, YouTube)", "Interview (podcast, guest feature, Q&A)", "Workshop (hands-on session, tutorial, masterclass)"];

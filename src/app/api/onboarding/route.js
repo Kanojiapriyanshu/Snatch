@@ -1,41 +1,78 @@
-// src/app/api/test-1/route.js
+import { NextResponse } from "next/server";
+import connectDb from "@/db/mongoose";
+import OnboardingData from "@/models/onboarding.model";
+import User from "@/models/user.model";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 
-export async function POST(request) {
+export const dynamic = "force-dynamic";
+
+export async function POST(req) {
   try {
-    // Parse JSON from the request body directly in the POST handler
-    const body = await request.json();
-    console.log("body", body);  
-    const { message } = body;
-    console.log("message", message);  
+    const body = await req.json();
+    const { userId, formData } = body;
 
-    // Check if the message is provided
-    if (!message) {
-      return new Response(
-        JSON.stringify({ success: false, error: "No message provided" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
+    await connectDb();
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, message: "userId is required" },
+        { status: 400 }
       );
     }
 
-    // Return a response with the received message
-    return new Response(
-      JSON.stringify({ success: true, echo: message }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
+    const { isDraft, _id, __v, createdAt, updatedAt, ...cleanFormData } = formData;
+
+    let onboardingData = await OnboardingData.findOne({ userId });
+    if (onboardingData) {
+      onboardingData = await OnboardingData.findOneAndUpdate(
+        { userId },
+        { ...cleanFormData, isDraft: false, hasCompletedOnboarding: true },
+        { new: true, runValidators: true }
+      );
+    } else {
+      onboardingData = await OnboardingData.create({
+        ...cleanFormData,
+        userId,
+        isDraft: false,
+      });
+    }
+
+    onboardingData = onboardingData.toObject();
+    onboardingData._id = onboardingData._id.toString();
+
+    let user = await User.findOne({ userId });
+    if (!user) {
+      user = await User.create({
+        userId,
+        instagramUsername: onboardingData.username,
+        onboardingData: onboardingData._id,
+      });
+    } else {
+      user.onboardingData = onboardingData._id;
+      user.instagramUsername = onboardingData.username;
+      await user.save();
+    }
+
+    user = user.toObject();
+    user._id = user._id.toString();
+    user.onboardingData = user.onboardingData.toString();
+
+    await clerkClient.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        hasCompletedOnboarding: true,
+        username: onboardingData.username,
+      },
+    });
+
+    return NextResponse.json(
+      { success: true, message: "Success", data: { onboardingData, user } },
+      { status: 201 }
     );
   } catch (error) {
-    // Handle any errors and return a response
-    return new Response(
-      JSON.stringify({ success: false, error: "Invalid request" }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
+    console.error("Error in onboarding route:", error);
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
     );
   }
 }
-

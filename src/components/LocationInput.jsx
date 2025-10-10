@@ -12,16 +12,30 @@ const LocationInput = ({ value, onSelectLocation, onEnsureValid, ...props }) => 
   const userTypingRef = useRef(false);
 
   // inside LocationInput
-const ensureValidLocation = async () => {
-  if (query && query.length >= 2) {
-    await fetchLocations(query, true); // will auto-select first suggestion if needed
-  }
-};
+// const ensureValidLocation = async () => {
+//   if (query && query.length >= 2) {
+//     await fetchLocations(query, true); // will auto-select first suggestion if needed
+//   }
+// };
 
-// expose to parent
+// // expose to parent
+// useEffect(() => {
+//   if (onEnsureValid) onEnsureValid(ensureValidLocation);
+// }, [query, onEnsureValid]);
+
 useEffect(() => {
-  if (onEnsureValid) onEnsureValid(ensureValidLocation);
-}, [query, onEnsureValid]);
+  const handleAutofill = (e) => {
+    const val = e.target.value;
+    if (val && val.length >= 2) {
+      fetchLocations(val, true); // auto-apply suggestion
+    }
+  };
+
+  const input = document.querySelector('input[placeholder*="Which city"]');
+  if (input) input.addEventListener("change", handleAutofill);
+
+  return () => input && input.removeEventListener("change", handleAutofill);
+}, []);
 
   useEffect(() => {
     if (!userTypingRef.current) {

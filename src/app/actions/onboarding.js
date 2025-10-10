@@ -4,6 +4,7 @@
 import connectDb from "@/db/mongoose";
 import OnboardingData from "@/models/onboarding.model";
 import User from "@/models/user.model";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function handler({ userId, formData }) {
   try {
@@ -69,6 +70,14 @@ export async function handler({ userId, formData }) {
     user = user.toObject();
     user._id = user._id.toString();
     user.onboardingData = user.onboardingData.toString();
+
+      // ✅ Update Clerk metadata here
+    await clerkClient.users.updateUserMetadata(userId, {
+      privateMetadata: {
+        hasCompletedOnboarding: true,
+        username: onboardingData.username,
+      },
+    });
 
     return {
       success: true,

@@ -644,7 +644,7 @@ const handlePopupGenerate = async () => {
       </button>
 
       {/* Title */}
-      <h2 className="text-xl text-graphite mb-4 text-left font-qimano">You’re Good to Go!</h2>
+      <h2 className="text-xl text-graphite mb-4 text-left text-[#108B4A] font-qimano">You’re Good to Go!</h2>
 
       <hr className="border-gray-200 mb-4" />
 
@@ -689,7 +689,7 @@ const handlePopupGenerate = async () => {
             </button>
 
             {/* Title */}
-            <h2 className="text-xl sm:text-2xl font-[Georgia] text-black mb-4 text-left font-qimano">Disclaimer</h2>
+            <h2 className="text-xl sm:text-2xl font-[Georgia] text-[#EB3B00] mb-4 text-left font-qimano">Disclaimer</h2>
 
             <hr className="border-gray-200 mb-4" />
 

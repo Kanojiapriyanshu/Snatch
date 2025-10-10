@@ -18,6 +18,7 @@ export default function EnterOtp() {
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -36,7 +37,8 @@ export default function EnterOtp() {
   // So the benefit of the debounce is specifically to avoid invalid_action errors (caused by session/timing issues), while better error handling helps you show the user why it failed.
   
   const verifyOtp = async () => {
-    if (!isLoaded || !email) return;
+    // if (!isLoaded || !email) return;
+    if (!isLoaded || !email || hasSubmitted) return;
     setIsLoading(true);
     setError("");
 
@@ -46,8 +48,13 @@ export default function EnterOtp() {
       });
 
       if (signInAttempt.status === "complete") {
+        setHasSubmitted(true)  // ✅ lock interaction
         await setActive({ session: signInAttempt.createdSessionId });
         router.push("/onboarding/step-1");
+         // optional: small delay to keep button disabled during route change
+          // setTimeout(() => {
+          //   router.push("/onboarding/step-1");
+          // }, 300);
       } else {
         setError("OTP verification failed. Please try again.");
       }
@@ -180,9 +187,9 @@ export default function EnterOtp() {
           {/* Verify Button */}
           <button
             onClick={verifyOtp}
-            disabled={isLoading}
+            disabled={isLoading || hasSubmitted}
             className={`w-full sm:w-[356px] h-12 rounded-lg mt-6 flex items-center justify-center text-white text-base font-medium ${
-              isLoading
+              isLoading || hasSubmitted
                 ? "bg-[#BFCFFF] cursor-not-allowed"
                 : "bg-electric-blue hover:bg-[#002ACC]"
             }`}

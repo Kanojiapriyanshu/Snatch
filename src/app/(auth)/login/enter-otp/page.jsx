@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Otp from "@/components/Otp";
+import { initializeUserMetadata } from "@/app/actions/initializeMetadata";
 
 export default function EnterOtp() {
   const { isLoaded, signIn } = useSignIn();
@@ -17,6 +18,7 @@ export default function EnterOtp() {
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -40,7 +42,7 @@ export default function EnterOtp() {
 
 
   const verifyOtp = async () => {
-  if (!isLoaded || !email) return;
+  if (!isLoaded || !email || hasSubmitted) return;
 
   setIsLoading(true);
   setError("");
@@ -52,7 +54,10 @@ export default function EnterOtp() {
     });
 
     if (result.status === "complete") {
+       setHasSubmitted(true); // ✅ lock interaction
       // No manual reload required!
+        // call server action
+      await initializeUserMetadata(result.createdSessionId.userId);
       window.location.href = "/onboarding/loading";
     } else {
       setError("OTP verification failed. Please try again.");
@@ -183,9 +188,9 @@ export default function EnterOtp() {
           {/* Verify Email Button */}
           <button
             onClick={verifyOtp}
-            disabled={isLoading}
+            disabled={isLoading || hasSubmitted}
             className={`w-full sm:w-[356px] h-12 rounded-lg mt-6 flex items-center justify-center text-white text-base font-medium ${
-              isLoading
+              isLoading || hasSubmitted
                 ? "bg-[#BFCFFF] cursor-not-allowed"
                 : "bg-electric-blue hover:bg-[#002ACC]"
             }`}

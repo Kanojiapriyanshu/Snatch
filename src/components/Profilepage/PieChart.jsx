@@ -17,7 +17,7 @@ const DoughnutChart = ({ apiEndpoint }) => {
 
         if (!data.demographics) throw new Error("Invalid API Response");
 
-        const { male, female } = data.demographics;
+        const { male, female, unknown } = data.demographics;
         const high = Math.max(male, female);
 
         if (high === male) {
@@ -29,12 +29,12 @@ const DoughnutChart = ({ apiEndpoint }) => {
         }
 
         setChartData({
-          labels: ["Male", "Female"],
+          labels: ["Male", "Female", "Unknown"],
           datasets: [
             {
-              data: [parseFloat(male), parseFloat(female)],
-              backgroundColor: ["#0037EB", "rgba(0, 55, 235, 0.3)"],
-              borderColor: ["#0037EB", "rgba(0, 55, 235, 0.3)"],
+              data: [parseFloat(male), parseFloat(female), parseFloat(unknown)],
+              backgroundColor: ["#0037EB", "rgba(0, 55, 235, 0.3)","rgba(0,55,235,0.15)"],
+              borderColor: ["#0037EB", "rgba(0, 55, 235, 0.3)", "rgba(0,55,235,0.15)"],
               borderWidth: 0,
               circumference: 360,
               rotation: -90,
@@ -91,30 +91,42 @@ const DoughnutChart = ({ apiEndpoint }) => {
           </div>
 
           {/* Gender Legend */}
-          <div className="mt-6 flex justify-between w-full max-w-[240px] text-sm font-apfel-grotezk-regular">
-            {/* Male */}
-            <div className="flex flex-col items-center gap-1 ml-8">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-1.5 bg-[#0037EB] rounded-full"></span>
-                <span className="text-[#0037EB]">Men</span>
-              </div>
-              <span className="text-black ml-7">
-                {chartData.datasets[0].data[0].toFixed(1)}%
-              </span>
+           {/* Labels */}
+      <div className="mt-6 flex flex-col items-center gap-4 text-sm font-apfel-grotezk-regular">
+       <div className="flex justify-between gap-14 w-full max-w-[240px]">
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-1.5 bg-[#0037EB] rounded-full"></span>
+              <span className="text-[#0037EB]">Men</span>
             </div>
+            <span className="text-black ml-7">
+              {chartData.datasets[0].data[0].toFixed(1)}%
+            </span>
+          </div>
 
-            {/* Female */}
-            <div className="flex flex-col items-center gap-1">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-1.5 bg-[rgba(0,55,235,0.3)] rounded-full"></span>
-                <span className="text-[#888]">Women</span>
-              </div>
-              <span className="text-black ml-8">
-                {chartData.datasets[0].data[1].toFixed(1)}%
-              </span>
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-1.5 bg-[rgba(0,55,235,0.3)] rounded-full"></span>
+              <span className="text-[#666]">Women</span>
             </div>
+            <span className="text-black ml-8">
+              {chartData.datasets[0].data[1].toFixed(1)}%
+            </span>
           </div>
         </div>
+
+        <div className="flex flex-col items-center gap-1">
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-1.5 bg-[rgba(0,55,235,0.15)] rounded-full"></span>
+            <span className="text-[#999]">Unknown</span>
+          </div>
+          <span className="text-black ml-8">
+            {chartData.datasets[0].data[2].toFixed(1)}%
+          </span>
+        </div>
+      </div>
+    </div>
+    
       ) : (
         <p className="text-gray-600 text-sm text-center">Loading...</p>
       )}

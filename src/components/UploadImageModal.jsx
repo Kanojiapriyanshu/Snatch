@@ -276,7 +276,7 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                   style={{ backgroundImage: `url(${selectedImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
                 >
                   <div className="bg-gray-400 text-white px-4 py-1 rounded-t-md w-[100%] text-center">
-                    <span className="text-sm font-medium">Preview card</span>
+                    <span className="text-sm font-medium">Preview</span>
                   </div>
                   <div
                     className={clsx(
@@ -427,7 +427,7 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                   crop={crop}
                   onChange={(c) => setCrop(c)}
                   onComplete={(c) => setCompletedCrop(c)}
-                  aspect={4 / 5}  // rectangle aspect ratio
+                  aspect={1/1}  // rectangle aspect ratio
                   minWidth={40}
                 >
                   <img
@@ -455,7 +455,7 @@ export default function UploadImageModal({ isOpen, onClose, onImageSelect, type,
                       disabled={isProcessing}
                       className="px-4 py-2 bg-electric-blue text-white rounded-md"
                     >
-                      {isProcessing ? "Uploading..." : "Set"}
+                      {isProcessing ? "Uploading..." : "Upload"}
                     </button>
                   </div>
                 </div>
