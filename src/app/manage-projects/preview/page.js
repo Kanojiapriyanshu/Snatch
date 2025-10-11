@@ -784,7 +784,7 @@ const handleHamburgerClick = () => {
             </button>
           <button
         className={`
-          px-3 h-[38px] rounded-lg text-md transition-colors
+          w-48 h-[38px] rounded-lg text-md transition-colors
           ${
             status === "loading"
               ? "bg-electric-blue text-white cursor-not-allowed"
@@ -801,9 +801,9 @@ const handleHamburgerClick = () => {
         {status === "loading"
           ? "Completing..."
           : status === "success"
-          ? "Completed ✅"
+          ? "Completed"
           : status === "error"
-          ? "Retry ❌"
+          ? "Retry"
           : "Complete Project Details"}
       </button>
 
