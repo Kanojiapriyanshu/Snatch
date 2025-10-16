@@ -110,7 +110,7 @@ export default function Step1() {
     </div>
 
     {/* Gender Dropdown and Date of Birth */}
-    <div className="flex flex-col md:flex-row gap-0">
+    <div className="flex flex-col md:flex-row md:gap-6">
       <CustomDropdown
         options={["Male", "Female", "Other", "Prefer not to say"]}
         placeholder="Gender*"
@@ -123,6 +123,9 @@ export default function Step1() {
         value={formState.dateOfBirth}
         onChange={(value) => updateField("dateOfBirth", value)}
         className="w-full md:w-1/2"
+        variant="white"
+        width="full"
+        format="dd/mm/yyyy"
       />
     </div>
 

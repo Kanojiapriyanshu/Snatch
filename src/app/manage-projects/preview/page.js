@@ -553,12 +553,6 @@ const handleHamburgerClick = () => {
 
           {/* Fixed height brand collaboration section */}
            {isBrandCollaboration && Array.isArray(selectionState?.formData) && (() => {
-            // <div className="min-h-[60px] flex items-start mt-4">
-            // <div className="pointer-events-auto">
-            //     {isModalOpen && (
-            //       <Popup onClose={handleCloseModal} onContinueEditing={handleCloseModal} onNextStep={handleNextStep}  message={popupMessage} />
-            //     )}
-            // </div> 
             const selectedItem = selectionState.formData.find(
               (item) => item.key === activeImageId
             );
@@ -617,11 +611,15 @@ const handleHamburgerClick = () => {
                         </p>
                       )}
 
-                      <div className="flex gap-2">
-                        {/* Event name */}
+                      <div className="flex">
+                        {selectedItem.eventYear && (
+                          <span className="px-1 -ml-2 text-sm text-graphite">{selectedItem.eventYear}{" "}<span className="text-gray-500">•</span></span>
+                        )}
+                        <div className="flex gap-2">
+                             {/* Event name */}
                         {selectedItem.eventName && (
                           <p>
-                            <span className="text-graphite">{selectedItem.eventName}</span>
+                            <span>{selectedItem.eventName}</span>
                           </p>
                         )}
 
@@ -636,6 +634,8 @@ const handleHamburgerClick = () => {
                             ))}
                           </p>
                         )}
+                          </div>
+                     
                       </div>
                     </div>
                   )}

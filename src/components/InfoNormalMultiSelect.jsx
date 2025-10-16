@@ -55,6 +55,30 @@ const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onR
           </>)
       case "Collaboration":
         return "Influencers sometimes collaborate with brands to create a product.";
+
+      case "Conference":
+      return "(industry event, networking, speaking)";
+
+    case "Product Launch":
+      return "(new product, launch party, first look)";
+
+    case "Brand Promotion":
+      return "(ad campaign, pop-up, product promotion)";
+
+    case "Store Opening":
+      return "(new shop or flagship opening)";
+
+    case "Exclusive Experience":
+      return "(invite-only trip, dinner, event)";
+
+    case "Virtual Event / Livestream":
+      return "(online launch, IG Live, YouTube)";
+
+    case "Interview":
+      return "(podcast, guest feature, Q&A)";
+
+    case "Workshop":
+      return "(hands-on session, tutorial, masterclass)";
       default:
         return "";
     }

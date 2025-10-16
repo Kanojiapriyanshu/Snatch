@@ -30,7 +30,7 @@ const CustomDropdown = ({ options, placeholder, onSelect, selected }) => {
   };
 
   return (
-    <div ref={ref} className="relative w-[48.4%]">
+    <div ref={ref} className="relative w-1/2">
       {/* Display selected option or placeholder */}
       <div
        className={`rounded-lg border border-stroke bg-transparent py-[10px] px-5 cursor-pointer ${
@@ -42,7 +42,7 @@ const CustomDropdown = ({ options, placeholder, onSelect, selected }) => {
       </div>
 
       {isOpen && (
-        <ul className="absolute mt-2 w-[369px] rounded-lg border border-stroke bg-[#E9E9E9] py-2 text-graphite z-50">
+        <ul className="absolute mt-2 w-full rounded-lg border border-stroke bg-[#E9E9E9] py-2 text-graphite z-50">
           {options.map((option, index) => (
             <>
               <li

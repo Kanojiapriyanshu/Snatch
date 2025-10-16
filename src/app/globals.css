@@ -15,6 +15,41 @@
   --light-grey: #CBCBCB;
   --dark-grey: #7F7F7F;
   --brown: #333333;
+
+
+  /* blue shades */
+  --electric-blue-25: #EBF0FF; 
+  --electric-blue-50: #D4DEFD;   /* light bg */
+  --electric-blue-100: #BCCBFB;
+  --electric-blue-200: #A5B9F9;
+  --electric-blue-300: #8DA6F7;
+  --electric-blue-400: #5E81F3;   /* disabled */ 
+  --electric-blue-500: #2F5CEF;
+  --electric-blue-600: #0037EB;  /* primary */
+  --electric-blue-700: #002CBC;  /* hover */
+  --electric-blue-800: #00218D;  /* active/pressed */
+  --electric-blue-900: #00165E;
+
+  /* yellow shades */
+  --lime-yellow-50: #FBFDD3;  /* light bg */
+  --lime-yellow-400: #EEF25E; /* disabled */
+  --lime-yellow-600: #E4EA00; /* primary */
+  --lime-yellow-700: #B6BB00; /* hover */
+  --lime-yellow-800: #898C00; /* active/pressed */
+
+  /* smoke shades (while 300) */
+  --smoke-25: #FCFCFC; /* backgrounds */
+  --smoke-50: #FAFAFA;  /* light bg use for cards*/
+  --smoke-300:#F2F2F2; /* smoke - primary color */
+  --smoke-400: #ECECEC; /* on top of smoke (button bg, dividers) */
+  --smoke-600: #BFBFBF; /* empty states , disabled, neutral */ 
+
+  /* Graphite shades */
+  --graphite-25: #A1A1A1; /* usuage */
+  --graphite-50: #949494; /* cards */
+  --graphite-200: #7A7A7A; /* disabled */
+  --graphite-300: #6E6E6E; /* secondary text color */
+  --graphite-600: #212121; /* primary text color */
 }
 
 
@@ -51,6 +86,41 @@
     --dark-grey: #7F7F7F;
     --brown: #333333;
     --dark-electric-blue: #0130C8;
+
+    
+  /* blue shades */
+  --electric-blue-25: #EBF0FF; 
+  --electric-blue-50: #D4DEFD;   /* light bg */
+  --electric-blue-100: #BCCBFB;
+  --electric-blue-200: #A5B9F9;
+  --electric-blue-300: #8DA6F7;
+  --electric-blue-400: #5E81F3;   /* disabled */ 
+  --electric-blue-500: #2F5CEF;
+  --electric-blue-600: #0037EB;  /* primary */
+  --electric-blue-700: #002CBC;  /* hover */
+  --electric-blue-800: #00218D;  /* active/pressed */
+  --electric-blue-900: #00165E;
+
+  /* yellow shades */
+  --lime-yellow-50: #FBFDD3;  /* light bg */
+  --lime-yellow-400: #EEF25E; /* disabled */
+  --lime-yellow-600: #E4EA00; /* primary */
+  --lime-yellow-700: #B6BB00; /* hover */
+  --lime-yellow-800: #898C00; /* active/pressed */
+
+  /* smoke shades (while 300) */
+  --smoke-25: #FCFCFC; /* backgrounds */
+  --smoke-50: #FAFAFA;  /* light bg use for cards*/
+  --smoke-300:#F2F2F2; /* smoke - primary color */
+  --smoke-400: #ECECEC; /* on top of smoke (button bg, dividers) */
+  --smoke-600: #BFBFBF; /* empty states , disabled, neutral */ 
+
+  /* Graphite shades */
+  --graphite-25: #A1A1A1; /* usuage */
+  --graphite-50: #949494; /* cards */
+  --graphite-200: #7A7A7A; /* disabled */
+  --graphite-300: #6E6E6E; /* secondary text color */
+  --graphite-600: #212121; /* primary text color */
   }
 } 
 

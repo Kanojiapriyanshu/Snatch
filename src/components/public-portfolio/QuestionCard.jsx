@@ -264,18 +264,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
         )}
         style={{ minHeight: isMobile ? 0 : 240 }}
       >
-        <Image
-          src={cardType.icon}
-          alt="icon"
-          height={10}
-          width={10}
-          className="w-20 h-17 mt-4 lg:mt-0 lg:mb-2"
-        />
-        <p className={clsx("text-center text-xl p-2 lg:text-2xl font-qimano mb-0 line-clamp-3", cardType.text, "lg:mb-0 lg:mt-0")}
-           style={{ minHeight: '4.5em' }}>
-          {question}
-        </p>
-        <p className="font-apfel-grotezk-regular text-xs text-center mb-2 lg:mb-2 lg:mt-0">
+          <p className="font-apfel-grotezk-regular text-sm text-[#7A7A7A] font-semibold text-center mb-2 lg:mb-2 lg:mt-0">
           {cardType.bg === "bg-lime-yellow"
             ? "About"
             : cardType.bg === "bg-graphite"
@@ -283,6 +272,18 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
             : cardType.bg === "bg-electric-blue"
             ? "Brand"
             : ""}
+        </p>
+        <Image
+          src={cardType.icon}
+          alt="icon"
+          height={10}
+          width={10}
+          className="w-20 h-17 mt-4 lg:mt-0 lg:mb-2"
+        />
+      
+        <p className={clsx("text-center text-xl p-2 lg:text-2xl font-qimano mb-0 line-clamp-3", cardType.text, "lg:mb-0 lg:mt-0")}
+           style={{ minHeight: '4.5em' }}>
+          {question}
         </p>
         {(isMobile ? isRevealed : hovered) && (
           <p

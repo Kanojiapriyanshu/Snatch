@@ -83,7 +83,11 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const followers = useAnimatedNumber(Number(igData?.followers_count) || 0);
   const posts     = useAnimatedNumber(Number(igData?.media_count) || 0);
 
+
+
   function formatNumber(num) {
+  if (!num) return "0"; // handle undefined/null
+  num = Number(num);    // convert to number
   if (num >= 1_000_000_000) {
     return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, "") + "B";
   }
@@ -575,7 +579,10 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{reach}</motion.span>
+        <motion.span>
+        {useMotionValue(reach)?.current ? formatNumber(reach.get()) : "0"}
+      </motion.span>
+
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">avg reach</p>
     </motion.div>
@@ -584,7 +591,7 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{followers}</motion.span>
+        <motion.span> {useMotionValue(followers)?.current ? formatNumber(followers.get()) : "0"}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">followers</p>
     </motion.div>
@@ -593,7 +600,7 @@ const priceRange = lowest === highest ? (
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{posts}</motion.span>
+        <motion.span>{useMotionValue(posts)?.current ? formatNumber(posts.get()) : "0"}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">posts</p>
     </motion.div>

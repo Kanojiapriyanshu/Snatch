@@ -1,79 +1,47 @@
 import React, { useState, useEffect, useRef } from "react";
+import clsx from "clsx";
 
-export default function DatePicker4({ value, onChange, placeholder }) {
+export default function DatePicker4({
+  value,
+  onChange,
+  placeholder,
+  className,
+  variant,
+  width,
+  format = "dd/mm/yyyy", // supports "mm/yyyy" mode
+}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-
   const datepickerRef = useRef(null);
 
-// 👉 Format date as DD/MM/YYYY
-const formatDate = (dateObj) => {
-  const dd = String(dateObj.getDate()).padStart(2, "0");
-  const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-  const yyyy = dateObj.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-};
+  // 👉 Format date display
+  const formatDate = (dateObj) => {
+    const dd = String(dateObj.getDate()).padStart(2, "0");
+    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const yyyy = dateObj.getFullYear();
+    return format === "mm/yyyy" ? `${mm}/${yyyy}` : `${dd}/${mm}/${yyyy}`;
+  };
 
-const parseDate = (str) => {
-  const [dd, mm, yyyy] = str.split("/");
-  if (!dd || !mm || !yyyy) return null;
-  const date = new Date(`${yyyy}-${mm}-${dd}`);
-  return isNaN(date.getTime()) ? null : date;
-};
-
-
-  const renderCalendar = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const daysArray = [];
-
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      daysArray.push(<div key={`empty-${i}`}></div>);
+  const parseDate = (str) => {
+    const parts = str.split("/");
+    if (format === "mm/yyyy" && parts.length === 2) {
+      const [mm, yyyy] = parts.map(Number);
+      if (!mm || !yyyy) return null;
+      const date = new Date(yyyy, mm - 1, 1);
+      return isNaN(date.getTime()) ? null : date;
     }
-
-    for (let i = 1; i <= daysInMonth; i++) {
-      const day = new Date(year, month, i);
-      const dayString = formatDate(day);
-
-      let className =
-        "flex items-center justify-center cursor-pointer w-[40px] 2xl:w-[35px] h-[46px] rounded-full text-dark-3 hover:bg-primary hover:text-white";
-
-      if (selectedDate && dayString === selectedDate) {
-        className += " bg-primary text-white";
-      }
-
-      daysArray.push(
-        <div
-          key={i}
-          className={className}
-          onClick={() => handleDayClick(day)}
-        >
-          {i}
-        </div>
-      );
-    }
-
-    return daysArray;
+    const [dd, mm, yyyy] = parts.map(Number);
+    if (!dd || !mm || !yyyy) return null;
+    const date = new Date(yyyy, mm - 1, dd);
+    return isNaN(date.getTime()) ? null : date;
   };
 
-  const handleDayClick = (day) => {
-    const formatted = formatDate(day);
-    setSelectedDate(formatted);
-    onChange(formatted); // return formatted DOB
-    setIsOpen(false);
-  };
-
-  const toggleDatepicker = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleDatepicker = () => setIsOpen(!isOpen);
 
   const handleCancel = () => {
     setSelectedDate(null);
-    onChange(""); // clear
+    onChange("");
     setIsOpen(false);
   };
 
@@ -83,148 +51,187 @@ const parseDate = (str) => {
     }
   };
 
-      // 👉 Allow manual typing (DD/MM/YYYY) with auto-slash
   const handleInputChange = (e) => {
-  let typed = e.target.value.replace(/\D/g, ""); // remove non-digits
+    let typed = e.target.value.replace(/\D/g, "");
 
-  // auto-add slashes at positions 2 and 4
-  if (typed.length > 2 && typed.length <= 4) {
-    typed = typed.slice(0, 2) + "/" + typed.slice(2);
-  } else if (typed.length > 4) {
-    typed = typed.slice(0, 2) + "/" + typed.slice(2, 4) + "/" + typed.slice(4, 8);
-  }
-
-  onChange(typed);
-
-  // Try to parse partial or full input
-  const parts = typed.split("/");
-  if (parts.length >= 2) {
-    const dd = parseInt(parts[0], 10);
-    const mm = parseInt(parts[1], 10) - 1; // months are 0-based
-    const yyyy = parts[2] ? parseInt(parts[2], 10) : currentDate.getFullYear();
-
-    // if at least day and month look valid, update calendar month/year
-    if (!isNaN(mm) && mm >= 0 && mm <= 11) {
-      setCurrentDate(new Date(yyyy, mm, dd || 1));
+    if (format === "mm/yyyy") {
+      if (typed.length > 2) typed = typed.slice(0, 2) + "/" + typed.slice(2, 6);
+    } else {
+      if (typed.length > 2 && typed.length <= 4) {
+        typed = typed.slice(0, 2) + "/" + typed.slice(2);
+      } else if (typed.length > 4) {
+        typed =
+          typed.slice(0, 2) +
+          "/" +
+          typed.slice(2, 4) +
+          "/" +
+          typed.slice(4, 8);
+      }
     }
-  }
 
-  // If it's a complete valid date, update selectedDate
-  if (typed.length === 10) {
+    onChange(typed);
     const parsed = parseDate(typed);
     if (parsed) {
       setSelectedDate(formatDate(parsed));
       setCurrentDate(parsed);
     }
-  }
-};
+  };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setIsOpen(false);
+    }
+  };
 
+  const handleDayClick = (day) => {
+    if (format === "mm/yyyy") return;
+    const formatted = formatDate(day);
+    setSelectedDate(formatted);
+    onChange(formatted);
+    setIsOpen(false);
+  };
+
+  // 🧠 Auto-close when both month & year selected
+  const handleMonthChange = (month) => {
+    const newDate = new Date(currentDate.getFullYear(), Number(month));
+    setCurrentDate(newDate);
+    if (format === "mm/yyyy") {
+      const formatted = formatDate(newDate);
+      setSelectedDate(formatted);
+      onChange(formatted);
+      setIsOpen(false);
+    }
+  };
+
+  const handleYearChange = (year) => {
+    const newDate = new Date(Number(year), currentDate.getMonth());
+    setCurrentDate(newDate);
+    if (format === "mm/yyyy") {
+      const formatted = formatDate(newDate);
+      setSelectedDate(formatted);
+      onChange(formatted);
+      setIsOpen(false);
+    }
+  };
 
   useEffect(() => {
     document.addEventListener("click", handleDocumentClick);
-    return () => {
-      document.removeEventListener("click", handleDocumentClick);
-    };
+    return () => document.removeEventListener("click", handleDocumentClick);
   }, []);
 
-  const handleKeyDown = (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault(); // stop form submission
-    setIsOpen(false);   // close calendar
-  }
-};
+  // 🗓️ Calendar grid
+  const renderCalendar = () => {
+    if (format === "mm/yyyy") return null;
 
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysArray = [];
+
+    for (let i = 0; i < firstDayOfMonth; i++) daysArray.push(<div key={`empty-${i}`}></div>);
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      const day = new Date(year, month, i);
+      const dayString = formatDate(day);
+      let classes =
+        "flex items-center justify-center cursor-pointer w-[40px] 2xl:w-[35px] h-[46px] rounded-full text-dark-3 hover:bg-primary hover:text-white";
+      if (selectedDate === dayString) classes += " bg-primary text-white";
+
+      daysArray.push(
+        <div key={i} className={classes} onClick={() => handleDayClick(day)}>
+          {i}
+        </div>
+      );
+    }
+
+    return <div className="grid grid-cols-7 gap-2">{daysArray}</div>;
+  };
 
   return (
-    <section className="bg-white w-1/2 -ml-3">
-      <div className="container">
-        <div className="flex w-[400px]">
-          <div className="w-full px-4">
-            <div className="mb-0">
-              <div className="relative" ref={datepickerRef}>
-                <div className="relative flex items-center">
-                  <span
-                    onClick={toggleDatepicker}
-                    className="absolute left-0 pl-5 text-dark-5 cursor-pointer"
-                  >
-                    {/* calendar icon stays same */}
-                    <svg
-                      className="fill-current"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M17.5 3.3125H15.8125V2.625C15.8125 2.25 15.5 1.90625 15.0937 1.90625C14.6875 1.90625 14.375 2.21875 14.375 2.625V3.28125H5.59375V2.625C5.59375 2.25 5.28125 1.90625 4.875 1.90625C4.46875 1.90625 4.15625 2.21875 4.15625 2.625V3.28125H2.5C1.4375 3.28125 0.53125 4.15625 0.53125 5.25V16.125C0.53125 17.1875 1.40625 18.0937 2.5 18.0937H17.5C18.5625 18.0937 19.4687 17.2187 19.4687 16.125V5.25C19.4687 4.1875 18.5625 3.3125 17.5 3.3125ZM2.5 4.71875H4.1875V5.34375C4.1875 5.71875 4.5 6.0625 4.90625 6.0625C5.3125 6.0625 5.625 5.75 5.625 5.34375V4.71875H14.4687V5.34375C14.4687 5.71875 14.7812 6.0625 15.1875 6.0625C15.5937 6.0625 15.9062 5.75 15.9062 5.34375V4.71875H17.5C17.8125 4.71875 18.0625 4.96875 18.0625 5.28125V7.34375H1.96875V5.28125C1.96875 4.9375 2.1875 4.71875 2.5 4.71875ZM17.5 16.6562H2.5C2.1875 16.6562 1.9375 16.4062 1.9375 16.0937V8.71875H18.0312V16.125C18.0625 16.4375 17.8125 16.6562 17.5 16.6562Z" />
-                    </svg>
-                  </span>
-                  <input
-                    type="text"
-                    className="w-[320px] 2xl:w-full pl-[55px] pr-4 py-2.5 border rounded focus:outline-none"
-                    placeholder={placeholder || "DD/MM/YYYY"}
-                    value={value}
-                    onChange={handleInputChange}
-                    onClick={toggleDatepicker}
-                    onKeyDown={handleKeyDown}
-                  />
-                </div>
-
-                {isOpen && (
-                  <div className="absolute top-[100%] mt-2 px-8 py-2 bg-white border rounded shadow-md z-20 w-56 2xl:w-full">
-                    <div className="flex items-center justify-between mb-4">
-                      <select
-                        value={currentDate.getFullYear()}
-                        onChange={(e) =>
-                          setCurrentDate(
-                            new Date(e.target.value, currentDate.getMonth())
-                          )
-                        }
-                        className="w-20 2xl:w-36 px-2 2xl:px-4 py-2 border rounded"
-                      >
-                        {Array.from({ length: 2012 - 1926 + 1 }, (_, i) => 2012 - i).map(
-                          (year) => (
-                            <option key={year} value={year}>
-                              {year}
-                            </option>
-                          )
-                        )}
-                      </select>
-
-                      <select
-                        value={currentDate.getMonth()}
-                        onChange={(e) =>
-                          setCurrentDate(
-                            new Date(currentDate.getFullYear(), e.target.value)
-                          )
-                        }
-                        className="w-20 2xl:w-36 px-2 2xl:px-4 py-2 border rounded"
-                      >
-                        {Array.from({ length: 12 }, (_, i) => (
-                          <option key={i} value={i}>
-                            {new Date(0, i).toLocaleString("en-US", {
-                              month: "long",
-                            })}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="grid grid-cols-7 gap-2">{renderCalendar()}</div>
-                    <div className="mt-4 flex justify-between">
-                      <button
-                        className="px-4 py-2 bg-gray-300 text-dark-3 rounded"
-                        onClick={handleCancel}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+    <section
+      className={clsx(
+        "relative rounded",
+        variant === "white" ? "bg-white" : "bg-transparent",
+        width === "full" ? "w-full" : "w-1/2",
+        className
+      )}
+    >
+      <div className="relative" ref={datepickerRef}>
+        <div className="relative flex items-center">
+          <span onClick={toggleDatepicker} className="absolute left-0 pl-5 text-dark-5 cursor-pointer">
+            <svg
+              className="fill-current"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M17.5 3.3125H15.8125V2.625C15.8125 2.25 15.5 1.90625 15.0937 1.90625C14.6875 1.90625 14.375 2.21875 14.375 2.625V3.28125H5.59375V2.625C5.59375 2.25 5.28125 1.90625 4.875 1.90625C4.46875 1.90625 4.15625 2.21875 4.15625 2.625V3.28125H2.5C1.4375 3.28125 0.53125 4.15625 0.53125 5.25V16.125C0.53125 17.1875 1.40625 18.0937 2.5 18.0937H17.5C18.5625 18.0937 19.4687 17.2187 19.4687 16.125V5.25C19.4687 4.1875 18.5625 3.3125 17.5 3.3125ZM17.5 16.6562H2.5C2.1875 16.6562 1.9375 16.4062 1.9375 16.0937V8.71875H18.0312V16.125C18.0625 16.4375 17.8125 16.6562 17.5 16.6562Z" />
+            </svg>
+          </span>
+          <input
+            type="text"
+            className={clsx(
+              "w-full pl-[55px] pr-4 py-2.5 border rounded focus:outline-none border-gray-300",
+              variant === "white" ? "bg-white" : "bg-transparent"
+            )}
+            placeholder={placeholder || (format === "mm/yyyy" ? "MM/YYYY" : "DD/MM/YYYY")}
+            value={value}
+            onChange={handleInputChange}
+            onClick={toggleDatepicker}
+            onKeyDown={handleKeyDown}
+          />
         </div>
+
+        {isOpen && (
+          <div
+            className={clsx(
+              "absolute top-[100%] mt-2 px-8 py-2 border rounded shadow-md z-20 w-56 2xl:w-full",
+              variant === "white" ? "bg-white" : "bg-white"
+            )}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <select
+                value={currentDate.getFullYear()}
+                onChange={(e) => handleYearChange(e.target.value)}
+                className="w-20 2xl:w-36 px-2 2xl:px-4 py-2 border rounded"
+              >
+                {Array.from({ length: 2012 - 1926 + 1 }, (_, i) => 2012 - i).map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={currentDate.getMonth()}
+                onChange={(e) => handleMonthChange(e.target.value)}
+                className="w-20 2xl:w-36 px-2 2xl:px-4 py-2 border rounded"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i} value={i}>
+                    {new Date(0, i).toLocaleString("en-US", { month: "long" })}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {format !== "mm/yyyy" && renderCalendar()}
+
+            {format !== "mm/yyyy" && (
+              <div className="mt-4 flex justify-between">
+                <button
+                  className="px-4 py-2 bg-gray-300 text-dark-3 rounded"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -25,10 +25,7 @@ const PortfolioPublic = () => {
   // Extract username
   const pathnameParts = pathname.split("/");
   const username = pathnameParts[1] || "";
-
-  console.log("pathname: test: ", pathname);
-  console.log("isAdminView: test: ", pathname.includes("/adminview"));
-
+  
   // Listen for route changes to stop loading when navigation is complete
 // Refresh media once when username is available
 //   useEffect(() => {

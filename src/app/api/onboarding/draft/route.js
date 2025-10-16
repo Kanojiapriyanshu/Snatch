@@ -36,7 +36,6 @@ export async function POST(req) {
     const { userId } = getAuth(req);
 
     const { _id, ...updateData } = await req.json(); // exclude _id
-    //console.log("updateData", updateData); // log the updateData
 
     //also nned to update user model for igusername = username edit it on furether edits by user as well
     const draft = await OnboardingData.findOneAndUpdate(
@@ -44,7 +43,6 @@ export async function POST(req) {
       { ...updateData },
       { upsert: true, new: true }
     );
-
 
     return NextResponse.json({ 
       success: true, 

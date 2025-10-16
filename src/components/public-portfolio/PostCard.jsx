@@ -114,6 +114,9 @@ export default function PostCard({ post, postId, username, allPosts }) {
   const companyLocation = post.post?.companyLocation;
   const companyLogo = post.post?.companyLogo;
   const eventTypes = post.post?.eventTypes || [];
+  const eventYear =  post?.post?.eventYear || "";
+  const eventName = post?.post?.eventName || "";
+
 
   const hasCompanyInfo =
     companyName &&
@@ -325,18 +328,32 @@ export default function PostCard({ post, postId, username, allPosts }) {
                               )}
                             </p>
                           )}
+                        <div className="flex">
+                        {eventYear && (
+                          <span className="px-1 -ml-2 text-sm text-graphite">{eventYear}{" "}<span className="text-gray-500">•</span></span>
+                        )}
+                        <div className="flex gap-2">
+                             {/* Event name */}
+                        {eventName && (
+                          <p>
+                            <span>{eventName}</span>
+                          </p>
+                        )}
 
-                          <div className="flex gap-2">
-                            {post.post.eventTypes?.length > 0 && (
-                              <p className="">
-                                {post.post.eventTypes.map((eventType, index) => (
-                                  <span key={index} className="px-1 -ml-2 text-sm">
-                                    {index > 0 ? " | " : " • "}{eventType}
-                                  </span>
-                                ))}
-                              </p>
-                            )}
+                        {/* Event types */}
+                        {eventTypes?.length > 0 && (
+                          <p>
+                            {eventTypes.map((eventType, index) => (
+                              <span key={index} className="px-1 -ml-2 text-sm">
+                                {index > 0 ? " | " : " • "}
+                                {eventType}
+                              </span>
+                            ))}
+                          </p>
+                        )}
                           </div>
+                     
+                      </div>
                         </div>
                       )}
                     </div>
@@ -616,15 +633,32 @@ export default function PostCard({ post, postId, username, allPosts }) {
                   <p>
                     <span className="text-graphite font-medium">{companyName || 'Name of company'}</span> {companyLocation && `• ${companyLocation}`}
                   </p>
-                  {eventTypes.length > 0 && (
-                    <p>
-                      {eventTypes.map((type, index) => (
-                        <span key={index} className="px-1 text-sm">
-                          {index > 0 ? " | " : " • "}{type}
-                        </span>
-                      ))}
-                    </p>
-                  )}
+                   <div className="flex">
+                        {eventYear && (
+                          <span className="px-1 -ml-2 text-sm text-graphite">{eventYear}{" "}<span className="text-gray-500">•</span></span>
+                        )}
+                        <div className="flex gap-2">
+                             {/* Event name */}
+                        {eventName && (
+                          <p>
+                            <span>{eventName}</span>
+                          </p>
+                        )}
+
+                        {/* Event types */}
+                        {eventTypes?.length > 0 && (
+                          <p>
+                            {eventTypes.map((eventType, index) => (
+                              <span key={index} className="px-1 -ml-2 text-sm">
+                                {index > 0 ? " | " : " • "}
+                                {eventType}
+                              </span>
+                            ))}
+                          </p>
+                        )}
+                          </div>
+                     
+                      </div>
                 </div>
               </div>
             </div>

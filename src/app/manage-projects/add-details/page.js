@@ -8,16 +8,16 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { industryList, eventTypes } from "@/data/portfolio/industry";
 import { fetchMediaInsights } from "@/utils/fetchMediaInsights";
-import SvgComponent from "@/components/svg/Instagramsvg";
-import Uploadsvg from "@/components/svg/Uploadsvg";
 import {generateFormDataFromUserInput} from "@/utils/generateFormDataFromUserInput";
 import { cleanAIResponse } from "@/utils/aiResponseClear";
-import ProjectsGrid from "@/components/ProjectsGrid";
 import MultiSelectInput from "@/components/MultiSelectInput";
-import NormalMultiSelect from "@/components/NormalMultiSelect";
+import InfoNormalMultiSelect from "@/components/InfoNormalMultiSelect";
 import ProjectCustomFileInput from "@/components/ProjectCustomFileInput";
-
-
+import DateInput from "@/components/DateInput";
+import BottomToolbar from "./bottomToolbar";
+import ProjectSidebar from "./projectSidebar";
+import ProjectMediaDisplay from "./projectMediaDisplay";
+import BrandPopup from "./brandPopup";
 // Component that uses useSearchParams wrapped in Suspense
 function SearchParamsProvider({ setActiveTab, setActiveImageId }) {
   const searchParams = useSearchParams();
@@ -98,7 +98,7 @@ const checkOrientation = (width, height) => {
 
   
   if (isBrandCollaboration) {
-    requiredFields.push("companyName", "companyLocation");
+    requiredFields.push("companyName", "companyLocation", "eventName", "eventYear"); //type of location campaign, date of campaign Mandatroy
   }
 
   useEffect(() => {
@@ -108,7 +108,7 @@ const checkOrientation = (width, height) => {
   const isProjectFilled = (formData) => {
   if (!formData) return false;
   const baseFields = ["titleName", "description", "industries"];
-  const companyFields = ["companyName", "companyLocation"];
+  const companyFields = ["companyName", "companyLocation", "eventName", "eventYear"];
   const fieldsToCheck = [...baseFields];
   if (formData.isBrandCollaboration) fieldsToCheck.push(...companyFields);
   return fieldsToCheck.every((field) => {
@@ -155,7 +155,6 @@ useEffect(() => {
   if (!activeImageId && projects?.length > 0) {
     const firstProjectId = projects[0].mediaId;
     setActiveImageId(firstProjectId);
-    console.log("Setting initial activeImageId:", firstProjectId);
   }
 }, [projects, activeImageId]);
 
@@ -163,8 +162,6 @@ useEffect(() => {
 useEffect(() => {
   if (!activeImageId) return;
 
-  console.log("Loading form data for mediaId:", activeImageId);
-  
   const formDataArray = Array.isArray(selectionState?.formData)
     ? selectionState.formData
     : [];
@@ -201,7 +198,6 @@ useEffect(() => {
         isBrandCollaboration: savedBrandCollabState,
         
     });
-    console.log("Loaded existing form data:", existingFormData);
   } else {
     // Initialize with empty values if no existing data
     setCurrentFormData({
@@ -390,12 +386,12 @@ const handleToggle = () => {
         companyLocation: currentFormData.companyLocation || "",
         eventName: currentFormData.eventName || "",
         eventTypes: currentFormData.eventTypes || [],
+        eventYear: currentFormData.eventYear || "",
       } : {})
     };
 
     // Force string conversion for mediaId and ensure it's passed correctly
     const mediaIdString = activeImageId.toString();
-    console.log("Updating form data for mediaId:", mediaIdString, updatedEntry);
     
     // Call updateFormDataForMedia with string ID
     updateFormDataForMedia(mediaIdString, updatedEntry);
@@ -453,7 +449,6 @@ const handleToggle = () => {
   const areRequiredFieldsFilled = fieldsToCheck.every((field) => {
     const value = formData[field];
     const isValid = value && (Array.isArray(value) ? value.length > 0 : value.trim() !== "");
-    console.log(`Field ${field}: ${isValid ? 'valid' : 'invalid'} - Value:`, value);
     return isValid;
   });
 
@@ -507,6 +502,21 @@ const computedProjects = projects.map(project => ({
   status: getProjectStatus(project),
 }));
 
+const handleDateChange = (dateStr, mediaId) => {
+  // Create the updated form data
+  const updatedData = {
+    ...currentFormData,
+    eventYear: dateStr,
+    key: mediaId.toString() // Ensure mediaId is string
+  };
+
+  // Update local state
+  setCurrentFormData(updatedData);
+
+  // Send to backend via context
+  updateFormDataForMedia(mediaId.toString(), updatedData);
+};
+
 
 const handlePrevious = () => {
   const currentIndex = projects.findIndex(project => project.mediaId === activeImageId);
@@ -529,23 +539,6 @@ const handleNext = () => {
   const handleHamburgerClick = () => {
     setIsMenuVisible((prev) => !prev); // Toggle menu visibility
   };
-
-
-  const handleProfileClick = () => {
-    router.push("/profile");
-  };
-
-  const handleNextClick = () => {
-    router.push("/dashboard");
-  };
-
-  const handleDashboardClick = () => {
-    router.push("/dashboard");
-  }
-
-  const handleSettingClick = () => {
-   router.push("/settings")
-  }
 
 const handleBrandPopupChoice = (isBrand) => {
   setIsBrandCollaboration(isBrand);
@@ -624,56 +617,56 @@ const handlePopupGenerate = async () => {
         <SearchParamsProvider setActiveTab={setActiveTab} setActiveImageId={setActiveImageId} />
       </Suspense>
       <div className="relative w-full h-full flex flex-col items-center top-3 justify-center">
-    {showSuccessPopup && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-    <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
-      
-      {/* Close Icon */}
-      <button
-        className="absolute top-4 right-4 text-gray-500 hover:text-black"
-        onClick={() => setShowSuccessPopup(false)}
-        aria-label="Close"
-      >
-         <Image
-        src="/assets/icons/cross-mark.svg"
-        alt="Go to Portfolio"
-        width={28}
-        height={28}
-        className="w-7 h-7 object-contain"
-      />
-      </button>
-
-      {/* Title */}
-      <h2 className="text-xl text-graphite mb-4 text-left text-[#108B4A] font-qimano">You’re Good to Go!</h2>
-
-      <hr className="border-gray-200 mb-4" />
-
-      {/* Message */}
-      <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
-       Nice work! You’ve completed the required project details. Any unfinished ones have been saved as drafts and won’t appear in your portfolio (yet!).
-      </p>
-
-      {/* Buttons */}
-      <div className="flex flex-col sm:flex-row justify-center gap-4 font-apfel-grotezk-regular">
+      {showSuccessPopup && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+      <div className="relative bg-white rounded-xl p-6 sm:p-8 max-w-xl w-full text-center">
+        
+        {/* Close Icon */}
         <button
+          className="absolute top-4 right-4 text-gray-500 hover:text-black"
           onClick={() => setShowSuccessPopup(false)}
-          className="border border-electric-blue text-electric-blue px-6 py-2 rounded-xl hover:bg-blue-50 transition"
+          aria-label="Close"
         >
-          Keep Editing
+          <Image
+          src="/assets/icons/cross-mark.svg"
+          alt="Go to Portfolio"
+          width={28}
+          height={28}
+          className="w-7 h-7 object-contain"
+        />
         </button>
-        <button
-          onClick={() => {
-            setShowSuccessPopup(false);
-            router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
-          }}
-          className="bg-electric-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
-        >
-          Save and Continue
-        </button>
+
+        {/* Title */}
+        <h2 className="text-xl text-graphite mb-4 text-left text-[#108B4A] font-qimano">You’re Good to Go!</h2>
+
+        <hr className="border-gray-200 mb-4" />
+
+        {/* Message */}
+        <p className="text-base text-black font-sans mb-6 text-left font-apfel-grotezk-regular">
+        Nice work! You’ve completed the required project details. Any unfinished ones have been saved as drafts and won’t appear in your portfolio (yet!).
+        </p>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 font-apfel-grotezk-regular">
+          <button
+            onClick={() => setShowSuccessPopup(false)}
+            className="border border-electric-blue text-electric-blue px-6 py-2 rounded-xl hover:bg-blue-50 transition"
+          >
+            Keep Editing
+          </button>
+          <button
+            onClick={() => {
+              setShowSuccessPopup(false);
+              router.push(`/manage-projects/preview/?activeImageId=${activeImageId}&tab=${activeTab}`);
+            }}
+            className="bg-electric-blue text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition"
+          >
+            Save and Continue
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-)}
+      )}
 
       {showMinProjectsPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -722,239 +715,24 @@ const handlePopupGenerate = async () => {
         </div>
       )}
 
-      {(showBrandPopup || popupAnimating) && (
-        <>
-          {/* Backdrop */}
-          <div
-            className={`fixed top-0 left-[35vw] h-full w-[65vw] z-40 bg-black/10 backdrop-blur-sm transition-opacity duration-500 ${showBrandPopup ? 'opacity-70 pointer-events-auto' : 'opacity-70 pointer-events-none'}`}
-          />
-          {/* Sliding Popup */}
-          <div
-              className="fixed top-0 left-0 z-50 h-full"
-              style={{
-                width: '38vw',
-                minWidth: 320,
-                maxWidth: 800,
-                pointerEvents: 'auto',
-                transform: showBrandPopup ? 'translateX(0)' : 'translateX(-100%)',
-                // transition: 'transform 0.6s ease-in-out',
-                transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)',
-              }}
-            
-          >
-            <div
-              className={`h-full w-full bg-white shadow-lg rounded-r-3xl flex flex-col items-center`}
-              style={{
-                borderTopRightRadius: 32,
-                borderBottomRightRadius: 32,
-                boxShadow: '2px 0 24px rgba(0,0,0,0.08)',
-              }}
-            >
-              <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
-                {popupStep === 1 ? (
-               <>
-                {/* Logo */}
-                <div className="flex justify-center mb-6">
-                  <Image
-                    src="/assets/images/aiLogo.svg"
-                    className="w-28 h-10"
-                    width={10}
-                    height={10}
-                    alt="AI Logo"
-                  />
-                </div>
+      <BrandPopup
+      showBrandPopup={showBrandPopup}
+      popupAnimating={popupAnimating}
+      popupStep={popupStep}
+      activeCaption={activeCaption}
+      activeMediaLink={activeMediaLink}
+      isBrandCollaboration={isBrandCollaboration}
+      popupUserInput={popupUserInput}
+      popupGenerating={popupGenerating}
+      setShowBrandPopup={setShowBrandPopup}
+      setPopupAnimating={setPopupAnimating}
+      setPopupStep={setPopupStep}
+      setPopupUserInput={setPopupUserInput}
+      handleBrandPopupChoice={handleBrandPopupChoice}
+      handlePromptChange={handlePromptChange}
+      handlePopupGenerate={handlePopupGenerate}
+    />
 
-                {/* Question Heading */}
-                <h2 className="text-2xl text-center text-graphite font-qimano mb-6 leading-snug">
-                  Was this in collaboration with a brand or something you shared independently?
-                </h2>
-
-                {/* Image + Caption Card */}
-                {activeCaption && (
-                  <div className="mb-8 p-3 bg-gray-100 rounded-lg w-full flex items-start gap-3 text-dark-grey text-sm">
-                  {activeMediaLink && (
-                 <div className="relative w-[32px] h-[48px] rounded-md overflow-hidden flex-shrink-0">
-                  {/(\.mp4|\.webm|\.ogg)(\?|$)/i.test(activeMediaLink) ? (
-                    <video
-                      src={activeMediaLink}
-                      playsInline
-                      muted
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Image
-                      src={activeMediaLink}
-                      alt="Project media"
-                      fill
-                      className="object-cover"
-                    />
-                  )}
-                </div>
-
-                  )}
-
-                    <span className="font-apfel-grotezk-regular">
-                      {activeCaption.length > 150
-                        ? activeCaption.slice(0, 150) + "..."
-                        : activeCaption}
-                    </span>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                  <button
-                    className="w-full sm:w-auto px-6 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
-                    onClick={() => handleBrandPopupChoice(true)}
-                  >
-                    It is a brand post
-                  </button>
-                  <button
-                    className="w-full sm:w-auto px-6 py-2 rounded-lg border border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white transition"
-                    onClick={() => handleBrandPopupChoice(false)}
-                  >
-                    It is a personal post
-                  </button>
-                </div>
-              </>
-                ) : (
-                  <>
-                {/* Go Back Button */}
-                <button
-                  className="absolute top-6 left-6 flex items-center text-electric-blue text-base font-apfel-grotezk-regular"
-                  onClick={() => setPopupStep(1)}
-                >
-                  <span className="mr-2">←</span> Go Back
-                </button>
-
-                {/* Logo */}
-                <div className="flex items-center mr-10" >
-                <Image
-                  src="/assets/images/aiLogo.svg"
-                  className="w-14 h-7"
-                  width={10}
-                  height={10}
-                  alt="AI Logo"
-                />
-
-                {/* Heading */}
-                <h2 className="text-[22px] font-qimano text-electric-blue mb-6 mt-7 text-center">
-                  Tell us about the post, we&rsquo;ll do the rest!
-                </h2>
-                </div>
-                {/* Image + Caption Card */}
-                {activeCaption && (
-                  <div className="w-full">
-                    <div className="mb-4 p-3 bg-gray-100 rounded-lg w-full flex gap-3 text-dark-grey text-sm">
-                    {activeMediaLink && (
-                  <div className="relative w-[32px] h-[48px] rounded-md overflow-hidden flex-shrink-0">
-                  {/(\.mp4|\.webm|\.ogg)(\?|$)/i.test(activeMediaLink) ? (
-                    <video
-                      src={activeMediaLink}
-                      playsInline
-                      muted
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Image
-                      src={activeMediaLink}
-                      alt="Project media"
-                      fill
-                      className="object-cover"
-                    />
-                  )}
-                </div>
-
-                  )}
-                      <span className=" font-apfel-grotezk-regular">
-                        {activeCaption.length > 150
-                          ? activeCaption.slice(0, 150) + "..."
-                          : activeCaption}
-                      </span>
-                    </div>
-
-                    {/* Checkbox */}
-                    <label className="flex items-center gap-2 text-graphite text-sm mb-1 font-apfel-grotezk-regular">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 text-dark-grey "
-                        checked={popupUserInput === activeCaption}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setPopupUserInput(activeCaption);
-                          } else {
-                            setPopupUserInput("");
-                          }
-                        }}
-                      />
-                      Use the caption as your prompt
-                    </label>
-                  </div>
-                )}
-
-                {/* Textarea with dynamic placeholder */}
-                <div className="relative w-full">
-                <textarea
-                  className="mt-5 w-full text-graphite font-apfel-grotezk-regular text-[16px] tracking-normal leading-[120%] p-4 border border-gray-300 rounded-lg min-h-[200px] mb-4 focus:outline-none focus:border-blue-600 placeholder:text-dark-grey"
-                  value={popupUserInput}
-                  // onChange={(e) => setPopupUserInput(e.target.value)}
-                  onChange={(e) => handlePromptChange(e.target.value)}
-                />
-                {/* Custom Placeholder Overlay */}
-                {!popupUserInput && (
-                  <div className="absolute top-8 left-4 right-4 text-dark-grey whitespace-pre-line pointer-events-none font-apfel-grotezk-regular text-[16px] tracking-normal ">
-                    {isBrandCollaboration ? (
-                      <>
-                        <p className="mb-1">Share the key details of this collaboration:</p>
-                        <ul className="list-disc list-inside -mt-1">
-                          <li>The brand name</li>
-                          <li>Where it took place</li>
-                          <li>What the event or campaign was about</li>
-                          <li>How you added your magic to it</li>
-                        </ul>
-                      </>
-                    ) : (
-                      <p>
-                        Tell us what this post is about. What inspired you to make it, and why
-                        do you think it matters to your audience?
-                      </p>
-                    )}
-                  </div>
-                )}
-                </div>
-                {/* Buttons */}
-                <div className="flex gap-1 flex-nowrap">
-                  <button
-                    className={`2xl:px-8 px-6 py-2 rounded-lg border-[1.5px] bg-white border-electric-blue text-electric-blue hover:bg-electric-blue hover:text-white text-sm font-apfel-grotezk-regular transition whitespace-nowrap flex-shrink-0`}
-                    onClick={() => {
-                      setShowBrandPopup(false);
-                      setPopupAnimating(true);
-                      setTimeout(() => setPopupAnimating(false), 500);
-                    }}
-                    disabled={popupGenerating}
-                  >
-                    Skip AI & enter manually
-                  </button>
-                  <button
-                    className={`2xl:px-8 px-6 py-2 rounded-lg ${
-                      popupGenerating || !popupUserInput.trim()
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
-                    } min-w-[240px] text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
-                    onClick={handlePopupGenerate}
-                    disabled={popupGenerating || !popupUserInput.trim()}
-                  >
-                    {popupGenerating ? "Generating..." : "Generate my project details"}
-                  </button>
-                </div>
-              </>
-
-                )}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
 
        <div className="absolute left-1/2 top-1/2 transform -translate-y-1/2 w-full -translate-x-1/2 flex flex-col items-center mx-auto justify-center text-center mt-3  mb-10 "> 
          <p className="text-2xl text-black font-qimano">
@@ -971,230 +749,28 @@ const handlePopupGenerate = async () => {
      <div className="flex justify-center 7xl:min-w-[93%] mx-auto mt-10">
 
      <div className="flex flex-row font-apfel-grotezk-regular mt-8">
-        <div className="w-[278px] bg-white text-black p-3 rounded-lg">
-          <div className="flex justify-between items-center border-b w-[260px]  border-light-grey">
-            <button
-              className={`relative px-4 py-2 text-lg font-medium ${
-                activeTab === "instagram" ? "text-electric-blue" : "text-light-grey"
-              }`}
-              onClick={() => setActiveTab("instagram")}
-            >
-              <div className="flex justify-center items-center ml-4 font-apfel-grotezk-regular">
-             <SvgComponent
-              style={{
-                color: activeTab === "instagram" ? "blue" : "",
-              }}
-            />
-              IG
-              </div>
-              
-              {activeTab === "instagram" && (
-                <span className="absolute bottom-[-1px] left-0 w-32 h-[2px] bg-electric-blue"></span>
-              )}
-            </button>
-            <button
-              className={`relative px-4 py-2 text-lg font-medium ${
-                activeTab === "uploaded" ? "text-electric-blue" : "text-light-grey"
-              }`}
-              onClick={() => setActiveTab("uploaded")}
-            >
-             <div className="flex justify-center items-center font-apfel-grotezk-regular">
-             <Uploadsvg
-            style={{
-              color: activeTab === "upload" ? "blue" : "", height: "35px"
-            }}
-          />  
-              Uploaded
-              </div>
-              {activeTab === "uploaded" && (
-                <span className="absolute bottom-[-1px] left-0 w-full h-[2px] bg-electric-blue"></span>
-              )}
-            </button>
-          </div>
-
-          <div className="mt-4 h-full  " style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} >
-            <p className="text-md">Fill details for at least 4 projects</p>
-            <p className="text-light-grey text-sm">
-              {activeTab === "instagram"
-                ? selectionState.instagramSelected.length
-                : selectionState.uploadedFiles.length}{" "}
-            </p>
-            <ProjectsGrid
-              projects={computedProjects}
-              activeTab={activeTab}
-              onProjectClick={handleProjectClick}
-              showStatus={true}
-            />
-          </div>
-        </div>
-
-       
-  <div className=" flex ">
+      <ProjectSidebar
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      selectionState={selectionState}
+      computedProjects={computedProjects}
+      handleProjectClick={handleProjectClick}
+    />
+          
+      <div className="flex">
     
-<div className="w-[258px] ml-16 mt-0 relative  ">
-
-{/* Media and Insights Container */}
-<div className="3xl:w-[250px] w-[80%] h-auto overflow-hidden rounded-lg  flex items-center">
-  <div className="w-full rounded-lg overflow-hidden">
-    {/* Media Display */}
-    {(activeImageId !== null || projects.length > 0) && (() => {
-      if (!activeProject) {
-        return (
-          <p className="text-graphite flex justify-center items-center h-full">
-            No project selected
-          </p>
-        );
-      }
-
-      if (activeProject.name === "IMAGE") {
-        return (
-          <Image
-            src={activeProject.mediaLink}
-            alt={activeProject.name}
-            width={1080}
-            height={1080}
-            className={`w-full ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
-            onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-              setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-            }}
-          />
-        );
-      }
-
-      if (activeProject.name === "VIDEO") {
-        return (
-          <video
-            src={activeProject.mediaLink}
-            controls
-            disablePictureInPicture
-            controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-            className={`w-full  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
-            onLoadedMetadata={(e) => {
-              setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
-            }}
-          />
-        );
-      }
-
-      if (activeProject.name === "CAROUSEL_ALBUM") {
-        return (
-          <div className="relative w-full aspect-[4/6]"> {/* Set container ratio */}
-            {activeProject.children.map((child, index) => (
-              <div
-                key={child.id}
-                className={`absolute inset-0 transition-opacity duration-500 ${
-                  (carouselIndexes[activeProject.mediaId] || 0) === index
-                    ? "opacity-100 z-0"
-                    : "opacity-0 z-0"
-                }`}
-              >
-                {child.media_type === "IMAGE" ? (
-                  <Image
-                    src={child.media_url}
-                    alt={`Media ${child.id}`}
-                    fill
-                    className="object-cover rounded-lg"
-                    onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                      setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-                    }}
-                  />
-                ) : (
-                  <video
-                    src={child.media_url}
-                    controls
-                    disablePictureInPicture
-                    controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-                    className="w-full h-full object-cover rounded-lg"
-                    onLoadedMetadata={(e) => {
-                      setIsPortrait(
-                        checkOrientation(
-                          e.target.videoWidth,
-                          e.target.videoHeight
-                        )
-                      );
-                    }}
-                  />
-                )}
-
-                {activeProject.children.length > 1 && (
-                  <>
-                    <button
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
-                      onClick={() =>
-                        handleSlide(
-                          activeProject.mediaId,
-                          "prev",
-                          activeProject.children.length
-                        )
-                      }
-                    >
-                      ❮
-                    </button>
-                    <button
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
-                      onClick={() =>
-                        handleSlide(
-                          activeProject.mediaId,
-                          "next",
-                          activeProject.children.length
-                        )
-                      }
-                    >
-                      ❯
-                    </button>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        );
-      }
-
-      if (activeProject.fileUrl) {
-        return (
-          <div className=" w-full rounded-lg overflow-hidden">
-            {activeProject.fileUrl.match(/\.(jpeg|jpg|gif|png)$/) ? (
-              <Image
-                src={activeProject.fileUrl}
-                alt={activeProject.fileName}
-                width={1080}
-                height={1080}
-                className={` w-full  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover`}
-                onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                  setIsPortrait(checkOrientation(naturalWidth, naturalHeight));
-                }}
-              />
-            ) : (
-              <video
-                src={activeProject.fileUrl}
-                controls
-                className={`  w-full  ${isPortrait ? 'aspect-[4/6]' : 'h-auto'} object-cover rounded-lg`}
-                onLoadedMetadata={(e) => {
-                  setIsPortrait(checkOrientation(e.target.videoWidth, e.target.videoHeight));
-                }}
-              />
-            )}
-          </div>
-        );
-      }
-
-      return null;
-    })()}
-  </div>
-</div>
-
- {/* Insights Section - Only for Instagram content */}
-{activeTab === "instagram" && insights && insights.length > 0 && (
-  <div className="bg-white rounded-lg mt-2 p-4 flex gap-4 justify-center text-black">
-    {insights.map((item) => (
-      <div key={item.name} className="flex-col text-center">
-        <p className="text-[19px]">{item.values[0]?.value || 0}</p>
-        <p className="text-[12px] text-gray-500">{item.title}</p>
-      </div>
-    ))}
-  </div>
-)}
-</div>
+        <ProjectMediaDisplay
+          activeTab={activeTab}
+          activeProject={activeProject}
+          activeImageId={activeImageId}
+          projects={projects}
+          insights={insights}
+          isPortrait={isPortrait}
+          setIsPortrait={setIsPortrait}
+          carouselIndexes={carouselIndexes}
+          handleSlide={handleSlide}
+          checkOrientation={checkOrientation}
+        />
 
         <div className="-ml-8 3xl:ml-20 mt-0 flex flex-col gap-8 overflow-y-scroll overflow-x-hidden h-[70vh]  7xl:h-[80vh] 9xl:h-[80vh]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <div className="flex items-center justify-between ">
@@ -1244,11 +820,11 @@ const handlePopupGenerate = async () => {
   </span>
   <span className="text-xl transition-transform duration-200 group-hover:translate-x-1">→</span>
 </button>
-
-<div className="border-b  border-light-grey"></div>
+   
+         <div className="border-b  border-light-grey"></div>
 
           <MultiSelectInput
-            label="Choose Industry (Max 5)"
+            label="Choose Industry* (Max 3)"
             data={industryList}
             selectedValues={
               currentFormData?.industries?.length > 0
@@ -1262,7 +838,7 @@ const handlePopupGenerate = async () => {
           />
 
           <TitleWithCounter
-            label={"Give it a title"}
+            label={"Give it a title*"}
             name="titleName"
             value={currentFormData?.titleName || selectionState?.formData[activeProject?.mediaId]?.titleName || ""}
             onChange={(e) => handleInputChange(e, activeImageId)}
@@ -1272,7 +848,7 @@ const handlePopupGenerate = async () => {
 
           <TitleWithCounter
             name="description"
-            label={"Add description"}
+            label={"Add description* "}
             value={currentFormData?.description || selectionState?.formData[activeProject?.mediaId]?.description || ""}
             onChange={(e) => handleInputChange(e, activeImageId)}
             consideration={currentFormData.considerations?.description}
@@ -1283,36 +859,23 @@ const handlePopupGenerate = async () => {
             <>
               <div className="text-black flex flex-col gap-5">
                 <div className="flex flex-row gap-2">
-                <p className=" text-md whitespace-nowrap">About Company</p>
+                <p className=" text-md whitespace-nowrap">About brand / company</p>
                 <div className="border-b  border-light-grey w-full mb-3"></div>
                 </div>
                 <FormInput
-                  placeholder="Enter name of company"
+                  placeholder="Name of the brand / company*"
                   name="companyName"
                   value={currentFormData?.companyName || selectionState?.formData[activeProject?.mediaId]?.companyName || ""}
                   onChange={(e) => handleInputChange(e, activeImageId)}
                   consideration={currentFormData.considerations?.companyName}
                   considerationType={currentFormData.considerations?.companyName_type}
                 />
-                <FormInput
-                  placeholder="Enter location of company"
-                  name="companyLocation"
-                  value={currentFormData?.companyLocation || selectionState?.formData[activeProject?.mediaId]?.companyLocation || ""}
-                  onChange={(e) => handleInputChange(e, activeImageId)}
-                  consideration={currentFormData.considerations?.companyLocation}
-                  considerationType={currentFormData.considerations?.companyLocation_type}
-                />
               </div>
 
               <div className="text-black flex flex-col gap-5">
-              <div className="flex flex-row gap-2">
-                <p className=" text-md whitespace-nowrap">Upload logo of the Company</p>
-                <div className="border-b  border-light-grey w-full mb-3"></div>
-                </div>
-
               <ProjectCustomFileInput
                 onFileChange={(uploadedUrl) => console.log("Uploaded URL:", uploadedUrl)}
-                placeholder="Upload a company logo from your device"
+                placeholder="Upload brand / company logo"
                 iconSrc="/assets/icons/onboarding/Upload.svg"
                 activeImageId={activeImageId} 
               />
@@ -1321,165 +884,78 @@ const handlePopupGenerate = async () => {
               <div className="text-black flex flex-col gap-5">
 
               <div className="flex flex-row gap-2">
-                <p className=" text-md whitespace-nowrap">About the Event</p>
+                <p className=" text-md whitespace-nowrap">About campaign / collaboration</p>
                 <div className="border-b  border-light-grey w-full mb-3"></div>
                 </div>
-                <FormInput
-                  placeholder="Name of the event"
+                
+                <InfoNormalMultiSelect
+                label="Type of campaign / collaboration (Select at least 1)"
+                options={eventTypes}
+                selectedValues={
+                currentFormData?.eventTypes?.length > 0
+                  ? currentFormData?.eventTypes
+                  : (selectionState?.formData[activeProject?.mediaId]?.eventTypes?.length > 0
+                    ? selectionState?.formData[activeProject?.mediaId].eventTypes
+                    : [])
+                  }
+                  onAddValue={(value) => handleAddValue("eventTypes", value, activeImageId)}
+                  onRemoveValue={(value) => handleRemoveValue("eventTypes", value, activeImageId)}
+                />
+                
+                 <FormInput
+                  placeholder="Name of the campaign"
                   name="eventName"
                   value={currentFormData?.eventName || selectionState?.formData[activeProject?.mediaId]?.eventName || ""}
                   onChange={(e) => handleInputChange(e, activeImageId)}
                   consideration={currentFormData.considerations?.eventName}
                   considerationType={currentFormData.considerations?.eventName_type}
                 />
-
-                <NormalMultiSelect
-                  label="Choose Event type"
-                  options={eventTypes}
-                  selectedValues={
-                    currentFormData?.eventTypes?.length > 0
-                      ? currentFormData?.eventTypes
-                      : (selectionState?.formData[activeProject?.mediaId]?.eventTypes?.length > 0
-                        ? selectionState?.formData[activeProject?.mediaId].eventTypes
-                        : [])
-                  }
-                  onAddValue={(value) => handleAddValue("eventTypes", value, activeImageId)}
-                  onRemoveValue={(value) => handleRemoveValue("eventTypes", value, activeImageId)}
+                 <FormInput
+                  placeholder="Location"
+                  name="companyLocation"
+                  value={currentFormData?.companyLocation || selectionState?.formData[activeProject?.mediaId]?.companyLocation || ""}
+                  onChange={(e) => handleInputChange(e, activeImageId)}
+                  consideration={currentFormData.considerations?.companyLocation}
+                  considerationType={currentFormData.considerations?.companyLocation_type}
+                />
+                <DateInput
+                  placeholder="Date of collaboration (MM/YYYY)"
+                  value={currentFormData?.eventYear || selectionState?.formData[activeProject?.mediaId]?.eventYear || ""}
+                  onChange={(value) => handleDateChange(value, activeImageId)}
+                  variant="transparent"
+                  width="full"
+                  className="my-2"
+                  format="mm/yyyy"
                 />
                 
-
                 <div className="bg-transparent h-20"></div>
               
               </div>
             </>
           )}
 
-{showToast && (
-  <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-[#0037EB]/60 text-white px-6 py-3 rounded-md shadow-md font-apfel-grotezk-regular z-50 transition-all duration-500">
-    {hasConsiderations
-      ? "Most details are filled! Some sections are missing due to missing info, please review!"
-      : "Project details added! Give it a quick look before moving on."}
-  </div>
-)}
+          {showToast && (
+            <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-[#0037EB]/60 text-white px-6 py-3 rounded-md shadow-md font-apfel-grotezk-regular z-50 transition-all duration-500">
+              {hasConsiderations
+                ? "Most details are filled! Some sections are missing due to missing info, please review!"
+                : "Project details added! Give it a quick look before moving on."}
+            </div>
+          )}
 
  
 
-<div className="border-b border-light-grey"></div>
-
-<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  h-[74px] bg-white rounded-lg shadow-lg  py-1 px-3 font-apfel-grotezk-regular">
-  <div className="flex gap-2">
-
-    <div className="flex gap-[9px] px-3 py-1.5 w-[750px] items-center  rounded-md">
-
-      <div className="flex items-center justify-center gap-[9px]">
-         <button onClick={handleNextClick} className="w-[105px] h-[56px]  text-electric-blue text-2xl font-semibold  text-center px-2">
-             <Image 
-              src="/assets/images/snatch.svg"
-              width={40}
-              height={40}
-              alt="snatchlogo"
-              className=" w-32 h-10"
-            />
-          </button>
-               <button
-                  onClick={handleHamburgerClick}
-                  className="w-[61px] h-[56px] bg-gray-100 text-electric-blue  rounded-md mx-auto font-medium hover:bg-transparent relative"
-                >
-                  <Image
-                    className="mx-auto w-8"
-                    src="/assets/icons/onboarding/Hamburger.svg"
-                    alt="hamburger"
-                    width={20}
-                    height={20}
-                  />
-          </button>
-      </div>
-      
-      
-                {/* Dropdown Menu */}
-                {isMenuVisible && (
-                  <div className="absolute top-[-210%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
-                    <ul className="flex flex-col p-3 gap-2">
-                      <li
-                        onClick={handleDashboardClick}
-                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                      >
-                        Dashboard
-                      </li>
-                      <li
-                        onClick={handleSettingClick}
-                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                      >
-                        Settings
-                      </li>
-                      <li
-                        onClick={handleProfileClick}
-                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                      >
-                        Profile
-                      </li>
-                    </ul>
-                  </div>
-                )}
-
-
-        <div className="flex justify-start items-start">
-            <button
-          className="px-2 py-1.5 w-[149px] h-[38px] text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4 flex items-center justify-between"
-          onClick={handlePrevious}
-          disabled={projects.length <= 1}
-        >
-           <Image
-              src="/assets/images/projectsLeftarrow.svg"
-              alt="back arrow"
-              width={14}
-              height={14}
-              className="w-[14px] h-[14px]"
-            />
-            <span className="text-md">Previous Project</span>
-        </button>
-        
-        <button
-          className="px-2 py-1.5 w-[119px] h-[38px] flex items-center justify-between text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
-          onClick={handleNext}
-          disabled={projects.length <= 1}
-        >
-            <span className="text-md">Next Project</span>
-             <Image
-                    src="/assets/images/projectRightarrow.svg"
-                    alt="back arrow"
-                    width={14}
-                    height={14}
-                    className="w-[14px] h-[14px]"
-            />
-        </button>
-        </div>
-          
-
-      <div className="bg-gray-100 px-3 py-2 h-[56px] rounded-lg flex items-center gap-[8px] ">
-  <button
-    className="px-4 h-[38px] rounded-lg border-electric-blue border-[1px] text-electric-blue hover:bg-electric-blue hover:text-white transition-colors"
-    onClick={handleBackClick}
-  >
-    Previous Step
-  </button>
-
-<button
-  className={`px-4 h-[38px] rounded-lg transition-colors
-    ${!isAnyProjectCompleted ? "bg-gray-400 text-gray-200 cursor-not-allowed" : "bg-electric-blue text-white hover:bg-blue-700"}
-  `}
-  onClick={handlePreviewClick}
-  disabled={!isAnyProjectCompleted}
->
-  Preview
-</button>
-
-     </div>
-
+    <div className="border-b border-light-grey"></div>
+    <BottomToolbar
+      isMenuVisible={isMenuVisible}
+      handleHamburgerClick={handleHamburgerClick}
+      handlePrevious={handlePrevious}
+      handleNext={handleNext}
+      handleBackClick={handleBackClick}
+      handlePreviewClick={handlePreviewClick}
+      isAnyProjectCompleted={isAnyProjectCompleted}
+      projects={projects}
+        />
     </div>
-  </div>
-</div>
-        </div>
 
   </div>
 

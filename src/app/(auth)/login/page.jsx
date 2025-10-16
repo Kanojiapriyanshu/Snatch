@@ -173,7 +173,7 @@ export default function Page() {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center lg:flex-row overflow-hidden">
+    <div className="h-screen flex flex-col justify-center lg:flex-row overflow-hidden bg-smoke">
       {/* Left Section for Image */}
       <div className="lg:px-10 lg:py-9 xl:px-10 xl:py-9 2xl:px-10 relative lg:w-1/2 h-screen">
         <Image
