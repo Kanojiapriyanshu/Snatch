@@ -1,4 +1,4 @@
-//onboarding/context.js
+//app/onboarding/context.js
 "use client";
 import React, { createContext, useState, useContext, useEffect, useRef } from "react";
 import debounce from "lodash/debounce"; // Add this dependency
@@ -26,6 +26,9 @@ export const FormProvider = ({ children }) => {
     contentType: [],
     languages: [],
     compensation: [],
+    currencyCode: "",
+    currencySymbol: "",
+    currencyFlag: "",
     post: "",
     story: "",
     reels: "",
@@ -122,8 +125,6 @@ export const FormProvider = ({ children }) => {
       ...newData,
       updatedAt: timestamp,
     };
-
-    console.log("Updated data for user:", userId, updatedData);
 
     // Update state and localStorage
     setFormData(updatedData);

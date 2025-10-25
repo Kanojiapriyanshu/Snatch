@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardContext } from "../DashboardContext";
 import useFontSize from "@/hooks/useFontSize"; 
+import Button from "@/components/ui/Button";
 
 const DashboardPage = () => {
   const [selectedLocationType, setSelectedLocationType] = useState("city");
@@ -208,9 +209,9 @@ const DashboardPage = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <button className="bg-lime-yellow text-black px-6 py-3 rounded-lg hover:bg-yellow-300 transition-all duration-200 flex items-center gap-2 font-apfel-grotezk-regular">
+              <Button variant="yellowPrimary">
                 Connect Instagram via Facebook <span className="text-xl">→</span>
-              </button>
+              </Button>
             </a>
           </div>
         )}

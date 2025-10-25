@@ -65,6 +65,9 @@ const onboardingDataSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    currencyCode: { type: String, default: "" },
+    currencySymbol: { type: String, default: "" },
+    currencyFlag: { type: String, default: "" },
     post: {
       type: String,
     },
@@ -93,6 +96,4 @@ const onboardingDataSchema = new mongoose.Schema(
 );
 
 const OnboardingData =  mongoose?.models?.OnboardingData || mongoose.model("OnboardingData", onboardingDataSchema);
-// Debugging: Check if the model is correctly registered
-console.log("Available models:", mongoose.models);
 export default OnboardingData;

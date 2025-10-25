@@ -10,7 +10,7 @@ function Preview() {
   const sectionHeadingFont = useFontSize(14, 18);
   const bodyFont = useFontSize(11, 18);
   const pillFont = useFontSize(10, 16);
-
+ const symbol = formData.currencySymbol || "";
  const story = Number(formData.story) || 0;
  const reel = Number(formData.reels) || 0;
  const post = Number(formData.post) || 0;
@@ -39,9 +39,9 @@ function formatNumber(value) {
 }
 
  const priceRange =
-   lowest === highest
-     ? `₹ ${formatNumber(lowest)}`
-     : `₹ ${formatNumber(lowest)} - ₹ ${formatNumber(highest)}`;
+    lowest === highest
+      ? `${symbol} ${formatNumber(lowest)}`
+      : `${symbol} ${formatNumber(lowest)} - ${symbol} ${formatNumber(highest)}`;
     
     return (
 

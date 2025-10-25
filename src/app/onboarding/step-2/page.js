@@ -6,17 +6,21 @@ import { useRouter } from "next/navigation";
 import { useFormContext } from "../context";
 import MultiSelectInput from "@/components/MultiSelectInput";
 import MoneyInput from "@/components/MoneyInput";
-import NormalMultiSelect from "@/components/NormalMultiSelect";
 import InfoNormalMultiSelect from "@/components/InfoNormalMultiSelect";
 import PricingGuideModal from "@/components/PricingGuideModal";
 import { industryList } from "@/data/portfolio/industry";
+import CurrencyDropdown from "@/components/CurrencyDropdown";
 
 export default function Step2() {
   const { formData, updateFormData, isSaving } = useFormContext();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
-  
+  const [selectedCurrency, setSelectedCurrency] = useState({
+    code: "",
+    symbol: "",
+    flag: "",
+  });
   // Add state to track form completion
   const [isFormComplete, setIsFormComplete] = useState(false);
 
@@ -34,6 +38,14 @@ export default function Step2() {
 
     checkFormCompletion();
   }, [formData]);
+
+  useEffect(() => {
+    setSelectedCurrency({
+      code: formData.currencyCode || "",
+      symbol: formData.currencySymbol || "",
+      flag: formData.currencyFlag || "",
+    });
+  }, [formData.currencyCode, formData.currencySymbol, formData.currencyFlag]);
 
   const handleAddValue = (field, value) => {
     if (!formData[field]?.includes(value)) {
@@ -86,29 +98,51 @@ export default function Step2() {
           onRemoveValue={(value) => handleRemoveValue("compensation", value)}
         />
 
-        <div className="space-x-0 flex flex-col">
-          <h4 className="mb-5">Add pricing for your services*</h4>
-          <div className="flex flex-row gap-3">
-            <MoneyInput
-              title="Story"
-              placeholder="Enter amount"
-              value={formData.story}
-              onChange={(value) => updateFormData({ story: value })}
-            />
-            <MoneyInput
-              title="Post"
-              placeholder="Enter amount"
-              value={formData.post}
-              onChange={(value) => updateFormData({ post: value })}
-            />
-            <MoneyInput
-              title="Reel"
-              placeholder="Enter amount"
-              value={formData.reels}
-              onChange={(value) => updateFormData({ reels: value })}
-            />
-          </div>
-          <div className="mt-3 text-sm text-graphite">
+      <div>
+      <div className="flex items-center justify-between w-[76%]">
+        <h4 className="">Add pricing for your services*</h4>
+        <CurrencyDropdown
+        value={selectedCurrency}
+        onChange={(currency) => {
+        updateFormData({
+          currencyCode: currency.code,
+          currencySymbol: currency.symbol,
+          currencyFlag: currency.flag,
+        });
+         setSelectedCurrency({
+          code: currency.code,
+          symbol: currency.symbol,
+          flag: currency.flag,
+        });
+      }}
+
+      />
+      </div>
+
+      <div className="flex flex-row gap-3 mt-4">
+        <MoneyInput
+          title="Post"
+          placeholder="Enter amount"
+          value={formData.post}
+          currencySymbol={selectedCurrency?.symbol || ""}
+          onChange={(value) => updateFormData({ post: value })}
+        />
+        <MoneyInput
+          title="Story"
+          placeholder="Enter amount"
+          value={formData.story}
+          currencySymbol={selectedCurrency?.symbol || ""}
+          onChange={(value) => updateFormData({ story: value })}
+        />
+        <MoneyInput
+          title="Reel"
+          placeholder="Enter amount"
+          value={formData.reels}
+          currencySymbol={selectedCurrency?.symbol || ""}
+          onChange={(value) => updateFormData({ reels: value })}
+        />
+      </div>
+      <div className="mt-3 text-sm text-graphite">
             Not sure what to charge?{' '}
             <a
               onClick={() => setIsPricingModalOpen(true)}
@@ -127,7 +161,7 @@ export default function Step2() {
               </svg>
             </a>
           </div>
-        </div>
+    </div>
 
         <div className="bg-transparent w-full h-24"></div>
       </form>

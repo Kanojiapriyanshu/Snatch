@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -34,6 +35,7 @@ module.exports = {
       'yellow-shade': {
           50: 'var(--lime-yellow-50)',
           400: 'var(--lime-yellow-400)',
+          500: 'var(--lime-yellow-500)',
           600: 'var(--lime-yellow-600)',
           700: 'var(--lime-yellow-700)',
           800: 'var(--lime-yellow-800)',

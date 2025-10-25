@@ -33,6 +33,7 @@
   /* yellow shades */
   --lime-yellow-50: #FBFDD3;  /* light bg */
   --lime-yellow-400: #EEF25E; /* disabled */
+  --lime-yellow-500: #E9EE2F;
   --lime-yellow-600: #E4EA00; /* primary */
   --lime-yellow-700: #B6BB00; /* hover */
   --lime-yellow-800: #898C00; /* active/pressed */
@@ -121,6 +122,21 @@
   --graphite-200: #7A7A7A; /* disabled */
   --graphite-300: #6E6E6E; /* secondary text color */
   --graphite-600: #212121; /* primary text color */
+
+  /* error orange shades */
+  --orange-600: #BC2F00;
+  --orange-100: #F9C4B3;
+  --orange-200: #F7B199;
+
+  /* success green shades  */
+  --green-600: #108B4A;
+  --green-100: #ACE5C6;
+  --green-200: #96DDB7;
+
+  /* caution shades light yellowish */
+  --caution-600: #C69A25;
+  --caution-50: #F8E2A6;
+  --caution-100: #F1D893;
   }
 } 
 

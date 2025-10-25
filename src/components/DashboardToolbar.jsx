@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
+import Button from "./ui/Button";
 
 export default function DashboardToolbar({ isInstagramLinked }) {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function DashboardToolbar({ isInstagramLinked }) {
 
   return (
     <div   className={`absolute top-[87%] h-[79px] flex justify-center items-center gap-3 bg-white font-apfel-grotezk-regular rounded-xl shadow-md z-50 ${
-    isInstagramLinked ? "w-[420px] left-[37%] " : "w-[270px] left-[42%] "
+    isInstagramLinked ? "w-[430px] left-[37%] " : "w-[270px] left-[42%] "
   }`}>
       {/* Always show Snatch Logo */}
       <button
@@ -32,18 +33,8 @@ export default function DashboardToolbar({ isInstagramLinked }) {
         />
       </button>
 
-      {/* Always show Dashboard */}
-      <button
-        onClick={handleDashboardClick}
-        className={`w-[90px] h-[50px] rounded-md text-center font-medium ${
-          isActive("/dashboard")
-            ? "bg-electric-blue text-white"
-            : "bg-gray-100 text-electric-blue border-2 border-transparent hover:border-electric-blue hover:bg-white hover:text-electric-blue"
-        }`}
-      >
-        Dashboard
-      </button>
-
+      <Button className="h-[50px]">Dashboard</Button>
+    
       {/* Show Profile + Settings only if Instagram connected */}
       {isInstagramLinked && (
         <>

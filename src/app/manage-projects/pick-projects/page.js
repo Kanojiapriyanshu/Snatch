@@ -11,6 +11,7 @@ import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
 import InstagramPopup from "@/components/PopUp1"
 import { useUser } from "@clerk/nextjs";
+import Button from "@/components/ui/Button";
 
 export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -689,27 +690,21 @@ return (
 
     {/* Final Action Buttons */}
     <div className=" h-[56px] bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-center gap-[8px]">
-     <button
-  className=" h-[38px] flex  items-center  gap-1 px-3 py-2 border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors"
-  onClick={handleBackClick}
->
-  <Image
-    src="/assets/images/projectsLeftarrow.svg"
-    alt="back arrow"
-    width={14}
-    height={14}
-    className="w-[14px] h-[14px]"
-  />
-  <span className="text-md">Back</span>
-</button>
+    <Button variant="secondary" className="space-x-1" onClick={handleBackClick}>  
+      <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="12"
+      viewBox="0 0 7 12"
+      fill="currentColor"
+      className="w-[14px] h-[12px] transition-colors duration-200"
+    >
+      <path d="M2.43411 5.99755L6.50736 10.0705C6.64569 10.209 6.71653 10.3831 6.71986 10.5928C6.72303 10.8023 6.65219 10.9795 6.50736 11.1245C6.36236 11.2694 6.18669 11.3418 5.98036 11.3418C5.77403 11.3418 5.59836 11.2694 5.45336 11.1245L0.959111 6.6303C0.865611 6.53663 0.79961 6.43788 0.761109 6.33405C0.722609 6.23021 0.70336 6.11805 0.70336 5.99755C0.70336 5.87705 0.72261 5.76488 0.761109 5.66105C0.79961 5.55721 0.865611 5.45846 0.959111 5.3648L5.45336 0.870545C5.59186 0.732212 5.76594 0.661379 5.97561 0.658046C6.18511 0.65488 6.36236 0.725713 6.50736 0.870545C6.65219 1.01555 6.72461 1.19121 6.72461 1.39755C6.72461 1.60388 6.65219 1.77954 6.50736 1.92455L2.43411 5.99755Z" />
+    </svg>
+    <p>Back</p>
+    </Button>
 
-
-      <button
-        className={` h-[38px] flex items-center justify-between gap-1 px-4 py-2 rounded-lg text-md transition-colors ${
-          isDisabled
-            ? "bg-[#6C7FA5] text-light-grey cursor-not-allowed"
-            : "bg-electric-blue text-white hover:bg-blue-700"
-        }`}
+      <Button
         onClick={handleProjectClick}
         disabled={isDisabled}
       >
@@ -721,7 +716,7 @@ return (
           height={14}
           className="w-[14px] h-[14px]"
         />
-      </button>
+      </Button>
       
     </div>
 

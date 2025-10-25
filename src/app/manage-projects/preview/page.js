@@ -8,6 +8,7 @@ import { fetchMediaInsights } from "@/utils/fetchMediaInsights";
 import Popup from "@/components/Popup";
 import Uploadsvg from "@/components/svg/Uploadsvg";
 import SvgComponent from "@/components/svg/Instagramsvg";
+import Button from "@/components/ui/Button";
 
  function PreviewContent() {
   const {
@@ -605,7 +606,7 @@ const handleHamburgerClick = () => {
                       {(selectedItem.companyName || selectedItem.companyLocation) && (
                         <p>
                           {selectedItem.companyName && (
-                            <span className="text-graphite">{selectedItem.companyName}</span>
+                            <span className="text-blue-shade-600">{selectedItem.companyName}</span>
                           )}
                           {selectedItem.companyLocation && <> • {selectedItem.companyLocation}</>}
                         </p>
@@ -613,7 +614,7 @@ const handleHamburgerClick = () => {
 
                       <div className="flex">
                         {selectedItem.eventYear && (
-                          <span className="px-1 -ml-2 text-sm text-graphite">{selectedItem.eventYear}{" "}<span className="text-gray-500">•</span></span>
+                          <span className="px-1 -ml-1 text-sm text-graphite">{selectedItem.eventYear}{" "}<span className="text-gray-500">•</span></span>
                         )}
                         <div className="flex gap-2">
                              {/* Event name */}
@@ -692,7 +693,7 @@ const handleHamburgerClick = () => {
           </div>
         </div>
 
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  bg-white rounded-lg w-[823px] h-[74px] px-4 py-1.5 shadow-lg z-50 ">
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2  bg-white rounded-lg w-[865px] h-[74px] px-4 py-1.5 shadow-lg z-50 ">
         <div className="flex items-center gap-[9px] w-full h-full">
           {/* Logo + Hamburger */}
                 <div className="flex w-[175px] h-[56px] gap-[8px] items-center ">
@@ -720,34 +721,36 @@ const handleHamburgerClick = () => {
                 </div>
 
                 {/* Dropdown Menu */}
-                      {isMenuVisible && (
-                        <div className="absolute top-[-220%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
-                          <ul className="flex flex-col p-3 gap-2">
-                            <li
-                              onClick={handleDashboardClick}
-                              className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                            >
-                              Dashboard
-                            </li>
-                            <li
-                              onClick={handleSettingClick}
-                              className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                            >
-                              Settings
-                            </li>
-                            <li
-                              onClick={handleProfileClick}
-                              className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                            >
-                              Profile
-                            </li>
-                          </ul>
-                        </div>
-                      )}
+                {isMenuVisible && (
+                  <div className="absolute top-[-220%] left-[13%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+                    <ul className="flex flex-col p-3 gap-2">
+                      <li
+                        onClick={handleDashboardClick}
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      >
+                        Dashboard
+                      </li>
+                      <li
+                        onClick={handleSettingClick}
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      >
+                        Settings
+                      </li>
+                      <li
+                        onClick={handleProfileClick}
+                        className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                      >
+                        Profile
+                      </li>
+                    </ul>
+                  </div>
+                )}
 
               <div className="flex justify-start items-start">
-                  <button
-                className="px-2 py-1.5 w-[149px] h-[38px] text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4 flex items-center justify-between"
+              <Button
+              variant="hyperlink"
+              className="space-x-1 text-base"
+              size="sm"
                 onClick={handlePrevious}
                 disabled={projects.length <= 1}
               >
@@ -759,53 +762,43 @@ const handleHamburgerClick = () => {
                   className="w-[14px] h-[14px]"
                 />
                 <span className="text-md">Previous Project</span>
-              </button>
+              </Button>
               
-                  <button
-                      className="px-2 py-1.5 w-[119px] h-[38px] flex items-center justify-between text-electric-blue rounded hover:opacity-80 transition-colors underline underline-offset-4"
+                  <Button
+                      variant="hyperlink"
+                      className="space-x-1 text-base"
+                      size="sm"
                       onClick={handleNext}
                       disabled={projects.length <= 1}
                     >
                         <span className="text-md">Next Project</span>
                         <Image
-                                src="/assets/images/projectRightarrow.svg"
-                                alt="back arrow"
-                                width={14}
-                                height={14}
-                                className="w-[14px] h-[14px]"
+                          src="/assets/images/projectRightarrow.svg"
+                          alt="back arrow"
+                          width={14}
+                          height={14}
+                          className="w-[14px] h-[14px]"
                         />
-                    </button>
+                    </Button>
               </div>
 
           {/* Right Buttons: Previous Step + See Previews */} 
           <div className="bg-gray-100 px-2 py-2 h-[56px] rounded-lg flex justify-between items-start gap-[8px]">
-              <button className="px-2 h-[38px] border-electric-blue border-[1px] text-electric-blue rounded-lg hover:bg-electric-blue hover:text-white transition-colors" onClick={handleBackClick}>
+              <Button  onClick={handleBackClick}>
               Previous Step
-            </button>
-          <button
-        className={`
-          w-48 h-[38px] rounded-lg text-md transition-colors
-          ${
-            status === "loading"
-              ? "bg-electric-blue text-white cursor-not-allowed"
-              : status === "success"
-              ? "bg-green-600 text-white"
-              : status === "error"
-              ? "bg-red-600 text-white"
-              : "bg-electric-blue text-white hover:bg-blue-700"
-          }
-        `}
-        onClick={handleNextStep}
-        disabled={status === "loading"} // prevent multiple clicks
-      >
-        {status === "loading"
-          ? "Completing..."
-          : status === "success"
-          ? "Completed"
-          : status === "error"
-          ? "Retry"
-          : "Complete Project Details"}
-      </button>
+            </Button>
+          <Button
+          onClick={handleNextStep}
+          disabled={status === "loading"} // prevent multiple clicks
+        >
+          {status === "loading"
+            ? "Completing..."
+            : status === "success"
+            ? "Completed"
+            : status === "error"
+            ? "Retry"
+            : "Complete Project Details"}
+        </Button>
 
           </div>
 

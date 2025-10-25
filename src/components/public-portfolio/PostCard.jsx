@@ -321,7 +321,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                           {(post.post.companyName || post.post.companyLocation) && (
                             <p>
                               {post.post.companyName && (
-                                <> <span className="text-graphite">{post.post.companyName}</span></>
+                                <> <span className="text-blue-shade-600">{post.post.companyName}</span></>
                               )}
                               {post.post.companyLocation && (
                                 <> • {post.post.companyLocation}</>
@@ -330,7 +330,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                           )}
                         <div className="flex">
                         {eventYear && (
-                          <span className="px-1 -ml-2 text-sm text-graphite">{eventYear}{" "}<span className="text-gray-500">•</span></span>
+                          <span className="px-1 -ml-1 text-sm text-graphite">{eventYear}{" "}<span className="text-gray-500">•</span></span>
                         )}
                         <div className="flex gap-2">
                              {/* Event name */}

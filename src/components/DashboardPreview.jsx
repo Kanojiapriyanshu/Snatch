@@ -22,7 +22,7 @@ export default async function DashboardPreview({ userId }) {
   const story = Number(onboarding.story) || 0;
   const reels = Number(onboarding.reels) || 0;
   const post = Number(onboarding.post) || 0;
-
+  const symbol = onboarding.currencySymbol || "";
   const values = [story, reels, post].filter((v) => v > 0);
   const lowest = values.length ? Math.min(...values) : 0;
   const highest = values.length ? Math.max(...values) : 0;
@@ -37,8 +37,8 @@ export default async function DashboardPreview({ userId }) {
 
   const priceRange =
     lowest === highest
-      ? `₹ ${formatNumber(lowest)}`
-      : `₹ ${formatNumber(lowest)} - ₹ ${formatNumber(highest)}`;
+      ? `${symbol} ${formatNumber(lowest)}`
+      : `${symbol} ${formatNumber(lowest)} - ${symbol} ${formatNumber(highest)}`;
 
   return (
     <DashboardClient onboarding={onboarding} priceRange={priceRange} />

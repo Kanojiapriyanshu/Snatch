@@ -1,3 +1,4 @@
+//app/onboarding/layout.js
 "use client";
 
 import { FormProvider, useFormContext } from "./context";
@@ -6,6 +7,7 @@ import { useState, useEffect, useRef} from "react";
 import Preview from "@/components/Preview";
 import { useRouter, usePathname } from "next/navigation";
 import NextButton from "@/components/NextButton";
+import Button from "@/components/ui/Button";
 
 function LayoutContent({ children }) {
   const { formData } = useFormContext();
@@ -143,12 +145,13 @@ function LayoutContent({ children }) {
           ) : (
             // Step-2: Back + Next
             <>
-              <button
+              <Button
                 onClick={() => router.push("/onboarding/step-1")}
-                className="w-[72px] h-[37px] bg-white text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
+                className="px-6"
+                // className="w-[72px] h-[37px] bg-white text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
               >
                 Back
-              </button>
+              </Button>
               <NextButton />
             </>
           )}
@@ -157,12 +160,12 @@ function LayoutContent({ children }) {
         // First-time onboarding
         <>
           {pathname === "/onboarding/step-2" && (
-            <button
+            <Button
               onClick={() => router.push("/onboarding/step-1")}
-              className="w-[72px] h-[37px] bg-white text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
+              // className="w-[72px] h-[37px] bg-white text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
             >
               Back
-            </button>
+            </Button>
           )}
           <NextButton />
         </>

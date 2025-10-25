@@ -7,6 +7,7 @@ import { handler } from "@/app/actions/onboarding";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import Button from "./ui/Button";
 
 const NextButton = () => {
   const [response, setResponse] = useState({});
@@ -22,15 +23,6 @@ const NextButton = () => {
       alert("User ID is missing. Please log in.");
       return;
     }
-
-    // // Ensure location is valid and synced before validation
-    //   if (locationEnsureRef.current) {
-    //     await locationEnsureRef.current();
-
-    //     // Wait a tick to allow React state/context to update formData.location
-    //     await new Promise((resolve) => setTimeout(resolve, 100));
-    //   }
-
 
     if (pathname === "/onboarding/step-2") {
       const {
@@ -154,16 +146,18 @@ const NextButton = () => {
   };
 
   return (
-    <button
+    <Button
       onClick={handleNextClick}
       disabled={isSubmitting}
-      className={` h-[37px] border z-50 rounded-md text-center font-medium 
-        ${isSubmitting 
-          ? "w-[100px] bg-[#809DFF] text-white cursor-not-allowed" 
-          : "w-[74px] bg-white text-electric-blue border-electric-blue hover:bg-electric-blue hover:text-white"}`}
+      className={`${isSubmitting ? "w-[85px]" : ""} px-6`}
+        //isSubmitting width bigger add condition
+      // className={` h-[37px] border z-50 rounded-md text-center font-medium 
+      //   ${isSubmitting 
+      //     ? "w-[100px] bg-[#809DFF] text-white cursor-not-allowed" 
+      //     : "w-[74px] bg-white text-electric-blue border-electric-blue hover:bg-electric-blue hover:text-white"}`}
     >
-      {isSubmitting ? "Submitting..." : "Next"}
-    </button>
+      {isSubmitting ? "Submitting" : "Next"}
+    </Button>
   );
 };
 

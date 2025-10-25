@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useAuth } from "@clerk/nextjs";
+import Button from "./ui/Button";
 
 export default function OnboardingToolbar() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -119,7 +120,7 @@ export default function OnboardingToolbar() {
   return (
     <div
       className={`fixed top-[88%] left-[50%] translate-x-[-50%] ${
-        allComplete ? "w-[545px]" : "w-[560px]"
+        allComplete ? "w-[545px]" : "w-[370px]"
       } h-[74px] flex justify-center items-center gap-3 shadow-md bg-white rounded-md z-20 p-5 font-apfel-grotezk-regular`}
     >
       {/* Snatch button */}
@@ -191,34 +192,41 @@ export default function OnboardingToolbar() {
       {/* Presskit & Create Portfolio */}
       <div
         className={`${
-          isRed ? "w-[370px]" : "w-[499px]"
+          isRed ? "w-[300px]" : "w-[590px]"
         } h-[56px] gap-2 bg-gray-100 flex justify-between items-center rounded-md p-2`}
       >
         {/* Presskit toggle */}
         <div className="relative">
-          <button
-            onClick={() => setShowPresskitMenu((prev) => !prev)}
-            className={`px-5 py-2 rounded-md border font-medium transition ${
-              presskitIncomplete
-                ? "text-[#EB3B00] border-[#EB3B00] hover:bg-[#EB3B00]/10"
-                : "text-electric-blue border-electric-blue"
-            }`}
-          >
-            {presskitIncomplete ? (
-              "Complete press kit"
-            ) : (
-              <div className="flex items-center gap-2">
-                <Image
-                  src="/assets/images/edit-pencil.svg"
-                  alt="Edit"
-                  width={16}
-                  height={16}
-                  className="w-5 h-5"
-                />
-                <p>Edit press kit</p>
-              </div>
-            )}
-          </button>
+
+            <Button
+                onClick={() => setShowPresskitMenu((prev) => !prev)}
+                variant="secondary"
+                className={`${
+                  presskitIncomplete
+                    ? "text-[#EB3B00] border-[#EB3B00] hover:border-[#EB3B00] hover:text-[#EB3B00] active:text-[#EB3B00] active:border-[#EB3B00]"
+                    : ""
+                } flex justify-center items-center gap-2`}
+              >
+                {presskitIncomplete ? (
+                  "Complete press kit"
+                ) : (
+                  <>
+                    {/* Inline SVG that inherits text color */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 30 30"
+                      fill="currentColor"
+                      className="transition-colors duration-200"
+                    >
+                      <path d="M6.25 23.75H7.82688L20.6225 10.9544L19.0456 9.3775L6.25 22.1731V23.75ZM5.505 25.625C5.18479 25.625 4.91646 25.5167 4.7 25.3C4.48333 25.0835 4.375 24.8152 4.375 24.495V22.3294C4.375 22.0246 4.43354 21.7341 4.55062 21.4578C4.6675 21.1816 4.82854 20.9408 5.03375 20.7356L20.8631 4.91344C21.0521 4.74177 21.2607 4.60917 21.4891 4.51562C21.7176 4.42188 21.9572 4.375 22.2078 4.375C22.4584 4.375 22.7011 4.41948 22.9359 4.50844C23.1709 4.5974 23.379 4.73885 23.56 4.93281L25.0866 6.47844C25.2805 6.65948 25.4187 6.86781 25.5012 7.10344C25.5837 7.33906 25.625 7.57469 25.625 7.81031C25.625 8.06177 25.5821 8.30167 25.4963 8.53C25.4104 8.75854 25.2739 8.96729 25.0866 9.15625L9.26437 24.9662C9.05917 25.1715 8.81844 25.3325 8.54219 25.4494C8.26594 25.5665 7.97542 25.625 7.67063 25.625H5.505ZM19.8203 10.1797L19.0456 9.3775L20.6225 10.9544L19.8203 10.1797Z" />
+                    </svg>
+                    <p>Edit press kit</p>
+                  </>
+                    )}
+            </Button>
+
 
           {/* Presskit dropdown */}
           {showPresskitMenu && (
@@ -271,34 +279,51 @@ export default function OnboardingToolbar() {
           )}
         </div>
 
-        {!isRed && (
-          <button
-            onClick={handlePortfolioClick}
-            className={`px-2 flex items-center justify-center py-2 border rounded-md text-center font-medium transition ${
-              allComplete
-                ? "bg-electric-blue text-white border-electric-blue hover:bg-electric-blue hover:text-white"
-                : "bg-[#0037EB]/50 text-smoke cursor-not-allowed"
-            }`}
-            disabled={!allComplete}
-          >
-            <Image
-              src={
-                portfolioComplete && hasClickedPortfolio
-                  ? "/assets/images/preview.svg"
-                  : "/assets/images/create.svg"
-              }
-              alt="portfolio action"
-              width={20}
-              height={20}
-            />
-            <span className="text-white ml-1">
-              {portfolioComplete && hasClickedPortfolio
-                ? "Preview Presskit"
-                : "Create Presskit"}
-            </span>
-          </button>
-        )}
+        {!isRed && (  <Button
+          onClick={handlePortfolioClick}
+          disabled={!allComplete}
+          variant="primary"
+          className="flex items-center justify-center w-44"
+        >
+          <Image
+            src={
+              portfolioComplete && hasClickedPortfolio
+                ? "/assets/images/preview.svg"
+                : "/assets/images/create.svg"
+            }
+            alt="portfolio action"
+            width={20}
+            height={20}
+          />
+          <span className="ml-1">
+            {portfolioComplete && hasClickedPortfolio
+              ? "Preview press kit"
+              : "Create press kit"}
+          </span>
+        </Button>)}
+
       </div>
     </div>
   );
 }
+
+{/* 
+          <Button  onClick={() => setShowPresskitMenu((prev) => !prev)}   variant="secondary"
+           className={` ${
+              presskitIncomplete
+                ? "text-[#EB3B00] border-[#EB3B00] hover:border-[#EB3B00] hover:text-[#EB3B00] active:text-[#EB3B00] active:border-[#EB3B00]"
+                : ""
+            } flex justify-center items-center`}>{presskitIncomplete ? (
+              "Complete press kit"
+            ) : (
+              <div className="flex items-center gap-2">
+                <Image
+                  src="/assets/images/edit-pencil.svg"
+                  alt="Edit"
+                  width={16}
+                  height={16}
+                  className="w-5 h-5"
+                />
+                <p>Edit press kit</p>
+              </div>
+            )}</Button> */}

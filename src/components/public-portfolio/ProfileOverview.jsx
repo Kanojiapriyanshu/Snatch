@@ -219,7 +219,8 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   const story = Number(formData?.story) || 0;
   const reel = Number(formData?.reels) || 0;
   const post = Number(formData?.post) || 0;
- 
+  const symbol = formData.currencySymbol || "";
+
    // Find the lowest and highest values among story, reel, and post
   const values = [story, reel, post].filter((v) => v > 0);
   const lowest = values.length ? Math.min(...values) : 0;
@@ -239,13 +240,16 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
     return num.toString();
   }
   
-const priceRange = lowest === highest ? (
-  <><span className="font-md">₹</span> {formatNumber(lowest)}</>) : (
-  <><span className="font-md">₹</span> {formatNumber(lowest)}{' '}
-  - <span className="font-thin">₹</span> {formatNumber(highest)}
-  </>
-);
-
+  const priceRange = lowest === highest ? (
+    <>
+      <span className="font-md">{symbol}</span> {formatNumber(lowest)}
+    </>
+  ) : (
+    <>
+      <span className="font-md">{symbol}</span> {formatNumber(lowest)}{' '}
+      - <span className="font-thin">{symbol}</span> {formatNumber(highest)}
+    </>
+  );
   
   // Update the handleRequest function to handle both admin and public cases
   const handleRequest = () => {
@@ -313,6 +317,7 @@ const priceRange = lowest === highest ? (
       reach={reach}
       followers={followers}
       posts={posts}
+      formatNumber={formatNumber}
     />
 
     {/* Main Content Container - Now using normal flow */}

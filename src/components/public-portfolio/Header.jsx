@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import { useCheckScreenSize } from "@/utils/public-portfolio/portfolio";
 import { useRouter, usePathname } from "next/navigation";
+import { useMotionValue } from "framer-motion";
 
-const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton = true, showHeaderButton = true, reach, followers, posts, isScrolled = false }) => {
+const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton = true, showHeaderButton = true, reach, followers, posts, isScrolled = false, formatNumber }) => {
   const router = useRouter();
   const pathname = usePathname();
   const isMobile = useCheckScreenSize();
@@ -102,19 +103,19 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
         >
           <div className="text-center">
             <h2 className="text-3xl font-medium font-qimano">
-              <motion.span>{reach}</motion.span>
+              <motion.span> {useMotionValue(reach)?.current ? formatNumber(reach.get()) : "0"}</motion.span>
             </h2>
             <p className="text-md text-white font-apfel-grotezk-regular">avg reach</p>
           </div>
           <div className="text-center">
             <h2 className="text-3xl font-medium font-qimano">
-              <motion.span>{followers}</motion.span>
+              <motion.span>{useMotionValue(followers)?.current ? formatNumber(followers.get()) : "0"}</motion.span>
             </h2>
             <p className="text-md text-white font-apfel-grotezk-regular">followers</p>
           </div>
           <div className="text-center">
             <h2 className="text-3xl font-medium font-qimano">
-              <motion.span>{posts}</motion.span>
+              <motion.span>{useMotionValue(posts)?.current ? formatNumber(posts.get()) : "0"}</motion.span>
             </h2>
             <p className="text-md text-white font-apfel-grotezk-regular">posts</p>
           </div>
