@@ -584,10 +584,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>
-        {useMotionValue(reach)?.current ? formatNumber(reach.get()) : "0"}
-      </motion.span>
-
+        <motion.span>{reach ? formatNumber(reach.get()) : "0"}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">avg reach</p>
     </motion.div>
@@ -596,7 +593,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span> {useMotionValue(followers)?.current ? formatNumber(followers.get()) : "0"}</motion.span>
+        <motion.span>{followers ? formatNumber(followers.get()) : "0"}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">followers</p>
     </motion.div>
@@ -605,7 +602,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
       variants={statsVariants}
     >
       <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{useMotionValue(posts)?.current ? formatNumber(posts.get()) : "0"}</motion.span>
+        <motion.span>{posts ? formatNumber(posts.get()) : "0"}</motion.span>
       </h2>
       <p className="text-sm text-white font-apfel-grotezk-regular">posts</p>
     </motion.div>

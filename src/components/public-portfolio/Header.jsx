@@ -8,6 +8,10 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
   const pathname = usePathname();
   const isMobile = useCheckScreenSize();
   const isAdminViewRoute = pathname.includes('/adminview');
+  const reachValue = useMotionValue(reach || 0);
+  const followersValue = useMotionValue(followers || 0);
+  const postsValue = useMotionValue(posts || 0);
+
 
   if (isMobile) return null;
 
@@ -103,19 +107,19 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
         >
           <div className="text-center">
             <h2 className="text-3xl font-medium font-qimano">
-              <motion.span> {useMotionValue(reach)?.current ? formatNumber(reach.get()) : "0"}</motion.span>
+              <motion.span>{reach ? formatNumber(reach.get()) : "0"}</motion.span>
             </h2>
             <p className="text-md text-white font-apfel-grotezk-regular">avg reach</p>
           </div>
           <div className="text-center">
             <h2 className="text-3xl font-medium font-qimano">
-              <motion.span>{useMotionValue(followers)?.current ? formatNumber(followers.get()) : "0"}</motion.span>
+                <motion.span>{followers ? formatNumber(followers.get()) : "0"}</motion.span>
             </h2>
             <p className="text-md text-white font-apfel-grotezk-regular">followers</p>
           </div>
           <div className="text-center">
             <h2 className="text-3xl font-medium font-qimano">
-              <motion.span>{useMotionValue(posts)?.current ? formatNumber(posts.get()) : "0"}</motion.span>
+                 <motion.span>{posts ? formatNumber(posts.get()) : "0"}</motion.span>
             </h2>
             <p className="text-md text-white font-apfel-grotezk-regular">posts</p>
           </div>
