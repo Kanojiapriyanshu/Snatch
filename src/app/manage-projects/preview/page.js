@@ -581,6 +581,7 @@ const handleHamburgerClick = () => {
                       className="h-12 w-12 bg-cover rounded-full"
                     />
                   ) : (
+                    <div className="bg-[#BFBFBF]/20 rounded-full">
                     <Image
                       src="/assets/images/logo.svg"
                       width={50}
@@ -588,6 +589,7 @@ const handleHamburgerClick = () => {
                       alt="Default Logo"
                       className="h-12 w-12 bg-cover rounded-full"
                     />
+                    </div>
                   )}
 
                   {/* Divider */}
@@ -597,44 +599,44 @@ const handleHamburgerClick = () => {
                     <div className="h-12 border-l border-gray-400"></div>
                   )}
 
+
                   {/* Content */}
                   {(selectedItem.companyName ||
                     selectedItem.companyLocation ||
                     selectedItem.eventTypes?.length > 0) && (
-                    <div className="text-gray-500 text-sm space-y-1">
+                    <div className="text-graphite text-sm space-y-1">
                       {/* Company name + location */}
                       {(selectedItem.companyName || selectedItem.companyLocation) && (
                         <p>
                           {selectedItem.companyName && (
                             <span className="text-blue-shade-600">{selectedItem.companyName}</span>
                           )}
-                          {selectedItem.companyLocation && <> • {selectedItem.companyLocation}</>}
+                          {selectedItem.companyLocation && <> <span className="text-[#BFBFBF] ">•</span> {selectedItem.companyLocation}</>}
+                           {selectedItem.eventYear && (
+                            <>
+                          <span className="text-[#BFBFBF] mx-0.5">•</span>
+                          <span className="px-1 -ml-1 text-sm text-graphite">{selectedItem.eventYear}</span>
+                            </>
+                        )}
                         </p>
                       )}
 
                       <div className="flex">
-                        {selectedItem.eventYear && (
-                          <span className="px-1 -ml-1 text-sm text-graphite">{selectedItem.eventYear}{" "}<span className="text-gray-500">•</span></span>
-                        )}
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                              {/* Event name */}
                         {selectedItem.eventName && (
                           <p>
                             <span>{selectedItem.eventName}</span>
                           </p>
                         )}
-
                         {/* Event types */}
                         {selectedItem.eventTypes?.length > 0 && (
-                          <p>
-                            {selectedItem.eventTypes.map((eventType, index) => (
-                              <span key={index} className="px-1 -ml-2 text-sm">
-                                {index > 0 ? " | " : " • "}
-                                {eventType}
-                              </span>
-                            ))}
+                          <p className="text-sm">
+                            <span className="text-[#BFBFBF]">• </span>
+                            {selectedItem.eventTypes.join(", ")}
                           </p>
                         )}
+
                           </div>
                      
                       </div>

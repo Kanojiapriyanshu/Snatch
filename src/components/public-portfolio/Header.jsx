@@ -8,10 +8,6 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
   const pathname = usePathname();
   const isMobile = useCheckScreenSize();
   const isAdminViewRoute = pathname.includes('/adminview');
-  const reachValue = useMotionValue(reach || 0);
-  const followersValue = useMotionValue(followers || 0);
-  const postsValue = useMotionValue(posts || 0);
-
 
   if (isMobile) return null;
 

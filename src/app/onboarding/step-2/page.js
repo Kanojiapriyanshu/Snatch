@@ -99,8 +99,9 @@ export default function Step2() {
         />
 
       <div>
-      <div className="flex items-center justify-between w-[76%]">
+      <div className="flex items-center justify-between ">
         <h4 className="">Add pricing for your services*</h4>
+        <span className="border w-[55%]"></span>
         <CurrencyDropdown
         value={selectedCurrency}
         onChange={(currency) => {

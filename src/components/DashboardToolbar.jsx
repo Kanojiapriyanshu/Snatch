@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import Button from "./ui/Button";
+import * as gtag from "@/lib/gtag";
 
 export default function DashboardToolbar({ isInstagramLinked }) {
   const router = useRouter();
@@ -11,9 +11,33 @@ export default function DashboardToolbar({ isInstagramLinked }) {
   const isActive = (route) =>
     route === "/dashboard" ? pathname.startsWith("/dashboard") : pathname === route;
 
-  const handleDashboardClick = () => router.push("/dashboard");
-  const handleProfileClick = () => router.push("/profile");
-  const handleSettingsClick = () => router.push("/settings");
+  const handleDashboardClick = () => {
+  gtag.event({
+    action: "dashboard_click",
+    category: "navigation",
+    label: "Dashboard Button",
+  });
+  router.push("/dashboard");
+};
+
+const handleProfileClick = () => {
+  gtag.event({
+    action: "profile_click",
+    category: "navigation",
+    label: "Profile Button",
+  });
+  router.push("/profile");
+};
+
+const handleSettingsClick = () => {
+  gtag.event({
+    action: "settings_click",
+    category: "navigation",
+    label: "Settings Button",
+  });
+  router.push("/settings");
+};
+
 
   return (
     <div   className={`absolute top-[87%] h-[79px] flex justify-center items-center gap-3 bg-white font-apfel-grotezk-regular rounded-xl shadow-md z-50 ${
@@ -33,8 +57,17 @@ export default function DashboardToolbar({ isInstagramLinked }) {
         />
       </button>
 
-      <Button className="h-[50px]">Dashboard</Button>
-    
+       <button
+        onClick={handleDashboardClick}
+        className={`w-[90px] h-[50px] rounded-md text-center font-medium ${
+          isActive("/dashboard")
+            ? "bg-electric-blue text-white"
+            : "bg-gray-100 text-electric-blue border-2 border-transparent hover:border-electric-blue hover:bg-white hover:text-electric-blue"
+        }`}
+      >
+        Dashboard
+      </button>
+
       {/* Show Profile + Settings only if Instagram connected */}
       {isInstagramLinked && (
         <>

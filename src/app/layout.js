@@ -1,10 +1,11 @@
-// app/layout.js
+// SRC/app/layout.js
 import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
-// import Script from "next/script";
+import Script from "next/script";
+import AnalyticsProvider from "./analytics-provider";
 
 // ✅ Font setup
 const apfelGrotezkMittel = localFont({
@@ -42,9 +43,31 @@ export default function RootLayout({ children }) {
         `}
       >
         <Providers>
+          <AnalyticsProvider />
            <Toaster position="top-center" />
           {children}
         </Providers>
+
+          {/* ✅ Google Analytics Scripts */}
+         <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                page_path: window.location.pathname,
+                send_page_view: false
+              });
+            `,
+          }}
+        />
 
       </body>
     </html>
@@ -53,9 +76,9 @@ export default function RootLayout({ children }) {
 }
 
   {/* ✅ Feedbask Widget Script */}
-        {/* <Script
-          id="feedbask-widget-script"
-          strategy="lazyOnload"
-          src="https://cdn.feedbask.com/widget.js"
-          data-client-key="d847c202-9bd5-4a9d-8e3a-8ec8f95ce897"
-        /> */}
+        //  <Script
+        //   id="feedbask-widget-script"
+        //   strategy="lazyOnload"
+        //   src="https://cdn.feedbask.com/widget.js"
+        //   data-client-key="d847c202-9bd5-4a9d-8e3a-8ec8f95ce897"
+        // />

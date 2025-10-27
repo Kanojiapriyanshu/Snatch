@@ -324,14 +324,17 @@ export default function PostCard({ post, postId, username, allPosts }) {
                                 <> <span className="text-blue-shade-600">{post.post.companyName}</span></>
                               )}
                               {post.post.companyLocation && (
-                                <> • {post.post.companyLocation}</>
+                                <> <span className="text-[#BFBFBF] ">•</span> {post.post.companyLocation}</>
                               )}
+                            {eventYear && (
+                            <>
+                          <span className="text-[#BFBFBF] mx-0.5">•</span>
+                          <span className="px-1 -ml-1 text-sm text-graphite">{eventYear}</span>
+                            </>
+                        )}
                             </p>
                           )}
                         <div className="flex">
-                        {eventYear && (
-                          <span className="px-1 -ml-1 text-sm text-graphite">{eventYear}{" "}<span className="text-gray-500">•</span></span>
-                        )}
                         <div className="flex gap-2">
                              {/* Event name */}
                         {eventName && (
@@ -342,13 +345,9 @@ export default function PostCard({ post, postId, username, allPosts }) {
 
                         {/* Event types */}
                         {eventTypes?.length > 0 && (
-                          <p>
-                            {eventTypes.map((eventType, index) => (
-                              <span key={index} className="px-1 -ml-2 text-sm">
-                                {index > 0 ? " | " : " • "}
-                                {eventType}
-                              </span>
-                            ))}
+                          <p className="text-sm">
+                            <span className="text-[#BFBFBF]">• </span>
+                            {eventTypes.join(", ")}
                           </p>
                         )}
                           </div>
