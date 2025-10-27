@@ -6,7 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
 import AnalyticsProvider from "./analytics-provider";
-
+import { Suspense } from "react";
 // ✅ Font setup
 const apfelGrotezkMittel = localFont({
   src: [{ path: "./fonts/ApfelGrotezk-Mittel.otf", weight: "400", style: "normal" }],
@@ -43,7 +43,9 @@ export default function RootLayout({ children }) {
         `}
       >
         <Providers>
-          <AnalyticsProvider />
+           <Suspense fallback={null}>
+              <AnalyticsProvider />
+            </Suspense>
            <Toaster position="top-center" />
           {children}
         </Providers>
