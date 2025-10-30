@@ -510,7 +510,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
               {/* CTA Button */}
               <motion.button 
-                className="bg-lime-yellow text-graphite font-outline text-semibold py-2 px-4 rounded mt-6 w-[370px] max-w-[370px] font-apfel-grotezk-regular" 
+                className="bg-yellow-shade-600 text-graphite font-outline text-semibold py-2 px-4 rounded mt-6 w-[370px] max-w-[370px] font-apfel-grotezk-regular" 
                 onClick={handleRequest}
                 variants={itemVariants}
                 whileHover={{ scale: 1.02 }}
@@ -682,7 +682,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
         
         {/* CTA Button */}
         <motion.button
-          className="w-full bg-[#F7EA5F] text-black font-apfel-grotezk-regular text-[22px] font-normal py-3 rounded mt-4 mb-2 text-center"
+          className="w-full bg-yellow-shade-600 text-black font-apfel-grotezk-regular text-[22px] font-normal py-3 rounded mt-4 mb-2 text-center"
           onClick={handleRequest}
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}

@@ -8,20 +8,30 @@ export default function DatePicker4({
   className,
   variant,
   width,
-  format = "dd/mm/yyyy", // supports "mm/yyyy" mode
+  format = "dd/mm/yyyy", 
+  displayFormat = "numeric",
+  onboarding
 }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const datepickerRef = useRef(null);
 
-  // 👉 Format date display
   const formatDate = (dateObj) => {
-    const dd = String(dateObj.getDate()).padStart(2, "0");
-    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const yyyy = dateObj.getFullYear();
-    return format === "mm/yyyy" ? `${mm}/${yyyy}` : `${dd}/${mm}/${yyyy}`;
-  };
+  const dd = String(dateObj.getDate()).padStart(2, "0");
+  const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const yyyy = dateObj.getFullYear();
+
+  if (format === "mm/yyyy") {
+    if (displayFormat === "text") {
+      const monthName = dateObj.toLocaleString("default", { month: "long" });
+      return `${monthName}, ${yyyy}`; // 👉 July, 1993
+    }
+    return `${mm}/${yyyy}`; // 👉 07/1993
+  }
+  return `${dd}/${mm}/${yyyy}`;
+};
+
 
   const parseDate = (str) => {
     const parts = str.split("/");
@@ -178,7 +188,7 @@ export default function DatePicker4({
               variant === "white" ? "bg-white" : "bg-transparent"
             )}
             placeholder={placeholder || (format === "mm/yyyy" ? "MM/YYYY" : "DD/MM/YYYY")}
-            value={value}
+            value={selectedDate || value}
             onChange={handleInputChange}
             onClick={toggleDatepicker}
             onKeyDown={handleKeyDown}
@@ -192,31 +202,66 @@ export default function DatePicker4({
               variant === "white" ? "bg-white" : "bg-white"
             )}
           >
-            <div className="flex items-center justify-between mb-4">
-              <select
-                value={currentDate.getFullYear()}
-                onChange={(e) => handleYearChange(e.target.value)}
-                className="w-20 2xl:w-36 px-2 2xl:px-4 py-2 border rounded"
-              >
-                {Array.from({ length: 2012 - 1926 + 1 }, (_, i) => 2012 - i).map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+        <div
+          className={`flex items-center mb-4 ${
+            onboarding == false ? "justify-start gap-3" : "justify-between"
+          }`}
+        >
+          {/* YEAR SELECT with custom SVG */}
+          <div className="relative inline-block">
+            <select
+              value={currentDate.getFullYear()}
+              onChange={(e) => handleYearChange(e.target.value)}
+              className="w-20 2xl:w-36 appearance-none px-2 2xl:px-4 py-2 border rounded pr-8 cursor-pointer"
+            >
+              {Array.from({ length: 2012 - 1926 + 1 }, (_, i) => 2012 - i).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
 
-              <select
-                value={currentDate.getMonth()}
-                onChange={(e) => handleMonthChange(e.target.value)}
-                className="w-20 2xl:w-36 px-2 2xl:px-4 py-2 border rounded"
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i} value={i}>
-                    {new Date(0, i).toLocaleString("en-US", { month: "long" })}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* custom arrow icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          {/* MONTH SELECT with custom SVG */}
+          <div className="relative inline-block">
+            <select
+              value={currentDate.getMonth()}
+              onChange={(e) => handleMonthChange(e.target.value)}
+              className="w-20 2xl:w-36 appearance-none px-2 2xl:px-4 py-2 border rounded pr-8 cursor-pointer"
+            >
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i} value={i}>
+                  {new Date(0, i).toLocaleString("en-US", { month: "long" })}
+                </option>
+              ))}
+            </select>
+
+            {/* custom arrow icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+
 
             {format !== "mm/yyyy" && renderCalendar()}
 

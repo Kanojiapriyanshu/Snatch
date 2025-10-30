@@ -611,10 +611,10 @@ const handleHamburgerClick = () => {
                           {selectedItem.companyName && (
                             <span className="text-blue-shade-600">{selectedItem.companyName}</span>
                           )}
-                          {selectedItem.companyLocation && <> <span className="text-[#BFBFBF] ">•</span> {selectedItem.companyLocation}</>}
+                          {selectedItem.companyLocation && <> <span className="text-[#BFBFBF] mx-0.5 ">•</span> {selectedItem.companyLocation}</>}
                            {selectedItem.eventYear && (
                             <>
-                          <span className="text-[#BFBFBF] mx-0.5">•</span>
+                          <span className="text-[#BFBFBF] mx-1">•</span>
                           <span className="px-1 -ml-1 text-sm text-graphite">{selectedItem.eventYear}</span>
                             </>
                         )}

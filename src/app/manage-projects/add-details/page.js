@@ -926,6 +926,8 @@ const handlePopupGenerate = async () => {
                   width="full"
                   className="my-2"
                   format="mm/yyyy"
+                  displayFormat="text"
+                  onboarding={false}
                 />
                 
                 <div className="bg-transparent h-20"></div>

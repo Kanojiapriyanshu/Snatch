@@ -324,11 +324,11 @@ export default function PostCard({ post, postId, username, allPosts }) {
                                 <> <span className="text-blue-shade-600">{post.post.companyName}</span></>
                               )}
                               {post.post.companyLocation && (
-                                <> <span className="text-[#BFBFBF] ">•</span> {post.post.companyLocation}</>
+                                <> <span className="text-[#BFBFBF] mx-[0.5]">•</span> {post.post.companyLocation}</>
                               )}
                             {eventYear && (
                             <>
-                          <span className="text-[#BFBFBF] mx-0.5">•</span>
+                          <span className="text-[#BFBFBF] mx-1">•</span>
                           <span className="px-1 -ml-1 text-sm text-graphite">{eventYear}</span>
                             </>
                         )}

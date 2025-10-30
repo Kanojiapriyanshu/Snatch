@@ -75,7 +75,7 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
           
           {/* Always show the CTA button */}
           <motion.button 
-            className="bg-lime-yellow text-graphite font-outline py-2 px-6 w-[300px] max-w-[300px] rounded font-apfel-grotezk-regular" 
+            className="bg-yellow-shade-600 text-graphite font-outline py-2 px-6 w-[300px] max-w-[300px] rounded font-apfel-grotezk-regular" 
             onClick={handleRequest}
           >
             {isAdminViewRoute ? "Copy Portfolio link" : "Get in touch"}

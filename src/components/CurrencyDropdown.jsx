@@ -21,27 +21,28 @@ export default function CurrencyDropdown({ value, onChange }) {
        {value && value.code ? (
       <div className="flex items-center gap-2">
         <Image
-          className="rounded-full w-5 h-5"
           src={value.flag}
           alt={value.code}
-          width={10}
-          height={10}
+          width={20} 
+          height={14}
         />
         <span className="text-sm font-medium">{value.code}</span>
       </div>
     ) : (
       <span className="text-sm text-gray-500">Select</span>
     )}
-
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`w-4 h-4 ml-1 transition-transform ${isOpen ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className={`pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 transition-transform duration-200 ${
+          isOpen ? "rotate-180" : ""
+        }`}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
       </button>
 
       {isOpen && (

@@ -3,125 +3,84 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
-//If your refresh endpoint hasn’t finished writing to the DB yet, React Query might fetch “old” or expired media the first time. Once refresh finishes, the next re-fetch (or page reload) would show the updated media.
+// Skeleton component for each image/video
+const MediaSkeleton = () => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.4 }}
+    className="w-full h-full bg-gray-300 animate-pulse rounded-md"
+  />
+);
 
 const PortfolioPublic = () => {
   const [carouselIndexes, setCarouselIndexes] = useState({});
-  const pathname = usePathname();
-  const isAdminView = pathname.includes("/adminview");
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [targetUrl, setTargetUrl] = useState('');
   const [loadingPostId, setLoadingPostId] = useState(null);
   const [hoveredPostId, setHoveredPostId] = useState(null);
   const [isNavigating, setIsNavigating] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
   const queryClient = useQueryClient();
-  
-  // Extract username
-  const pathnameParts = pathname.split("/");
-  const username = pathnameParts[1] || "";
-  
-  // Listen for route changes to stop loading when navigation is complete
-// Refresh media once when username is available
-//   useEffect(() => {
-//   if (!username) return;
 
-//   const refreshExpiredMedia = async () => {
-//     try {
-//       await fetch(`/api/auth/refreshInstagram?username=${username}`);
-//       console.log("✅ Refresh call triggered for username:", username);
-//     } catch (err) {
-//       console.error("❌ Failed to refresh media:", err);
-//     }
-//   };
+  const isAdminView = pathname.includes("/adminview");
+  const username = pathname.split("/")[1] || "";
 
-//   refreshExpiredMedia();
-// }, [username]);
+  // Refresh media once when username is available
+  useEffect(() => {
+    if (!username) return;
 
-// Refresh media once when username is available
-useEffect(() => {
-  if (!username) return;
+    const refreshExpiredMedia = async () => {
+      try {
+        console.log("⏳ Refresh call triggered for username:", username);
+        await fetch(`/api/auth/refreshInstagram?username=${username}`);
 
-  const refreshExpiredMedia = async () => {
-    try {
-      console.log("⏳ Refresh call triggered for username:", username);
-      await fetch(`/api/auth/refreshInstagram?username=${username}`);
+        let attempts = 0;
+        let freshFound = false;
 
-      // 🔄 Wait until DB has fresh media
-      let attempts = 0;
-      let freshFound = false;
+        while (attempts < 5 && !freshFound) {
+          const res = await fetch(`/api/public-portfolio/posts?username=${username}`);
+          const data = await res.json();
 
-      while (attempts < 5 && !freshFound) {
-        const res = await fetch(`/api/public-portfolio/posts?username=${username}`);
-        const data = await res.json();
+          if (data?.success && data.instagram?.length > 0) {
+            freshFound = true;
+            queryClient.invalidateQueries(["publicProjects", username]);
+            console.log("✅ Media refreshed and UI updated");
+            break;
+          }
 
-        if (data?.success && data.instagram?.length > 0) {
-          freshFound = true;
-          // ✅ Tell React Query to re-fetch and update UI
-          queryClient.invalidateQueries(["publicProjects", username]);
-          console.log("✅ Media refreshed and UI updated");
-          break;
+          attempts++;
+          await new Promise((res) => setTimeout(res, 5000));
         }
 
-        attempts++;
-        await new Promise((res) => setTimeout(res, 5000)); // wait 2s before retry
+        if (!freshFound) console.warn("⚠️ No fresh media detected in DB");
+      } catch (err) {
+        console.error("❌ Failed to refresh media:", err);
       }
+    };
 
-      if (!freshFound) {
-        console.warn("⚠️ Refresh finished but no fresh media detected in DB");
-      }
-    } catch (err) {
-      console.error("❌ Failed to refresh media:", err);
-    }
-  };
+    refreshExpiredMedia();
+  }, [username, queryClient]);
 
-  refreshExpiredMedia();
-}, [username, queryClient]);
-
-
-// Handle route change cleanup
-useEffect(() => {
-  const handleBeforeUnload = () => {
-    setLoadingPostId(null);
-    setHoveredPostId(null);
-    setIsNavigating(false);
-  };
-
-  window.addEventListener("beforeunload", handleBeforeUnload);
-
-  return () => {
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-  };
-}, []);
-
-
-  // Stop loading when pathname changes (indicating successful navigation)
-  useEffect(() => {
-    if (isNavigating) {
-      setLoadingPostId(null);
-      setHoveredPostId(null);
-      setIsNavigating(false);
-    }
-  }, [pathname]);
-
-  // ✅ Use React Query instead of manual fetch
-  const { data: projects = [], isLoading, isError, error } = useQuery({
+  // ✅ Fetch public projects using React Query
+  const {
+    data: projects = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["publicProjects", username],
     queryFn: async () => {
-      const url = `/api/public-portfolio/posts?username=${username}`;
-      const response = await fetch(url);
-      const data = await response.json();
+      const res = await fetch(`/api/public-portfolio/posts?username=${username}`);
+      const data = await res.json();
 
-      if (!data.success) {
-        throw new Error(data.error || "Failed to fetch public projects");
-      }
+      if (!data.success) throw new Error(data.error || "Failed to fetch projects");
 
-      // Process projects same as before:
       return [
         ...data.instagram.map((item) => {
           if (item.name === "CAROUSEL_ALBUM" && item.children?.length > 0) {
@@ -133,21 +92,18 @@ useEffect(() => {
                 mediaId: child.id,
               })),
               mediaId: item.mediaId,
-              title: item.name,
             };
           }
           return {
             mediaType: item.name || item.fileName,
             mediaUrl: item.mediaLink || item.fileUrl,
             mediaId: item.mediaId,
-            title: item.name,
           };
         }),
         ...data.uploaded.map((item) => ({
           mediaType: item.mediaType || item.fileName,
           mediaUrl: item.mediaUrl || item.fileUrl,
           mediaId: item.mediaId,
-          title: item.name,
         })),
       ];
     },
@@ -155,7 +111,7 @@ useEffect(() => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // Carousel slide handler — unchanged
+  // Carousel slide handler
   const handleSlide = (e, mediaId, direction, totalSlides) => {
     e.stopPropagation();
     setCarouselIndexes((prev) => {
@@ -170,117 +126,59 @@ useEffect(() => {
     });
   };
 
-   // Prefetch the clicked project and its neighbors
-  const prefetchProjectAndNeighbors = async (clickedMediaId) => {
-    if (!projects || projects.length === 0) return;
-
-    const currentIndex = projects.findIndex(p => p.mediaId === clickedMediaId);
-    if (currentIndex === -1) return;
-
-    // Get indices for left, current, and right (with wrap-around)
-    const indices = [
-      currentIndex === 0 ? projects.length - 1 : currentIndex - 1, // left
-      currentIndex, // current
-      currentIndex === projects.length - 1 ? 0 : currentIndex + 1 // right
-    ];
-
-    await Promise.all(
-      indices.map(idx => {
-        const project = projects[idx];
-        if (!project) return null;
-        // Prefetch form data
-        queryClient.prefetchQuery(
-          ["postPreview", username, project.mediaId],
-          async () => {
-            const res = await fetch(`/api/public-portfolio/preview?username=${username}&postId=${project.mediaId}`);
-            return res.json();
-          }
-        );
-        // Prefetch insights
-        return queryClient.prefetchQuery(
-          ["postInsights", username, project.mediaId],
-          async () => {
-            const res = await fetch(`/api/public-portfolio/media-insights?username=${username}&postId=${project.mediaId}`);
-            return res.json();
-          }
-        );
-      })
-    );
+  const handleMouseEnter = (mediaId) => {
+    if (!isNavigating) setHoveredPostId(mediaId);
+  };
+  const handleMouseLeave = (mediaId) => {
+    if (hoveredPostId === mediaId && !isNavigating) setHoveredPostId(null);
   };
 
   const handlePostClick = async (e, mediaId, url) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // Set loading state and prevent it from being cleared by mouse events
     setLoadingPostId(mediaId);
     setIsNavigating(true);
-    setHoveredPostId(null); // Clear hover state when clicking
-    
+    setHoveredPostId(null);
     try {
-      // Prefetch data
-      await prefetchProjectAndNeighbors(mediaId);
-      
-      // Navigate to the post
       router.push(url);
-      
-      // Note: Loading state will be cleared by the useEffect when pathname changes
-    } catch (error) {
-      console.error('Error during navigation:', error);
-      // Clear loading state on error
+    } catch (err) {
+      console.error("Error navigating:", err);
       setLoadingPostId(null);
       setIsNavigating(false);
     }
   };
 
-  // Handle mouse enter for hover effect (only if not navigating)
-  const handleMouseEnter = (mediaId) => {
-    if (!isNavigating) {
-      setHoveredPostId(mediaId);
-    }
-  };
-
-  // Handle mouse leave - only clear hover, never clear loading during navigation
-  const handleMouseLeave = (mediaId) => {
-    // Only clear hover state, not loading state
-    if (hoveredPostId === mediaId && !isNavigating) {
-      setHoveredPostId(null);
-    }
-    // Never clear loadingPostId here if navigation is in progress
-  };
-
-  // ✅ Loading and error states
+  // ✅ Loading state (show grid skeletons)
   if (isLoading) {
-    return <p className="text-center text-gray-500 font-qimano">Finding your projects...</p>;
-  }
-
-  if (isError) {
-    return <p className="text-center text-red-500">Error: {error.message}</p>;
-  }
-
-  if (loading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-        <DotLottieReact
-          src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
-          loop
-          autoplay
-          style={{ width: 180, height: 180 }}
-        />
+      <div className="w-full mx-auto max-w-[1600px] p-4 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div key={i} className="aspect-[5/8] lg:aspect-[5/7] w-full">
+            <MediaSkeleton />
+          </div>
+        ))}
       </div>
     );
   }
 
-  // ✅ Render same as before
+  // Error UI
+  if (isError)
+    return (
+      <p className="text-center text-red-500">
+        Error: {(error.message)}
+      </p>
+    );
+
+  // ✅ Main render (with skeleton per image while loading)
   return (
-    <div className="w-full mx-auto max-w-[600px] lg:max-w-[1600px] p-2 sm:p-4">
+    <div className="w-full mx-auto max-w-[1600px] p-2 sm:p-4">
       {projects.length > 0 ? (
         <>
-          {/* Mobile & Tablet: keep existing grid */}
+          {/* Mobile / Tablet grid */}
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-4 lg:hidden">
             {projects.map((project, index) => (
               <div key={index} className="relative w-full aspect-[5/8] p-0 sm:p-2">
-                 <Link
+                <Link
                   href={
                     isAdminView
                       ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
@@ -288,70 +186,43 @@ useEffect(() => {
                   }
                   className="block w-full h-full"
                 >
-                  <div 
+                  <div
                     className="relative w-full h-full group rounded-md overflow-hidden"
                     onMouseEnter={() => handleMouseEnter(project.mediaId)}
                     onMouseLeave={() => handleMouseLeave(project.mediaId)}
                   >
+                    <AnimatePresence mode="wait">
+                      <MediaSkeleton key={`skeleton-${project.mediaId}`} />
+                    </AnimatePresence>
+
                     {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
-                      <>
-                        {project.children.map((child, idx) => (
-                          <div
-                            key={child.mediaId}
-                            className={`absolute inset-0 transition-all duration-500 ${
-                              (carouselIndexes[project.mediaId] || 0) === idx
-                                ? "opacity-100 z-10"
-                                : "opacity-0 z-0"
-                            }`}
-                          >
-                            {child.mediaType === "IMAGE" ? (
-                              <Image
-                                src={child.mediaUrl}
-                                alt={`Media ${child.mediaId}`}
-                                fill
-                                className="object-cover"
-                              />
-                            ) : (
-                              <video
-                                className="w-full h-full object-cover"
-                                src={child.mediaUrl}
-                                muted
-                                playsInline
-                              />
-                            )}
-                          </div>
-                        ))}
-                        {project.children.length > 1 && (
-                          <div className="absolute z-20 inset-0 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button
-                              onClick={(e) =>
-                                handleSlide(
-                                  e,
-                                  project.mediaId,
-                                  "prev",
-                                  project.children.length
-                                )
-                              }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 ml-1 z-0"
-                            >
-                              ❮
-                            </button>
-                            <button
-                              onClick={(e) =>
-                                handleSlide(
-                                  e,
-                                  project.mediaId,
-                                  "next",
-                                  project.children.length
-                                )
-                              }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 mr-1 z-0"
-                            >
-                              ❯
-                            </button>
-                          </div>
-                        )}
-                      </>
+                      project.children.map((child, idx) => (
+                        <div
+                          key={child.mediaId}
+                          className={`absolute inset-0 transition-all duration-500 ${
+                            (carouselIndexes[project.mediaId] || 0) === idx
+                              ? "opacity-100 z-10"
+                              : "opacity-0 z-0"
+                          }`}
+                        >
+                          {child.mediaType === "IMAGE" ? (
+                            <Image
+                              src={child.mediaUrl}
+                              alt={`Media ${child.mediaId}`}
+                              fill
+                              className="object-cover"
+                              onLoadingComplete={(img) => img.classList.add("loaded")}
+                            />
+                          ) : (
+                            <video
+                              className="w-full h-full object-cover"
+                              src={child.mediaUrl}
+                              muted
+                              playsInline
+                            />
+                          )}
+                        </div>
+                      ))
                     ) : project.mediaType.includes("VIDEO") ||
                       project.mediaType.endsWith(".mp4") ? (
                       <video
@@ -366,32 +237,30 @@ useEffect(() => {
                         alt={`Project ${index + 1}`}
                         fill
                         className="object-cover"
+                        onLoadingComplete={(img) => img.classList.add("loaded")}
                       />
                     )}
+
+                    {/* Hover overlay */}
                     <div
                       className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-10 cursor-pointer"
                       onClick={(e) =>
-                      handlePostClick(
-                        e,
-                        project.mediaId,
-                        isAdminView
-                          ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
-                          : `/${username}/media-kit/post/?postId=${project.mediaId}`
-                      )
-                    }>
-                      {(loadingPostId === project.mediaId || hoveredPostId === project.mediaId) ? (
-                        loadingPostId === project.mediaId ? (
-                          <DotLottieReact
-                            src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
-                            loop
-                            autoplay
-                            style={{ width: 80, height: 80 }}
-                          />
-                        ) : (
-                          <span className="text-lime-yellow text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
-                            Post Info & Insights ↗
-                          </span>
+                        handlePostClick(
+                          e,
+                          project.mediaId,
+                          isAdminView
+                            ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
+                            : `/${username}/media-kit/post/?postId=${project.mediaId}`
                         )
+                      }
+                    >
+                      {loadingPostId === project.mediaId ? (
+                        <DotLottieReact
+                          src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+                          loop
+                          autoplay
+                          style={{ width: 80, height: 80 }}
+                        />
                       ) : (
                         <span className="text-lime-yellow text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
                           Post Info & Insights ↗
@@ -404,7 +273,7 @@ useEffect(() => {
             ))}
           </div>
 
-          {/* Desktop: Instagram-like grid, 4 columns, rectangle aspect, larger gap */}
+          {/* Desktop grid */}
           <div className="hidden lg:grid lg:grid-cols-4 lg:gap-8">
             {projects.map((project, index) => (
               <div key={index} className="relative w-full aspect-[5/7]">
@@ -416,72 +285,17 @@ useEffect(() => {
                   }
                   className="block w-full h-full"
                 >
-                  <div 
+                  <div
                     className="relative w-full h-full group rounded-md overflow-hidden"
                     onMouseEnter={() => handleMouseEnter(project.mediaId)}
                     onMouseLeave={() => handleMouseLeave(project.mediaId)}
                   >
-                    {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
-                      <>
-                        {project.children.map((child, idx) => (
-                          <div
-                            key={child.mediaId}
-                            className={`absolute inset-0 transition-all duration-500 ${
-                              (carouselIndexes[project.mediaId] || 0) === idx
-                                ? "opacity-100 z-10"
-                                : "opacity-0 z-0"
-                            }`}
-                          >
-                            {child.mediaType === "IMAGE" ? (
-                              <Image
-                                src={child.mediaUrl}
-                                alt={`Media ${child.mediaId}`}
-                                fill
-                                className="object-cover"
-                              />
-                            ) : (
-                              <video
-                                className="w-full h-full object-cover"
-                                src={child.mediaUrl}
-                                muted
-                                playsInline
-                              />
-                            )}
-                          </div>
-                        ))}
-                        {project.children.length > 1 && (
-                          <div className="absolute z-20 inset-0 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button
-                              onClick={(e) =>
-                                handleSlide(
-                                  e,
-                                  project.mediaId,
-                                  "prev",
-                                  project.children.length
-                                )
-                              }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 ml-1 -z-10"
-                            >
-                              ❮
-                            </button>
-                            <button
-                              onClick={(e) =>
-                                handleSlide(
-                                  e,
-                                  project.mediaId,
-                                  "next",
-                                  project.children.length
-                                )
-                              }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 mr-1 -z-10"
-                            >
-                              ❯
-                            </button>
-                          </div>
-                        )}
-                      </>
-                    ) : project.mediaType.includes("VIDEO") ||
-                      project.mediaType.endsWith(".mp4") ? (
+                    <AnimatePresence mode="wait">
+                      <MediaSkeleton key={`skeleton-desktop-${project.mediaId}`} />
+                    </AnimatePresence>
+
+                    {project.mediaType.includes("VIDEO") ||
+                    project.mediaType.endsWith(".mp4") ? (
                       <video
                         className="w-full h-full object-cover"
                         src={project.mediaUrl}
@@ -494,32 +308,29 @@ useEffect(() => {
                         alt={`Project ${index + 1}`}
                         fill
                         className="object-cover"
+                        onLoadingComplete={(img) => img.classList.add("loaded")}
                       />
                     )}
+
                     <div
                       className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-10 cursor-pointer"
                       onClick={(e) =>
-                      handlePostClick(
-                        e,
-                        project.mediaId,
-                        isAdminView
-                          ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
-                          : `/${username}/media-kit/post/?postId=${project.mediaId}`
-                      )
-                    }>
-                      {(loadingPostId === project.mediaId || hoveredPostId === project.mediaId) ? (
-                        loadingPostId === project.mediaId ? (
-                          <DotLottieReact
-                            src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
-                            loop
-                            autoplay
-                            style={{ width: 80, height: 80 }}
-                          />
-                        ) : (
-                          <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
-                            Post Info & Insights ↗
-                          </span>
+                        handlePostClick(
+                          e,
+                          project.mediaId,
+                          isAdminView
+                            ? `/${username}/media-kit/adminview/post?postId=${project.mediaId}`
+                            : `/${username}/media-kit/post/?postId=${project.mediaId}`
                         )
+                      }
+                    >
+                      {loadingPostId === project.mediaId ? (
+                        <DotLottieReact
+                          src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+                          loop
+                          autoplay
+                          style={{ width: 80, height: 80 }}
+                        />
                       ) : (
                         <span className="text-yellow-300 text-center text-decoration-underline text-[21px] font-apfel-grotezk-regular">
                           Post Info & Insights ↗
@@ -540,3 +351,20 @@ useEffect(() => {
 };
 
 export default PortfolioPublic;
+
+// Listen for route changes to stop loading when navigation is complete
+// Refresh media once when username is available
+//   useEffect(() => {
+//   if (!username) return;
+
+//   const refreshExpiredMedia = async () => {
+//     try {
+//       await fetch(`/api/auth/refreshInstagram?username=${username}`);
+//       console.log("✅ Refresh call triggered for username:", username);
+//     } catch (err) {
+//       console.error("❌ Failed to refresh media:", err);
+//     }
+//   };
+
+//   refreshExpiredMedia();
+// }, [username]);

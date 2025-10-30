@@ -148,7 +148,6 @@ function LayoutContent({ children }) {
               <Button
                 onClick={() => router.push("/onboarding/step-1")}
                 className="px-6"
-                // className="w-[72px] h-[37px] bg-white text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
               >
                 Back
               </Button>

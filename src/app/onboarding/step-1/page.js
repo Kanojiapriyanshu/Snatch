@@ -126,6 +126,8 @@ export default function Step1() {
         variant="white"
         width="full"
         format="dd/mm/yyyy"
+        displayFormat="numeric"
+        onboarding={true}
       />
     </div>
 

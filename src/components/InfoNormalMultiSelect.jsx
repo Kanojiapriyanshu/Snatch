@@ -95,7 +95,7 @@ const InfoNormalMultiSelect = ({ label, options, selectedValues, onAddValue, onR
 
       {/* Input container */}
       <div
-        className="relative z-20 w-full bg-transparent rounded-md border border-gray-300 p-[2px] pr-8 text-graphite outline-none transition focus:border-primary active:border-primary cursor-pointer"
+        className="relative w-full bg-transparent rounded-md border border-gray-300 p-[2px] pr-8 text-graphite outline-none transition focus:border-primary active:border-primary cursor-pointer"
         onClick={toggleDropdown}
       >
         <div className="flex flex-wrap items-center gap-2 min-h-[40px]" style={{ padding: "0px" }}>
