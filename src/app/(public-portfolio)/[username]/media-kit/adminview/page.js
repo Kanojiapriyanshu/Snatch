@@ -29,8 +29,9 @@ function AdminPortfolioContent({ ownerId }) {
   if (isPostsError) return <div>Error: {postsError.message}</div>;
 
   if (isLoading) {
-    return <LoadingTransition />;
+    return <LoadingTransition isAdmin={true}/>;
   }
+  
 
   return (
     <div className="h-[200vh] py-[1%] px-[1%] relative">

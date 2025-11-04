@@ -21,6 +21,13 @@ export default function LoadingPage() {
         const portfolioRes = await fetch(`/api/public-portfolio/userinfo?username=${username}`);
         const portfolioResult = await portfolioRes.json();
 
+           if (portfolioRes.status === 404 || portfolioResult?.error === "No portfolio found") {
+          // ✅ Trigger your global 404
+          router.replace("/not-found");
+          return;
+        }
+
+
         // 2️⃣ Fetch instagram stats
         const igRes = await fetch(`/api/public-portfolio/instagram-stats?username=${encodeURIComponent(username)}`);
         const igResult = await igRes.json();
@@ -46,5 +53,5 @@ export default function LoadingPage() {
     fetchAll();
   }, [username, isAdmin, router]);
 
-  return <LoadingTransition />;
+  return <LoadingTransition isAdmin={isAdmin}/>;
 }

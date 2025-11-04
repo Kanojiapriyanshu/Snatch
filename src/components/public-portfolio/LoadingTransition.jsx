@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const LoadingTransition = () => {
+const LoadingTransition = ({isAdmin = false}) => {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center">
       <div className="animate-pulse mb-4">
@@ -13,7 +13,10 @@ const LoadingTransition = () => {
         />
       </div>
       <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse mx-auto">
-        You're going live... This one’s worth the wait 👀
+        {/* You're going live... This one’s worth the wait 👀 */}
+        {isAdmin
+          ? "You're going live... This one’s worth the wait 👀"
+          : "We’re loading your favorite influencer’s press kit ✨"} 
       </p>
     </div>
   );

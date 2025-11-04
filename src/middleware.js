@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/login(.*)",
   "/signup(.*)",
+  "/not-found",
   "/api/auth/refreshInstagram",
   "/privacy-policy",
   "/terms-and-services",

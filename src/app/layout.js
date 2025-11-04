@@ -28,6 +28,9 @@ export const metadata = {
   title: "Snatch",
   description: "Connecting Influencers",
   viewport: { width: "device-width", initialScale: 1 },
+    icons: {
+    icon: "/favicon.ico",
+    }
 };
 
 export default function RootLayout({ children }) {
