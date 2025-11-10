@@ -219,7 +219,7 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   const story = Number(formData?.story) || 0;
   const reel = Number(formData?.reels) || 0;
   const post = Number(formData?.post) || 0;
-  const symbol = formData.currencySymbol || "";
+  const symbol = formData?.currencySymbol || "";
 
    // Find the lowest and highest values among story, reel, and post
   const values = [story, reel, post].filter((v) => v > 0);

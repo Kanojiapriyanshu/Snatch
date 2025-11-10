@@ -402,82 +402,82 @@ const renderInstagramTab = () => (
     {/* right side rendered projects graph api fetch  */}
     <div ref={containerRef} className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
     <MediaDisplay media={currentMedia} displayType="instagram" showLoader={showInstagramPopup} />
-{shouldShowPagination && (
-  <div className="fixed left-1/2 -translate-y-1/2 bottom-20 5xl:bottom-24">
-    <div className="inline-flex items-center font-apfel-grotezk-regular rounded-lg px-1 py-1 space-x-1">
-      
-      {/* Prev */}
-      <button
-        onClick={handlePrev}
-        disabled={currentPage === 0}
-        className={`flex items-center justify-center text-lg ${
-          currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-      >
-        ←
-      </button>
-
-      {/* Page numbers */}
-      {(() => {
-        const visiblePages = [];
-        let startPage = Math.max(0, currentPage - 2);
-        let endPage = Math.min(totalPages - 1, startPage + 4);
-
-        // Adjust startPage if not enough pages on the right
-        if (endPage - startPage < 4) {
-          startPage = Math.max(0, endPage - 4);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-          visiblePages.push(
-            <button
-              key={i}
-              onClick={() => handlePageClick(i)}
-              className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors
-                ${
-                  currentPage === i
-                    ? "text-electric-blue underline"
-                    : "text-graphite hover:text-electric-blue"
-                }`}
-            >
-              {i + 1}
-            </button>
-          );
-        }
-
-        return visiblePages;
-      })()}
-
-      {/* Ellipsis & Total Pages */}
-      {totalPages > 5 && currentPage < totalPages - 3 && (
-        <>
-          <span className="px-1 text-graphite select-none">...</span>
+    {shouldShowPagination && (
+      <div className="fixed left-1/2 -translate-y-1/2 bottom-20 5xl:bottom-24">
+        <div className="inline-flex items-center font-apfel-grotezk-regular rounded-lg px-1 py-1 space-x-1">
+          
+          {/* Prev */}
           <button
-            onClick={() => handlePageClick(totalPages - 1)}
-            className="w-8 h-8 rounded-md flex items-center justify-center font-medium transition-colors text-graphite hover:text-electric-blue"
+            onClick={handlePrev}
+            disabled={currentPage === 0}
+            className={`flex items-center justify-center text-lg ${
+              currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            {totalPages}
+            ←
           </button>
-        </>
-      )}
 
-      {/* Next */}
-      <button
-        onClick={handleNext}
-        disabled={
-          isLoadingMore || (!mediaPages[currentPage + 1] && !paging?.next)
-        }
-        className={`flex items-center justify-center text-lg ${
-          !mediaPages[currentPage + 1] && !paging?.next
-            ? "opacity-50 cursor-not-allowed"
-            : ""
-        }`}
-      >
-        →
-      </button>
-    </div>
-  </div>
-)}
+          {/* Page numbers */}
+          {(() => {
+            const visiblePages = [];
+            let startPage = Math.max(0, currentPage - 2);
+            let endPage = Math.min(totalPages - 1, startPage + 4);
+
+            // Adjust startPage if not enough pages on the right
+            if (endPage - startPage < 4) {
+              startPage = Math.max(0, endPage - 4);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+              visiblePages.push(
+                <button
+                  key={i}
+                  onClick={() => handlePageClick(i)}
+                  className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors
+                    ${
+                      currentPage === i
+                        ? "text-electric-blue underline"
+                        : "text-graphite hover:text-electric-blue"
+                    }`}
+                >
+                  {i + 1}
+                </button>
+              );
+            }
+
+            return visiblePages;
+          })()}
+
+          {/* Ellipsis & Total Pages */}
+          {totalPages > 5 && currentPage < totalPages - 3 && (
+            <>
+              <span className="px-1 text-graphite select-none">...</span>
+              <button
+                onClick={() => handlePageClick(totalPages - 1)}
+                className="w-8 h-8 rounded-md flex items-center justify-center font-medium transition-colors text-graphite hover:text-electric-blue"
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
+
+          {/* Next */}
+          <button
+            onClick={handleNext}
+            disabled={
+              isLoadingMore || (!mediaPages[currentPage + 1] && !paging?.next)
+            }
+            className={`flex items-center justify-center text-lg ${
+              !mediaPages[currentPage + 1] && !paging?.next
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+          >
+            →
+          </button>
+        </div>
+      </div>
+    )}
 
     </div>
 
@@ -545,8 +545,8 @@ const renderUploadTab = () => (
     </div>
 
     {/* Upload area */}
-    <div className="w-[70vw] h-[70vh] text-black rounded-md pt-1 b">
-      <div className="flex gap-6 7xl:justify-center  h-full">
+    <div className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md pt-1 b">
+      <div className="flex gap-6 7xl:justify-center">
         <label
           htmlFor="file-upload"
           className="cursor-pointer w-[200px] h-[250px] aspect-[4/5]  bg-gray-200 rounded-md flex justify-center items-center"

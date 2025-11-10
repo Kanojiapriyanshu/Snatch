@@ -23,7 +23,8 @@ export default function LoadingPage() {
 
            if (portfolioRes.status === 404 || portfolioResult?.error === "No portfolio found") {
           // ✅ Trigger your global 404
-          router.replace("/not-found");
+            router.replace(`/${username}/media-kit/not-found`);
+
           return;
         }
 
@@ -53,5 +54,5 @@ export default function LoadingPage() {
     fetchAll();
   }, [username, isAdmin, router]);
 
-  return <LoadingTransition isAdmin={isAdmin}/>;
+  return <LoadingTransition isAdmin={isAdmin} username={username}/>;
 }

@@ -64,6 +64,7 @@ export default function EnterOtp() {
     }
   } catch (err) {
     setError(err.message || "Invalid OTP. Please try again.");
+    //might need to throw error for global error page trigger
   } finally {
     setIsLoading(false);
   }

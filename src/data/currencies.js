@@ -72,14 +72,6 @@ export const currencies = [
     flag: "https://flagcdn.com/w20/cn.png",
   },
   {
-    code: "CHF",
-    name: "Swiss Franc",
-    country: "Switzerland",
-    countryCode: "CH",
-    symbol: "CHF",
-    flag: "https://flagcdn.com/w20/ch.png",
-  },
-  {
     code: "SGD",
     name: "Singapore Dollar",
     country: "Singapore",
@@ -87,7 +79,32 @@ export const currencies = [
     symbol: "S$",
     flag: "https://flagcdn.com/w20/sg.png",
   },
+    {
+    code: "BRL",
+    name: "Brazilian Real",
+    country: "Brazil",
+    countryCode: "BR",
+    symbol: "R$",
+    flag: "https://flagcdn.com/w20/br.png",
+  },
   {
+    code: "IDR",
+    name: "Indonesian Rupiah",
+    country: "Indonesia",
+    countryCode: "ID",
+    symbol: "Rp",
+    flag: "https://flagcdn.com/w20/id.png"
+  },
+
+    {
+    code: "CHF",
+    name: "Swiss Franc",
+    country: "Switzerland",
+    countryCode: "CH",
+    symbol: "CHF",
+    flag: "https://flagcdn.com/w20/ch.png",
+  },
+   {
     code: "NZD",
     name: "New Zealand Dollar",
     country: "New Zealand",
@@ -102,14 +119,6 @@ export const currencies = [
     countryCode: "KR",
     symbol: "₩",
     flag: "https://flagcdn.com/w20/kr.png",
-  },
-  {
-    code: "BRL",
-    name: "Brazilian Real",
-    country: "Brazil",
-    countryCode: "BR",
-    symbol: "R$",
-    flag: "https://flagcdn.com/w20/br.png",
   },
   {
     code: "ZAR",

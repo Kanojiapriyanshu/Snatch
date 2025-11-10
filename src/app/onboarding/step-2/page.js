@@ -166,7 +166,8 @@ export default function Step2() {
 
         <div className="bg-transparent w-full h-24"></div>
       </form>
-      <PricingGuideModal isOpen={isPricingModalOpen} onClose={() => setIsPricingModalOpen(false)} />
+      <PricingGuideModal isOpen={isPricingModalOpen} onClose={() => setIsPricingModalOpen(false)}     selectedCurrency={selectedCurrency}
+      setSelectedCurrency={setSelectedCurrency} />
     </div>
   );
 }

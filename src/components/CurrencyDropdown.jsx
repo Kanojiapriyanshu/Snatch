@@ -46,7 +46,7 @@ export default function CurrencyDropdown({ value, onChange }) {
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-52 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-52 overflow-y-auto overflow-x-hidden">
           {currencies.map((currency) => (
             <div
               key={currency.code}

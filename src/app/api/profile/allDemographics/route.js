@@ -16,6 +16,7 @@ export async function GET(req) {
     }
 
     const user = await User.findOne({ userId });
+    
 
     if (!user || !user.instagramAccessToken || !user.instagramAccountId) {
       console.warn("Instagram details not found for user:", userId);
