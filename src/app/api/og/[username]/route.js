@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import connectDb from "@/db/mongoose";
 import OnboardingData from "@/models/onboarding.model";
 
-export const runtime = "edge"; // faster response for image generation
+//export const runtime = "edge"; // faster response for image generation
 
 export async function GET(req, { params }) {
   const { username } = params;
