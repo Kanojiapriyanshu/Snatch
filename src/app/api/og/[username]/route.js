@@ -4,11 +4,18 @@ import connectDb from "@/db/mongoose";
 import OnboardingData from "@/models/onboarding.model";
 
 export const runtime = "nodejs";
+export const preferredRegion = "bom1";
+
 export async function GET(req, { params }) {
   const { username } = params;
+  let user = null;
 
-  await connectDb();
-  const user = await OnboardingData.findOne({ username });
+  try {
+    await connectDb();
+    user = await OnboardingData.findOne({ username }).lean();
+  } catch (err) {
+    console.error("❌ DB Error:", err);
+  }
 
   if (!user) {
     return new ImageResponse(
@@ -32,32 +39,46 @@ export async function GET(req, { params }) {
     );
   }
 
+  const profilePic =
+    user.profilePicture?.startsWith("http")
+      ? user.profilePicture
+      : "https://app.snatchsocial.com/default-thumbnail.jpg";
+
   return new ImageResponse(
     (
       <div
         style={{
           width: "100%",
           height: "100%",
+          display: "flex", // ✅ Important!
           background: "linear-gradient(180deg, #111 0%, #000 100%)",
           color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
           fontFamily: "sans-serif",
           padding: "60px 80px",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
-        {/* Left side info */}
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 64, fontWeight: "bold" }}>
+        {/* Left Section */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex", // ✅ Important
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <h1 style={{ fontSize: 64, fontWeight: "bold", margin: 0 }}>
             {user.firstName} {user.lastName || ""}
           </h1>
-          <p style={{ fontSize: 28, color: "#aaa" }}>
-            @{user.username} • {user.location}
+
+          <p style={{ fontSize: 28, color: "#aaa", margin: "10px 0" }}>
+            @{user.username} {user.location ? `• ${user.location}` : ""}
           </p>
 
-          <p style={{ fontSize: 30, marginTop: 30 }}>
-            Rs {user.post || "—"} • {user.compensation?.join(", ") || "Compensation N/A"}
+          <p style={{ fontSize: 30, margin: "30px 0 0 0" }}>
+            Rs {user.post || "—"} •{" "}
+            {user.compensation?.join(", ") || "Compensation N/A"}
           </p>
 
           <p style={{ marginTop: 20, color: "#ccc" }}>
@@ -65,7 +86,7 @@ export async function GET(req, { params }) {
           </p>
         </div>
 
-        {/* Right side image */}
+        {/* Right Section */}
         <div
           style={{
             width: 300,
@@ -73,27 +94,20 @@ export async function GET(req, { params }) {
             borderRadius: 20,
             overflow: "hidden",
             background: "#222",
-            display: "flex",
+            display: "flex", // ✅ Important
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          {user.profilePicture ? (
-            <img
-              src={user.profilePicture}
-              width="300"
-              height="400"
-              style={{ objectFit: "cover" }}
-            />
-          ) : (
-            <span>No image</span>
-          )}
+          <img
+            src={profilePic}
+            width="300"
+            height="400"
+            style={{ objectFit: "cover" }}
+          />
         </div>
       </div>
     ),
-    {
-      width: 1200,
-      height: 630,
-    }
+    { width: 1200, height: 630 }
   );
 }
