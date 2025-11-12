@@ -30,7 +30,8 @@ const isPublicRoute = createRouteMatcher([
   "/:username/media-kit/post",
   "/onboarding/loading",
   "/:username/media-kit/loading(.*)" ,
-  "/api/public-portfolio/userinfo(.*)"
+  "/api/public-portfolio/userinfo(.*)",
+  "/api/og/:username"
 ]);
 
 export default clerkMiddleware(async (authFn, request) => {
