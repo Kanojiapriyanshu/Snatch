@@ -5,6 +5,7 @@ import Image from "next/image";
 import { pricingGuides } from "@/data/pricingGuides";
 import CurrencyDropdown from "./CurrencyDropdown";
 import { currencies } from "@/data/currencies";
+import Button from "./ui/Button";
 
 const PricingGuideModal = ({
   isOpen,
@@ -61,8 +62,8 @@ const PricingGuideModal = ({
         </div>
 
         {/* Title — always visible */}
-        <h2 className="text-3xl font-qimano text-electric-blue text-center mb-10 mt-6">
-          Set Your Prices with Confidence
+        <h2 className="text-3xl font-qimano text-electric-blue  mb-10">
+          The Creator’s Pricing Playbook
         </h2>
 
         {/* Conditional Rendering Below */}
@@ -78,9 +79,9 @@ const PricingGuideModal = ({
               You can check guides for these countries instead:
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4 text-gray-800">
+            <div className="flex flex-wrap max-w-3xl justify-center mx-auto gap-4 text-gray-800">
               {availableCountries.map((country) => (
-                <button
+                <Button
                   key={country.code}
                   onClick={() =>
                     setModalCurrency({
@@ -89,10 +90,12 @@ const PricingGuideModal = ({
                       flag: country.flag,
                     })
                   }
-                  className="underline hover:text-electric-blue transition-colors"
+                  variant="hyperlink"
+                  size=""
+                  className="text-graphite !font-extralight "
                 >
                   {country.name}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -100,34 +103,34 @@ const PricingGuideModal = ({
           // ✅ Pricing Data Table
           <>
             {/* Table */}
-            <div className="overflow-x-auto mb-8">
+            <div className="overflow-x-auto mb-8 font-apfel-grotezk-regular">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="border-b border-gray-200">
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                    <th className="px-4 py-3 text-left text-gray-700">
                       Tier
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                    <th className="px-4 py-3 text-left text-gray-700">
                       Followers
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                    <th className="px-4 py-3 text-left text-gray-700">
                       Engagement Rate
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                    <th className="px-4 py-3 text-left text-gray-700">
                       Post (Static)
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                    <th className="px-4 py-3 text-left text-gray-700">
                       Story (1 Frame)
                     </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                    <th className="px-4 py-3 text-left text-gray-700">
                       Reel (Video)
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {pricingData.tiers.map((tier, i) => (
-                    <tr key={i} className="border-b border-gray-100">
-                      <td className="px-4 py-3 font-semibold text-gray-700">
+                    <tr key={i} className="border-b border-gray-100 font-apfel-grotezk-regular">
+                      <td className="px-4 py-3 font-[600] text-gray-700">
                         {tier.tier}
                       </td>
                       <td className="px-4 py-3 text-gray-700">
@@ -148,7 +151,7 @@ const PricingGuideModal = ({
             {/* “When Higher Pricing Makes Sense” */}
             <div>
               <h3 className="text-xl font-md text-electric-blue text-center font-qimano">
-                When Higher Pricing Makes Sense
+                When higher pricing makes sense:
               </h3>
               <p className="text-gray-600 text-center mb-4 text-sm">
                 Because it's not just about the numbers
