@@ -24,7 +24,7 @@ export async function GET(req, { params }) {
           style={{
             fontSize: 50,
             color: "white",
-            background: "black",
+            background: "linear-gradient(135deg, #004CFF 0%, #0057E7 50%, #002D8B 100%)",
             width: "100%",
             height: "100%",
             display: "flex",
@@ -44,6 +44,14 @@ export async function GET(req, { params }) {
       ? user.profilePicture
       : "https://app.snatchsocial.com/default-thumbnail.jpg";
 
+    function formatNumber(num) {
+    if (!num) return "—";
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+    if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+    return num;
+    }
+
+
   return new ImageResponse(
     (
       <div
@@ -51,7 +59,7 @@ export async function GET(req, { params }) {
           width: "100%",
           height: "100%",
           display: "flex", // ✅ Important!
-          background: "linear-gradient(180deg, #111 0%, #000 100%)",
+          background: "#0057E7",
           color: "white",
           fontFamily: "sans-serif",
           padding: "60px 80px",
@@ -72,13 +80,15 @@ export async function GET(req, { params }) {
             {user.firstName} {user.lastName || ""}
           </h1>
 
-          <p style={{ fontSize: 28, color: "#aaa", margin: "10px 0" }}>
+          <p style={{ fontSize: 28, color: "white", margin: "10px 0" }}>
             @{user.username} {user.location ? `• ${user.location}` : ""}
           </p>
 
           <p style={{ fontSize: 30, margin: "30px 0 0 0" }}>
-            Rs {user.post || "—"} •{" "}
-            {user.compensation?.join(", ") || "Compensation N/A"}
+             {/* {user.story || "—"} - {user.reels} •{" "}
+            {user.compensation?.join(", ") || "Compensation N/A"} */}
+           {formatNumber(user.story)} - {formatNumber(user.reels)} •{" "}
+          {user.compensation?.join(", ") || "Compensation N/A"}
           </p>
 
           <p style={{ marginTop: 20, color: "#ccc" }}>
@@ -108,6 +118,6 @@ export async function GET(req, { params }) {
         </div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    { width: 1200, height: 630,  }
   );
 }
