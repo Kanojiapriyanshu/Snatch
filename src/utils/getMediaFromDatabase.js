@@ -1,9 +1,10 @@
 
 // utils/getMediaFromDatabase.ts
-export async function getMediaFromDatabase(after = null, limit= 20) {
+export async function getMediaFromDatabase(after = null, limit= 20, sort = "date", page = null) {
   try {
-    // Include cursor + limit in query string
-    const query = new URLSearchParams({ limit: limit.toString() });
+    // Include cursor + limit + sort in query string
+    const query = new URLSearchParams({ limit: limit.toString(), sort: sort });
+    if (page !== null) query.append("page", page.toString());
     if (after) query.append("after", after);
 
     //const response = await fetch(`/api/auth/get-media?${query.toString()}`);

@@ -1,4 +1,3 @@
-//app/api/auth/get-media/route.js
 import { NextResponse } from "next/server";
 import User from "@/models/user.model";
 import { getAuth } from "@clerk/nextjs/server";
@@ -6,93 +5,180 @@ import connectDb from "@/db/mongoose";
 
 export const dynamic = "force-dynamic";
 
-//right side project show fetch from graph api in pick - projects
 export async function GET(req) {
   try {
     await connectDb();
+
     const { searchParams } = req.nextUrl;
-    const after = searchParams.get("after") || "";
+    const sortBy = searchParams.get("sort") || "date"; // "date" | "engagement" | "likes" | "comments"
+    const order = searchParams.get("order") || "desc";
+    const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
 
-    // Clerk auth
+    // Clerk Auth
     const { userId } = getAuth(req);
+    if (!userId)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!userId) {
-      return NextResponse.json(
-        { connected: false, error: "User not present! Please sign up first." },
-        { status: 401 }
-      );
-    }
-
-    // Fetch user from DB
     const user = await User.findOne({ userId });
-    if (!user) {
-      return NextResponse.json(
-        { connected: false, error: "User not found in the database." },
-        { status: 404 }
-      );
-    }
+    if (!user)
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     const { instagramAccessToken, instagramAccountId } = user;
-    if (!instagramAccessToken || !instagramAccountId) {
+    if (!instagramAccessToken || !instagramAccountId)
       return NextResponse.json(
-        { error: "Instagram access token or account ID is missing." },
+        { error: "Instagram not connected" },
         { status: 400 }
       );
+
+    // ---------------------------------------------------------
+    // 1) FETCH ALL MEDIA METADATA (FAST FETCH)
+    // ---------------------------------------------------------
+    let allMeta = [];
+    let nextPage = null;
+
+    do {
+      const url =
+        `https://graph.facebook.com/v21.0/${instagramAccountId}/media?` +
+        `fields=id,media_type,timestamp,like_count,comments_count,video_views` +
+        `&limit=100` +
+        (nextPage ? `&after=${nextPage}` : ``) +
+        `&access_token=${instagramAccessToken}`;
+
+      const res = await fetch(url, { cache: "no-store" });
+      const json = await res.json();
+
+      allMeta = [...allMeta, ...(json.data || [])];
+      nextPage = json.paging?.cursors?.after || null;
+    } while (nextPage);
+
+    // ---------------------------------------------------------
+    // 2) FETCH followers + media_count
+    // ---------------------------------------------------------
+    const countRes = await fetch(
+      `https://graph.facebook.com/v21.0/${instagramAccountId}?fields=followers_count,media_count&access_token=${instagramAccessToken}`
+    );
+    const countJson = await countRes.json();
+
+    const followers = countJson.followers_count || 0;
+    const mediaCount = countJson.media_count || allMeta.length;
+
+    // ---------------------------------------------------------
+    // 3) COMPUTE ENGAGEMENT RATE
+    // ---------------------------------------------------------
+    const computed = allMeta.map((p) => {
+      const likes = p.like_count || 0;
+      const comments = p.comments_count || 0;
+      const engagement = followers ? ((likes + comments) / followers) * 100 : 0;
+
+      return {
+        ...p,
+        engagementRate: parseFloat(engagement.toFixed(2)),
+      };
+    });
+
+    // ---------------------------------------------------------
+    // 4) SORT LOGIC
+    // ---------------------------------------------------------
+    const sortKey =
+      sortBy === "likes"
+        ? "like_count"
+        : sortBy === "comments"
+        ? "comments_count"
+        : sortBy === "engagement"
+        ? "engagementRate"
+        : "timestamp";
+
+    computed.sort((a, b) => {
+      if (sortKey === "timestamp") {
+        return order === "asc"
+          ? new Date(a.timestamp) - new Date(b.timestamp)
+          : new Date(b.timestamp) - new Date(a.timestamp);
+      }
+      return order === "asc" ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
+    });
+
+    // ---------------------------------------------------------
+    // 5) PAGINATION (AFTER SORT)
+    // ---------------------------------------------------------
+    const start = (page - 1) * limit;
+    const pagePosts = computed.slice(start, start + limit);
+
+    const ids = pagePosts.map((p) => p.id);
+
+    if (ids.length === 0) {
+      return NextResponse.json({
+        mediaData: [],
+        totalPosts: computed.length,
+        mediaCount,
+        page,
+        limit,
+        totalPages: Math.ceil(computed.length / limit),
+      });
     }
 
-    // Fetch IG Media with pagination
-    const mediaUrl =
-      `https://graph.facebook.com/v21.0/${instagramAccountId}/media?` +
-      `fields=id,media_type,media_url,permalink,caption,timestamp,like_count,comments_count,thumbnail_url,username` +
-      `&limit=${limit}` +
-      (after ? `&after=${after}` : ``) +
+    // ---------------------------------------------------------
+    // 6) FETCH URL + CHILDREN ONLY FOR PAGINATED POSTS
+    // ---------------------------------------------------------
+    const batchUrl =
+      `https://graph.facebook.com/v21.0/?ids=${ids.join(",")}` +
+      `&fields=id,media_url,thumbnail_url,caption,permalink,username,media_type,timestamp,children{ id, media_type, media_url, thumbnail_url }` +
       `&access_token=${instagramAccessToken}`;
 
-      const mediaResponse = await fetch(mediaUrl, {
-      cache: "no-store", // ⚠️ Force fresh fetch, no caching
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      }
-    });
-    const mediaData = await mediaResponse.json();
+    const batchRes = await fetch(batchUrl, { cache: "no-store" });
+    const batchData = await batchRes.json();
 
-    if (!mediaResponse.ok || mediaData.error) {
-      return NextResponse.json(
-        { error: mediaData.error?.message || "Failed to fetch Instagram user media." },
-        { status: 500 }
-      );
-    }
+    // ---------------------------------------------------------
+    // 7) FINAL MERGE + SAFE CHILDREN NORMALIZATION
+    // ---------------------------------------------------------
+    const finalPosts = pagePosts.map((p) => {
+      const full = batchData[p.id] || {};
 
-    // Handle carousels
-    const enrichedMediaData = await Promise.all(
-      mediaData.data.map(async (mediaItem) => {
-        if (mediaItem.media_type === "CAROUSEL_ALBUM") {
-          const carouselResponse = await fetch(
-            `https://graph.facebook.com/v21.0/${mediaItem.id}/children?fields=id,media_type,media_url&access_token=${instagramAccessToken}`
-          );
-          const carouselData = await carouselResponse.json();
-          return { ...mediaItem, children: carouselData.data || [] };
+      let children = [];
+
+      // IG sometimes returns children in different ways
+      if (full.children) {
+        if (Array.isArray(full.children)) {
+          children = full.children;
+        } else if (Array.isArray(full.children?.data)) {
+          children = full.children.data;
+        } else if (typeof full.children === "object") {
+          children = [full.children];
         }
-        return mediaItem;
-      })
-    );
+      }
 
-    // Get media_count
-    const countResponse = await fetch(
-      `https://graph.facebook.com/v21.0/${instagramAccountId}?fields=media_count&access_token=${instagramAccessToken}`
-    );
-    const countData = await countResponse.json();
+      return {
+        ...p,
+        ...full,
+        children, // ALWAYS an array
+      };
+    });
 
     return NextResponse.json({
-      mediaData: enrichedMediaData,
-      paging: mediaData.paging || {},
-      mediaCount: countData.media_count
-    });
+      mediaData: finalPosts,
+      totalPosts: computed.length,
+      mediaCount,
+      page,
+      limit,
+      totalPages: Math.ceil(computed.length / limit),
+      paging: {
+    cursors: {
+      before: page > 1 ? `page=${page - 1}` : null,
+      after: page < Math.ceil(computed.length / limit) ? `page=${page + 1}` : null,
+    },
+    next:
+      page < Math.ceil(computed.length / limit)
+        ? `?page=${page + 1}&limit=${limit}`
+        : null,
+    previous:
+      page > 1 ? `?page=${page - 1}&limit=${limit}` : null,
+  },
+   });
+
   } catch (error) {
-    console.error("Error fetching media data:", error);
+    console.error("Error fetching media:", error);
     return NextResponse.json(
-      { error: "An error occurred while processing your request." },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

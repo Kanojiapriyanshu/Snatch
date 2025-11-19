@@ -1,6 +1,7 @@
-export async function fetchInstagramMedia(code, after = null) {
+export async function fetchInstagramMedia(code, after = null, sort = "date", page = null) {
   try {
-    let url = `/api/auth/instagram/callback?code=${code}`; //maybe pass page size as well for jash bug
+    let url = `/api/auth/instagram/callback?code=${code}&sort=${sort}`;
+    if (page !== null) url += `&page=${page}`;
     if (after) url += `&after=${after}`;
     const response = await fetch(url);
     const data = await response.json();

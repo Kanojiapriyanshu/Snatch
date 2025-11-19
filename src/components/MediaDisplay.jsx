@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useSelectedProjects } from "@/app/manage-projects/context";
 
-const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  }) => {
+const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, loadingType }) => {
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null); 
@@ -134,6 +134,187 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
 };
 
 
+
+
+  const gridContent = () => {
+    if (displayType === "instagram" && loadingType === "pagination") {
+      return (
+        <div className="col-span-full w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4 w-full max-w-7xl">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <div key={idx} className="relative w-full aspect-[4/5] rounded-md overflow-hidden bg-gray-200 animate-pulse" />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (displayType === "instagram" && loadingType === "sorting") {
+      return (
+        <div className="col-span-full flex flex-col items-center justify-center w-full h-96 mx-auto">
+          <Image
+            src="/assets/icons/sandwatch.svg"
+            alt="Sorting"
+            width={52}
+            height={73}
+            className="animate-pulse"
+          />
+          <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse text-center mt-4">
+            Hold on while we sort your posts!
+          </p>
+        </div>
+      );
+    }
+
+    if (displayType === "instagram" && loadingType === "initial") {
+      return (
+        <div className="col-span-full flex flex-col items-center justify-center w-full h-96 mx-auto">
+          <Image
+            src="/assets/icons/sandwatch.svg"
+            alt="Loading"
+            width={52}
+            height={73}
+            className="animate-pulse"
+          />
+          <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse text-center mt-4">
+            Hold on while we fetch your posts!
+          </p>
+        </div>
+      );
+    }
+
+    if (displayType === "instagram" && media?.length > 0) {
+      return media.map((mediaItem) => (
+        <div
+          key={mediaItem.id}
+          className="relative w-full aspect-[4/5] border border-gray-300 rounded-md overflow-hidden cursor-pointer"
+          onClick={() => handleSelect(mediaItem)}
+        >
+          <div
+            className={`absolute top-2 left-2 w-4 h-4 rounded-full flex items-center justify-center z-10 ${
+              isMediaSelected(mediaItem.id) ? "bg-electric-blue" : "bg-transparent border border-black"
+            }`}
+          />
+
+          {mediaItem.media_type === "IMAGE" ? (
+            <img src={mediaItem.media_url} alt={mediaItem.id || "Media"} className="object-cover w-full h-full" />
+          ) : mediaItem.media_type === "VIDEO" ? (
+            <video
+              controls
+              disablePictureInPicture
+              controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
+              muted={mutedStates[mediaItem.id] ?? true}
+              className="object-cover w-full h-full"
+              src={mediaItem.media_url}
+            />
+          ) : mediaItem.media_type === "CAROUSEL_ALBUM" && mediaItem.children ? (
+            <div className="relative w-full h-full">
+              {mediaItem.children.map((child, index) => (
+                <div
+                  key={child.id}
+                  className={`absolute inset-0 transition-transform duration-500 ${
+                    (carouselIndexes[mediaItem.id] || 0) === index ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+                  }`}
+                >
+                  {child.media_type === "IMAGE" ? (
+                    <img src={child.media_url} alt={`Media ${child.id}`} className="w-full h-full object-cover" />
+                  ) : (
+                    <video
+                      controls
+                      disablePictureInPicture
+                      controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
+                      muted={mutedStates[child.id] ?? true}
+                      className="w-full h-full object-cover"
+                      src={child.media_url}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                </div>
+              ))}
+
+              <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
+                {mediaItem.children.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full ${
+                      (carouselIndexes[mediaItem.id] || 0) === index ? "bg-blue-500" : "bg-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <button
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSlide(mediaItem.id, "prev", mediaItem.children.length);
+                }}
+              >
+                ❮
+              </button>
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSlide(mediaItem.id, "next", mediaItem.children.length);
+                }}
+              >
+                ❯
+              </button>
+            </div>
+          ) : (
+            <p>Unsupported media type</p>
+          )}
+
+          {isMediaSelected(mediaItem.id) && (
+            <div className="absolute bottom-0 left-0 right-0 bg-electric-blue h-[35px] flex items-center justify-center font-apfel-grotezk-regular">
+              <Image src="/assets/images/okay.svg" alt="okay" width={10} height={10} className="w-[15px] h-[12px] mr-7" />
+              <span className="text-white -ml-5" style={{ fontWeight: 10 }}>
+                Selected
+              </span>
+            </div>
+          )}
+        </div>
+      ));
+    }
+
+    if (displayType === "uploaded" && uploadedFiles?.length > 0) {
+      return uploadedFiles.map((file) => {
+        const isSelected = isUploadedFileSelected(file.mediaId);
+        const isVideo = file.fileType?.startsWith("video/") || file.fileUrl?.match(/\.(mp4|webm|ogg)$/i);
+        const isImage = file.fileType?.startsWith("image/") || file.fileUrl?.match(/\.(jpg|jpeg|png|gif|svg|webp|avif)$/i);
+
+        return (
+          <div
+            key={file.mediaId}
+            className="relative aspect-[4/5] w-full border border-gray-300 rounded-md overflow-hidden cursor-pointer"
+            onClick={() => handleFileSelect(file)}
+          >
+            {isImage ? (
+              <img src={file.fileUrl} alt={file.fileName || "uploaded image"} className="w-full h-full object-cover " />
+            ) : isVideo ? (
+              <video src={file.fileUrl} className="w-full h-full object-cover" muted playsInline />
+            ) : (
+              <div className="flex items-center justify-center h-full text-gray-500 text-sm">Unsupported file</div>
+            )}
+
+            <div className={`absolute top-2 left-2 w-4 h-4 rounded-full flex items-center justify-center z-10 ${isSelected ? "bg-electric-blue" : "bg-transparent border border-black"}`}></div>
+
+            {isSelected && (
+              <div className="absolute bottom-0 left-0 right-0 bg-electric-blue h-[35px] flex items-center justify-center font-apfel-grotezk-regular">
+                <img src="/assets/images/okay.svg" alt="okay" className="w-[15px] h-[12px] mr-7" />
+                <span className="text-white -ml-5" style={{ fontWeight: 10 }}>Selected</span>
+              </div>
+            )}
+          </div>
+        );
+      });
+    }
+
+    return null;
+  };
+
   return (
     <div className="mb-20 flex 7xl:justify-center" >
       {/* Confirmation Popup */}
@@ -180,209 +361,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading  
 
     {/* Responsive grid with rectangular aspect ratio */}
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-4 w-full max-w-7xl">
-      {/* Instagram Media */}
-      {displayType === "instagram" && media?.length > 0 ? (
-        media.map((mediaItem) => (
-          <div
-            key={mediaItem.id}
-            className="relative w-full aspect-[4/5] border border-gray-300 rounded-md overflow-hidden cursor-pointer"
-            onClick={() => handleSelect(mediaItem)}
-          >
-            {/* Circle on Top Left */}
-            <div
-              className={`absolute top-2 left-2 w-4 h-4 rounded-full flex items-center justify-center z-10 ${
-                isMediaSelected(mediaItem.id)
-                  ? "bg-electric-blue"
-                  : "bg-transparent border border-black"
-              }`}
-            >
-              {/* Optional: Add text or icon inside the circle */}
-            </div>
-
-            {/* Media Content */}
-            {mediaItem.media_type === "IMAGE" ? (
-              <img
-                src={mediaItem.media_url}
-                alt={mediaItem.id || "Media"}
-                className="object-cover w-full h-full"
-              />
-            ) : mediaItem.media_type === "VIDEO" ? (
-            <video
-              controls
-              disablePictureInPicture
-              controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-              muted={mutedStates[mediaItem.id] ?? true} // default true
-              className="object-cover w-full h-full"
-              src={mediaItem.media_url}
-            />
-            ) : mediaItem.media_type === "CAROUSEL_ALBUM" &&
-              mediaItem.children ? (
-              <div className="relative w-full h-full">
-                {mediaItem.children.map((child, index) => (
-                  <div
-                    key={child.id}
-                    className={`absolute inset-0 transition-transform duration-500 ${
-                      (carouselIndexes[mediaItem.id] || 0) === index
-                        ? "translate-x-0 opacity-100"
-                        : "translate-x-full opacity-0"
-                    }`}
-                  >
-                    {child.media_type === "IMAGE" ? (
-                      <img
-                        src={child.media_url}
-                        alt={`Media ${child.id}`}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <video
-                        controls
-                        disablePictureInPicture
-                        controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-                        muted={mutedStates[child.id] ?? true} 
-                        className="w-full h-full object-cover"
-                        src={child.media_url}
-                      >
-                        Your browser does not support the video tag.
-                      </video>
-                    )}
-                  </div>
-                ))}
-
-                {/* Navigation Dots */}
-                <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-                  {mediaItem.children.map((_, index) => (
-                    <div
-                      key={index}
-                      className={`w-2 h-2 rounded-full ${
-                        (carouselIndexes[mediaItem.id] || 0) === index
-                          ? "bg-blue-500"
-                          : "bg-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                {/* Navigation Buttons */}
-                <button
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSlide(
-                      mediaItem.id,
-                      "prev",
-                      mediaItem.children.length
-                    );
-                  }}
-                >
-                  ❮
-                </button>
-                <button
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-6 h-6 flex justify-center items-center"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSlide(
-                      mediaItem.id,
-                      "next",
-                      mediaItem.children.length
-                    );
-                  }}
-                >
-                  ❯
-                </button>
-              </div>
-            ) : (
-              <p>Unsupported media type</p>
-            )}
-
-            {/* Selected Line */}
-            {isMediaSelected(mediaItem.id) && (
-              <div className="absolute bottom-0 left-0 right-0 bg-electric-blue h-[35px] flex items-center justify-center font-apfel-grotezk-regular">
-                <Image
-                  src="/assets/images/okay.svg"
-                  alt="okay"
-                  width={10}
-                  height={10}
-                  className="w-[15px] h-[12px] mr-7"
-                />
-                <span className="text-white -ml-5" style={{ fontWeight: 10 }}>
-                  Selected
-                </span>
-              </div>
-            )}
-          </div>
-        ))
-      ) : displayType === "uploaded" && uploadedFiles?.length > 0 ? (
-    uploadedFiles.map((file) => {
-      const isSelected = isUploadedFileSelected(file.mediaId);
-
-      // Detect whether it's an image or video
-      const isVideo = file.fileType?.startsWith("video/") || file.fileUrl?.match(/\.(mp4|webm|ogg)$/i);
-      const isImage = file.fileType?.startsWith("image/") || file.fileUrl?.match(/\.(jpg|jpeg|png|gif|svg|webp|avif)$/i);
-
-      return (
-        <div
-          key={file.mediaId}
-          className="relative aspect-[4/5] w-full border border-gray-300 rounded-md overflow-hidden cursor-pointer"
-          onClick={() => handleFileSelect(file)}
-        >
-          {/* ✅ File Preview */}
-          {isImage ? (
-            <img
-              src={file.fileUrl}
-              alt={file.fileName || "uploaded image"}
-              className="w-full h-full object-cover "
-            />
-          ) : isVideo ? (
-            <video
-              src={file.fileUrl}
-              className="w-full h-full object-cover"
-              muted
-              playsInline
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-500 text-sm">
-              Unsupported file
-            </div>
-          )}
-
-          {/* ✅ Selection Circle */}
-          <div
-            className={`absolute top-2 left-2 w-4 h-4 rounded-full flex items-center justify-center z-10 ${
-              isSelected ? "bg-electric-blue" : "bg-transparent border border-black"
-            }`}
-          ></div>
-
-          {/* ✅ Selected Overlay */}
-          {isSelected && (
-            <div className="absolute bottom-0 left-0 right-0 bg-electric-blue h-[35px] flex items-center justify-center font-apfel-grotezk-regular">
-              <img
-                src="/assets/images/okay.svg"
-                alt="okay"
-                className="w-[15px] h-[12px] mr-7"
-              />
-              <span className="text-white -ml-5" style={{ fontWeight: 10 }}>
-                Selected
-              </span>
-            </div>
-          )}
-        </div>
-      );
-    })
-
-      ) : displayType === "instagram" && (!media || media.length === 0) ? (
-       <div className="col-span-full flex flex-col items-center justify-center w-full h-96 mx-auto">
-    <Image
-      src="/assets/icons/sandwatch.svg"
-      alt="Loading"
-      width={52}
-      height={73}
-      className="animate-pulse"
-    />
-    <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse text-center mt-4">
-      Hold on while we fetch your posts!
-    </p>
-  </div>
-      ) : null}
+      {gridContent()}
     </div>
   </div>
   );

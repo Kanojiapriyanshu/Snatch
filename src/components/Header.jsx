@@ -10,17 +10,17 @@ import { useSelectedProjects } from "@/app/manage-projects/context"; // adjust p
 const steps = [
   {
     id: "/manage-projects/pick-projects",
-    label: "Pick Projects",
+    label: "Pick projects you wish to highlight",
     icon: <SvgComponent />,
   },
   {
     id: "/manage-projects/add-details",
-    label: "Add Details",
+    label: "Add details for selected projects",
     icon: <Writesvg />,
   },
   {
     id: "/manage-projects/preview",
-    label: "Preview",
+    label: "Preview & complete project setup",
     icon: <Viewsvg />,
   },
 ];
@@ -66,17 +66,17 @@ const Header = () => {
                 {/* SVG Icon */}
                 <div
                   className={`w-5 h-5 transition-all duration-300 mr-2 ${
-                    pathname === step.id ? "text-lime-yellow" : "text-white"
+                    pathname === step.id ? "text-[#FAFAFA]" : "text-[#BFBFBF]"
                   }`}
                 >
                   {step.icon}
                 </div>
                 {/* Step Label */}
                 <span
-                  className={`mt-2 transition-all duration-300 font-apfel-grotezk-regular ${
+                  className={`mt-2 transition-all duration-300 font-qimano ${
                     pathname === step.id
-                      ? "text-lime-yellow "
-                      : "text-gray-300"
+                      ? "text-[#FAFAFA]"
+                      : "text-[#BFBFBF]"
                   }`}
                 >
                   {step.label}

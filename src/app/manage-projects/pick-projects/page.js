@@ -12,6 +12,8 @@ import Uploadsvg from "@/components/svg/Uploadsvg";
 import InstagramPopup from "@/components/PopUp1"
 import { useUser } from "@clerk/nextjs";
 import Button from "@/components/ui/Button";
+import { TfiAlignLeft } from "react-icons/tfi";
+import { FiChevronDown } from "react-icons/fi"; // Arrow icon
 
 export default function PickProjects() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -33,11 +35,28 @@ export default function PickProjects() {
  const PAGE_SIZE = 20;
  const [isLoadingMore, setIsLoadingMore] = useState(false);
  const [loading, setLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
+  const [isSorting, setIsSorting] = useState(false);
  const [totalPages, setTotaPages] = useState(0);
  const [code, setCode] = useState(null);
  const containerRef = useRef(null);
  const { user, isLoaded } = useUser();
  const [hasInitialized, setHasInitialized] = useState(false);
+ const [sortOption, setSortOption] = useState("date");
+const contentRef = useRef(null);
+const [containerWidth, setContainerWidth] = useState(null);
+
+useEffect(() => {
+  if (!contentRef.current) return;
+
+  const observer = new ResizeObserver(entries => {
+    const width = entries[0].contentRect.width;
+    setContainerWidth(width);
+  });
+
+  observer.observe(contentRef.current);
+  return () => observer.disconnect();
+}, []);
 
 
    useEffect(() => {
@@ -48,6 +67,53 @@ export default function PickProjects() {
       setShowInstagramPopup(true); // show popup instantly
     }
   }, []);
+
+  // Effect to handle sort option changes
+  useEffect(() => {
+    if (!hasInitialized) return; // Wait for initial load
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    const fetchSortedMedia = async () => {
+      try {
+        setIsSorting(true);
+        setLoading(true);
+        setCurrentPage(0); // Reset to first page
+        setCarouselIndexes({}); // Reset carousel indexes
+
+        if (code) {
+          // First-time user: fetch from Instagram API with sort
+          const { connected, media, paging, mediaCount } = await fetchInstagramMedia(code, null, sortOption, 1);
+
+          if (connected) {
+            setMedia(media);
+            setPaging(paging);
+            setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+          }
+        } else {
+          // Returning user: fetch from DB with sort
+          const { media, paging, mediaCount } = await getMediaFromDatabase(
+            "",
+            PAGE_SIZE,
+            sortOption,
+            1
+          );
+
+          setMedia(media);
+          setPaging(paging);
+          setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
+        }
+      } catch (error) {
+        console.error("Error fetching sorted media:", error);
+      } finally {
+        setIsSorting(false);
+        setLoading(false);
+      }
+    };
+
+    fetchSortedMedia();
+  }, [sortOption, hasInitialized]);
    
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -59,11 +125,12 @@ export default function PickProjects() {
 
     const initInstagram = async () => {
       try {
+        setIsInitialLoading(true);
         setLoading(true);
 
         if (code) {
           // FIRST-TIME USER → Handle OAuth callback
-          const { connected, media, paging, mediaCount } = await fetchInstagramMedia(code);
+          const { connected, media, paging, mediaCount } = await fetchInstagramMedia(code, null, sortOption, 1);
 
           if (connected) {
             setMedia(media);
@@ -80,7 +147,9 @@ export default function PickProjects() {
           //2️⃣ Then fetch from DB (always after refresh completes)
           const { media, paging, mediaCount } = await getMediaFromDatabase(
             "",
-            PAGE_SIZE
+            PAGE_SIZE,
+            sortOption,
+            1
           );
 
           setMedia(media);
@@ -91,6 +160,7 @@ export default function PickProjects() {
         console.error(error);
         // alert("Error fetching Instagram media");
       } finally {
+        setIsInitialLoading(false);
         setLoading(false);
       }
     };
@@ -136,13 +206,13 @@ const handleNext = async () => {
       let newPaging = {};
 
       if (code) {
-        // 👉 First-time user: fetch directly from Instagram API
-        const result = await fetchInstagramMedia(code, paging.cursors.after);
+        // 👉 First-time user: fetch next page from Instagram API
+        const result = await fetchInstagramMedia(code, paging.cursors.after, sortOption, currentPage + 2);
         moreMedia = result.media;
         newPaging = result.paging;
       } else {
-        // 👉 Returning user: fetch from DB
-        const result = await getMediaFromDatabase(paging.cursors.after, 20);
+        // 👉 Returning user: fetch next page from DB
+        const result = await getMediaFromDatabase(paging.cursors.after, 20, sortOption, currentPage + 2);
         moreMedia = result.media;
         newPaging = result.paging;
       }
@@ -214,6 +284,7 @@ const handleNext = async () => {
         return result;
       }
 
+      // const sortedMedia = getSortedMedia(media);
       const mediaPages = chunkArray(media, PAGE_SIZE);
       const currentMedia = mediaPages[currentPage] || [];
 
@@ -241,19 +312,26 @@ const handleNext = async () => {
       let tempMedia = media;
 
       // Loop from current last loaded page to target page
-      for (let i = mediaPages.length; i <= pageNumber; i++) {
+        for (let i = mediaPages.length; i <= pageNumber; i++) {
         let newMedia, newPaging;
 
         if (code) {
-          // First-time OAuth flow → fetch directly from Instagram
+          // First-time OAuth flow → fetch page from Instagram
+          const pageNum = mediaPages.length + 1;
           ({ media: newMedia, paging: newPaging } = await fetchInstagramMedia(
             code,
-            afterCursor || tempPaging?.cursors?.after
+            afterCursor || tempPaging?.cursors?.after,
+            sortOption,
+            pageNum
           ));
         } else {
-          // Subsequent visits → fetch from DB
+          // Subsequent visits → fetch page from DB
+          const pageNum = mediaPages.length + 1;
           const dbResult = await getMediaFromDatabase(
-            afterCursor || tempPaging?.cursors?.after
+            afterCursor || tempPaging?.cursors?.after,
+            PAGE_SIZE,
+            sortOption,
+            pageNum
           );
           newMedia = dbResult.media;
           newPaging = dbResult.paging;
@@ -400,84 +478,75 @@ const renderInstagramTab = () => (
     </div>
 
     {/* right side rendered projects graph api fetch  */}
-    <div ref={containerRef} className="w-[70vw] h-[50vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-    <MediaDisplay media={currentMedia} displayType="instagram" showLoader={showInstagramPopup} />
-    {shouldShowPagination && (
-      <div className="fixed left-1/2 -translate-y-1/2 bottom-20 5xl:bottom-24">
-        <div className="inline-flex items-center font-apfel-grotezk-regular rounded-lg px-1 py-1 space-x-1">
-          
-          {/* Prev */}
-          <button
-            onClick={handlePrev}
-            disabled={currentPage === 0}
-            className={`flex items-center justify-center text-lg ${
-              currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            ←
-          </button>
+    <div ref={containerRef} className="w-[70vw] h-[60vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        
+      <div className="sticky top-0 z-50 bg-smoke   flex flex-row mb-3 items-start justify-between text-graphite">
+        <span className=" font-qimano mt-2">
+        <span className="text-electric-blue text-xl">{(selectionState?.instagramSelected?.length || 0) + (selectionState?.uploadedFiles?.length || 0)} / 12 </span>
+         Selected <span className="text-[#878787] text-sm">*Minimum 4 required </span> 
+        </span>
+        {renderInstagramPopup()}
+      
+      <div className="relative w-64 mt-2 font-apfel-grotezk-regular">
 
-          {/* Page numbers */}
-          {(() => {
-            const visiblePages = [];
-            let startPage = Math.max(0, currentPage - 2);
-            let endPage = Math.min(totalPages - 1, startPage + 4);
+        {/* Label ON the border */}
+        <label
+          htmlFor="sort_by"
+          className="
+            absolute left-9 
+            -top-2
+            text-xs 
+            text-[#878787] bg-smoke 
+            px-1
+            pointer-events-none
+          "
+        >
+          Sort by
+        </label>
 
-            // Adjust startPage if not enough pages on the right
-            if (endPage - startPage < 4) {
-              startPage = Math.max(0, endPage - 4);
-            }
+        {/* Left icon */}
+        <TfiAlignLeft className="absolute left-3 top-1/2 -translate-y-1/2 text-lg pointer-events-none" />
 
-            for (let i = startPage; i <= endPage; i++) {
-              visiblePages.push(
-                <button
-                  key={i}
-                  onClick={() => handlePageClick(i)}
-                  className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors
-                    ${
-                      currentPage === i
-                        ? "text-electric-blue underline"
-                        : "text-graphite hover:text-electric-blue"
-                    }`}
-                >
-                  {i + 1}
-                </button>
-              );
-            }
+        {/* Select */}
+        <select
+          id="sort_by"
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="
+            block w-full appearance-none
+            border border-[#878787] bg-smoke rounded-md  text-graphite text-sm
+            py-3 pl-9 pr-8
+            focus:border-blue-500 focus:ring-0 focus:outline-none
+          "
+        >
+          <option value="date">Date uploaded</option>
+          <option value="engagement">Engagement rate</option>
+          <option value="likes">Likes</option>
+          <option value="comments">Comments</option>
+          <option value="views">Views</option>
+        </select>
 
-            return visiblePages;
-          })()}
-
-          {/* Ellipsis & Total Pages */}
-          {totalPages > 5 && currentPage < totalPages - 3 && (
-            <>
-              <span className="px-1 text-graphite select-none">...</span>
-              <button
-                onClick={() => handlePageClick(totalPages - 1)}
-                className="w-8 h-8 rounded-md flex items-center justify-center font-medium transition-colors text-graphite hover:text-electric-blue"
-              >
-                {totalPages}
-              </button>
-            </>
-          )}
-
-          {/* Next */}
-          <button
-            onClick={handleNext}
-            disabled={
-              isLoadingMore || (!mediaPages[currentPage + 1] && !paging?.next)
-            }
-            className={`flex items-center justify-center text-lg ${
-              !mediaPages[currentPage + 1] && !paging?.next
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
-          >
-            →
-          </button>
-        </div>
+        {/* Right chevron */}
+        <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
       </div>
-    )}
+
+
+
+      </div>
+    {
+      (() => {
+        const loadingType = isInitialLoading ? "initial" : isSorting ? "sorting" : isLoadingMore ? "pagination" : null;
+        return (
+          <MediaDisplay
+            media={currentMedia}
+            displayType="instagram"
+            showLoader={showInstagramPopup}
+            loading={loading || isLoadingMore}
+            loadingType={loadingType}
+          />
+        );
+      })()
+    }
 
     </div>
 
@@ -592,18 +661,6 @@ const renderInstagramPopup = () => {
 
 return (
     <div className="flex flex-col h-[77vh] max-w-[1800px] 7xl:max-w-[2500px] mx-auto bg-smoke w-full space-x-8 overflow-hidden" >
-      
-      <div className="flex flex-col mx-auto items-start text-graphite">
-        <p className="text-2xl text-black font-qimano">
-        Pick at least 4 posts that wish to highlight in your press kit.
-        </p>
-        <span className="mx-auto font-qimano ">
-        <span className="text-electric-blue text-xl">{(selectionState?.instagramSelected?.length || 0) + (selectionState?.uploadedFiles?.length || 0)} / 12</span> Selected
-        *Minimum 4 required to continue
-      </span>
-
-   {renderInstagramPopup()}
-      </div>
 
       <div className="flex w-full border-b border-gray-300 mt-0 items-center ">
       <button
@@ -642,86 +699,166 @@ return (
     {/* left side insta and upload projects */}
       {selectedTab === "instagram" ? renderInstagramTab() : renderUploadTab()}
 
-<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg w-[530px] px-4 py-1.5 shadow-xl z-50 h-[11%] font-apfel-grotezk-regular">
-  <div className="flex items-center gap-[9px] w-full h-full">
-    
-    {/* Logo + Hamburger */}
-    <div className="flex items-center justify-center gap-2 relative px-2 py-2">
-      <button onClick={handleNextClick} className="w-[105px] h-[56px] text-electric-blue text-2xl font-semibold text-center">
-        <Image 
-          src="/assets/images/snatch.svg"
-          width={40}
-          height={40}
-          alt="snatchlogo"
-          className="mx-auto w-32 h-10"
-        />
-      </button>
+    <div  className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg px-4 py-1.5 shadow-xl z-50 h-[11%] font-apfel-grotezk-regular transition-all duration-200"
+      style={{
+        width: containerWidth ? containerWidth + 40 : "auto", // dynamic!!
+      }}>
+      <div ref={contentRef} className="flex items-center gap-[9px] w-full h-full">
+        
+        {/* Logo + Hamburger */}
+        <div className="flex items-center justify-center gap-2 relative px-2 py-2">
+          <button onClick={handleNextClick} className="w-[105px] h-[56px] text-electric-blue text-2xl font-semibold text-center">
+            <Image 
+              src="/assets/images/snatch.svg"
+              width={40}
+              height={40}
+              alt="snatchlogo"
+              className="mx-auto w-32 h-10"
+            />
+          </button>
 
-      <button
-        onClick={handleHamburgerClick}
-        className="w-[60px] h-[56px] bg-gray-100 text-electric-blue rounded-md mx-auto font-medium hover:bg-transparent relative"
-      >
-        <Image
-          className="mx-auto w-8"
-          src="/assets/icons/onboarding/Hamburger.svg"
-          alt="hamburger"
-          width={20}
-          height={20}
-        />
-      </button>
+          <button
+            onClick={handleHamburgerClick}
+            className="w-[60px] h-[56px] bg-gray-100 text-electric-blue rounded-md mx-auto font-medium hover:bg-transparent relative"
+          >
+            <Image
+              className="mx-auto w-8"
+              src="/assets/icons/onboarding/Hamburger.svg"
+              alt="hamburger"
+              width={20}
+              height={20}
+            />
+          </button>
 
-      {/* Dropdown Menu */}
-      {isMenuVisible && (
-        <div className="absolute top-[-220%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
-          <ul className="flex flex-col p-3 gap-2">
-            <li onClick={handleDashboardClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
-              Dashboard
-            </li>
-            <li onClick={handleSettingClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
-              Settings
-            </li>
-            <li onClick={handleProfileClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
-              Profile
-            </li>
-          </ul>
+          {/* Dropdown Menu */}
+          {isMenuVisible && (
+            <div className="absolute top-[-220%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+              <ul className="flex flex-col p-3 gap-2">
+                <li onClick={handleDashboardClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
+                  Dashboard
+                </li>
+                <li onClick={handleSettingClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
+                  Settings
+                </li>
+                <li onClick={handleProfileClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
+                  Profile
+                </li>
+              </ul>
+            </div>
+          )}
+
+          {shouldShowPagination && (
+          <div className=" left-1/2  bottom-20 5xl:bottom-24 ">
+            <div className="inline-flex items-center font-apfel-grotezk-regular rounded-lg px-1 py-1 space-x-1">
+              {/* rectangle on hover padding, color-> blue-50 no border only fill*/}
+              {/* Prev */}
+              <button
+                onClick={handlePrev}
+                disabled={currentPage === 0}
+                className={`flex items-center text-graphite justify-center text-lg ${
+                  currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                ←
+              </button>
+
+              {/* Page numbers */}
+              {(() => {
+                const visiblePages = [];
+                let startPage = Math.max(0, currentPage - 2);
+                let endPage = Math.min(totalPages - 1, startPage + 4);
+
+                // Adjust startPage if not enough pages on the right
+                if (endPage - startPage < 4) {
+                  startPage = Math.max(0, endPage - 4);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                  visiblePages.push(
+                    <button
+                      key={i}
+                      onClick={() => handlePageClick(i)}
+                      className={`w-6 h-6 rounded-lg flex gap-x-0.5 items-center justify-center transition-colors hover:text-electric-blue   
+                        ${
+                          currentPage === i
+                            ? "text-electric-blue bg-blue-shade-50"
+                            : "text-graphite hover:text-electric-blue"
+                        }`}
+                    >
+                      {i + 1}
+                    </button>
+                  );
+                }
+
+                return visiblePages;
+              })()}
+
+              {/* Ellipsis & Total Pages */}
+              {totalPages > 3 && currentPage < totalPages - 3 && (
+                <>
+                  <span className="px-1 text-graphite select-none">...</span>
+                  <button
+                    onClick={() => handlePageClick(totalPages - 1)}
+                    className="w-8 h-8 rounded-md flex items-center justify-center font-medium transition-colors text-graphite hover:text-electric-blue"
+                  >
+                    {totalPages}
+                  </button>
+                </>
+              )}
+
+              {/* Next */}
+              <button
+                onClick={handleNext}
+                disabled={
+                  isLoadingMore || (!mediaPages[currentPage + 1] && !paging?.next)
+                }
+                className={`flex items-center  text-graphite justify-center text-lg ${
+                  !mediaPages[currentPage + 1] && !paging?.next
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                →
+              </button>
+            </div>
+          </div>
+        )}
         </div>
-      )}
+
+        {/* Final Action Buttons */}
+        <div className=" h-[56px] bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-center gap-[8px]">
+        <Button variant="secondary" className="space-x-1" onClick={handleBackClick}>  
+          <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="12"
+          viewBox="0 0 7 12"
+          fill="currentColor"
+          className="w-[14px] h-[12px] transition-colors duration-200"
+        >
+          <path d="M2.43411 5.99755L6.50736 10.0705C6.64569 10.209 6.71653 10.3831 6.71986 10.5928C6.72303 10.8023 6.65219 10.9795 6.50736 11.1245C6.36236 11.2694 6.18669 11.3418 5.98036 11.3418C5.77403 11.3418 5.59836 11.2694 5.45336 11.1245L0.959111 6.6303C0.865611 6.53663 0.79961 6.43788 0.761109 6.33405C0.722609 6.23021 0.70336 6.11805 0.70336 5.99755C0.70336 5.87705 0.72261 5.76488 0.761109 5.66105C0.79961 5.55721 0.865611 5.45846 0.959111 5.3648L5.45336 0.870545C5.59186 0.732212 5.76594 0.661379 5.97561 0.658046C6.18511 0.65488 6.36236 0.725713 6.50736 0.870545C6.65219 1.01555 6.72461 1.19121 6.72461 1.39755C6.72461 1.60388 6.65219 1.77954 6.50736 1.92455L2.43411 5.99755Z" />
+        </svg>
+        <p>Back</p>
+        </Button>
+
+          <Button
+            onClick={handleProjectClick}
+            disabled={isDisabled}
+          >
+            <span className="text-md">Add Project Details</span>
+              <Image
+              src="/assets/images/projectRightWhiteArrow.svg"
+              alt="back arrow"
+              width={14}
+              height={14}
+              className="w-[14px] h-[14px]"
+            />
+          </Button>
+          
+        </div>
+
+      </div>
     </div>
-
-    {/* Final Action Buttons */}
-    <div className=" h-[56px] bg-gray-100 px-2 py-2 rounded-lg flex justify-between items-center gap-[8px]">
-    <Button variant="secondary" className="space-x-1" onClick={handleBackClick}>  
-      <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="12"
-      viewBox="0 0 7 12"
-      fill="currentColor"
-      className="w-[14px] h-[12px] transition-colors duration-200"
-    >
-      <path d="M2.43411 5.99755L6.50736 10.0705C6.64569 10.209 6.71653 10.3831 6.71986 10.5928C6.72303 10.8023 6.65219 10.9795 6.50736 11.1245C6.36236 11.2694 6.18669 11.3418 5.98036 11.3418C5.77403 11.3418 5.59836 11.2694 5.45336 11.1245L0.959111 6.6303C0.865611 6.53663 0.79961 6.43788 0.761109 6.33405C0.722609 6.23021 0.70336 6.11805 0.70336 5.99755C0.70336 5.87705 0.72261 5.76488 0.761109 5.66105C0.79961 5.55721 0.865611 5.45846 0.959111 5.3648L5.45336 0.870545C5.59186 0.732212 5.76594 0.661379 5.97561 0.658046C6.18511 0.65488 6.36236 0.725713 6.50736 0.870545C6.65219 1.01555 6.72461 1.19121 6.72461 1.39755C6.72461 1.60388 6.65219 1.77954 6.50736 1.92455L2.43411 5.99755Z" />
-    </svg>
-    <p>Back</p>
-    </Button>
-
-      <Button
-        onClick={handleProjectClick}
-        disabled={isDisabled}
-      >
-         <span className="text-md">Add Project Details</span>
-          <Image
-          src="/assets/images/projectRightWhiteArrow.svg"
-          alt="back arrow"
-          width={14}
-          height={14}
-          className="w-[14px] h-[14px]"
-        />
-      </Button>
-      
-    </div>
-
-  </div>
-</div>
 
     </div>
   );
