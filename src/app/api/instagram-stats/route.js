@@ -36,7 +36,7 @@ export async function GET(req) {
     }
 
     const { instagramAccessToken, instagramAccountId } = user;
-
+    //https://developers.facebook.com/docs/instagram-platform/insights/  -> engagement, profile_views
     const url = `https://graph.facebook.com/v19.0/${instagramAccountId}?fields=followers_count,media_count,insights.metric(reach).period(days_28)&access_token=${instagramAccessToken}`;
 
     const response = await fetch(url);

@@ -33,3 +33,6 @@ export default function LoadingTransition() {
     </div>
   );
 }
+
+
+// If  after a long time, the dashboard doesnt come then use copy to rfersh page general 404 page

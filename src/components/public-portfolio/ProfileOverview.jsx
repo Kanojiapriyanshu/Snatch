@@ -10,6 +10,7 @@ import PortfolioPublic from "./PortfolioPublic";
 import Questionnaire from "./QuestionCard";
 import AudienceCard from "./AudienceCard";
 import SocialLinks from "./SocialLinks";
+import SharePopup from "./Sharepopup";
 
 const useAnimatedNumber = (target) => {
   const motionValue = useMotionValue(0);
@@ -43,6 +44,8 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const pressKitRef = useRef(null);
   const mainContainerRef = useRef(null);
   const [igData, setIgData] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [portfolioUrl, setPortfolioUrl] = useState("");
 
    // Load from sessionStorage once
   useEffect(() => {
@@ -252,28 +255,56 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
   );
   
   // Update the handleRequest function to handle both admin and public cases
-  const handleRequest = () => {
-  if (isAdminView) {
-  // For admin view - copy portfolio link
-  const parts = pathname.split("/");
-  const username = parts[1];
-  const portfolioUrl = `${window.location.origin}/${username}/media-kit`;
+  // const handleRequest = () => {
+  // if (isAdminView) {
+  // // For admin view - copy portfolio link
+  // const parts = pathname.split("/");
+  // const username = parts[1];
+  // setPortfolioUrl(`${window.location.origin}/${username}/media-kit`);
   
-  try {
-  navigator.clipboard.writeText(portfolioUrl);
-  alert("Portfolio link copied to clipboard!");
-  } catch (err) {
-  console.error("Failed to copy link:", err);
-  alert("Failed to copy link");
-  }
-  } else {
-  // For public view - redirect to request popup
-  const parts = pathname.split("/");
-  const influencerUsername = parts[1];
-  router.push(`/request-popup?username=${influencerUsername}`);
-  }
-  };
+  // try {
+  // navigator.clipboard.writeText(portfolioUrl);
+  // setIsOpen(true);
+  // } catch (err) {
+  // console.error("Failed to copy link:", err);
+  // alert("Failed to copy link");
+  // }
+  // } else {
+  // // For public view - redirect to request popup
+  // const parts = pathname.split("/");
+  // const influencerUsername = parts[1];
+  // router.push(`/request-popup?username=${influencerUsername}`);
+  // }
+  // };
 
+
+
+// Update the handleRequest function to handle both admin and public cases
+const handleRequest = () => {
+  if (isAdminView) {
+    // For admin view - copy portfolio link
+    const parts = pathname.split("/");
+    const username = parts[1];
+    const url = `${window.location.origin}/${username}/media-kit`;
+    
+    // Set the state for the popup
+    setPortfolioUrl(url);
+    setIsOpen(true);
+    
+    // Copy to clipboard using the local variable
+    try {
+      navigator.clipboard.writeText(url);
+    } catch (err) {
+      console.error("Failed to copy link:", err);
+      alert("Failed to copy link");
+    }
+  } else {
+    // For public view - redirect to request popup
+    const parts = pathname.split("/");
+    const influencerUsername = parts[1];
+    router.push(`/request-popup?username=${influencerUsername}`);
+  }
+};
   // Tooltip text logic for compensation types
   const getCompensationTooltip = (item) => {
     switch (item) {
@@ -694,6 +725,8 @@ const finalHeight = isMobile ? defaultHeight : headerHeight;
 
       {/* Spacer for fixed content on desktop */}
       {!isMobile && <div style={{ height: '560px' }} />}
+
+      {isOpen && <SharePopup portfolioUrl={portfolioUrl}   onClose={() => setIsOpen(false)} />}
 
       {/* Press Kit Section - Now in normal document flow */}
       <motion.div
