@@ -84,12 +84,10 @@ export async function GET(req, { params }) {
             @{user.username} {user.location ? `• ${user.location}` : ""}
           </p>
 
-          <p style={{ fontSize: 30, margin: "30px 0 0 0" }}>
-             {/* {user.story || "—"} - {user.reels} •{" "}
-            {user.compensation?.join(", ") || "Compensation N/A"} */}
+          {/* <p style={{ fontSize: 30, margin: "30px 0 0 0" }}>
            {formatNumber(user.story)} - {formatNumber(user.reels)} •{" "}
           {user.compensation?.join(", ") || "Compensation N/A"}
-          </p>
+          </p> */}
 
           <p style={{ marginTop: 20, color: "#ccc" }}>
             {user.industry?.join(", ") || ""}
