@@ -50,21 +50,21 @@ export const refreshInstagramMedia = inngest.createFunction(
       const now = new Date();
       const lastRefresh = draft.lastRefreshedAt || now;
 
-      const secondsSince = (now - lastRefresh) / 1000;
+      // const secondsSince = (now - lastRefresh) / 1000;
 
-      if (secondsSince < 4) {
-        console.log(`⏭️ Skipping ${userId}, refreshed ${secondsSince.toFixed(1)} sec ago`);
-        continue;
-      }
-
-
-      // const hoursSince = (now - lastRefresh) / (1000 * 60 * 60);
-
-      // // Skip if refreshed within last 24h
-      // if (hoursSince < 24) {
-      //   console.log(`⏭️ Skipping ${userId}, refreshed ${hoursSince.toFixed(1)}h ago`);
+      // if (secondsSince < 4) {
+      //   console.log(`⏭️ Skipping ${userId}, refreshed ${secondsSince.toFixed(1)} sec ago`);
       //   continue;
       // }
+
+
+      const hoursSince = (now - lastRefresh) / (1000 * 60 * 60);
+
+      // Skip if refreshed within last 24h
+      if (hoursSince < 24) {
+        console.log(`⏭️ Skipping ${userId}, refreshed ${hoursSince.toFixed(1)}h ago`);
+        continue;
+      }
 
       // ----------------------------------------------------
       // ⭐ FIXED SECTION: Replace entire `instagramSelected` array
