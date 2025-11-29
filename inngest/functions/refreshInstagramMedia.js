@@ -1,5 +1,5 @@
-// /inngest/functions/refreshInstagramMedia.mjs
-import { inngest } from "../client.mjs";
+// /inngest/functions/refreshInstagramMedia.js
+import { inngest } from "../client.js";
 import axios from "axios";
 
 export const refreshInstagramMedia = inngest.createFunction(
@@ -10,7 +10,7 @@ export const refreshInstagramMedia = inngest.createFunction(
   {
     event: "app/refresh.all.instagram",
      // ⭐ Adds cron job automatically
-    cron: "*/7 * * * *", // every 7 minute (for testing)
+    cron: "*/5 * * * *", // every 7 minute (for testing)
   },
 
   async ({ step }) => {
@@ -49,7 +49,7 @@ export const refreshInstagramMedia = inngest.createFunction(
 
       const secondsSince = (now - lastRefresh) / 1000;
 
-      if (secondsSince < 40) {
+      if (secondsSince < 4) {
         console.log(`⏭️ Skipping ${userId}, refreshed ${secondsSince.toFixed(1)} sec ago`);
         continue;
       }

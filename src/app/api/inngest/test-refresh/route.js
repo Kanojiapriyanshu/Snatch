@@ -1,5 +1,5 @@
 //src/app/api/inngest/test-refresh/route.js
-import { inngest } from "../../../../../inngest/client.mjs";
+import { inngest } from "../../../../../inngest/client.js";
 
 export async function GET() {
 

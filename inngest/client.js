@@ -1,4 +1,4 @@
-// /inngest/client.mjs
+// /inngest/client.js
 import { Inngest } from "inngest";
 
 export const inngest = new Inngest({
