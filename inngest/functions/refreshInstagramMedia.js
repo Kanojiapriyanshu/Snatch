@@ -6,6 +6,9 @@ export const refreshInstagramMedia = inngest.createFunction(
   {
     id: "refresh-all-instagram-media",
     name: "Refresh All Instagram Media",
+    // ⭐ Allow long-running background execution
+    timeout: "15m",   // up to 15 minutes
+    concurrency: 1,
   },
   {
     event: "app/refresh.all.instagram",
