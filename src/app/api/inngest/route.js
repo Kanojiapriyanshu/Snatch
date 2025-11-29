@@ -1,4 +1,6 @@
 //src/app/api/inngest/route.js
+export const runtime = "edge";
+
 import { serve } from "inngest/next";
 import { inngest } from "../../../../inngest/client.js";
 import { refreshInstagramMedia } from "../../../../inngest/functions/refreshInstagramMedia.js";
