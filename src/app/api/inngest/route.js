@@ -1,5 +1,5 @@
 //src/app/api/inngest/route.js
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 import { serve } from "inngest/next";
 import { inngest } from "../../../../inngest/client.js";
