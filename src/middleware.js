@@ -31,7 +31,8 @@ const isPublicRoute = createRouteMatcher([
   "/onboarding/loading",
   "/:username/media-kit/loading(.*)" ,
   "/api/public-portfolio/userinfo(.*)",
-  "/api/og/:username"
+  "/api/og/:username", 
+  "/api/inngest(.*)",
 ]);
 
 export default clerkMiddleware(async (authFn, request) => {
@@ -90,7 +91,10 @@ export default clerkMiddleware(async (authFn, request) => {
 
 export const config = {
   // matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
-  matcher : ["/((?!_next/static|_next/image|api/inngest|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  //matcher : ["/((?!_next/static|_next/image|api/inngest|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+   matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|api/inngest|api/inngest/.*).*)",
+  ],
 };
 
 
