@@ -5,8 +5,8 @@ export const scheduleInstagramRefresh = inngest.createFunction(
     id: "schedule-instagram-refresh",
     name: "Schedule Instagram Refresh (Daily)",
   },
-  // { cron: "0 0 * * *" }, // Runs every 24 hours at midnight
-  { cron: "*/30 * * * *" }, // Every 30 minutes for testing
+  { cron: "0 0 * * *" }, // Runs every 24 hours at midnight
+  //{ cron: "*/30 * * * *" }, // Every 30 minutes for testing
   async ({ step }) => {
     const { default: connectDb } = await import("../../src/db/mongoose.js");
     const { default: User } = await import("../../src/models/user.model.js");
