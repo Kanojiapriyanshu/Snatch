@@ -1,4 +1,4 @@
-
+//src/middleware.js
 
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -90,12 +90,14 @@ export default clerkMiddleware(async (authFn, request) => {
 });
 
 export const config = {
-  // matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
-  //matcher : ["/((?!_next/static|_next/image|api/inngest|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
    matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/inngest|api/inngest/.*).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/inngest|api/inngest/.*|api/webhooks/.*).*)",
+    // "/((?!_next/static|_next/image|favicon.ico|api/inngest|api/inngest/.*).*)",
   ],
 };
 
+
+  // matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  //matcher : ["/((?!_next/static|_next/image|api/inngest|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 
 // Starting October 8, 2024, the Node SDK is entering a three-month notice period. We encourage everyone to migrate to @clerk/express. For full details, please see our changelog: https://clerk.com/changelog/2024-10-08-express-sdk

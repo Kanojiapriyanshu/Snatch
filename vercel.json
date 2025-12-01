@@ -1,0 +1,9 @@
+
+{
+  "cron": {
+    "refresh-instagram-every-5-min": {
+      "schedule": "*/5 * * * *",
+      "path": "/api/inngest"
+    }
+  }
+}
