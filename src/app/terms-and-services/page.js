@@ -28,7 +28,7 @@ We operate the website app.snatchsocial.com (the 'Site'), as well as any other r
 
 Snatch Social, a digital platform designed to connect influencers and brands for seamless collaborations.
 
-You can contact us by phone at +917021005555, email at mahirr@snatchsocial.com, or by mail to G-1/192, Pushpa Kunj, Wadala Station Road, Wadala West, Mumbai, Maharashtra 400031, India.
+You can contact us by phone at +917021005555, email at info@snatchsocial.com, or by mail to G-1/192, Pushpa Kunj, Wadala Station Road, Wadala West, Mumbai, Maharashtra 400031, India.
 
 These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity ('you'), and Snatch Social LLP, concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.
 
@@ -108,7 +108,7 @@ solely for your personal, non-commercial use or internal business purpose.
 
 Except as set out in this section or elsewhere in our Legal Terms, no part of the Services and no Content or Marks may be copied, reproduced, aggregated, republished, uploaded, posted, publicly displayed, encoded, translated, transmitted, distributed, sold, licensed, or otherwise exploited for any commercial purpose whatsoever, without our express prior written permission.
 
-If you wish to make any use of the Services, Content, or Marks other than as set out in this section or elsewhere in our Legal Terms, please address your request to: mahirr@snatchsocial.com. If we ever grant you the permission to post, reproduce, or publicly display any part of our Services or Content, you must identify us as the owners or licensors of the Services, Content, or Marks and ensure that any copyright or proprietary notice appears or is visible on posting, reproducing, or displaying our Content.
+If you wish to make any use of the Services, Content, or Marks other than as set out in this section or elsewhere in our Legal Terms, please address your request to: info@snatchsocial.com. If we ever grant you the permission to post, reproduce, or publicly display any part of our Services or Content, you must identify us as the owners or licensors of the Services, Content, or Marks and ensure that any copyright or proprietary notice appears or is visible on posting, reproducing, or displaying our Content.
 
 
 We reserve all rights not expressly granted to you in and to the Services, Content, and Marks.
@@ -377,7 +377,7 @@ The Parties agree that any arbitration shall be limited to the Dispute between t
           Mumbai, Maharashtra 400031
           India
           Phone: +917021005555
-          mahirr@snatchsocial.com
+          info@snatchsocial.com
             </p>
           
           {/* Bottom fade overlay */}

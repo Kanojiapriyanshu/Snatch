@@ -91,7 +91,10 @@ export default clerkMiddleware(async (authFn, request) => {
 
 export const config = {
    matcher: [
-     "/((?!_next/static|_next/image|favicon.ico|api/inngest|api/inngest/.*).*)",
+     // Skip static files & public assets completely
+    "/((?!_next/static|_next/image|_next|favicon.ico|assets/|.*\\..*|api/inngest|api/inngest/.*).*)",
+    // "/((?!_next/static|_next/image|favicon.ico|assets|.*\\.(png|jpg|jpeg|svg|gif|ico|webp)|api/inngest|api/inngest/.*).*)",
+    //  "/((?!_next/static|_next/image|favicon.ico|api/inngest|api/inngest/.*).*)",
   ],
 };
 

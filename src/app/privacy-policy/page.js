@@ -252,7 +252,7 @@ const privacyPolicy = () => {
             If you have any questions about this Privacy Policy, You can contact us:
           </p>
           <ul className="list-disc pl-6 text-gray-700 mb-6 space-y-2">
-            <li>By email: <a href="mailto:mahirr@snatchsocial.com" className="text-blue-600 underline">mahirr@snatchsocial.com</a></li>
+            <li>By email: <a href="mailto:info@snatchsocial.com" className="text-blue-600 underline">info@snatchsocial.com</a></li>
           </ul>
         </div>
       </main>
