@@ -1,4 +1,5 @@
 // src/app/api/og/[username]/route.js
+
 import { ImageResponse } from "next/og";
 import connectDb from "@/db/mongoose";
 import OnboardingData from "@/models/onboarding.model";
@@ -17,6 +18,7 @@ export async function GET(req, { params }) {
     console.error("❌ DB Error:", err);
   }
 
+  // Fallback OG
   if (!user) {
     return new ImageResponse(
       (
@@ -24,7 +26,8 @@ export async function GET(req, { params }) {
           style={{
             fontSize: 50,
             color: "white",
-            background: "linear-gradient(135deg, #004CFF 0%, #0057E7 50%, #002D8B 100%)",
+            background:
+              "linear-gradient(135deg, #004CFF 0%, #0057E7 50%, #002D8B 100%)",
             width: "100%",
             height: "100%",
             display: "flex",
@@ -32,25 +35,16 @@ export async function GET(req, { params }) {
             justifyContent: "center",
           }}
         >
-          Creator not found
+          <span>Creator not found</span>
         </div>
       ),
       { width: 1200, height: 630 }
     );
   }
 
-  const profilePic =
-    user.profilePicture?.startsWith("http")
-      ? user.profilePicture
-      : "https://app.snatchsocial.com/default-thumbnail.jpg";
-
-    function formatNumber(num) {
-    if (!num) return "—";
-    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
-    if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
-    return num;
-    }
-
+  const profilePic = user.profilePicture?.startsWith("http")
+    ? user.profilePicture
+    : "https://app.snatchsocial.com/default-thumbnail.jpg";
 
   return new ImageResponse(
     (
@@ -58,64 +52,99 @@ export async function GET(req, { params }) {
         style={{
           width: "100%",
           height: "100%",
-          display: "flex", // ✅ Important!
-          background: "#0057E7",
-          color: "white",
+          display: "flex",
+          flexDirection: "row",
+          background: "#ffffff",
+          color: "#000",
           fontFamily: "sans-serif",
-          padding: "60px 80px",
-          justifyContent: "space-between",
-          alignItems: "center",
         }}
       >
-        {/* Left Section */}
+        {/* LEFT IMAGE SIDE */}
         <div
           style={{
-            flex: 1,
-            display: "flex", // ✅ Important
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <h1 style={{ fontSize: 64, fontWeight: "bold", margin: 0 }}>
-            {user.firstName} {user.lastName || ""}
-          </h1>
-
-          <p style={{ fontSize: 28, color: "white", margin: "10px 0" }}>
-            @{user.username} {user.location ? `• ${user.location}` : ""}
-          </p>
-
-          {/* <p style={{ fontSize: 30, margin: "30px 0 0 0" }}>
-           {formatNumber(user.story)} - {formatNumber(user.reels)} •{" "}
-          {user.compensation?.join(", ") || "Compensation N/A"}
-          </p> */}
-
-          <p style={{ marginTop: 20, color: "#ccc" }}>
-            {user.industry?.join(", ") || ""}
-          </p>
-        </div>
-
-        {/* Right Section */}
-        <div
-          style={{
-            width: 300,
-            height: 400,
-            borderRadius: 20,
+            width: "42%",
+            height: "100%",
             overflow: "hidden",
-            background: "#222",
-            display: "flex", // ✅ Important
-            alignItems: "center",
-            justifyContent: "center",
+            display: "flex",
           }}
         >
           <img
             src={profilePic}
-            width="300"
-            height="400"
+            width="100%"
+            height="100%"
             style={{ objectFit: "cover" }}
           />
         </div>
+
+        {/* RIGHT CONTENT SIDE */}
+        <div
+          style={{
+            width: "58%",
+            padding: "60px 50px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: "35px",
+          }}
+        >
+          {/* NAME */}
+          <div
+            style={{
+              fontSize: 70,
+              fontWeight: 600,
+              marginBottom: -20,
+              display: "flex",
+            }}
+          >
+            <span>{`${user.firstName} ${user.lastName}`}</span>
+          </div>
+
+          {/* INDUSTRY TAGS */}
+          {user?.industry?.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                gap: 15,
+              }}
+            >
+              {user.industry.map((tag, i) => (
+                <div
+                  key={i}
+                  style={{
+                    padding: "10px 20px",
+                    background: "rgba(0, 55, 235, 0.10)",
+                    borderRadius: 8,
+                    fontSize: 30,
+                    display: "flex",
+                  }}
+                >
+                  <span>{tag}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* USERNAME + LOCATION */}
+          <div
+            style={{
+              fontSize: 32,
+              paddingTop: 10,
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 15,
+            }}
+          >
+            <span>@{user.username}</span>
+
+            {user.location && <span>• {user.location}</span>}
+          </div>
+        </div>
       </div>
     ),
-    { width: 1200, height: 630,  }
+    {
+      width: 1200,
+      height: 630,
+    }
   );
 }
