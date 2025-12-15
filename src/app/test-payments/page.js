@@ -1,14 +1,22 @@
 //src/app/test-payments/page.js
 
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
+import Script from "next/script";
 
 export default function TestPayments() {
   const [userId, setUserId] = useState("user_test_123");
   const [planType, setPlanType] = useState("monthly");
   const [loading, setLoading] = useState(false);
+  const [rzpLoaded, setRzpLoaded] = useState(false);
 
   const startSubscription = async () => {
+    if (!rzpLoaded) {
+      alert("Razorpay SDK not loaded yet");
+      return;
+    }
+
     setLoading(true);
 
     const res = await fetch("/api/payments/subscriptions/create", {
@@ -47,68 +55,74 @@ export default function TestPayments() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 space-y-6">
-        <h2 className="text-2xl font-bold text-center">
-          Razorpay Subscription Test
-        </h2>
+    <>
+      {/* Razorpay SDK */}
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
+        onLoad={() => setRzpLoaded(true)}
+      />
 
-        <div>
-          <label className="block text-sm font-medium mb-1">User ID</label>
-          <input
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-            placeholder="Enter User ID"
-          />
-        </div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 space-y-6">
+          <h2 className="text-2xl font-bold text-center">
+            Razorpay Subscription Test
+          </h2>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Select Plan
-          </label>
-          <select
-            value={planType}
-            onChange={(e) => setPlanType(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          <div>
+            <label className="block text-sm font-medium mb-1">User ID</label>
+            <input
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Select Plan
+            </label>
+            <select
+              value={planType}
+              onChange={(e) => setPlanType(e.target.value)}
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+            >
+              <option value="monthly">₹900 / month</option>
+              <option value="annual">₹9000 / year</option>
+            </select>
+          </div>
+
+          <button
+            onClick={startSubscription}
+            disabled={loading || !rzpLoaded}
+            className="w-full bg-black text-white py-3 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50"
           >
-            <option value="monthly">₹900 / month</option>
-            <option value="annual">₹9000 / year</option>
-          </select>
+            {loading ? "Starting..." : "Upgrade to Pro – Start Free Trial"}
+          </button>
+
+          <button
+            onClick={async () => {
+              await fetch("/api/payments/subscriptions/cancel", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId }),
+              });
+              alert("Subscription cancelled");
+            }}
+            className="text-red-600 underline text-sm"
+          >
+            Cancel Subscription
+          </button>
+
+          <p className="text-xs text-gray-500 text-center">
+            Card required · ₹0 charged today · Cancel anytime
+          </p>
         </div>
-
-        <button
-          onClick={startSubscription}
-          disabled={loading}
-          className="w-full bg-black text-white py-3 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50"
-        >
-          {loading ? "Starting..." : "Upgrade to pro – Start Free Trial"}
-        </button>
-
-        <button
-        onClick={async () => {
-          await fetch("/api/payments/subscriptions/cancel", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId }),
-          });
-          alert("Subscription cancelled");
-        }}
-        className="text-red-600 underline text-sm"
-      >
-        Cancel Subscription
-      </button>
-
-
-        <p className="text-xs text-gray-500 text-center">
-          Card required · ₹0 charged today · Cancel anytime
-        </p>
-
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </div>
-    </div>
+    </>
   );
 }
+
 
 
 // "use client";
