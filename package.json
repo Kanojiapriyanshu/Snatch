@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "backdate": "node src/scripts/backdateInstagramDocs.js"
+    "backdate": "node src/scripts/backdateInstagramDocs.js",
+    "subscriptions" : "node src/scripts/users-subscription.js"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.6",
@@ -28,6 +29,7 @@
     "mongoose": "^8.9.4",
     "next": "14.2.18",
     "posthog-js": "^1.231.0",
+    "razorpay": "^2.9.6",
     "react": "^18",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^18",

@@ -1,3 +1,4 @@
+//src/models/user.model.js
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -32,6 +33,24 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false, // added to save the fb page name
     },
+
+    subscription: {
+      plan: { type: String, enum: ["free", "early_bird", "trial", "pro"], default: "free" },
+      trialStartedAt: { type: Date, default: null },  // for project tracking of trial updated to pro or not
+      trialEndsAt: { type: Date, default: null },
+      subscriptionId: { type: String, default: null }, // Razorpay subscription id (not for early bird)
+      nextBillingDate: { type: Date, default: null },  // Razorpay sends webhook updates
+      isActive: { type: Boolean, default: true },
+    },
+  usage: {
+      generationsUsed: { type: Number, default: 0 },
+      projectsUsed: { type: Number, default: 0 },
+    },
+    limits: {
+    generationLimit: { type: Number, default: 10 }, // free plan default
+    projectLimit: { type: Number, default: 8 },
+  },
+
   },
   { timestamps: true }
 );

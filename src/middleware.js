@@ -33,6 +33,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/public-portfolio/userinfo(.*)",
   "/api/og/:username", 
   "/api/inngest(.*)",
+  '/test-payments(.*)'
 ]);
 
 export default clerkMiddleware(async (authFn, request) => {
