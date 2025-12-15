@@ -37,6 +37,11 @@ export async function POST(req) {
         "subscription.trialStartedAt": new Date(),
         "subscription.trialEndsAt": new Date(sub.current_end * 1000),
         "subscription.nextBillingDate": new Date(sub.current_end * 1000),
+        // ✅ ADD PRO LIMITS FOR TRIAL USERS!
+        limits: {
+          generationLimit: 16,
+          projectLimit: 12,
+        },
       }
     );
   }
