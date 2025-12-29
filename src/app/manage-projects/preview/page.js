@@ -13,11 +13,9 @@ import Button from "@/components/ui/Button";
  function PreviewContent() {
   const {
     selectionState,
-    handleFileUpload,
-    updateFormDataForImage,
     isBrandCollaboration,
-    setIsBrandCollaboration
   } = useSelectedProjects();
+  
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const [isHydrated, setIsHydrated] = useState(false);
   const [insights, setInsights] = useState([]);

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useSelectedProjects } from "@/app/manage-projects/context";
+import { PLAN_TOOLTIPS } from "@/data/planTooltips";
+import Tooltip from "@/components/ui/Tooltip";
 
-const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, loadingType }) => {
+const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, loadingType, plan, projectsUsed, projectLimit, remaining, onLimitExceeded }) => {
   const [carouselIndexes, setCarouselIndexes] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null); 
@@ -15,7 +17,6 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, 
     removeFile,
     addFile,
   } = useSelectedProjects();
-  const MAX_SELECTION = 12;
 
   // Check if a media item is selected
   const isMediaSelected = (mediaId) =>
@@ -31,15 +32,52 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, 
   const getSelectedUploadedFile = (mediaId) =>
     selectionState?.uploadedFiles?.find((file) => file.mediaId === mediaId);
 
+    const isFreePlan = plan === "free";
+    const badgeBg = isFreePlan ? "bg-graphite" : "bg-smoke";
+    const badgeIcon = isFreePlan  ? "/assets/images/pro-yellow.svg"
+    : "/assets/images/pro-grey.svg";
+    const tooltip = PLAN_TOOLTIPS.number_of_projects[plan] ?? PLAN_TOOLTIPS.number_of_projects.free;
+
+  async function updateProjectUsage(action = "increment") {
+    try {
+      const res = await fetch("/api/user/usage/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "projects",
+          action, // "increment" | "decrement"
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Usage update failed:", data);
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      console.error("Error updating usage:", err);
+      return null;
+    }
+  }
+
   // Toggle select/deselect for Instagram media
-  const handleSelect = (mediaItem) => {
+  const handleSelect = async (mediaItem) => {
     const totalSelected =
     (selectionState.instagramSelected?.length || 0) +
     (selectionState.uploadedFiles?.length || 0);
 
+    //If user is on free plan and already selected 8+, show upgrade bar when they try to add more
+    if (!isMediaSelected(mediaItem.id) && plan === "free" && totalSelected >= 8) {
+      onLimitExceeded && onLimitExceeded();
+      return;
+    }
+
       // Otherwise, check the limit
-    if (totalSelected >= MAX_SELECTION) {
-      alert(`You can select up to ${MAX_SELECTION} projects only.`);
+    if (totalSelected >= projectLimit) {
+      alert(`You can select up to ${projectLimit} projects only.`);
       return;
     }
     
@@ -76,10 +114,21 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, 
         mediaItem.caption || ""   // ✅ Pass caption
       );
     }
+    await updateProjectUsage("increment"); // 👈 increment backend
   };
 
   // Toggle select/deselect for uploaded files
   const handleFileSelect = (file) => {
+    const totalSelected =
+      (selectionState.instagramSelected?.length || 0) +
+      (selectionState.uploadedFiles?.length || 0);
+
+      //Free users: show upgrade when trying to add beyond 8
+      if (!isUploadedFileSelected(file.mediaId) && plan === "free" && totalSelected >= 8) {
+        onLimitExceeded && onLimitExceeded();
+        return;
+      }
+
     if (isUploadedFileSelected(file.mediaId)) {
       const hasFormData = selectionState.formData?.some(
         (item) => item.key === String(file.mediaId)
@@ -126,6 +175,11 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, 
     });
   };
 
+  if (projectsUsed === projectLimit && plan == "free") {
+    alert("You have reached your project limit. Please upgrade to Pro to add more projects.");
+    //black UI  overlay upgrade to pro
+  }
+
   const toggleMute = (id) => {
   setMutedStates((prev) => ({
     ...prev,
@@ -133,7 +187,8 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, 
   }));
 };
 
-
+const LIMIT_REACHED = selectionState.instagramSelected.length +
+                      selectionState.uploadedFiles.length >= 8;
 
 
   const gridContent = () => {
@@ -187,7 +242,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, 
       return media.map((mediaItem) => (
         <div
           key={mediaItem.id}
-          className="relative w-full aspect-[4/5] border border-gray-300 rounded-md overflow-hidden cursor-pointer"
+          className="relative w-full aspect-[4/5] border border-gray-300 rounded-md  cursor-pointer"
           onClick={() => handleSelect(mediaItem)}
         >
           <div
@@ -195,6 +250,21 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, 
               isMediaSelected(mediaItem.id) ? "bg-electric-blue" : "bg-transparent border border-black"
             }`}
           />
+
+          {LIMIT_REACHED && !isMediaSelected(mediaItem.id) && isFreePlan && (
+            <div className="absolute top-2 right-2 z-20">
+              <div className={`w-7 h-6 rounded-md flex items-center justify-center ${badgeBg}`}>
+                  <Tooltip title={tooltip.title} body={tooltip.body} placement={"bottom"}>
+                <Image
+                  src={badgeIcon}
+                  width={13}
+                  height={13}
+                  alt="pro required"
+                />
+                </Tooltip>
+              </div>
+            </div>
+          )}
 
           {mediaItem.media_type === "IMAGE" ? (
             <img src={mediaItem.media_url} alt={mediaItem.id || "Media"} className="object-cover w-full h-full" />
@@ -298,7 +368,7 @@ const MediaDisplay = ({ media, uploadedFiles, displayType, showLoader, loading, 
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500 text-sm">Unsupported file</div>
             )}
-
+              {/* show pro icon too  : check pro/free then put icon */}
             <div className={`absolute top-2 left-2 w-4 h-4 rounded-full flex items-center justify-center z-10 ${isSelected ? "bg-electric-blue" : "bg-transparent border border-black"}`}></div>
 
             {isSelected && (

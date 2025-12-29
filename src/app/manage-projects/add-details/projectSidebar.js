@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import SvgComponent from "@/components/svg/Instagramsvg";
 import Uploadsvg from "@/components/svg/Uploadsvg";
@@ -11,7 +10,7 @@ export default function ProjectSidebar({
   selectionState,
   computedProjects,
   handleProjectClick,
-}) {
+}){
   return (
     <div className="w-[278px] bg-white text-black p-3 rounded-lg">
       {/* Tabs header */}

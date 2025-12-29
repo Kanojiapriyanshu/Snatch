@@ -1,3 +1,9 @@
+// // src/app/(public-portfolio)/[username]/media-kit/layout.js
+import connectDb from "@/db/mongoose";
+import User from "@/models/user.model";
+import Image from "next/image";
+import Link from "next/link";
+
 export async function generateMetadata({ params }) {
   const { username } = params;
   const baseUrl =
@@ -29,6 +35,46 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function MediaKitLayout({ children }) {
-  return <>{children}</>;
+async function getUserPlan(username) {
+  await connectDb();
+
+  const user = await User.findOne(
+    { instagramUsername: username },
+    { "subscription.plan": 1 }
+  ).lean();
+
+  return user?.subscription?.plan ?? "free";
+}
+
+export default async function MediaKitLayout({ children, params }) {
+  const plan = await getUserPlan(params.username);
+  const showBranding = plan === "free";
+
+  return (
+    <>
+      {children}
+      {showBranding && (
+        <Link
+          href="https://snatchsocial.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-9 right-6 z-50"
+        >
+          <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-md shadow-lg
+                          flex gap-2 items-center justify-center
+                          hover:scale-[1.03] transition-transform cursor-pointer">
+            <div className="text-graphite font-apfel-grotezk-mittel font-medium text-[15px] flex gap-1 items-center">
+              Built on
+              <Image
+                src="/assets/images/snatch-white.svg"
+                alt="Built on SNATCH"
+                width={56}
+                height={56}
+              />
+            </div>
+          </div>
+        </Link>
+      )}
+    </>
+  );
 }

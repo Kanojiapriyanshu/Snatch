@@ -2,22 +2,26 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Tooltip from "@/components/ui/Tooltip";
+import { PLAN_TOOLTIPS } from "@/data/planTooltips";
 
 const Portfolio = () => {
   const [projects, setProjects] = useState([]);
   const [carouselIndexes, setCarouselIndexes] = useState({});
-  const [mutedStates, setMutedStates] = useState({}); 
+  const [mutedStates, setMutedStates] = useState({});
+  const [plan, setPlan] = useState(null);
 
+  /* ---------------- FETCH PROJECTS ---------------- */
   useEffect(() => {
-    const fetchProjects = async () => {
+    async function fetchProjects() {
       try {
-        const response = await fetch("/api/projects/all-projects");
-        const data = await response.json();
+        const res = await fetch("/api/projects/all-projects");
+        const data = await res.json();
 
-        if (data.success && data.instagram && data.uploaded) {
-          const processedProjects = [
+        if (data.success) {
+          const processed = [
             ...data.instagram.map((item) => {
-              if (item.name === "CAROUSEL_ALBUM" && item.children?.length > 0) {
+              if (item.name === "CAROUSEL_ALBUM" && item.children?.length) {
                 return {
                   mediaType: "CAROUSEL_ALBUM",
                   children: item.children.map((child) => ({
@@ -26,151 +30,179 @@ const Portfolio = () => {
                     mediaId: child.id,
                   })),
                   mediaId: item.mediaId,
-                  title: item.name,
                 };
               }
               return {
                 mediaType: item.name || item.fileName,
                 mediaUrl: item.mediaLink || item.fileUrl,
                 mediaId: item.mediaId,
-                title: item.name,
               };
             }),
             ...data.uploaded.map((item) => ({
               mediaType: item.mediaType || item.fileName,
               mediaUrl: item.mediaUrl || item.fileUrl,
               mediaId: item.mediaId,
-              title: item.name,
             })),
           ];
-          setProjects(processedProjects);
-        } else {
-          console.error("Error:", data.error);
+          setProjects(processed);
         }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
+      } catch (err) {
+        console.error("Error fetching projects", err);
       }
-    };
-
+    }
     fetchProjects();
   }, []);
 
-   const toggleMute = (e, id) => {
-    e.stopPropagation();
-    setMutedStates((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+  /* ---------------- FETCH PLAN ---------------- */
+  useEffect(() => {
+    async function fetchPlan() {
+      try {
+        const res = await fetch("/api/user/limits");
+        const data = await res.json();
+        setPlan(data.plan);
+      } catch (err) {
+        console.error("Failed to fetch plan", err);
+      }
+    }
+    fetchPlan();
+  }, []);
 
-  const handleSlide = (e, mediaId, direction, totalSlides) => {
+  const handleSlide = (e, mediaId, direction, total) => {
+    e.preventDefault();
     e.stopPropagation();
     setCarouselIndexes((prev) => {
-      const currentIndex = prev[mediaId] || 0;
-      const newIndex =
-        direction === "next"
-          ? (currentIndex + 1) % totalSlides
-          : currentIndex === 0
-          ? totalSlides - 1
-          : currentIndex - 1;
-      return { ...prev, [mediaId]: newIndex };
+      const current = prev[mediaId] || 0;
+      return {
+        ...prev,
+        [mediaId]:
+          direction === "next"
+            ? (current + 1) % total
+            : current === 0
+            ? total - 1
+            : current - 1,
+      };
     });
   };
 
+  const isFreePlan = plan === "free";
+  const tooltip = PLAN_TOOLTIPS[plan] || PLAN_TOOLTIPS.free;
+
   return (
     <div className="w-full flex justify-center">
-      <div className="w-full max-w-5xl p-6 overflow-y-auto" style={{ maxHeight: 'calc(85vh - 96px)', scrollbarWidth: 'none',        // Firefox
-    msOverflowStyle: 'none' }} >
-        {projects.length > 0 ? (
+      <div className="w-full max-w-5xl p-6 overflow-y-auto max-h-[85vh]" style={{ maxHeight: 'calc(85vh - 96px)', scrollbarWidth: 'none', }}>
+        {projects.length ? (
           <div className="grid grid-cols-3 gap-8">
             {projects.map((project, index) => {
-              const activeImageId = project.mediaId || project.id;
-              return (
+              const isLocked =
+                isFreePlan && projects.length > 8 && index >= 8;
+              const activeImageId = project.mediaId;
+
+              const Media = (
+                <div className="relative w-[165px] h-[210px] rounded-md overflow-hidden">
+                  {/* MEDIA */}
+                  {project.mediaType === "CAROUSEL_ALBUM" &&
+                  project.children ? (
+                    <>
+                      {project.children.map((child, idx) => (
+                        <div
+                          key={child.mediaId}
+                          className={`absolute inset-0 transition-opacity duration-300 ${
+                            (carouselIndexes[project.mediaId] || 0) === idx
+                              ? "opacity-100"
+                              : "opacity-0"
+                          }`}
+                        >
+                          {child.mediaType === "IMAGE" ? (
+                            <Image
+                              src={child.mediaUrl}
+                              alt="media"
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <video
+                              src={child.mediaUrl}
+                              muted
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                      ))}
+
+                      {project.children.length > 1 && !isLocked && (
+                        <div className="absolute inset-0 z-20 flex items-center justify-between px-1">
+                          <button
+                            onClick={(e) =>
+                              handleSlide(
+                                e,
+                                project.mediaId,
+                                "prev",
+                                project.children.length
+                              )
+                            }
+                            className="bg-black/60 text-white rounded-full w-6 h-6"
+                          >
+                            ❮
+                          </button>
+                          <button
+                            onClick={(e) =>
+                              handleSlide(
+                                e,
+                                project.mediaId,
+                                "next",
+                                project.children.length
+                              )
+                            }
+                            className="bg-black/60 text-white rounded-full w-6 h-6"
+                          >
+                            ❯
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  ) : project.mediaType?.includes("VIDEO") ||
+                    project.mediaType?.endsWith(".mp4") ? (
+                    <video
+                      src={project.mediaUrl}
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={project.mediaUrl}
+                      alt="project"
+                      fill
+                      className="object-cover"
+                    />
+                  )}
+
+                  {/* 🔒 LOCK OVERLAY */}
+                  {isLocked && (
+                    <div className="absolute inset-0 z-30 bg-[#212121]/80 backdrop-blur-sm flex flex-col items-center justify-center text-center px-4">
+                      <Tooltip title={tooltip.title} body={tooltip.body} placement="top">
+                        <Image
+                          src="/assets/images/pro-yellow.svg"
+                          width={20}
+                          height={20}
+                          alt="Pro required"
+                          className="cursor-pointer"
+                        />
+                      </Tooltip>
+                      <p className="mt-3 text-sm text-white leading-snug font-apfel-grotezk-regular">
+                       Your trial has ended. Upgrade to showcase all posts in your press kit.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+
+              return  (
                 <Link
                   key={index}
                   href={`/manage-projects/preview?activeImageId=${activeImageId}`}
+                  className="p-2"
                 >
-                  <div className="rounded-lg p-2 cursor-pointer">
-                    {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
-                      <div className="relative w-[165px] h-[210px] group">
-                        {project.children.map((child, idx) => (
-                          <div
-                            key={child.id}
-                            className={`absolute h-[210px] inset-0 transition-transform duration-500 ${
-                              (carouselIndexes[project.mediaId] || 0) === idx
-                                ? "translate-x-0 opacity-100"
-                                : "translate-x-50 opacity-0"
-                            }`}
-                          >
-                            {child.mediaType === "IMAGE" ? (
-                              <Image
-                                src={child.mediaUrl}
-                                alt={`Media ${child.mediaId}`}
-                                fill
-                                className="object-cover rounded-md h-[210px]"
-                              />
-                            ) : (
-                              <video
-                                controls
-                                 disablePictureInPicture
-                                controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
-                                className="w-full object-cover rounded-md h-[210px]"
-                                src={child.mediaUrl}
-                              />
-                            )}
-                          </div>
-                        ))}
-                        {project.children.length > 1 && (
-                          <div className="absolute z-10 inset-0 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <button
-                              onClick={(e) =>
-                                handleSlide(
-                                  e,
-                                  project.mediaId,
-                                  "prev",
-                                  project.children.length
-                                )
-                              }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 ml-1"
-                            >
-                              ❮
-                            </button>
-                            <button
-                              onClick={(e) =>
-                                handleSlide(
-                                  e,
-                                  project.mediaId,
-                                  "next",
-                                  project.children.length
-                                )
-                              }
-                              className="bg-black/50 text-white rounded-full w-6 h-6 mr-1"
-                            >
-                              ❯
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ) : project.mediaType.includes("VIDEO") ||
-                      project.mediaType.endsWith(".mp4") ? (
-                      <video
-                        controls
-                        disablePictureInPicture
-                        controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
-                        muted={mutedStates[project.id] ?? true} 
-                        src={project.mediaUrl}
-                        className="w-[165px] h-[210px] object-cover rounded-md"
-                      >
-                        <source src={project.mediaUrl} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    ) : (
-                      <Image
-                        width={32}
-                        height={32}
-                        src={project.mediaUrl}
-                        alt={`Project ${index + 1}`}
-                        className="w-[165px] h-[210px] object-cover rounded-md"
-                      />
-                    )}
-                  </div>
+                  {Media}
                 </Link>
               );
             })}

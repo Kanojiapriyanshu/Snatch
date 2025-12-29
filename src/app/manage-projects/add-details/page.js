@@ -18,6 +18,7 @@ import BottomToolbar from "./bottomToolbar";
 import ProjectSidebar from "./projectSidebar";
 import ProjectMediaDisplay from "./projectMediaDisplay";
 import BrandPopup from "./brandPopup";
+
 // Component that uses useSearchParams wrapped in Suspense
 function SearchParamsProvider({ setActiveTab, setActiveImageId }) {
   const searchParams = useSearchParams();
@@ -84,7 +85,8 @@ export default function AddDetails() {
   const [showMinProjectsPopup, setShowMinProjectsPopup] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
   const [popupUserInputs, setPopupUserInputs] = useState({});
-
+  const [limits, setLimits] = useState(null);
+  const [loading, setLoading] = useState(true);
   // Add this helper function before the return statement
 const checkOrientation = (width, height) => {
   return height > width;
@@ -104,6 +106,7 @@ const checkOrientation = (width, height) => {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
+  
 
   const isProjectFilled = (formData) => {
   if (!formData) return false;
@@ -293,9 +296,55 @@ useEffect(() => {
   }
 }, [activeTab, activeImageId]);
 
+  useEffect(() => {
+  async function load() {
+    try {
+      const res = await fetch("/api/user/limits");
+      const data = await res.json();
+      console.log("Fetched plan and limits:", data);
+
+      setLimits(data);
+    } catch (err) {
+      console.error("Error fetching plan:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  load();
+}, [])
+
+  if (loading) return <p>Loading...</p>;
+  if (!limits || limits.error) return <p>Unable to load limits</p>;
+
+     
+  const { plan, generationsUsed, generationLimit } = limits;
 
 if (!isHydrated) {
     return null;
+}
+
+  //as user click on generate button use /increment and dec api to track usage
+  async function updateUsage(type, action) {
+  try {
+    const res = await fetch("/api/user/usage/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, action }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Usage API error:", data.error);
+      return;
+    }
+
+    console.log("Usage updated:", data);
+    return data;
+  } catch (error) {
+    console.error("Network error updating usage:", error);
+  }
 }
 
 const handleProjectClick = async (mediaId) => {
@@ -569,6 +618,12 @@ const handleBrandPopupChoice = (isBrand) => {
 const handlePopupGenerate = async () => {
   if (!popupUserInput.trim()) return;
   setPopupGenerating(true);
+
+    if (generationsUsed >= generationLimit && plan === "free") {
+    alert("Your generation limit is reached — upgrade to continue!");
+    return;
+  }
+
   try {
     const result = await generateFormDataFromUserInput(popupUserInput, isBrandCollaboration);
     const cleanedResult = cleanAIResponse(result);
@@ -590,9 +645,19 @@ const handlePopupGenerate = async () => {
       updateFormDataForMedia(activeImageId.toString(), updatedData);
     }
     setCurrentFormData(updatedData);
+    // 3️⃣ ONLY NOW increment usage
+    await updateUsage("generations", "increment");
+
+    // 4️⃣ Update local limits state (instant UI sync)
+    setLimits((prev) => ({
+      ...prev,
+      generationsUsed: prev.generationsUsed + 1,
+    }));
+
     setShowBrandPopup(false);
     setPopupUserInput('');
     setPopupStep(1);
+
     // Check for considerations
     if (cleanedResult.considerations && Object.keys(cleanedResult.considerations).length > 0) {
       setHasConsiderations(true);
@@ -731,6 +796,7 @@ const handlePopupGenerate = async () => {
       handleBrandPopupChoice={handleBrandPopupChoice}
       handlePromptChange={handlePromptChange}
       handlePopupGenerate={handlePopupGenerate}
+      limits={limits}     
     />
 
 
@@ -744,8 +810,6 @@ const handlePopupGenerate = async () => {
        </div>
        </div>
        
-    
-
      <div className="flex justify-center 7xl:min-w-[93%] mx-auto mt-10">
 
      <div className="flex flex-row font-apfel-grotezk-regular mt-8">

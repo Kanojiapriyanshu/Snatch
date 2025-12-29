@@ -1,21 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function UpgradeFloatingButton() {
   const router = useRouter();
-  const [show, setShow] = useState(true);
+  const pathname = usePathname();
 
-  // Optional: hide on pricing page
-  useEffect(() => {
-    if (window.location.pathname.includes("/pricing") || window.location.pathname.includes("/onboarding") || window.location.pathname.includes("/media-kit") || window.location.pathname.includes("/loading")) {
-      setShow(false);
-    }
-  }, []);
+  // ❌ pages where button should NOT appear
+  const hiddenRoutes = [
+    "/pricing",
+    "/onboarding",
+    "/media-kit",
+    "/loading",
+  ];
 
-  if (!show) return null;
+  const shouldHide = hiddenRoutes.some(route =>
+    pathname.includes(route)
+  );
+
+  if (shouldHide) return null;
 
   return (
     <button

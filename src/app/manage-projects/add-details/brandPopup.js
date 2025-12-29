@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { PLAN_TOOLTIPS } from "@/data/planTooltips";
+import Tooltip from "@/components/ui/Tooltip";
 
 const BrandPopup = ({
   showBrandPopup,
@@ -18,7 +20,20 @@ const BrandPopup = ({
   handleBrandPopupChoice,
   handlePromptChange,
   handlePopupGenerate,
+  limits
 }) => {
+   
+  const { plan, generationsUsed, generationLimit } = limits;
+  const isProPlan = plan === "pro" || plan === "early_bird" || plan === "trial";
+    const effectiveLimit = plan === "pro" || plan === "early_bird" || plan === "trial"
+    ? 16
+    : generationLimit;
+   const remaining = effectiveLimit - generationsUsed;
+   const LOW_CREDITS_THRESHOLD = 3;
+   const isLowCredits = !isProPlan && remaining <= LOW_CREDITS_THRESHOLD && remaining > 0;
+   const isOutOfCredits =  !isProPlan && remaining <= 0;
+   const tooltip = PLAN_TOOLTIPS.ai_generations[plan] ?? PLAN_TOOLTIPS.ai_generations.free;
+
   return (
     <>
       {(showBrandPopup || popupAnimating) && (
@@ -52,6 +67,22 @@ const BrandPopup = ({
                 boxShadow: "2px 0 24px rgba(0,0,0,0.08)",
               }}
             >
+              {/* 🔔 Premium Upsell Banner */}
+              {isLowCredits && (
+                <div className="w-full bg-graphite text-white px-4 py-2 rounded-tr-3xl flex items-center justify-center gap-2 text-sm font-apfel-grotezk-regular z-10">
+                  <Image
+                    src="/assets/images/pro-yellow.svg"
+                    alt="Pro"
+                    width={16}
+                    height={16}
+                  />    
+                  <div className="flex items-center gap-1 cursor-pointer">
+                    Almost out 😟 Upgrade to Snatch Pro for monthly prompt generations
+                    </div>
+                    <div className="text-xl ml-10">›</div>
+                </div>
+              )}
+
               <div className="p-8 mt-20 flex flex-col items-center w-full max-w-lg mx-auto transition-all duration-500">
                 {popupStep === 1 ? (
                   <>
@@ -135,13 +166,60 @@ const BrandPopup = ({
                         height={10}
                         alt="AI Logo"
                       />
-                      <h2 className="text-[22px] font-qimano text-electric-blue mb-6 mt-7 text-center">
+                      <h2 className="text-[22px] font-qimano text-electric-blue mb-2 mt-7 text-center">
                         Tell us about the post, we&rsquo;ll do the rest!
                       </h2>
                     </div>
 
+                    <div className="flex gap-2">
+                  {isProPlan && 
+                   <Tooltip title={tooltip.title} body={tooltip.body} placement={"bottom"}>
+                  <span className="relative group">
+                    <Image
+                      src="/assets/images/pro-grey.svg"
+                      width={20}
+                      height={18}
+                      alt="Pro plan"
+                      className="inline-block cursor-pointer"
+                    />
+
+                    {/* Tooltip */}
+                  
+                  </span>
+                  </Tooltip>
+                  }
+                    <div className="flex items-center gap-2">
+                    {/* ⚠️ Show yellow Pro icon only for Free + Low credits */}
+                    {!isProPlan && isLowCredits && (
+                      <Tooltip
+                        title={PLAN_TOOLTIPS.ai_generations.free.title}
+                        body={PLAN_TOOLTIPS.ai_generations.free.body}
+                        placement="bottom"
+                      >
+                        <Image
+                          src="/assets/images/pro-yellow.svg"
+                          width={16}
+                          height={16}
+                          alt="Upgrade to Pro"
+                          className="cursor-pointer"
+                        />
+                      </Tooltip>
+                    )}
+
+                    {/* Count text */}
+                    <div
+                      className={`font-qimano text-xl mt-0.5 ${
+                        isLowCredits ? "text-caution-25" : "text-graphite"
+                      }`}
+                    >
+                      {generationsUsed} / {effectiveLimit} generations remaining
+                    </div>
+                  </div>
+
+                    </div>
+
                     {activeCaption && (
-                      <div className="w-full">
+                      <div className="w-full mt-5">
                         <div className="mb-4 p-3 bg-gray-100 rounded-lg w-full flex gap-3 text-dark-grey text-sm">
                           {activeMediaLink && (
                             <div className="relative w-[32px] h-[48px] rounded-md overflow-hidden flex-shrink-0">
@@ -185,7 +263,7 @@ const BrandPopup = ({
                       </div>
                     )}
 
-                    <div className="relative w-full">
+                    <div className= {`relative w-full ${activeCaption ? "mt-0" : "mt-6"}`}>
                       <textarea
                         className="mt-5 w-full text-graphite font-apfel-grotezk-regular text-[16px] tracking-normal leading-[120%] p-4 border border-gray-300 rounded-lg min-h-[200px] mb-4 focus:outline-none focus:border-blue-600 placeholder:text-dark-grey"
                         value={popupUserInput}
@@ -232,12 +310,12 @@ const BrandPopup = ({
 
                       <button
                         className={`2xl:px-8 px-6 py-2 rounded-lg ${
-                          popupGenerating || !popupUserInput.trim()
+                          popupGenerating || !popupUserInput.trim() || isOutOfCredits
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                             : "border-2 bg-electric-blue text-white hover:bg-white hover:text-electric-blue"
                         } min-w-[240px] text-sm font-apfel-grotezk-regular transition cursor-pointer whitespace-nowrap flex-shrink-0`}
                         onClick={handlePopupGenerate}
-                        disabled={popupGenerating || !popupUserInput.trim()}
+                        disabled={popupGenerating || !popupUserInput.trim() || isOutOfCredits}
                       >
                         {popupGenerating
                           ? "Generating..."

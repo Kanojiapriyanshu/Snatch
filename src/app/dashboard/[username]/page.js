@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DashboardContext } from "../DashboardContext";
 import useFontSize from "@/hooks/useFontSize"; 
 import Button from "@/components/ui/Button";
+import { useUser } from "@/context/UserContext";
 
 const DashboardPage = () => {
   const [selectedLocationType, setSelectedLocationType] = useState("city");
@@ -18,6 +19,7 @@ const DashboardPage = () => {
 
   const pathname = usePathname();
   const username = pathname.split("/").pop();
+  const { plan } = useUser();
 
    // 🧠 Helper function to DRY error-handling logic
 const safeFetch = async (url, timeout = 5000) => {
@@ -38,7 +40,7 @@ const safeFetch = async (url, timeout = 5000) => {
   }
 };
 
-  // Fetch Analytics
+  // Fetch Analytics - put subscription check here only then show analytics
   const {
     data: analytics = {
       totalVisitors: 0,
@@ -165,12 +167,12 @@ const safeFetch = async (url, timeout = 5000) => {
       <div className="mt-2 relative pt-3 pb-0 px-3 h-full grid grid-rows-[9rem,27vh,1fr] gap-3">
         {/* ROW 1: Top Analytics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full h-full">
-          <DashboardCardwrapper count={analytics.totalVisitors} label="Profile Visits" />
-          <DashboardCardwrapper count={totalRequests} label="Request Received" />
+          <DashboardCardwrapper count={analytics.totalVisitors} label="Profile visits"  plan={plan}/>
+          <DashboardCardwrapper count={totalRequests} label="Request received" plan={"pro"} />
           <DashboardCardwrapper
             count={Number(analytics?.totalAvgTimeSpent)?.toFixed(1) || "0.0"}
-            label="Avg Time Spent (Mins)"
-            className="w-full"
+            label="Avg time spent (Mins)"
+            className="w-full" plan={plan}
           />
         </div>
 

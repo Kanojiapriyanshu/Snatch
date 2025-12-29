@@ -62,7 +62,7 @@ const handleSettingsClick = () => {
         className={`w-[90px] h-[50px] rounded-md text-center font-medium ${
           isActive("/dashboard")
             ? "bg-electric-blue text-white"
-            : "bg-gray-100 text-electric-blue border-2 border-transparent hover:border-electric-blue hover:bg-white hover:text-electric-blue"
+            : "bg-[#F2F2F2] text-electric-blue border-2 border-transparent hover:border-electric-blue"
         }`}
       >
         Dashboard
@@ -76,7 +76,7 @@ const handleSettingsClick = () => {
             className={`w-[80px] h-[50px] rounded-md text-center font-medium ${
               isActive("/profile")
                 ? "bg-electric-blue text-white"
-                : "bg-gray-100 text-electric-blue border-2 border-transparent hover:border-electric-blue hover:bg-white hover:text-electric-blue"
+                : "bg-[#F2F2F2] text-electric-blue border-2 border-transparent hover:border-electric-blue "
             }`}
           >
             Profile
@@ -87,7 +87,7 @@ const handleSettingsClick = () => {
             className={`w-[80px] h-[50px] rounded-md text-center font-medium ${
               isActive("/settings")
                 ? "bg-electric-blue text-white"
-                : "bg-gray-100 text-electric-blue border-2 border-transparent hover:border-electric-blue hover:bg-white hover:text-electric-blue"
+                : "bg-[#F2F2F2] text-electric-blue border-2 border-transparent hover:border-electric-blue"
             }`}
           >
             Settings

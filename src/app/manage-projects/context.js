@@ -177,6 +177,28 @@ const addInstagramSelection = (mediaLink, mediaId, name, caption = "", children 
   });
 };
 
+async function updateUsage(type, action) {
+  try {
+    const res = await fetch("/api/user/usage/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, action }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Usage API error:", data.error);
+      return;
+    }
+
+    console.log("Usage updated:", data);
+    return data;
+  } catch (error) {
+    console.error("Network error updating usage:", error);
+  }
+}
+
   
 const removeInstagramSelection = async (selectionId) => {
     setSelectionState((prevState) => {
@@ -222,11 +244,19 @@ const removeInstagramSelection = async (selectionId) => {
     } catch (error) {
       console.error("Failed to delete formData from the database:", error);
     }
+
+      
+    // 🔥 NEW — decrement usage in backend
+      try {
+        await updateUsage("projects", "decrement");
+      } catch (err) {
+        console.error("Failed updating project usage:", err);
+      }
   };
   
 
   // Remove uploaded file
-  const removeFile = (mediaId) => {
+  const removeFile = async (mediaId) => {
     setSelectionState((prevState) => {
       const newState = {
         ...prevState,
@@ -246,6 +276,13 @@ const removeInstagramSelection = async (selectionId) => {
 
       return newState;
     });
+
+      // 🔥 NEW — decrement usage in backend
+      try {
+        await updateUsage("projects", "decrement");
+      } catch (err) {
+        console.error("Failed updating project usage:", err);
+      }
   };
 
   // Handle file upload
@@ -280,6 +317,11 @@ const removeInstagramSelection = async (selectionId) => {
       });
 
       console.log("File uploaded successfully:", media);
+      try {
+        await updateUsage("projects", "increment");
+      } catch(err) {
+        console.error("Failed updating project usage:", err);
+      }
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Error uploading file. Please try again.");

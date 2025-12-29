@@ -1,7 +1,7 @@
 import React from 'react'
 import DashboardCard from './DashboardCard'
-const DashboardCardwrapper = ({count,label}) => {
-    return <DashboardCard count={count} label={label} />;
+const DashboardCardwrapper = ({count,label, plan}) => {
+    return <DashboardCard count={count} label={label} plan={plan}  />;
  
 }
 

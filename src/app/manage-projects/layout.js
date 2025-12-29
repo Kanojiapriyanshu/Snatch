@@ -1,10 +1,9 @@
-// app/onboarding/layout.js
+// app/manage-projects/layout.js
 "use client";
 
 import { SelectedProjectsProvider } from "./context";
-import Image from "next/image";
 import Header from "@/components/Header";
-import { useRouter } from "next/navigation";
+
 export default function OnboardingLayout({ children }) {
 
   return (
@@ -14,7 +13,6 @@ export default function OnboardingLayout({ children }) {
       <main className="p-8 overflow-hidden">{children}</main>
     </div>
    </SelectedProjectsProvider>
-
   );
 }
 

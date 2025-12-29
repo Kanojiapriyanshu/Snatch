@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import { fetchInstagramMedia } from "@/utils/fetchInstagramMedia";
 import { getMediaFromDatabase } from "@/utils/getMediaFromDatabase";
@@ -14,37 +14,59 @@ import { useUser } from "@clerk/nextjs";
 import Button from "@/components/ui/Button";
 import { TfiAlignLeft } from "react-icons/tfi";
 import { FiChevronDown } from "react-icons/fi"; // Arrow icon
+import { motion, AnimatePresence } from "framer-motion";
+import { PLAN_TOOLTIPS } from "@/data/planTooltips";
+import Tooltip from "@/components/ui/Tooltip";
 
 export default function PickProjects() {
-  const [isHydrated, setIsHydrated] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("instagram");
-  const [carouselIndexes, setCarouselIndexes] = useState({});
-  const router = useRouter();
-  const [media, setMedia] = useState([]);
-  const [showInstagramPopup, setShowInstagramPopup] = useState(false);
-  const { 
-    selectionState, 
-    handleFileUpload, 
-    addInstagramSelection,
-    removeInstagramSelection, 
-    removeFile
-  } = useSelectedProjects();
- const [isMenuVisible, setIsMenuVisible] = useState(false);
- const [paging, setPaging] = useState(null);
- const [currentPage, setCurrentPage] = useState(0);
- const PAGE_SIZE = 20;
- const [isLoadingMore, setIsLoadingMore] = useState(false);
- const [loading, setLoading] = useState(true);
-  const [isInitialLoading, setIsInitialLoading] = useState(false);
-  const [isSorting, setIsSorting] = useState(false);
- const [totalPages, setTotaPages] = useState(0);
- const [code, setCode] = useState(null);
- const containerRef = useRef(null);
- const { user, isLoaded } = useUser();
- const [hasInitialized, setHasInitialized] = useState(false);
- const [sortOption, setSortOption] = useState("date");
+const [isHydrated, setIsHydrated] = useState(false);
+const [selectedTab, setSelectedTab] = useState("instagram");
+const [carouselIndexes, setCarouselIndexes] = useState({});
+const router = useRouter();
+const [media, setMedia] = useState([]);
+const [showInstagramPopup, setShowInstagramPopup] = useState(false);
+const { 
+  selectionState, 
+  handleFileUpload, 
+  removeInstagramSelection, 
+  removeFile
+} = useSelectedProjects();
+const [isMenuVisible, setIsMenuVisible] = useState(false);
+const [paging, setPaging] = useState(null);
+const [currentPage, setCurrentPage] = useState(0);
+const PAGE_SIZE = 20;
+const [isLoadingMore, setIsLoadingMore] = useState(false);
+const [loading, setLoading] = useState(true);
+const [isInitialLoading, setIsInitialLoading] = useState(false);
+const [isSorting, setIsSorting] = useState(false);
+const [totalPages, setTotaPages] = useState(0);
+const [code, setCode] = useState(null);
+const containerRef = useRef(null);
+const { user, isLoaded } = useUser();
+const [hasInitialized, setHasInitialized] = useState(false);
+const [sortOption, setSortOption] = useState("date");
 const contentRef = useRef(null);
 const [containerWidth, setContainerWidth] = useState(null);
+const [limits, setLimits] = useState(null);
+const [showUpgradeBar, setShowUpgradeBar] = useState(false);
+
+  const plan = limits?.plan;
+  const projectsUsed = limits?.projectsUsed ?? 0;
+  const projectLimit = limits?.projectLimit ?? 8;
+
+  const isProPlan =
+    plan === "pro" || plan === "trial" || plan === "early_bird";
+
+  const effectiveLimit = isProPlan ? 12 : projectLimit;
+  const tooltip = PLAN_TOOLTIPS.number_of_projects[plan] ?? PLAN_TOOLTIPS.number_of_projects.free;
+
+  const totalSelected = useMemo(() => {
+    return (
+      (selectionState?.instagramSelected?.length || 0) +
+      (selectionState?.uploadedFiles?.length || 0)
+    );
+  }, [selectionState]);
+  const remaining = effectiveLimit - projectsUsed;
 
 useEffect(() => {
   if (!contentRef.current) return;
@@ -67,6 +89,24 @@ useEffect(() => {
       setShowInstagramPopup(true); // show popup instantly
     }
   }, []);
+
+    useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/user/limits");
+        const data = await res.json();
+        console.log("Fetched plan and limits:", data);
+
+        setLimits(data);
+      } catch (err) {
+        console.error("Error fetching plan:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, [])
 
   // Effect to handle sort option changes
   useEffect(() => {
@@ -114,6 +154,14 @@ useEffect(() => {
 
     fetchSortedMedia();
   }, [sortOption, hasInitialized]);
+
+    useEffect(() => {
+    if (!isProPlan && totalSelected > 8) {
+      setShowUpgradeBar(true);
+    } else {
+      setShowUpgradeBar(false);
+    }
+  }, [totalSelected, isProPlan]);
    
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -168,9 +216,15 @@ useEffect(() => {
     initInstagram();
   }, [isLoaded, user, hasInitialized]);
 
+
+
+  if (loading) return <p>Loading...</p>;
+  if (!limits || limits.error) return <p>Unable to load limits</p>;
+
   if (!isHydrated) {
     return null;
   }
+
   
   const scrollToTop = () => {
   if (containerRef.current) {
@@ -260,9 +314,6 @@ const handleNext = async () => {
 
     const handleProjectClick = () => {
 
-    const totalSelected =
-    (selectionState?.instagramSelected?.length || 0) +
-    (selectionState?.uploadedFiles?.length || 0);
 
       const canGoToAddDetails = totalSelected >= 4;
       
@@ -356,9 +407,9 @@ const handleNext = async () => {
 };
 
    
-    const handleBackClick = () => {
-     router.push("/profile")  
-    }
+  const handleBackClick = () => {
+    router.push("/profile")  
+  }
 
   const handleHamburgerClick = () => {
       setIsMenuVisible((prev) => !prev); // Toggle menu visibility
@@ -384,105 +435,163 @@ const handleNext = async () => {
 const renderInstagramTab = () => (
   <div className="flex justify-center gap-10 mt-5">
 
-    <div className="w-[278px] h-full bg-white text-black p-3 rounded-lg" >
-      <p className="text-md font-apfel-grotezk-regular">Selected projects from Instagram</p>
-      <p className="text-light-grey font-apfel-grotezk-regular">{selectionState?.instagramSelected?.length || "0"} Selected</p>
+<div className="w-[278px] h-full bg-white text-black p-3 rounded-lg">
+  <p className="text-md font-apfel-grotezk-regular">
+    Selected projects from Instagram
+  </p>
+  <p className="text-light-grey font-apfel-grotezk-regular">
+    {selectionState?.instagramSelected?.length || "0"} Selected
+  </p>
 
-      <div className="mt-[18px] w-auto border-b border-1 border-gray-200  "> 
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4 mt-7 overflow-y-auto max-h-[40vh]" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-        {selectionState?.instagramSelected?.map((project) => (
-          <div key={project.mediaId} className="flex flex-col items-center">
-            {/* Project Container */}
-            <div className="relative w-[120px] h-[120px] rounded-md overflow-hidden">
-              {project.name === "VIDEO" ? (
-                // Video Content
-                <video
-                 
-                  className="w-full h-full object-cover"
-                  src={project.mediaLink}
-                >
-                  Your browser does not support the video tag.
-                </video>
-              ) : project.name === "CAROUSEL_ALBUM" && project.children ? (
-                // Carousel Content
-                <div className="relative w-full h-full">
-                  {project.children.map((child, index) => (
-                    <div
-                      key={child.id}
-                      className={`absolute inset-0 transition-transform duration-500 ${
-                        (carouselIndexes[project.mediaId] || 0) === index
-                          ? "translate-x-0 opacity-100"
-                          : "translate-x-full opacity-0"
-                      }`}
-                    >
-                      {child.media_type === "IMAGE" ? (
-                        <Image
-                          src={child.media_url}
-                          alt={`Media ${child.id}`}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <video
-                        
-                          className="w-full h-full object-cover"
-                          src={child.media_url}
-                        />
-                      )}
-                    </div>
-                  ))}
+  <div className="mt-[18px] w-auto border-b border-gray-200" />
 
-                  {/* Carousel Navigation */}
-                  <button
-                    className="absolute left-1 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
-                    onClick={() => handleSlide(project.mediaId, "prev", project.children.length)}
-                  >
-                    ❮
-                  </button>
-                  <button
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-black/50 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
-                    onClick={() => handleSlide(project.mediaId, "next", project.children.length)}
-                  >
-                    ❯
-                  </button>
-                </div>
-              ) : (
+  <div
+    className="grid grid-cols-2 gap-4 mt-7 overflow-y-auto max-h-[40vh]"
+    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+  >
+    {selectionState?.instagramSelected?.map((project, index) => {
+      const isLocked = !isProPlan && index >= 8;
+
+      return (
+      <div key={project.mediaId} className="flex flex-col items-center">
+
+        {/* PROJECT CARD */}
+        <div className="relative w-[120px] h-[120px] group">
+
+          {/* ✅ MEDIA ONLY — clipped */}
+          <div className="w-full h-full rounded-md overflow-hidden relative">
+
+            {/* 🔒 LOCK OVERLAY */}
+            {isLocked && (
+              <div className="absolute inset-0 z-30 bg-[#212121]/80 backdrop-blur-sm
+                flex flex-col items-center justify-center text-center px-3 rounded-md">
                 <Image
-                  src={project.mediaLink}
-                  alt={`Project ${project.mediaId}`}
-                  fill
-                  className="object-cover"
+                  src="/assets/images/pro-yellow.svg"
+                  width={16}
+                  height={16}
+                  alt="Upgrade required"
                 />
-              )}
-            </div>
+                <p className="text-white text-[11px] mt-2">
+                  Your trial has ended, upgrade to showcase all posts in your press kit.
+                </p>
+              </div>
+            )}
 
-            {/* Delete Button - Outside and below the content */}
-            <button
-              onClick={() => removeInstagramSelection(project.mediaId)}
-              className="mt-2 p-1 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <Image
-                src="/assets/images/delete.svg"
-                alt="delete"
-                width={16}
-                height={16}
-                className="cursor-pointer w-20 h-6"
+            {/* MEDIA */}
+            {project.name === "VIDEO" ? (
+              <video
+                className="w-full h-full object-cover"
+                src={project.mediaLink}
               />
-            </button>
+            ) : project.name === "CAROUSEL_ALBUM" && project.children ? (
+              <div className="relative w-full h-full">
+                {project.children.map((child, idx) => (
+                  <div
+                    key={child.id}
+                    className={`absolute inset-0 transition-transform duration-500 ${
+                      (carouselIndexes[project.mediaId] || 0) === idx
+                        ? "translate-x-0 opacity-100"
+                        : "translate-x-full opacity-0"
+                    }`}
+                  >
+                    {child.media_type === "IMAGE" ? (
+                      <Image
+                        src={child.media_url}
+                        fill
+                        className="object-cover"
+                        alt=""
+                      />
+                    ) : (
+                      <video
+                        src={child.media_url}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Image
+                src={project.mediaLink}
+                fill
+                className="object-cover"
+                alt=""
+              />
+            )}
           </div>
-        ))}
-        <div className="-mb-10"></div>
+
+          {/* ✅ PRO BADGE + TOOLTIP — OUTSIDE overflow-hidden */}
+          {isProPlan && index >= 8 && (
+            <div className="absolute top-2 right-2 z-[9999]">
+              <Tooltip body={tooltip.body} placement="bottom">
+                <div className="w-7 h-7 rounded-md flex items-center justify-center bg-smoke cursor-pointer">
+                  <Image
+                    src="/assets/images/pro-grey.svg"
+                    width={13}
+                    height={13}
+                    alt="Pro"
+                  />
+                </div>
+              </Tooltip>
+            </div>
+          )}
+
+        </div>
+
+        {/* DELETE BUTTON */}
+        <button
+          onClick={() => removeInstagramSelection(project.mediaId)}
+          className="mt-2 p-1 rounded-full transition-colors hover:bg-gray-100"
+        >
+          <Image
+            src="/assets/images/delete.svg"
+            alt="delete"
+            width={16}
+            height={16}
+            className="cursor-pointer w-20 h-6"  
+          />
+        </button>
       </div>
-    </div>
+    );
+
+    })}
+
+    <div className="-mb-10" />
+  </div>
+</div>
+
 
     {/* right side rendered projects graph api fetch  */}
     <div ref={containerRef} className="w-[70vw] h-[60vh] 7xl:h-[70vh] text-black rounded-md overflow-y-auto"  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         
       <div className="sticky top-0 z-50 bg-smoke   flex flex-row mb-3 items-start justify-between text-graphite">
         <span className=" font-qimano mt-2">
-        <span className="text-electric-blue text-xl">{(selectionState?.instagramSelected?.length || 0) + (selectionState?.uploadedFiles?.length || 0)} / 12 </span>
+        <span className="text-electric-blue text-xl">
+          {isProPlan && 
+           <span className="relative group mr-1.5">
+            <Image
+              src="/assets/images/pro-grey.svg"
+              width={18}
+              height={18}
+              alt="Pro plan"
+              className="inline-block cursor-pointer mb-1"
+            />
+
+            {/* Tooltip */}
+            <span className="
+              absolute left-32 -translate-x-1/2 top-6 
+              whitespace-nowrap z-20 
+              px-3 py-1 rounded-md
+              text-xs text-graphite bg-white
+              opacity-0 group-hover:opacity-100 
+              transition-opacity duration-200
+              pointer-events-none font-apfel-grotezk-regular
+            ">
+              You are on a Pro plan (12 project slots unlocked)
+            </span>
+          </span>
+          }
+          {(selectionState?.instagramSelected?.length || 0) + (selectionState?.uploadedFiles?.length || 0)} / {effectiveLimit} </span>
          Selected <span className="text-[#878787] text-sm">*Minimum 4 required </span> 
         </span>
         {renderInstagramPopup()}
@@ -530,8 +639,6 @@ const renderInstagramTab = () => (
         <FiChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
       </div>
 
-
-
       </div>
     {
       (() => {
@@ -543,6 +650,11 @@ const renderInstagramTab = () => (
             showLoader={showInstagramPopup}
             loading={loading || isLoadingMore}
             loadingType={loadingType}
+            plan={plan}
+            projectsUsed={projectsUsed}
+            projectLimit={effectiveLimit}
+            remaining={remaining}
+            onLimitExceeded={() => setShowUpgradeBar(true)}
           />
         );
       })()
@@ -645,7 +757,8 @@ const renderUploadTab = () => (
           onChange={handleFileChange}
         />
         {/* right side rendered uplaod projects */}
-         <MediaDisplay uploadedFiles={selectionState.uploadedFiles}  displayType="uploaded"/>
+         <MediaDisplay uploadedFiles={selectionState.uploadedFiles}  displayType="uploaded" plan={plan} projectLimit={effectiveLimit}  onLimitExceeded={() => setShowUpgradeBar(true)}
+/>
       </div>
     </div>
   </div>
@@ -697,8 +810,44 @@ return (
       </div>
 
     {/* left side insta and upload projects */}
-      {selectedTab === "instagram" ? renderInstagramTab() : renderUploadTab()}
+    {selectedTab === "instagram" ? renderInstagramTab() : renderUploadTab()}
 
+      {showUpgradeBar && (
+        <div
+           className={`
+            fixed bottom-[calc(11%+20px)]
+            left-1/2 transform -translate-x-1/2  
+            ${shouldShowPagination ? "w-[70%] max-w-[550px] 3xl:max-w-[600px]"
+        : " w-[460px] max-w-[550px] 3xl:max-w-[600px]"}
+            bg-graphite text-white
+            py-3 px-4
+            flex items-center justify-around
+            z-[999] rounded-t-md
+            transition-all duration-300
+          `}
+        >
+          <div className="flex items-center gap-2">
+            <Image
+              src="/assets/images/pro-yellow.svg"
+              alt="pro-icon"
+              width={17}
+              height={17}
+              className="mb-1"
+            />
+            <span className="font-apfel-grotezk-regular text-[15px] ">
+              Get Snatch Pro to select more than 8 projects
+            </span>
+          </div>
+
+          <Image
+            src="/assets/images/projectRightWhiteArrow.svg"
+            alt="arrow"
+            width={8}
+            height={8}
+          />
+        </div>
+    )}
+ 
     <div  className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-lg px-4 py-1.5 shadow-xl z-50 h-[11%] font-apfel-grotezk-regular transition-all duration-200"
       style={{
         width: containerWidth ? containerWidth + 40 : "auto", // dynamic!!

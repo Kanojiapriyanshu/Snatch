@@ -440,7 +440,7 @@ const handleRequest = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.8 + index * 0.1, duration: 0.3 }}
               >
-                <span className="bg-brown text-gray-200 px-3 py-1.5 rounded-md text-xs">
+                <span className="bg-brown text-gray-200 px-3 py-1.5 rounded-md text-xs font-apfel-grotezk-regular">
                   {item}
                 </span>
               </motion.div>
@@ -482,62 +482,62 @@ const handleRequest = () => {
 
              
             {/* Services */}
-  <motion.div 
-    className="flex flex-wrap text-sm mt-4 gap-3"
-    variants={itemVariants}
-  >
-    {formData?.compensation?.length > 0 ? (
-      formData.compensation.map((item, index) => (
-        <motion.div
-          key={index}
-          className="inline-flex items-center font-qimano text-xl relative"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1.2 + index * 0.1, duration: 0.4 }}
-        >
-          {/* Text (not triggering tooltip) */}
-          <span className="transition-colors duration-300">
-            {item}
-          </span>
+          <motion.div 
+            className="flex flex-wrap text-sm mt-4 gap-3"
+            variants={itemVariants}
+          >
+            {formData?.compensation?.length > 0 ? (
+              formData.compensation.map((item, index) => (
+                <motion.div
+                  key={index}
+                  className="inline-flex items-center font-qimano text-xl relative"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.2 + index * 0.1, duration: 0.4 }}
+                >
+                  {/* Text (not triggering tooltip) */}
+                  <span className="transition-colors duration-300">
+                    {item}
+                  </span>
 
-          {/* Info icon and tooltip trigger zone */}
-          <div className="relative group ml-1 mb-2">
-            <Image
-              src="/assets/icons/i.svg"
-              alt="info"
-              width={10}
-              height={10}
-              className="w-4 h-4 cursor-pointer transition-colors duration-300 group-hover:brightness-0 group-hover:invert"
-            />
+                  {/* Info icon and tooltip trigger zone */}
+                  <div className="relative group ml-1 mb-2">
+                    <Image
+                      src="/assets/icons/i.svg"
+                      alt="info"
+                      width={10}
+                      height={10}
+                      className="w-4 h-4 cursor-pointer transition-colors duration-300 group-hover:brightness-0 group-hover:invert"
+                    />
 
-            {/* Tooltip */}
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-lime-yellow text-black text-sm px-3 py-2 rounded-md shadow-md max-w-[200px] w-max whitespace-normal text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
-              {item === "Sponsorships"
-                ? "Influencers are paid a fixed amount for each piece of content they create."
-                : item === "Gifting"
-                ? "This involves compensating influencers with products or services instead of money."
-                : item === "Affiliate"
-                ? "Influencers promote a product or service and receive a commission for every sale made through a unique affiliate link they share."
-                : item === "Hosted"
-                ? "Influencers are invited to events or trips, often in exchange for creating and sharing content related to the experience."
-                : item === "Collaboration"
-                ? "Influencers sometimes collaborate with brands to create a product."
-                : "More info coming soon."}
-            </span>
-          </div>
+                    {/* Tooltip */}
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-lime-yellow text-black text-sm px-3 py-2 rounded-md shadow-md max-w-[200px] w-max whitespace-normal text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
+                      {item === "Sponsorships"
+                        ? "Influencers are paid a fixed amount for each piece of content they create."
+                        : item === "Gifting"
+                        ? "This involves compensating influencers with products or services instead of money."
+                        : item === "Affiliate"
+                        ? "Influencers promote a product or service and receive a commission for every sale made through a unique affiliate link they share."
+                        : item === "Hosted"
+                        ? "Influencers are invited to events or trips, often in exchange for creating and sharing content related to the experience."
+                        : item === "Collaboration"
+                        ? "Influencers sometimes collaborate with brands to create a product."
+                        : "More info coming soon."}
+                    </span>
+                  </div>
 
-          {/* Separator */}
-          {index !== formData.compensation.length - 1 && (
-            <span className="text-gray-600 ml-[0.8rem] px-[0.5px] mr-[0.1rem] rounded-sm">|</span>
-          )}
-        </motion.div>
-      ))
-    ) : (
-      <div className="flex items-center justify-center">
-        <span>Compensation</span>
-      </div>
-    )}
-  </motion.div>
+                  {/* Separator */}
+                  {index !== formData.compensation.length - 1 && (
+                    <span className="text-gray-600 ml-[0.8rem] px-[0.5px] mr-[0.1rem] rounded-sm">|</span>
+                  )}
+                </motion.div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center">
+                <span>Compensation</span>
+              </div>
+            )}
+          </motion.div>
 
               {/* CTA Button */}
               <motion.button 
@@ -552,56 +552,56 @@ const handleRequest = () => {
             </motion.div>
 
             {/*2 Center - Profile Image desktop - FIXED VERSION */}
-  <motion.div
-    className="block relative left-[24%] mt-5 lg:mt-0 lg:left-1/3 transform -translate-x-1/3 -translate-y-3/4 top-[100%] ml-3 lg:-top-5 lg:right-10 rounded-xl overflow-visible z-20"
-    style={{
-      scale: isMobile ? "0" : profileImageScale,
-      opacity: isMobile ? "1" : profileImageOpacity,
-      zIndex: 100,
-      position: "absolute",
-      bottom: "-20px",
-    }}
-  >
-    <div className="lg:absolute overflow-visible z-[9999]">
-      <div className="absolute lg:translate-x-1/2 lg:translate-y-10 rounded-xl w-64 h-2/3 overflow-visible">
-        {/* Container for both skeleton and image - ensures same positioning */}
-        <div className="relative">
-          {/* Skeleton - always in the same position */}
-          <AnimatePresence mode="wait">
-            {!imageLoaded && (
-              <motion.div
-                key="skeleton"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="absolute top-0 left-0"
-              >
-                <ProfileImageSkeleton />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          {/* Image - fades in exactly in place of skeleton */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: imageLoaded ? 1 : 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="relative"
+            className="block relative left-[24%] mt-5 lg:mt-0 lg:left-1/3 transform -translate-x-1/3 -translate-y-3/4 top-[100%] ml-3 lg:-top-5 lg:right-10 rounded-xl overflow-visible z-20"
+            style={{
+              scale: isMobile ? "0" : profileImageScale,
+              opacity: isMobile ? "1" : profileImageOpacity,
+              zIndex: 100,
+              position: "absolute",
+              bottom: "-20px",
+            }}
           >
-            <Image
-              src={formData?.profilePicture || "/assets/images/profile_defaultOnborad.svg"}
-              alt={`${formData?.firstName} ${formData?.lastName}`}
-              width={320}
-              height={360}
-              className="object-cover lg:w-[320px] lg:h-[355px] w-66 h-80 relative z-[9999] rounded-xl right-6"
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageLoaded(true)}
-            />
+            <div className="lg:absolute overflow-visible z-[9999]">
+              <div className="absolute lg:translate-x-1/2 lg:translate-y-10 rounded-xl w-64 h-2/3 overflow-visible">
+                {/* Container for both skeleton and image - ensures same positioning */}
+                <div className="relative">
+                  {/* Skeleton - always in the same position */}
+                  <AnimatePresence mode="wait">
+                    {!imageLoaded && (
+                      <motion.div
+                        key="skeleton"
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute top-0 left-0"
+                      >
+                        <ProfileImageSkeleton />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  
+                  {/* Image - fades in exactly in place of skeleton */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: imageLoaded ? 1 : 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="relative"
+                  >
+                    <Image
+                      src={formData?.profilePicture || "/assets/images/profile_defaultOnborad.svg"}
+                      alt={`${formData?.firstName} ${formData?.lastName}`}
+                      width={320}
+                      height={360}
+                      className="object-cover lg:w-[320px] lg:h-[355px] w-66 h-80 relative z-[9999] rounded-xl right-6"
+                      onLoad={() => setImageLoaded(true)}
+                      onError={() => setImageLoaded(true)}
+                    />
+                  </motion.div>
+                </div>
+              </div>
+            </div>
           </motion.div>
-        </div>
-      </div>
-    </div>
-  </motion.div>
 
            {/* 3 Right Side - Stats */}
            <motion.div 
@@ -610,24 +610,24 @@ const handleRequest = () => {
              initial="hidden"
              animate="visible"
            >
-    <motion.div 
-      className="text-center lg:text-end"
-      variants={statsVariants}
-    >
-      <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{reach ? formatNumber(reach.get()) : "0"}</motion.span>
-      </h2>
-      <p className="text-sm text-white font-apfel-grotezk-regular">avg reach</p>
-    </motion.div>
-    <motion.div 
-      className="text-center lg:text-end"
-      variants={statsVariants}
-    >
-      <h2 className="text-5xl font-medium font-qimano">
-        <motion.span>{followers ? formatNumber(followers.get()) : "0"}</motion.span>
-      </h2>
-      <p className="text-sm text-white font-apfel-grotezk-regular">followers</p>
-    </motion.div>
+            <motion.div 
+              className="text-center lg:text-end"
+              variants={statsVariants}
+            >
+              <h2 className="text-5xl font-medium font-qimano">
+                <motion.span>{reach ? formatNumber(reach.get()) : "0"}</motion.span>
+              </h2>
+              <p className="text-sm text-white font-apfel-grotezk-regular">avg reach</p>
+            </motion.div>
+            <motion.div 
+              className="text-center lg:text-end"
+              variants={statsVariants}
+            >
+              <h2 className="text-5xl font-medium font-qimano">
+                <motion.span>{followers ? formatNumber(followers.get()) : "0"}</motion.span>
+              </h2>
+              <p className="text-sm text-white font-apfel-grotezk-regular">followers</p>
+            </motion.div>
     <motion.div 
       className="text-center lg:text-end"
       variants={statsVariants}

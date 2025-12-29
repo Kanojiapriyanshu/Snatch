@@ -54,6 +54,12 @@ module.exports = {
           300: 'var(--graphite-300)',
           600: 'var(--graphite-600)',
         },
+        'caution' : {
+          25: 'var(--caution)',
+        }, 
+        'black' : {
+          100: 'var(--black-100)'
+        }
       },
 
       screens: {     
