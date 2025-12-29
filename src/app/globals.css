@@ -51,6 +51,9 @@
   --graphite-200: #7A7A7A; /* disabled */
   --graphite-300: #6E6E6E; /* secondary text color */
   --graphite-600: #212121; /* primary text color */
+
+  /* caution shades */
+  --caution: #C69A25;
 }
 
 

@@ -94,7 +94,14 @@ const PricingGuideModal = ({
                   size=""
                   className="text-graphite !font-extralight "
                 >
-                  {country.name}
+                <Image
+                  src={country.flag}
+                  alt={country.name}
+                  className="w-5 h-3 object-cover "
+                  width={20}
+                  height={10}
+                />
+                 <span className="ml-1">{country.name}</span>
                 </Button>
               ))}
             </div>

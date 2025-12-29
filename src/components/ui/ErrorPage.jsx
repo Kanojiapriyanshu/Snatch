@@ -76,12 +76,22 @@ export default function ErrorPage({
           <p className="text-gray-400 text-sm mb-4">Error ID: {digest}</p>
         )}
 
-        <Link
+         {buttonText === "Refresh page" ? 
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-shade-600 transition text-white px-5 py-2 rounded-md text-md font-apfel-grotezk-regular"
+          >
+            {buttonText}
+          </button> :  
+          <Link
           href={buttonHref}
           className="bg-blue-shade-600 transition text-white px-5 py-2 rounded-md text-md font-apfel-grotezk-regular"
         >
           {buttonText}
         </Link>
+        }
+
+
       </div>
 
       {/* Footer Logo + Menu */}
@@ -101,10 +111,20 @@ export default function ErrorPage({
 
         <button
           onClick={() => setIsMenuVisible((prev) => !prev)}
-          className="relative z-20 flex items-center justify-center bg-[#F2F2F2]/50 rounded-xl w-[60px] h-[50px] cursor-pointer hover:opacity-90 transition"
+           className={`relative z-20 flex items-center justify-center bg-[#F2F2F2] rounded-md w-[60px] h-[50px] cursor-pointer hover:opacity-90 transition
+            ${
+              isMenuVisible
+                ? "bg-electric-blue"
+                : "bg-[#F2F2F2] hover:border-[1.6px] hover:border-electric-blue"
+            }
+          `}
         >
           <Image
-            src="/assets/icons/onboarding/Hamburger.svg"
+            src={
+              isMenuVisible
+                ? "/assets/icons/onboarding/HamburgerWhite.svg"
+                : "/assets/icons/onboarding/Hamburger.svg"
+            }
             alt="hamburger"
             width={24}
             height={24}

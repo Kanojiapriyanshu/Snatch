@@ -15,10 +15,13 @@ function LayoutContent({ children }) {
   const pathname = usePathname();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const menuRef = useRef(null);
-  
   const toggleMenu = () => setIsMenuVisible((prev) => !prev);
 
-   // ✅ Close menu when clicking outside
+  const isStep1 = pathname === "/onboarding/step-1";
+  const isStep2 = pathname === "/onboarding/step-2";
+  const showMenu = formData?.hasCompletedOnboarding && (isStep1 || isStep2);
+
+    // ✅ Close menu when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -48,6 +51,7 @@ function LayoutContent({ children }) {
     }
   };
 
+
   return (
     <div className="max-w-screen h-screen max-h-screen mx-auto">
        {/* adding w percentage here keeps padding right side on evry screen */}
@@ -68,109 +72,97 @@ function LayoutContent({ children }) {
         </div>
 
         {/* Navigation Buttons */}
-      <div
-          className={`absolute sm:top-[87%] z-50 sm:left-[43%] h-[74px] flex justify-center items-center gap-3 bg-white shadow-md rounded-md font-apfel-grotezk-regular p-3
-            ${
-              formData?.hasCompletedOnboarding
-                ? pathname === "/onboarding/step-1"
-                  ? "w-[300px]" // Snatch + Hamburger + Next
-                  : "w-[200px]" // Back + Next
-                : pathname === "/onboarding/step-1"
-                ? "w-[130px]" // Only Next
-                : "w-[200px]" // Back + Next
-            }
-          `}
+        <div
+          className={`
+          absolute sm:top-[87%] z-50 sm:left-[43%]
+          h-[74px]
+          flex items-center justify-center gap-3
+          bg-white shadow-md rounded-md
+          font-apfel-grotezk-regular p-3`}
         >
-      {formData.hasCompletedOnboarding ? (
-        <>
-          {pathname === "/onboarding/step-1" ? (
+
+          {showMenu && (
           <div className="flex items-center gap-3" ref={menuRef}>
-              {/* Snatch Button */}
-              <button
-                onClick={() => router.push("/dashboard")}
-                className="w-[90px] h-[56px] text-electric-blue text-2xl font-semibold text-center"
-              >
-                <Image
-                  src="/assets/images/snatch.svg"
-                  width={40}
-                  height={40}
-                  alt="snatchlogo"
-                  className="mx-auto w-24 h-7"
-                />
-              </button>
+            {/* Snatch Logo */}
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="w-[90px] h-[56px]"
+            >
+              <Image
+                src="/assets/images/snatch.svg"
+                alt="snatch"
+                width={40}
+                height={40}
+                className="mx-auto w-24 h-7"
+              />
+            </button>
 
-              {/* Hamburger Menu Button */}
-              <button
-                onClick={toggleMenu}
-                className="w-[61px] h-[44px] bg-gray-100 text-electric-blue rounded-md mx-auto font-medium hover:bg-transparent relative"
-              >
-                <Image
-                  className="mx-auto w-8"
-                  src="/assets/icons/onboarding/Hamburger.svg"
-                  alt="hamburger"
-                  width={20}
-                  height={20}
-                />
-              </button>
+            {/* Hamburger */}
+            <button
+              onClick={toggleMenu}
+              className={`w-[61px] h-[50px] rounded-md
+                ${
+                  isMenuVisible
+                    ? "bg-electric-blue"
+                    : "bg-[#F2F2F2] hover:border-[1.6px] hover:border-electric-blue"
+                }
+              `}
+            >
+              <Image
+                src={
+                  isMenuVisible
+                    ? "/assets/icons/onboarding/HamburgerWhite.svg"
+                    : "/assets/icons/onboarding/Hamburger.svg"
+                }
+                alt="menu"
+                width={18}
+                height={18}
+                className="mx-auto w-8"
+              />
+            </button>
 
-              {/* Dropdown Menu */}
-              {isMenuVisible && (
-                <div className="absolute top-[-200%] left-[-50px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50">
-                  <ul className="flex flex-col p-3 gap-2">
-                    <li
-                      onClick={() => handleMenuClick("/dashboard")}
-                      className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                    >
-                      Dashboard
-                    </li>
-                    <li
-                      onClick={() => handleMenuClick("/settings")}
-                      className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                    >
-                      Settings
-                    </li>
-                    <li
-                      onClick={() => handleMenuClick("/profile")}
-                      className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
-                    >
-                      Profile
-                    </li>
-                  </ul>
-                </div>
-              )}
+            {/* Dropdown Menu */}
+            {isMenuVisible && (
+              <div className="absolute top-[-200%] left-[-50px] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50">
+                <ul className="flex flex-col p-3 gap-2">
+                  <li
+                    onClick={() => handleMenuClick("/dashboard")}
+                    className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                  >
+                    Dashboard
+                  </li>
+                  <li
+                    onClick={() => handleMenuClick("/settings")}
+                    className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                  >
+                    Settings
+                  </li>
+                  <li
+                    onClick={() => handleMenuClick("/profile")}
+                    className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2"
+                  >
+                    Profile
+                  </li>
+                </ul>
+              </div>
+            )}
+            
+          </div>
+        )}
 
-              {/* Next Button */}
-              <NextButton />
-            </div>
-          ) : (
-            // Step-2: Back + Next
-            <>
+          {/* Back (ONLY step-2) */}
+            {isStep2 && (
               <Button
                 onClick={() => router.push("/onboarding/step-1")}
                 className="px-6"
               >
                 Back
               </Button>
-              <NextButton />
-            </>
-          )}
-        </>
-      ) : (
-        // First-time onboarding
-        <>
-          {pathname === "/onboarding/step-2" && (
-            <Button
-              onClick={() => router.push("/onboarding/step-1")}
-              // className="w-[72px] h-[37px] bg-white text-electric-blue border border-electric-blue rounded-md text-center font-medium hover:bg-electric-blue hover:text-white"
-            >
-              Back
-            </Button>
-          )}
-          <NextButton />
-        </>
-      )}
-    </div>
+            )}
 
+              {/* Next */}
+            <NextButton />
+        </div>
 
         {/* Right side: Form */}
         <div className="w-[40%] grid grid-cols-1 bg-white">
@@ -188,5 +180,6 @@ export default function OnboardingLayout({ children }) {
     </FormProvider>
   );
 }
+
 
 
