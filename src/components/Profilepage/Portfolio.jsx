@@ -179,7 +179,7 @@ const Portfolio = () => {
                   {/* 🔒 LOCK OVERLAY */}
                   {isLocked && (
                     <div className="absolute inset-0 z-30 bg-[#212121]/80 backdrop-blur-sm flex flex-col items-center justify-center text-center px-4">
-                      <Tooltip title={tooltip.title} body={tooltip.body} placement="top">
+                      <Tooltip body={tooltip?.body} placement="top">
                         <Image
                           src="/assets/images/pro-yellow.svg"
                           width={20}

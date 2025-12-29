@@ -12,10 +12,7 @@ const Tooltip = ({
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
-  const lines = body
-    .split(".")
-    .map(l => l.trim())
-    .filter(Boolean);
+  const lines = body?.split(".").map(l => l.trim()).filter(Boolean);
 
   useEffect(() => {
     if (!open || !triggerRef.current) return;
