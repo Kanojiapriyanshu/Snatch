@@ -185,7 +185,7 @@ const { data: insights, isLoading: isInsightsLoading } = useQuery({
           )}
 
           {/* Chart */}
-          <div className="mt-4 w-full flex justify-center">
+          <div className="mt-6 w-full flex justify-center">
             <PieChart apiEndpoint={genderEndpoint} />
           </div>
         </div>

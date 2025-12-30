@@ -43,7 +43,7 @@ const SimpleWorldMap = ({apiEndpoint}) => {
 
   return (
     <div className="mt-10">
-    <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={800} height={400} style={{ width: "100%", height: "auto" }} >
+    <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={700} height={400} style={{ width: "100%", height: "auto" }} >
       <Geographies geography={geoUrl}>
         {({ geographies }) =>
           geographies.map((geo) => {
