@@ -172,17 +172,6 @@ const CustomFileInput = ({ onFileChange, placeholder, iconSrc, label, fileNameKe
               >
                 Cancel
               </button>
-              {/* <button
-                onClick={cropImage}
-                className="px-4 py-2 bg-electric-blue border text-white rounded-md flex items-center justify-center min-w-[60px]"
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                  "Set"
-                )}
-              </button> */}
                <button
                 onClick={cropImage}
                 disabled={isProcessing}

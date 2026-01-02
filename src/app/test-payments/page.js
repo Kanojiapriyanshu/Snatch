@@ -39,7 +39,7 @@ export default function TestPayments() {
       name: "SnatchSocial",
       description:
         planType === "monthly"
-          ? "₹900 / month – 2 day free trial"
+          ? "₹5 / month – 2 day free trial"
           : "₹9000 / year – 2 day free trial",
       handler: () => {
         alert("✅ Card verified! Trial started.");
@@ -87,8 +87,9 @@ export default function TestPayments() {
               onChange={(e) => setPlanType(e.target.value)}
               className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
             >
-              <option value="monthly">₹900 / month</option>
+              {/* <option value="monthly">₹900 / month</option> */}
               <option value="annual">₹9000 / year</option>
+               <option value="monthly">₹5 / month</option>
             </select>
           </div>
 

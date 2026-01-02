@@ -11,18 +11,6 @@ const LocationInput = ({ value, onSelectLocation, onEnsureValid, ...props }) => 
 
   const userTypingRef = useRef(false);
 
-  // inside LocationInput
-// const ensureValidLocation = async () => {
-//   if (query && query.length >= 2) {
-//     await fetchLocations(query, true); // will auto-select first suggestion if needed
-//   }
-// };
-
-// // expose to parent
-// useEffect(() => {
-//   if (onEnsureValid) onEnsureValid(ensureValidLocation);
-// }, [query, onEnsureValid]);
-
 useEffect(() => {
   const handleAutofill = (e) => {
     const val = e.target.value;

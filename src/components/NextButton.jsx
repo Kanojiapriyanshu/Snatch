@@ -150,11 +150,6 @@ const NextButton = () => {
       onClick={handleNextClick}
       disabled={isSubmitting}
       className={`${isSubmitting ? "w-[85px]" : ""} px-6`}
-        //isSubmitting width bigger add condition
-      // className={` h-[37px] border z-50 rounded-md text-center font-medium 
-      //   ${isSubmitting 
-      //     ? "w-[100px] bg-[#809DFF] text-white cursor-not-allowed" 
-      //     : "w-[74px] bg-white text-electric-blue border-electric-blue hover:bg-electric-blue hover:text-white"}`}
     >
       {isSubmitting ? "Submitting" : "Next"}
     </Button>

@@ -306,24 +306,3 @@ export default function OnboardingToolbar() {
     </div>
   );
 }
-
-{/* 
-          <Button  onClick={() => setShowPresskitMenu((prev) => !prev)}   variant="secondary"
-           className={` ${
-              presskitIncomplete
-                ? "text-[#EB3B00] border-[#EB3B00] hover:border-[#EB3B00] hover:text-[#EB3B00] active:text-[#EB3B00] active:border-[#EB3B00]"
-                : ""
-            } flex justify-center items-center`}>{presskitIncomplete ? (
-              "Complete press kit"
-            ) : (
-              <div className="flex items-center gap-2">
-                <Image
-                  src="/assets/images/edit-pencil.svg"
-                  alt="Edit"
-                  width={16}
-                  height={16}
-                  className="w-5 h-5"
-                />
-                <p>Edit press kit</p>
-              </div>
-            )}</Button> */}

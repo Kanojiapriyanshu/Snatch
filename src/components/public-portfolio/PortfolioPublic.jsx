@@ -296,21 +296,3 @@ const PortfolioPublic = () => {
 };
 
 export default PortfolioPublic;
-
-
-// Listen for route changes to stop loading when navigation is complete
-// Refresh media once when username is available
-//   useEffect(() => {
-//   if (!username) return;
-
-//   const refreshExpiredMedia = async () => {
-//     try {
-//       await fetch(`/api/auth/refreshInstagram?username=${username}`);
-//       console.log("✅ Refresh call triggered for username:", username);
-//     } catch (err) {
-//       console.error("❌ Failed to refresh media:", err);
-//     }
-//   };
-
-//   refreshExpiredMedia();
-// }, [username]);
