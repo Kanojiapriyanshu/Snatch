@@ -38,26 +38,29 @@ const PortfolioPublic = () => {
 
     const refreshExpiredMedia = async () => {
       try {
-        await fetch(`/api/auth/refreshInstagram?username=${username}`);
-        let attempts = 0;
-        let freshFound = false;
+        
+        // await fetch(`/api/auth/refreshInstagram?username=${username}`);
+        // let attempts = 0;
+        // let freshFound = false;
 
-        while (attempts < 5 && !freshFound) {
+        // while (attempts < 5 && !freshFound) {
+     
+            // break;
+          // }
+
+          // attempts++;
+          // await new Promise((res) => setTimeout(res, 5000));
+
           const res = await fetch(`/api/public-portfolio/posts?username=${username}`);
           const data = await res.json();
 
           if (data?.success && data.instagram?.length > 0) {
             freshFound = true;
             queryClient.invalidateQueries(["publicProjects", username]);
-            break;
           }
-
-          attempts++;
-          await new Promise((res) => setTimeout(res, 5000));
-        }
-      } catch (err) {
-        console.error("Failed to refresh media:", err);
-      }
+         } catch (err) {
+            console.error("Failed to refresh media:", err);
+          }
     };
 
     refreshExpiredMedia();

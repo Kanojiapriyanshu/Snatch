@@ -743,7 +743,7 @@ const handlePopupGenerate = async () => {
               onClick={() => setShowMinProjectsPopup(false)}
               aria-label="Close"
             >
-              ✕
+               <Image src="/assets/images/close.svg" alt="close" className="w-4 h-5" height={10} width={10}/>
             </button>
 
             {/* Title */}

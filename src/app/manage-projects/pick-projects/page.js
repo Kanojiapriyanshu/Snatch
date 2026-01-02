@@ -186,11 +186,11 @@ useEffect(() => {
             setTotaPages(Math.ceil(mediaCount / PAGE_SIZE));
           }
         } else {
-          const refreshRes = await fetch(`/api/auth/refreshInstagram?userId=${user.id}`);  // can no-cache here too, if needed
+          // const refreshRes = await fetch(`/api/auth/refreshInstagram?userId=${user.id}`);  // can no-cache here too, if needed
 
-          if (!refreshRes.ok) {
-            console.error("Failed to refresh Instagram media");
-          }
+          // if (!refreshRes.ok) {
+          //   console.error("Failed to refresh Instagram media");
+          // }
 
           //2️⃣ Then fetch from DB (always after refresh completes)
           const { media, paging, mediaCount } = await getMediaFromDatabase(
@@ -216,8 +216,6 @@ useEffect(() => {
     initInstagram();
   }, [isLoaded, user, hasInitialized]);
 
-
-
   if (loading) return <p>Loading...</p>;
   if (!limits || limits.error) return <p>Unable to load limits</p>;
 
@@ -225,69 +223,66 @@ useEffect(() => {
     return null;
   }
 
-  
   const scrollToTop = () => {
   if (containerRef.current) {
     containerRef.current.scrollTo({ top: 0 });
     }
   };
 
-const handlePrev = () => {
-  setCurrentPage((prev) => Math.max(prev - 1, 0));
-  setTimeout(() => {
-  scrollToTop();
-}, 0);
-};
-
-const handleNext = async () => {
-  // If next page is already loaded, just go to it
-  if (mediaPages[currentPage + 1]) {
-    setCurrentPage((prev) => prev + 1);
+  const handlePrev = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 0));
+    setTimeout(() => {
     scrollToTop();
-    return;
-  }
+  }, 0);
+  };
 
-  // If not loaded but more data exists, fetch next page
-  if (paging?.next && paging?.cursors?.after) {
-    setIsLoadingMore(true);
-
-    // detect if user came from Instagram Auth (first-time)
-    const queryParams = new URLSearchParams(window.location.search);
-    const code = queryParams.get("code");
-
-    try {
-      let moreMedia = [];
-      let newPaging = {};
-
-      if (code) {
-        // 👉 First-time user: fetch next page from Instagram API
-        const result = await fetchInstagramMedia(code, paging.cursors.after, sortOption, currentPage + 2);
-        moreMedia = result.media;
-        newPaging = result.paging;
-      } else {
-        // 👉 Returning user: fetch next page from DB
-        const result = await getMediaFromDatabase(paging.cursors.after, 20, sortOption, currentPage + 2);
-        moreMedia = result.media;
-        newPaging = result.paging;
-      }
-
-      // update state
-      setMedia((prev) => [...prev, ...moreMedia]);
-      setPaging(newPaging);
+  const handleNext = async () => {
+    // If next page is already loaded, just go to it
+    if (mediaPages[currentPage + 1]) {
       setCurrentPage((prev) => prev + 1);
       scrollToTop();
-    } catch (error) {
-      alert(error.message || "Failed to load more media");
-    } finally {
-      setIsLoadingMore(false);
+      return;
     }
-  }
-};
 
-  
+    // If not loaded but more data exists, fetch next page
+    if (paging?.next && paging?.cursors?.after) {
+      setIsLoadingMore(true);
+
+      // detect if user came from Instagram Auth (first-time)
+      const queryParams = new URLSearchParams(window.location.search);
+      const code = queryParams.get("code");
+
+      try {
+        let moreMedia = [];
+        let newPaging = {};
+
+        if (code) {
+          // 👉 First-time user: fetch next page from Instagram API
+          const result = await fetchInstagramMedia(code, paging.cursors.after, sortOption, currentPage + 2);
+          moreMedia = result.media;
+          newPaging = result.paging;
+        } else {
+          // 👉 Returning user: fetch next page from DB
+          const result = await getMediaFromDatabase(paging.cursors.after, 20, sortOption, currentPage + 2);
+          moreMedia = result.media;
+          newPaging = result.paging;
+        }
+
+        // update state
+        setMedia((prev) => [...prev, ...moreMedia]);
+        setPaging(newPaging);
+        setCurrentPage((prev) => prev + 1);
+        scrollToTop();
+      } catch (error) {
+        alert(error.message || "Failed to load more media");
+      } finally {
+        setIsLoadingMore(false);
+      }
+    }
+  };
+
   const handleTabClick = (tab) => setSelectedTab(tab);
-
-  
+ 
   const handleSlide = (mediaId, direction, totalSlides) => {
     setCarouselIndexes((prev) => {
       const currentIndex = prev[mediaId] || 0;
@@ -301,28 +296,58 @@ const handleNext = async () => {
     });
   };
 
-
     // Handle file selection and upload (No SVG to base64 conversion here)
+    // const handleFileChange = (e) => {
+    //   const files = Array.from(e.target.files);
+    //   files.forEach((file) => {
+    //     if (file) {
+    //       handleFileUpload(file); 
+    //     }
+    //   });
+    // };
+
     const handleFileChange = (e) => {
-      const files = Array.from(e.target.files);
-      files.forEach((file) => {
-        if (file) {
-          handleFileUpload(file); 
-        }
-      });
-    };
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    const remainingSlots =
+      effectiveLimit - (projectsUsed + totalSelected);
+
+    // 🚫 no slots left
+    if (remainingSlots <= 0) {
+      if (!isProPlan) {
+        setShowUpgradeBar(true);
+      }
+      e.target.value = "";
+      return;
+    }
+
+    // ✅ upload only allowed number
+    const filesToUpload = files.slice(0, remainingSlots);
+
+    filesToUpload.forEach((file) => {
+      handleFileUpload(file);
+    });
+
+    // 🚨 user selected more than allowed
+    if (files.length > remainingSlots) {
+      if (!isProPlan) {
+      setShowUpgradeBar(true);
+    }
+    }
+    e.target.value = "";
+  };
+
 
     const handleProjectClick = () => {
-
-
-      const canGoToAddDetails = totalSelected >= 4;
-      
-      if (totalSelected >= 4) {
-        router.push("/manage-projects/add-details");
-      } else {
-        alert("Please select at least 4 projects before proceeding.");
-      }
-    };
+    const canGoToAddDetails = totalSelected >= 4;
+    
+    if (totalSelected >= 4) {
+      router.push("/manage-projects/add-details");
+    } else {
+      alert("Please select at least 4 projects before proceeding.");
+    }
+   };
 
     const isDisabled = selectionState.instagramSelected.length + selectionState.uploadedFiles.length < 4;
     
