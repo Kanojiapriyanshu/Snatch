@@ -217,7 +217,7 @@ export default function EnterOtp() {
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
 
-          <p className="text-md lg:relative lg:left-1/2 lg:-bottom-5 lg:mt-10 max-w-80 text-center font-apfel-grotezk-regular font-semibold h-14 bg-white">Tip: Can't find the OTP email? Check the <span className="text-electric-blue">Promotions section</span></p>
+          <p className="text-md lg:relative lg:left-1/2 lg:-bottom-5 lg:mt-10 max-w-80 text-center font-apfel-grotezk-regular font-semibold h-14 bg-[#FAFAFA]">Tip: Can't find the OTP email? Check the <span className="text-electric-blue">Promotions section</span></p>
       
       </div>
 

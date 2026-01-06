@@ -314,15 +314,14 @@ useEffect(() => {
   load();
 }, [])
 
-  if (loading) return <p>Loading...</p>;
-  if (!limits || limits.error) return <p>Unable to load limits</p>;
+  if (loading) return <p className="text-smoke">Loading...</p>;
+  if (!limits || limits.error) return <p className="text-smoke">Unable to load limits</p>;
 
-     
   const { plan, generationsUsed, generationLimit } = limits;
 
-if (!isHydrated) {
-    return null;
-}
+  if (!isHydrated) {
+      return null;
+  }
 
   //as user click on generate button use /increment and dec api to track usage
   async function updateUsage(type, action) {

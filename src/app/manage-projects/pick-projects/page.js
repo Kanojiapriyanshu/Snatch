@@ -216,8 +216,8 @@ useEffect(() => {
     initInstagram();
   }, [isLoaded, user, hasInitialized]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!limits || limits.error) return <p>Unable to load limits</p>;
+  if (loading) return <p className="text-smoke">Loading...</p>;
+  if (!limits || limits.error) return <p className="text-smoke">Unable to load limits</p>;
 
   if (!isHydrated) {
     return null;
@@ -906,7 +906,7 @@ return (
 
           {/* Dropdown Menu */}
           {isMenuVisible && (
-            <div className="absolute top-[-220%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-50 font-apfel-grotezk-regular">
+            <div className="absolute top-[-220%] left-[50%] w-[200px] bg-white shadow-lg rounded-md border border-light-grey z-0 font-apfel-grotezk-regular">
               <ul className="flex flex-col p-3 gap-2">
                 <li onClick={handleDashboardClick} className="cursor-pointer text-graphite hover:text-electric-blue hover:bg-gray-100 rounded-md p-2">
                   Dashboard

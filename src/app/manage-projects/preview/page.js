@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useRef } from "react";
 import Image from "next/image";
 import { useSelectedProjects } from "../context";
 import ProjectsGrid from "@/components/ProjectsGrid";
@@ -22,12 +22,12 @@ import Button from "@/components/ui/Button";
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeImageId = searchParams.get("activeImageId");
-  const initialTab = searchParams.get("tab") || "instagram";
-  const [activeTab, setActiveTab] = useState(initialTab);
+  // const initialTab = searchParams.get("tab") || "instagram";
+  // const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState("instagram");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // const isBrandCollaboration = searchParams.get('isBrandCollaboration');
+  const hasAutoSyncedTab = useRef(false);
 
   const requiredFields = ["titleName", "description", "industries"];
   // Add these near the top of PreviewContent function
@@ -39,81 +39,36 @@ import Button from "@/components/ui/Button";
     return height > width;
   };
 
-  const handleSubmit = () => {
-      if (filledProjectsCount < 4) {
-        setPopupMessage(
-          "Your portfolio needs at least 4 project details to be created. Don't worry, your progress is saved, and you can come back anytime to finish."
-        );
-      } else {
-        setPopupMessage(""); // Use default message in Popup
-      }
-        setIsModalOpen(true);
+const allProjects = React.useMemo(() => [
+  ...selectionState.instagramSelected.map(p => ({
+    ...p,
+    source: "instagram",
+  })),
+  ...selectionState.uploadedFiles.map(p => ({
+    ...p,
+    source: "uploaded",
+  })),
+], [selectionState.instagramSelected, selectionState.uploadedFiles]);
 
-  };
 
-  const handleContinueEditing = () => {
-    setIsModalOpen(false);
-  };
+// const activeProject =
+//   activeImageId !== null
+//     ? allProjects.find(
+//         (p) => String(p.mediaId) === String(activeImageId)
+//       )
+//     : allProjects[0];
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+const activeProject = React.useMemo(() => {
+  if (!activeImageId) return allProjects[0];
+  return allProjects.find(
+    p => String(p.mediaId) === String(activeImageId)
+  );
+}, [activeImageId, allProjects]);
 
-  const handleNextStep = () => {
-  setIsModalOpen(false);
-  setStatus("loading"); // button shows loading state immediately
-
-  // Collect all filled project mediaIds
-  const filledProjectIds = [
-    ...(selectionState.instagramSelected || []),
-    ...(selectionState.uploadedFiles || [])
-  ]
-    .filter(project => {
-      const formData = Array.isArray(selectionState.formData)
-        ? selectionState.formData.find(item => String(item.key) === String(project.mediaId))
-        : null;
-      return isProjectFilled(formData);
-    })
-    .map(project => project.mediaId);
-
-  console.log("SENDING FILLED PROJECT IDS TO SAVE all", filledProjectIds);
-
-  const finalSubmit = async () => {
-    try {
-      const response = await fetch("/api/projects/final", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mediaIds: filledProjectIds })
-      });
-
-      if (!response.ok) throw new Error("Failed to save projects");
-
-      // setStatus("success"); 
-
-      if (filledProjectsCount < 4) {
-        router.push("/profile?incompleteProjects=1");
-      } else {
-        router.push("/profile");
-      }
-    } catch (error) {
-      console.error("Error saving projects:", error);
-      setStatus("error"); 
-    }
-  };
-
-  finalSubmit();
-};
 
   const projects = activeTab === "instagram"
   ? selectionState.instagramSelected
   : selectionState.uploadedFiles;
-
-  console.log("CURRENT PROJECTS", projects)
-   
-const activeProject =
-  activeImageId !== null
-    ? projects.find((project) => String(project.mediaId) === String(activeImageId))
-    : projects[0];
 
     // Update useEffect to set initial index when activeProject changes
 useEffect(() => {
@@ -125,15 +80,52 @@ useEffect(() => {
   }
 }, [activeProject, projects]);
 
+useEffect(() => {
+  if (!activeProject) return;
+  if (hasAutoSyncedTab.current) return;
 
-console.log("preview activeimageid", activeProject,  activeImageId);
+  setActiveTab(activeProject.source);
+  hasAutoSyncedTab.current = true;
+}, [activeProject]);
+
+useEffect(() => {
+  hasAutoSyncedTab.current = false;
+}, [activeImageId]);
+
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
+    // Fetch insights whenever the active project changes
+ // Modify the existing useEffect for insights
+const lastFetchedMediaId = useRef(null);
 
- // Compute status for each project
+useEffect(() => {
+  if (!activeProject) return;
+  if (activeTab !== "instagram") {
+    setInsights([]);
+    return;
+  }
+
+  if (lastFetchedMediaId.current === activeProject.mediaId) return;
+
+  lastFetchedMediaId.current = activeProject.mediaId;
+
+  const fetchInsights = async () => {
+    const response = await fetchMediaInsights(activeProject.mediaId);
+    setInsights(response?.data || []);
+  };
+
+  fetchInsights();
+}, [activeProject, activeTab]);
+
+
+  if (!isHydrated) {
+    return null;
+  }
+
+   // Compute status for each project
   const getProjectStatus = (project) => {
     if (activeProject && String(project.mediaId) === String(activeProject.mediaId)) {
       return "Selected";
@@ -153,26 +145,6 @@ console.log("preview activeimageid", activeProject,  activeImageId);
     status: getProjectStatus(project),
   }));
 
-    // Fetch insights whenever the active project changes
- // Modify the existing useEffect for insights
-    useEffect(() => {
-      const fetchInsights = async () => {
-        // Only fetch insights for Instagram content
-        if (activeProject && activeTab === "instagram") {
-          const response = await fetchMediaInsights(activeProject.mediaId);
-          setInsights(response?.data || []);
-        } else {
-          // Clear insights for uploaded files
-          setInsights([]);
-        }
-      };
-
-      fetchInsights();
-    }, [activeProject, activeTab]);
-
-  if (!isHydrated) {
-    return null;
-  }
 
   const handleProjectClick = (projectId) => {
     // Update the URL with the new activeImageId
@@ -215,6 +187,71 @@ const handleNext = () => {
     setCurrentIndex(newIndex);
   }
 };
+
+  const handleSubmit = () => {
+      if (filledProjectsCount < 4) {
+        setPopupMessage(
+          "Your portfolio needs at least 4 project details to be created. Don't worry, your progress is saved, and you can come back anytime to finish."
+        );
+      } else {
+        setPopupMessage(""); // Use default message in Popup
+      }
+        setIsModalOpen(true);
+
+  };
+
+  const handleContinueEditing = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleNextStep = () => {
+  setIsModalOpen(false);
+  setStatus("loading"); // button shows loading state immediately
+
+  // Collect all filled project mediaIds
+  const filledProjectIds = [
+    ...(selectionState.instagramSelected || []),
+    ...(selectionState.uploadedFiles || [])
+  ]
+    .filter(project => {
+      const formData = Array.isArray(selectionState.formData)
+        ? selectionState.formData.find(item => String(item.key) === String(project.mediaId))
+        : null;
+      return isProjectFilled(formData);
+    })
+    .map(project => project.mediaId);
+
+
+  const finalSubmit = async () => {
+    try {
+      const response = await fetch("/api/projects/final", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mediaIds: filledProjectIds })
+      });
+
+      if (!response.ok) throw new Error("Failed to save projects");
+
+      // setStatus("success"); 
+
+      if (filledProjectsCount < 4) {
+        router.push("/profile?incompleteProjects=1");
+      } else {
+        router.push("/profile");
+      }
+    } catch (error) {
+      console.error("Error saving projects:", error);
+      setStatus("error"); 
+    }
+  };
+
+  finalSubmit();
+};
+
 
 // Helper to check if a project is "filled"
 const isProjectFilled = (formData) => {
@@ -308,7 +345,7 @@ const handleHamburgerClick = () => {
              <div className="flex justify-center items-center font-apfel-grotezk-regular">
              <Uploadsvg
             style={{
-              color: activeTab === "upload" ? "blue" : "", height: "35px"
+              color: activeTab === "uploaded" ? "blue" : "", height: "35px"
             }}
           />  
               Uploaded

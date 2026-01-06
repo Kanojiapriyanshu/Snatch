@@ -36,15 +36,18 @@ const Portfolio = () => {
                 mediaType: item.name || item.fileName,
                 mediaUrl: item.mediaLink || item.fileUrl,
                 mediaId: item.mediaId,
+                source: "instagram"
               };
             }),
             ...data.uploaded.map((item) => ({
               mediaType: item.mediaType || item.fileName,
               mediaUrl: item.mediaUrl || item.fileUrl,
-              mediaId: item.mediaId,
+              mediaId: String(item.mediaId),
+              source: "uploaded"
             })),
           ];
           setProjects(processed);
+          console.log("Fetched projects: Processed", processed);
         }
       } catch (err) {
         console.error("Error fetching projects", err);
@@ -94,7 +97,7 @@ const Portfolio = () => {
           <div className="grid grid-cols-3 gap-8">
             {projects.map((project, index) => {
               const isLocked =
-                isFreePlan && projects.length > 8 && index >= 8;
+              isFreePlan && projects.length > 8 && index >= 8;
               const activeImageId = project.mediaId;
 
               const Media = (
