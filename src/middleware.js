@@ -103,11 +103,19 @@ export default clerkMiddleware(async (auth, request) => {
 
 export const config = {
   matcher: [
-    "/((?!.*\\..*|_next).*)",
+    "/((?!.*\\..*|_next/static|_next/image|favicon.ico).*)",
     "/",
-    "/(api|trpc)(.*)",
+    "/(api|trpc)(.*)"
   ],
 };
+
+// export const config = {
+//   matcher: [
+//     "/((?!.*\\..*|_next).*)",
+//     "/",
+//     "/(api|trpc)(.*)",
+//   ],
+// };
 
 // import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 // import { NextResponse } from "next/server";
