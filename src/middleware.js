@@ -51,9 +51,16 @@ export default clerkMiddleware(async (auth, req) => {
 });
 
 export const config = {
-  matcher: [
+  // matcher: [
+  //   "/((?!_next|.*\\..*).*)",
+  //   "/(api|trpc)(.*)",
+  // ],
+    matcher: [
+    // match all pages except static files
     "/((?!_next|.*\\..*).*)",
-    "/(api|trpc)(.*)",
+
+    // match all API routes in App Router explicitly
+    "/api/(.*)",
   ],
 };
 
