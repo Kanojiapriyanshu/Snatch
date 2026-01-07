@@ -1,29 +1,44 @@
-// app/dashboard/layout.js   make it ssr by having compoenents using conetxt api
-
+// app/dashboard/layout.js
 import Image from "next/image";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
 import DashboardPreview from "@/components/DashboardPreview";
 import StatsCard from "@/components/StatsCard";
-import { FormProvider } from "../onboarding/context";
 import DashboardToolbar from "@/components/DashboardToolbar";
-import { currentUser } from "@clerk/nextjs/server";
-import connectDb from "@/db/mongoose";
-import User from "@/models/user.model";
+
+import { FormProvider } from "../onboarding/context";
 import { UserProvider } from "@/context/UserContext";
 
-export default async function OnboardingLayout({ children }) {
+import connectDb from "@/db/mongoose";
+import User from "@/models/user.model";
+
+export default async function DashboardLayout({ children }) {
+  // 🔐 AUTH GUARD
+  const { userId } = await auth();
   const user = await currentUser();
-  const userId = user?.id;
+  if (!userId) {
+    redirect("/");
+  }
 
+  const hasCompletedOnboarding =
+    user?.publicMetadata?.hasCompletedOnboarding;
+
+  if (!hasCompletedOnboarding) {
+    redirect("/onboarding/step-1");
+  }
+
+  // 🔎 DB FETCH
   let isInstagramLinked = false;
-  let plan = 'free';
+  let plan = "free";
 
-  if (userId) {
-    await connectDb();
-    const dbUser = await User.findOne({ userId });
+  await connectDb();
+  const dbUser = await User.findOne({ userId });
+
+  if (dbUser) {
     isInstagramLinked = !!(dbUser?.instagramAccessToken && dbUser?.instagramAccountId);
     plan = dbUser?.subscription?.plan || 'free';
   }
-
 
   return (
     <FormProvider>
@@ -57,5 +72,5 @@ export default async function OnboardingLayout({ children }) {
         </div>
       </UserProvider>
       </FormProvider>
-  )
+  );
 }
