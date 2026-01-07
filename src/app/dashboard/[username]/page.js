@@ -71,7 +71,6 @@ const safeFetch = async (url, timeout = 5000) => {
      queryFn: () => safeFetch("/api/auth/check-instagram-connection"),
     enabled: !!username,
     staleTime: 1000 * 60 * 5,
-    throwOnError: true,
   });
 
     // Fetch Instagram Followers only if connected

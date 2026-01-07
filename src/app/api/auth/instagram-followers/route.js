@@ -25,7 +25,7 @@ export async function GET(req) {
       return NextResponse.json({
         count: 0,
         error: 'Instagram not connected'
-      }, { status: 404 });
+      }, { status: 200 });
     }
 
     // 4. Use the Instagram Graph API to fetch follower count
