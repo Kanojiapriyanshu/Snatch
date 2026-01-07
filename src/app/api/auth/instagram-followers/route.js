@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAuth } from "@clerk/nextjs/server";
+import { auth } from '@clerk/nextjs/server';
 import connectDB from '@/db/mongoose';
 import User from '@/models/user.model';
 
@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic";
 export async function GET(req) {
   try {
     // 1. Get current user from Clerk
-    const {userId} = await getAuth(req);
-    if (!userId) {
+    const {userId} = await auth();
+      if (!userId) {
       return NextResponse.json({
         count: 0,
         error: 'User not authenticated'

@@ -1,6 +1,7 @@
+//src/app/api/auth/check-instagram-connection/route.js
 import { NextResponse } from "next/server";
 import User from "@/models/user.model"; 
-import { getAuth } from "@clerk/nextjs/server";
+import { auth } from '@clerk/nextjs/server';
 import connectDb from "@/db/mongoose";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +10,7 @@ export async function GET(req) {
   try {
     console.log("checking ig connection")
     await connectDb(); // Ensure the database connection
-    const { userId } = getAuth(req);
+    const { userId } = await auth()
 
     if (!userId) {
       return NextResponse.json({ connected: false, error: "User not authenticated! Please signup first" }, { status: 401 });
