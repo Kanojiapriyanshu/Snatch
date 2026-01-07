@@ -52,15 +52,15 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
     matcher: [
+      // "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next|favicon.ico|assets|icons|images).*)",
+    "/api/(.*)",
+  ],
+};
     // "/((?!_next|.*\\..*).*)",
 
     // // match all API routes in App Router explicitly
     // "/api/(.*)",
-      "/((?!_next/static|_next/image|favicon.ico).*)",
-    "/api/(.*)",
-  ],
-};
-
 
   // matcher: [
   //   "/((?!_next|.*\\..*).*)",
