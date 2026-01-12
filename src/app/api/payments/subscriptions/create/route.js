@@ -23,8 +23,8 @@ export async function POST(req) {
       ? process.env.Monthly_Live_Plan_ID
       : process.env.Annual_Live_Plan_ID;
 
- // const trialSeconds = 2 * 24 * 60 * 60;
- const trialSeconds = 5 * 60; // 300 seconds
+ const trialSeconds = 2 * 24 * 60 * 60;  //2 days
+//  const trialSeconds = 5 * 60; // 300 seconds
 
   const subscription = await razorpay.subscriptions.create({
     plan_id: planId,

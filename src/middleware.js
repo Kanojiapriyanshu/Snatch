@@ -24,6 +24,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/public-portfolio/audience/maleDemographics",
   "/api/public-portfolio/preview",
   "/api/public-portfolio/media-insights",
+  "/api/public-portfolio/all-media-insights",
   "/api/public-portfolio/instagram-stats",
   "/request-popup",
   "/api/send-email",

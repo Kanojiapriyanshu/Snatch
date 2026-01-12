@@ -23,83 +23,98 @@ export async function POST(req) {
 
   console.log("🔔 Razorpay Event:", event.event);
 
-  /* -------------------------------
-     1️⃣ Card authenticated (trial starts)   //went from free to trial but does not update limits in jaini case
-  -------------------------------- */
+/* ------------------------------------------------
+     2️⃣ Trial started (card authenticated)
+     NOTE: This event may NOT always fire
+  ------------------------------------------------ */
   if (event.event === "subscription.authenticated") {
     const sub = event.payload.subscription.entity;
 
-    await User.findOneAndUpdate(
+    const updated = await User.findOneAndUpdate(
       { "subscription.subscriptionId": sub.id },
       {
-        "subscription.plan": "trial",
-        "subscription.isActive": true,
-        "subscription.trialStartedAt": new Date(),
-        "subscription.trialEndsAt": new Date(sub.current_end * 1000),
-        "subscription.nextBillingDate": new Date(sub.current_end * 1000),
-        // ✅ ADD PRO LIMITS FOR TRIAL USERS!
-        limits: {
-          generationLimit: 16,
-          projectLimit: 12,
+        $set: {
+          "subscription.plan": "trial",
+          "subscription.isActive": true,
+          "subscription.trialStartedAt": new Date(),
+          "subscription.trialEndsAt": new Date(sub.current_end * 1000),
+          "subscription.nextBillingDate": new Date(sub.current_end * 1000),
+          "limits.generationLimit": 16,
+          "limits.projectLimit": 12,
         },
-      }
+      },
+      { new: true }
     );
+
+    if (!updated) {
+      console.log("⚠️ No user found for trial start:", sub.id);
+    }
   }
 
-  /* -------------------------------
-     2️⃣ Subscription charged (TRIAL OVER → PRO)
-  -------------------------------- */
-  if (
-    event.event === "subscription.charged" ||
-    event.event === "invoice.paid"
-  ) {
-    const sub =
-      event.event === "subscription.charged"
-        ? event.payload.subscription.entity
-        : { id: event.payload.invoice.entity.subscription_id };
+  /* ------------------------------------------------
+     3️⃣ Trial over → PRO (PAYMENT SUCCESS)
+     This is the MOST IMPORTANT event
+  ------------------------------------------------ */
+  if (  event.event === "subscription.charged" ||
+    event.event === "invoice.paid") {
+    const invoice = event.payload.invoice.entity;
+    const subscriptionId = invoice.subscription_id;
 
-    await User.findOneAndUpdate(
-      { "subscription.subscriptionId": sub.id },
+    const updated = await User.findOneAndUpdate(
+      { "subscription.subscriptionId": subscriptionId },
       {
-        "subscription.plan": "pro",
-        "subscription.isActive": true,
-        limits: {
-          generationLimit: 16,
-          projectLimit: 12,
+        $set: {
+          "subscription.plan": "pro",
+          "subscription.isActive": true,
+          "subscription.nextBillingDate": new Date(invoice.current_period_end * 1000),
+          "limits.generationLimit": 16,
+          "limits.projectLimit": 12,
         },
-      }
+      },
+      { new: true }
     );
+
+    if (!updated) {
+      console.log("⚠️ No user found for payment success:", subscriptionId);
+    }
   }
 
-  /* -------------------------------
-     3️⃣ Subscription cancelled
-     (during trial OR later)
-  -------------------------------- */
+  /* ------------------------------------------------
+     4️⃣ Subscription cancelled (trial OR paid)
+  ------------------------------------------------ */
   if (event.event === "subscription.cancelled") {
     const sub = event.payload.subscription.entity;
 
-    await User.findOneAndUpdate(
+    const updated = await User.findOneAndUpdate(
       { "subscription.subscriptionId": sub.id },
       {
-        "subscription.plan": "free",
-        "subscription.isActive": false,
-        "subscription.subscriptionId": null,
-        "subscription.trialStartedAt": null,
-        "subscription.trialEndsAt": null,
-        "subscription.nextBillingDate": null,
-        limits: {
-          generationLimit: 10,
-          projectLimit: 8,
+        $set: {
+          "subscription.plan": "free",
+          "subscription.isActive": false,
+          "subscription.subscriptionId": null,
+          "subscription.trialStartedAt": null,
+          "subscription.trialEndsAt": null,
+          "subscription.nextBillingDate": null,
+          "limits.generationLimit": 10,
+          "limits.projectLimit": 8,
         },
-      }
+      },
+      { new: true }
     );
+
+    if (!updated) {
+      console.log("⚠️ No user found for cancellation:", sub.id);
+    }
   }
 
-  /* -------------------------------
-     4️⃣ Payment failed (optional)
-  -------------------------------- */
+  /* ------------------------------------------------
+     5️⃣ Payment failed (logging only)
+  ------------------------------------------------ */
   if (event.event === "payment.failed") {
-    console.log("❌ Payment failed:", event.payload.payment.entity.id);
+    console.log(
+      "❌ Payment failed:",
+      event.payload.payment?.entity?.id
+    );
   }
 
   return new Response("OK", { status: 200 });

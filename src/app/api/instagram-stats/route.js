@@ -28,10 +28,22 @@ export async function GET(req) {
 
     const user = await User.findOne({ userId });
 
-    if (!user || !user.instagramAccessToken || !user.instagramAccountId) {
+      if (!user) {
       return NextResponse.json(
-        { error: "User or Instagram credentials not found" },
-        { status: 404 }
+        { error: "User not found in database" },
+        { status: 404 } // THIS is valid 404
+      );
+    }
+
+    if (!user.instagramAccessToken || !user.instagramAccountId) {
+      return NextResponse.json(
+        {
+          connected: false,
+          followers_count: "0",
+          media_count: "0",
+          reach: "0",
+        },
+        { status: 200 }
       );
     }
 
