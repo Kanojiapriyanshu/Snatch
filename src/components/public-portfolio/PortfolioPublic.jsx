@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -28,43 +28,41 @@ const PortfolioPublic = () => {
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
-
   const isAdminView = pathname.includes("/adminview");
   const username = pathname.split("/")[1] || "";
 
-  // 🔁 Refresh expired media logic
-  useEffect(() => {
-    if (!username) return;
+  const {
+  data: statsMap = {},
+  isLoading: loadingStats,
+  isFetching,
+} = useQuery({
+  queryKey: ["instagram-media-stats", username],
+  queryFn: async () => {
+    const res = await fetch(
+      `/api/public-portfolio/all-media-insights?username=${username}`
+    );
+    const data = await res.json();
 
-    const refreshExpiredMedia = async () => {
-      try {
-        
-        // await fetch(`/api/auth/refreshInstagram?username=${username}`);
-        // let attempts = 0;
-        // let freshFound = false;
+    if (!data?.success) {
+      throw new Error("Failed to fetch stats");
+    }
 
-        // while (attempts < 5 && !freshFound) {
-     
-            // break;
-          // }
+    // Convert array → map (cached result)
+    const map = {};
+    data.stats.forEach((s) => {
+      map[s.mediaId] = s;
+    });
 
-          // attempts++;
-          // await new Promise((res) => setTimeout(res, 5000));
+    return map;
+  },
 
-          const res = await fetch(`/api/public-portfolio/posts?username=${username}`);
-          const data = await res.json();
-
-          if (data?.success && data.instagram?.length > 0) {
-            freshFound = true;
-            queryClient.invalidateQueries(["publicProjects", username]);
-          }
-         } catch (err) {
-            console.error("Failed to refresh media:", err);
-          }
-    };
-
-    refreshExpiredMedia();
-  }, [username, queryClient]);
+  // 🔥 CACHE BEHAVIOR
+  staleTime: 1000 * 60 * 30, // 30 minutes → no refetch
+  cacheTime: 1000 * 60 * 60, // 1 hour in memory
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+  enabled: !!username,
+});
 
   // 📦 Fetch public projects
   const {
@@ -93,12 +91,14 @@ const PortfolioPublic = () => {
             };
           }
           return {
+            source: "instagram",
             mediaType: item.name || item.fileName,
             mediaUrl: item.mediaLink || item.fileUrl,
             mediaId: item.mediaId,
           };
         }),
         ...data.uploaded.map((item) => ({
+          source: "uploaded",
           mediaType: item.mediaType || item.fileName,
           mediaUrl: item.mediaUrl || item.fileUrl,
           mediaId: item.mediaId,
@@ -145,6 +145,14 @@ const PortfolioPublic = () => {
     }
   };
 
+  function format(num) {
+    if (num >= 1_000_000_000) return (num / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+    if (num >= 1_000_000) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (num >= 1_000) return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+    return String(num);
+  }
+
+
   // 🧱 Grid Skeleton while loading
   if (isLoading) {
     return (
@@ -162,88 +170,154 @@ const PortfolioPublic = () => {
     return <p className="text-center text-red-500">Error: {error.message}</p>;
 
   const renderMedia = (project, index) => {
-    const mediaId = project.mediaId;
-    const isLoaded = loadedMedia[mediaId];
+  const mediaId = project.mediaId;
+  const isLoaded = loadedMedia[mediaId];
+  const stat = statsMap[mediaId];
+  const isUploaded = project.source === "uploaded";
 
-    return (
-      <div
-        key={index}
-        className="relative w-full h-full rounded-md overflow-hidden group"
-        onMouseEnter={() => handleMouseEnter(mediaId)}
-        onMouseLeave={() => handleMouseLeave(mediaId)}
-      >
-        {!isLoaded && <MediaSkeleton />}
+  return (
+    <div
+      key={index}
+      className="relative w-full h-full rounded-md overflow-hidden group"
+      onMouseEnter={() => handleMouseEnter(mediaId)}
+      onMouseLeave={() => handleMouseLeave(mediaId)}
+    >
+      {!isLoaded && <MediaSkeleton />}
 
-        {/* Handle Video / Image / Carousel */}
-        {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
-          project.children.map((child, idx) => (
-            <div
-              key={child.mediaId}
-              className={`absolute inset-0 transition-all duration-500 ${
-                (carouselIndexes[mediaId] || 0) === idx
-                  ? "opacity-100 z-10"
-                  : "opacity-0 z-0"
-              }`}
-            >
-              {child.mediaType === "IMAGE" ? (
-                <Image
-                  src={child.mediaUrl}
-                  alt={`Media ${child.mediaId}`}
-                  fill
-                  className="object-cover"
-                  onLoadingComplete={() =>
-                    setLoadedMedia((prev) => ({ ...prev, [mediaId]: true }))
-                  }
-                />
-              ) : (
-                <video
-                  className="w-full h-full object-cover"
-                  src={child.mediaUrl}
-                  muted
-                  playsInline
-                  onLoadedData={() =>
-                    setLoadedMedia((prev) => ({ ...prev, [mediaId]: true }))
-                  }
-                />
-              )}
-            </div>
-          ))
-        ) : project.mediaType.includes("VIDEO") ||
-          project.mediaType.endsWith(".mp4") ? (
-          <video
-            className="w-full h-full object-cover"
-            src={project.mediaUrl}
-            muted
-            playsInline
-            onLoadedData={() =>
-              setLoadedMedia((prev) => ({ ...prev, [mediaId]: true }))
-            }
-          />
-        ) : (
-          <Image
-            src={project.mediaUrl}
-            alt={`Project ${index + 1}`}
-            fill
-            className="object-cover"
-            onLoadingComplete={() =>
-              setLoadedMedia((prev) => ({ ...prev, [mediaId]: true }))
-            }
-          />
-        )}
-
-        {/* Hover overlay */}
-        <div
-          className="absolute inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 z-10 cursor-pointer"
-          onClick={(e) =>
-            handlePostClick(
-              e,
-              mediaId,
-              isAdminView
-                ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
-                : `/${username}/media-kit/post/?postId=${mediaId}`
-            )
+      {/* MEDIA */}
+      {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
+        project.children.map((child, idx) => (
+          <div
+            key={child.mediaId}
+            className={`absolute inset-0 transition-all duration-500 ${
+              (carouselIndexes[mediaId] || 0) === idx
+                ? "opacity-100 z-10"
+                : "opacity-0 z-0"
+            }`}
+          >
+            {child.mediaType === "IMAGE" ? (
+              <Image
+                src={child.mediaUrl}
+                alt=""
+                fill
+                className="object-cover"
+                onLoadingComplete={() =>
+                  setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
+                }
+              />
+            ) : (
+              <video
+                className="w-full h-full object-cover"
+                src={child.mediaUrl}
+                muted
+                playsInline
+                onLoadedData={() =>
+                  setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
+                }
+              />
+            )}
+          </div>
+        ))
+      ) : project.mediaType.includes("VIDEO") ? (
+        <video
+          className="w-full h-full object-cover"
+          src={project.mediaUrl}
+          muted
+          playsInline
+          onLoadedData={() =>
+            setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
           }
+        />
+      ) : (
+        <Image
+          src={project.mediaUrl}
+          alt=""
+          fill
+          className="object-cover"
+          onLoadingComplete={() =>
+            setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
+          }
+        />
+      )}
+
+      {/* 📱 MOBILE — Views only */}
+      {stat?.views >= 0 && (
+        <div
+          className="
+            md:hidden
+            absolute bottom-2 left-1
+            z-20
+            flex items-center gap-1
+            px-1 py-1
+            rounded-md
+            text-white text-xs
+          "
         >
+          <Image
+            src="/assets/images/views.svg"
+            alt="Views"
+            width={14}
+            height={14}
+          />
+          <span>{format(stat.views)}</span>
+        </div>
+      )}
+
+      {/* 💻 DESKTOP HOVER OVERLAY */}
+      <div
+        className="
+          hidden md:flex
+          absolute inset-0
+          items-center justify-center
+          bg-black/40 backdrop-blur-sm
+          opacity-0 group-hover:opacity-100
+          transition-opacity duration-300
+          z-10 cursor-pointer
+        "
+        onClick={(e) =>
+          handlePostClick(
+            e,
+            mediaId,
+            isAdminView
+              ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
+              : `/${username}/media-kit/post/?postId=${mediaId}`
+          )
+        }
+      >
+        <div className="flex flex-wrap justify-center gap-4 text-white text-lg max-w-[90%]">
+          {!isUploaded && (
+            <>
+            {/* Likes */}
+              <div className="flex items-center gap-1.5">
+                <Image src="/assets/images/like.svg" alt="Like" width={16} height={16} />
+                <span>{format(stat?.likes ?? 0)}</span>
+              </div>
+
+              {/* Comments */}
+              <div className="flex items-center gap-1.5">
+                <Image src="/assets/images/comment.svg" alt="Comment" width={16} height={16} />
+                <span>{format(stat?.comments ?? 0)}</span>
+              </div>
+
+              {/* Views */}
+              {stat?.views >= 0 && (
+                <div className="flex items-center gap-1.5">
+                  <Image src="/assets/images/views.svg" alt="Views" width={16} height={16} />
+                  <span>{format(stat.views)}</span>
+                </div>
+              )}
+
+              {/* Shares */}
+              {stat?.shares >= 0 && (
+                <div className="flex items-center gap-1.5">
+                  <Image src="/assets/images/shares.svg" alt="Shares" width={16} height={16} />
+                  <span>{format(stat.shares)}</span>
+                </div>
+              )}
+
+              </>
+            )}
+
           {loadingPostId === mediaId ? (
             <DotLottieReact
               src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
@@ -252,14 +326,15 @@ const PortfolioPublic = () => {
               style={{ width: 80, height: 80 }}
             />
           ) : (
-            <span className="text-yellow-300 text-center underline text-[21px] font-apfel-grotezk-regular">
+            <span className="hidden lg:block text-yellow-300 font-apfel-grotezk-regular underline text-[20px] ">
               Post Info & Insights ↗
             </span>
           )}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   return (
     <div className="w-full mx-auto max-w-[1600px] p-2 sm:p-4">
@@ -268,10 +343,7 @@ const PortfolioPublic = () => {
           {/* 📱 Mobile / Tablet */}
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-4 lg:hidden">
             {projects.map((project, index) => (
-              <div
-                key={index}
-                className="relative aspect-[5/8] sm:aspect-[5/7] w-full"
-              >
+              <div key={index} className="relative aspect-[5/8] sm:aspect-[5/7]">
                 {renderMedia(project, index)}
               </div>
             ))}
@@ -280,7 +352,7 @@ const PortfolioPublic = () => {
           {/* 💻 Desktop */}
           <div className="hidden lg:grid lg:grid-cols-4 lg:gap-8">
             {projects.map((project, index) => (
-              <div key={index} className="relative w-full aspect-[5/7]">
+              <div key={index} className="relative aspect-[5/7]">
                 {renderMedia(project, index)}
               </div>
             ))}

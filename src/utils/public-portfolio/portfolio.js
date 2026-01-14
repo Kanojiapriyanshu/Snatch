@@ -120,3 +120,156 @@ export const Loader = () => {
     </div>
   );
 };
+
+
+async function fetchPostPreview({ postId, username }) {
+  const res = await fetch(
+    `/api/public-portfolio/preview?postId=${postId}&username=${username}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch post preview");
+  }
+
+  return res.json();
+}
+
+export function usePostPreview({ postId, username, allPosts }) {
+  return useQuery({
+    queryKey: ["post-preview", username, postId],
+    queryFn: async () => {
+      const data = await fetchPostPreview({ postId, username });
+
+      const matchingPost = allPosts?.find(
+        (p) => String(p.mediaId) === String(postId)
+      );
+
+      const defaultInsights = {
+        engagement: 0,
+        impressions: 0,
+        reach: 0,
+        saved: 0,
+        likes: 0,
+        comments: 0,
+      };
+
+      return {
+        post: data.post,
+        media: data.media,
+        mediaType: matchingPost?.mediaType || data.media.type,
+        mediaUrl:
+          matchingPost?.mediaUrl ||
+          data.media?.files?.[0]?.url ||
+          "",
+        children: matchingPost?.children || data.media?.files || [],
+        insights: matchingPost?.insights || defaultInsights,
+      };
+    },
+
+    enabled: !!postId && !!username,
+
+    // ✅ CACHE SETTINGS
+    staleTime: 5 * 60 * 1000, // 5 minutes (no refetch)
+    gcTime: 5 * 60 * 1000,    // keep in cache for 5 minutes
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+}
+
+async function fetchMediaInsights({ username, postId }) {
+  const res = await fetch(
+    `/api/public-portfolio/media-insights?username=${encodeURIComponent(
+      username
+    )}&postId=${encodeURIComponent(postId)}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch media insights");
+  }
+
+  const data = await res.json();
+
+  if (!data.success) {
+    throw new Error(data.error || "Insights API failed");
+  }
+
+  const insightsArray = data.insights?.data || [];
+  const insightsMap = {};
+
+  insightsArray.forEach((item) => {
+    insightsMap[item.name] = item.values?.[0]?.value || 0;
+  });
+
+  return insightsMap;
+}
+
+export function useMediaInsights({ username, postId, isInstagram }) {
+  return useQuery({
+    queryKey: ["media-insights", username, postId],
+
+    queryFn: () => fetchMediaInsights({ username, postId }),
+
+    // 🔐 Only run for Instagram posts
+    enabled: !!username && !!postId && isInstagram,
+
+    // ✅ CACHE SETTINGS
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 5 * 60 * 1000,
+
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+}
+
+async function fetchAudienceDemographics(username) {
+  const [genderRes, ageRes, countryRes] = await Promise.all([
+    fetch(
+      `/api/public-portfolio/audience/genderDemographics?username=${encodeURIComponent(
+        username
+      )}`
+    ),
+    fetch(
+      `/api/public-portfolio/audience/allDemographics?username=${encodeURIComponent(
+        username
+      )}`
+    ),
+    fetch(
+      `/api/public-portfolio/audience/countryDemographics?username=${encodeURIComponent(
+        username
+      )}`
+    ),
+  ]);
+
+  if (!genderRes.ok || !ageRes.ok || !countryRes.ok) {
+    throw new Error("Failed to fetch audience demographics");
+  }
+
+  const [genderData, ageData, countryData] = await Promise.all([
+    genderRes.json(),
+    ageRes.json(),
+    countryRes.json(),
+  ]);
+
+  return {
+    genderData: genderData.demographics || [],
+    ageData: ageData.ageDistribution || [],
+    countryData: countryData.countryDistribution || [],
+  };
+}
+
+export function useAudienceDemographics(username) {
+  return useQuery({
+    queryKey: ["audience-demographics", username],
+
+    queryFn: () => fetchAudienceDemographics(username),
+
+    enabled: !!username,
+
+    // ✅ CACHE (5 minutes)
+    staleTime: 5 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+}

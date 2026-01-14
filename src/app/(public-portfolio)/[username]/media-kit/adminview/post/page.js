@@ -1,62 +1,52 @@
-
-// src/app/(public-portfolio)/[username]/media-kit/adminview/post/page.js
 "use client";
-import { useEffect, useState } from "react";
+
 import { useSearchParams, useParams } from "next/navigation";
 import PostCard from "@/components/public-portfolio/PostCard";
 import { usePostsContext } from "@/context/PostContext";
-export default function PostDetailsPage() {
-  const { allPosts, username: contextUsername } = usePostsContext(); // Get data from context
+import { usePostPreview } from "@/utils/public-portfolio/portfolio";
 
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function PostDetailsPage() {
+  const { allPosts } = usePostsContext();
   const searchParams = useSearchParams();
   const params = useParams();
+
   const postId = searchParams.get("postId");
   const username = params.username;
 
+  const {
+    data: post,
+    isLoading,
+    isError,
+    error,
+  } = usePostPreview({
+    postId,
+    username,
+    allPosts,
+  });
 
-  useEffect(() => {
-    if (!postId || !username) {
-      console.error("Missing required params:", { postId, username });
-      return;
-    }
-
-    const fetchPostData = async () => {
-      try {
-        const res = await fetch(`/api/public-portfolio/preview?postId=${postId}&username=${username}`);
-        const data = await res.json();
-
-        if (data.success) {
-          // Find the matching post from allPosts
-          const matchingPost = allPosts?.find(p => String(p.mediaId) === String(postId));
-          
-          // Combine API data with matching post data
-          setPost({
-            ...data,
-            mediaType: matchingPost?.mediaType,
-            mediaUrl: matchingPost?.mediaUrl,
-            children: matchingPost?.children
-          });
-        } else {
-          console.error("Error fetching post:", data.error);
-        }
-      } catch (err) {
-        console.error("Fetch failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPostData();
-  }, [postId, username, allPosts]);
-
-  const currentPost = allPosts?.find(post => post.mediaId === postId);
-
-  if (!currentPost) {
-    return <div className="font-qimano h-[480px]  flex items-center text-md lg:text-2xl animate-pulse text-electric-blue">Hold on while we fetch the post!</div>;
+  if (isLoading) {
+    return (
+      <div className="font-qimano h-[480px] flex items-center text-md lg:text-2xl animate-pulse text-electric-blue">
+        Hold on while we fetch the post!
+      </div>
+    );
   }
 
+  if (isError) {
+    return (
+      <div className="text-red-500">
+        Failed to load post: {error.message}
+      </div>
+    );
+  }
 
-  return <PostCard key={postId} post={post} username={username} postId={postId} allPosts={allPosts}/>;
+  return (
+    <PostCard
+      key={postId}
+      post={post}
+      username={username}
+      postId={postId}
+      allPosts={allPosts}
+    />
+  );
 }

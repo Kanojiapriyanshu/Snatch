@@ -45,6 +45,12 @@ export async function POST(req) {
     isActive: true,
   };
 
+  // ✅ GIVE TRIAL LIMITS HERE  - at the time of subscritpion creation, remove it from here if want to offer this at time of mandate approve 
+  user.limits = {
+    generationLimit: 16,
+    projectLimit: 12,
+  };
+
   await user.save();
 
   return Response.json({

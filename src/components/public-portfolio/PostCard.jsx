@@ -2,58 +2,29 @@
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
-
+import { useMediaInsights } from "@/utils/public-portfolio/portfolio";
 
 export default function PostCard({ post, postId, username, allPosts }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [insights, setInsights] = useState(null);
+  // const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [isPortrait, setIsPortrait] = useState(false);
   const cardRef = useRef(null);
 
-    useEffect(() => {
-    if (!username || !postId) {
-      console.error("Missing required props:", { username, postId });
-      setLoading(false);
-      return;
-    }
+  const isInstagram = post?.media?.source === "instagram";
 
-    const fetchInsights = async () => {
-      // Only fetch insights for Instagram posts
-      if (post.media.source === "instagram") {
-        try {
-          const url = `/api/public-portfolio/media-insights?username=${encodeURIComponent(
-            username
-          )}&postId=${encodeURIComponent(postId)}`;
+    const {
+      data: insights,
+      isLoading: insightsLoading,
+      isError: insightsError,
+    } = useMediaInsights({
+      username,
+      postId,
+      isInstagram,
+    });
 
-          const res = await fetch(url);
-          const data = await res.json();
-
-          if (data.success) {
-            const insightsArray = data.insights.data;
-            const insightsMap = {};
-
-            insightsArray.forEach((item) => {
-              insightsMap[item.name] = item.values?.[0]?.value || 0;
-            });
-
-            setInsights(insightsMap);
-          } else {
-            throw new Error(data.error || "Failed to fetch insights");
-          }
-        } catch (error) {
-          console.error("Error fetching insights:", error);
-          setInsights(null);
-        }
-      }
-      setLoading(false);
-    };
-
-    fetchInsights();
-  }, [username, postId, post?.media?.source]);
-  
     const isAdminView = pathname?.includes("/adminview");
 
     const checkOrientation = (width, height) => {

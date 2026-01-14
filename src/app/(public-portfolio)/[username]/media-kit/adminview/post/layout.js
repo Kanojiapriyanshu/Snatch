@@ -1,4 +1,3 @@
-
 // app/public-portfolio/[username]/media-kit/adminview/post/layout.js
 import React from "react";
 import { PostsProvider } from "@/context/PostContext";

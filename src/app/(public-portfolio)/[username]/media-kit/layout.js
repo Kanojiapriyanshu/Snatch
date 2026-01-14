@@ -3,6 +3,7 @@ import connectDb from "@/db/mongoose";
 import User from "@/models/user.model";
 import Image from "next/image";
 import Link from "next/link";
+import BrandingGate from "@/components/public-portfolio/BrandingGate";
 
 export async function generateMetadata({ params }) {
   const { username } = params;
@@ -53,7 +54,7 @@ export default async function MediaKitLayout({ children, params }) {
   return (
     <>
       {children}
-      {showBranding && (
+      {/* {showBranding && (
         <Link
           href="https://snatchsocial.com"
           target="_blank"
@@ -74,6 +75,30 @@ export default async function MediaKitLayout({ children, params }) {
             </div>
           </div>
         </Link>
+      )} */}
+      {showBranding && (
+        <BrandingGate>
+          <Link
+            href="https://snatchsocial.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-9 right-6 z-50"
+          >
+            <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-md shadow-lg
+                            flex gap-2 items-center justify-center
+                            hover:scale-[1.03] transition-transform cursor-pointer">
+              <div className="text-graphite font-apfel-grotezk-mittel font-medium text-[15px] flex gap-1 items-center">
+                Built on
+                <Image
+                  src="/assets/images/snatch-white.svg"
+                  alt="Built on SNATCH"
+                  width={56}
+                  height={56}
+                />
+              </div>
+            </div>
+          </Link>
+        </BrandingGate>
       )}
     </>
   );
