@@ -15,27 +15,27 @@ export default function PostCard({ post, postId, username, allPosts }) {
 
   const isInstagram = post?.media?.source === "instagram";
 
-    const {
-      data: insights,
-      isLoading: insightsLoading,
-      isError: insightsError,
-    } = useMediaInsights({
-      username,
-      postId,
-      isInstagram,
-    });
+  const {
+    data: insights,
+    isLoading: insightsLoading,
+    isError: insightsError,
+  } = useMediaInsights({
+    username,
+    postId,
+    isInstagram,
+  });
 
-    const isAdminView = pathname?.includes("/adminview");
+  const isAdminView = pathname?.includes("/adminview");
 
-    const checkOrientation = (width, height) => {
-      return height > width;
-    };
+  const checkOrientation = (width, height) => {
+    return height > width;
+  };
 
   const currentIndex = allPosts ? allPosts.findIndex((p) => p.mediaId === postId) : -1;
   const totalPosts = allPosts ? allPosts.length : 0;
 
   // Get base URL for navigation
-  const baseUrl = isAdminView 
+  const baseUrl = isAdminView
     ? `/${username}/media-kit/adminview/post`
     : `/${username}/media-kit/post`;
 
@@ -75,7 +75,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [postId, allPosts]);
 
-  if (!post)  return <div className="font-qimano h-[480px]  flex items-center text-md lg:text-2xl animate-pulse text-electric-blue">Hold on while we fetch the post!</div>;
+  if (!post) return <div className="font-qimano h-[480px]  flex items-center text-md lg:text-2xl animate-pulse text-electric-blue">Hold on while we fetch the post!</div>;
 
   const imageUrl = post.media?.files?.[0]?.url;
   const title = post.post?.titleName || "Untitled";
@@ -85,7 +85,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
   const companyLocation = post.post?.companyLocation;
   const companyLogo = post.post?.companyLogo;
   const eventTypes = post.post?.eventTypes || [];
-  const eventYear =  post?.post?.eventYear || "";
+  const eventYear = post?.post?.eventYear || "";
   const eventName = post?.post?.eventName || "";
 
 
@@ -97,7 +97,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
     <div className="w-full flex flex-col items-center justify-start mt-10">
       {/* Main overlay background for large devices */}
       <div className="hidden md:flex fixed inset-0 w-full h-full bg-black/2 z-10 pointer-events-none" aria-hidden="true"></div>
-      
+
       {/* Desktop content wrapper with navigation arrows close to card */}
       <div className="hidden md:flex flex-col items-center justify-center w-full relative z-20">
         <div className="flex items-center justify-center w-full relative" style={{ minHeight: '430px', overflowY: 'visible' }}>
@@ -125,128 +125,123 @@ export default function PostCard({ post, postId, username, allPosts }) {
             ref={cardRef}
             className="w-[864px] h-[450px] p-2 bg-[#FFFFFF] rounded-lg mx-auto"
           >
-            
+
             <div className="flex gap-5 items-start mt-2 h-[400px]">
-          {/* Media Section */}
-          <div className="w-[300px] h-full pl-5 pt-5">
-            <div className="w-[250px]">
-              {(() => {
-                if (!post) {
-                  return (
-                    <p className="text-graphite flex justify-center items-center h-[50vh]">
-                      No post selected
-                    </p>
-                  );
-                }
+              {/* Media Section */}
+              <div className="w-[300px] h-full pl-5 pt-5">
+                <div className="w-[250px]">
+                  {(() => {
+                    if (!post) {
+                      return (
+                        <p className="text-graphite flex justify-center items-center h-[50vh]">
+                          No post selected
+                        </p>
+                      );
+                    }
 
-                // Shared wrapper with fixed aspect ratio
-                const Wrapper = ({ children }) => (
-                  <div className="relative w-full h-[385px] overflow-hidden rounded-lg  bg-white">
-                    {children}
-                  </div>
-                );
-
-                if (post.media?.type === "IMAGE") {
-                  return (
-                    <Wrapper>
-                      <Image
-                        src={post.media.files[0].url}
-                        alt={post.media.files[0].name || "Image"}
-                        fill
-                        // className="object-fit rounded-lg"
-                         className={`rounded-lg object-cover ${
-                          isPortrait ? "w-full h-full" : " "
-                        }`}
-                        sizes="250px"
-                      />
-                    </Wrapper>
-                  );
-                } else if (post.media?.type === "VIDEO") {
-                  return (
-                    <Wrapper>
-                      <video
-                        src={post.media.files[0].url}
-                        controls
-                        disablePictureInPicture
-                        controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-                        // className=" object-fit rounded-lg"
-                         className={`rounded-lg object-cover ${
-                        isPortrait ? "w-full h-full" : ""
-                      }`}
-                      />
-                    </Wrapper>
-                  );
-                } else if (post.media?.type === "CAROUSEL" && post.media.files?.length > 0) {
-                  return (
-                    <Wrapper>
-                      {post.media.files.map((file, index) => (
-                        <div
-                          key={index}
-                          className={`absolute inset-0 transition-opacity duration-500 rounded-lg ${
-                            carouselIndex === index ? "opacity-100" : "opacity-0"
-                          }`}
-                        >
-                          {file.type === "IMAGE" ? (
-                            <Image
-                              src={file.url}
-                              alt={`Carousel image ${index + 1}`}
-                              fill
-                              // className="object-fit rounded-lg"
-                              className={`rounded-lg object-cover ${
-                          isPortrait ? "w-full h-full" : " "
-                        }`}
-                              sizes="250px"
-                            />
-                          ) : file.type === "VIDEO" ? (
-                            <video
-                              controls
-                              disablePictureInPicture
-                              controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
-                              // className=" object-fit rounded-lg"
-                              className={`rounded-lg object-cover ${
-                          isPortrait ? "w-full h-full" : " "
-                        }`}    
-                            >
-                              <source src={file.url} type="video/mp4" />
-                            </video>
-                          ) : null}
-                        </div>
-                      ))}
-
-                      {/* Carousel navigation */}
-                      <div className="absolute inset-0 flex items-center justify-between px-2">
-                        <button
-                          className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                          onClick={() =>
-                            setCarouselIndex(
-                              carouselIndex === 0
-                                ? post.media.files.length - 1
-                                : carouselIndex - 1
-                            )
-                          }
-                        >
-                          ❮
-                        </button>
-                        <button
-                          className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                          onClick={() =>
-                            setCarouselIndex(
-                              carouselIndex === post.media.files.length - 1
-                                ? 0
-                                : carouselIndex + 1
-                            )
-                          }
-                        >
-                          ❯
-                        </button>
+                    // Shared wrapper with fixed aspect ratio
+                    const Wrapper = ({ children }) => (
+                      <div className="relative w-full h-[385px] overflow-hidden rounded-lg  bg-white">
+                        {children}
                       </div>
-                    </Wrapper>
-                  );
-                }
-                return null;
-              })()}
-            </div>
-          </div>
+                    );
+
+                    if (post.media?.type === "IMAGE") {
+                      return (
+                        <Wrapper>
+                          <Image
+                            src={post.media.files[0].url}
+                            alt={post.media.files[0].name || "Image"}
+                            fill
+                            // className="object-fit rounded-lg"
+                            className={`rounded-lg object-cover ${isPortrait ? "w-full h-full" : " "
+                              }`}
+                            sizes="250px"
+                          />
+                        </Wrapper>
+                      );
+                    } else if (post.media?.type === "VIDEO") {
+                      return (
+                        <Wrapper>
+                          <video
+                            src={post.media.files[0].url}
+                            controls
+                            disablePictureInPicture
+                            controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
+                            // className=" object-fit rounded-lg"
+                            className={`rounded-lg object-cover ${isPortrait ? "w-full h-full" : ""
+                              }`}
+                          />
+                        </Wrapper>
+                      );
+                    } else if (post.media?.type === "CAROUSEL" && post.media.files?.length > 0) {
+                      return (
+                        <Wrapper>
+                          {post.media.files.map((file, index) => (
+                            <div
+                              key={index}
+                              className={`absolute inset-0 transition-opacity duration-500 rounded-lg ${carouselIndex === index ? "opacity-100" : "opacity-0"
+                                }`}
+                            >
+                              {file.type === "IMAGE" ? (
+                                <Image
+                                  src={file.url}
+                                  alt={`Carousel image ${index + 1}`}
+                                  fill
+                                  // className="object-fit rounded-lg"
+                                  className={`rounded-lg object-cover ${isPortrait ? "w-full h-full" : " "
+                                    }`}
+                                  sizes="250px"
+                                />
+                              ) : file.type === "VIDEO" ? (
+                                <video
+                                  controls
+                                  disablePictureInPicture
+                                  controlsList="nofullscreen nodownload noplaybackrate noremoteplayback"
+                                  // className=" object-fit rounded-lg"
+                                  className={`rounded-lg object-cover ${isPortrait ? "w-full h-full" : " "
+                                    }`}
+                                >
+                                  <source src={file.url} type="video/mp4" />
+                                </video>
+                              ) : null}
+                            </div>
+                          ))}
+
+                          {/* Carousel navigation */}
+                          <div className="absolute inset-0 flex items-center justify-between px-2">
+                            <button
+                              className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                              onClick={() =>
+                                setCarouselIndex(
+                                  carouselIndex === 0
+                                    ? post.media.files.length - 1
+                                    : carouselIndex - 1
+                                )
+                              }
+                            >
+                              ❮
+                            </button>
+                            <button
+                              className="z-10 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                              onClick={() =>
+                                setCarouselIndex(
+                                  carouselIndex === post.media.files.length - 1
+                                    ? 0
+                                    : carouselIndex + 1
+                                )
+                              }
+                            >
+                              ❯
+                            </button>
+                          </div>
+                        </Wrapper>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
+              </div>
 
               {/* Details Section - Using flex column with fixed sections */}
               <div className="w-full h-full pl-5 pr-5 mt-5 flex flex-col">
@@ -297,33 +292,33 @@ export default function PostCard({ post, postId, username, allPosts }) {
                               {post.post.companyLocation && (
                                 <> <span className="text-[#BFBFBF] mx-[0.5]">•</span> {post.post.companyLocation}</>
                               )}
-                            {eventYear && (
-                            <>
-                          <span className="text-[#BFBFBF] mx-1">•</span>
-                          <span className="px-1 -ml-1 text-sm text-graphite">{eventYear}</span>
-                            </>
-                        )}
+                              {eventYear && (
+                                <>
+                                  <span className="text-[#BFBFBF] mx-1">•</span>
+                                  <span className="px-1 -ml-1 text-sm text-graphite">{eventYear}</span>
+                                </>
+                              )}
                             </p>
                           )}
-                        <div className="flex">
-                        <div className="flex gap-2">
-                             {/* Event name */}
-                        {eventName && (
-                          <p>
-                            <span>{eventName}</span>
-                          </p>
-                        )}
+                          <div className="flex">
+                            <div className="flex gap-2">
+                              {/* Event name */}
+                              {eventName && (
+                                <p>
+                                  <span>{eventName}</span>
+                                </p>
+                              )}
 
-                        {/* Event types */}
-                        {eventTypes?.length > 0 && (
-                          <p className="text-sm">
-                            <span className="text-[#BFBFBF]">• </span>
-                            {eventTypes.join(", ")}
-                          </p>
-                        )}
+                              {/* Event types */}
+                              {eventTypes?.length > 0 && (
+                                <p className="text-sm">
+                                  <span className="text-[#BFBFBF]">• </span>
+                                  {eventTypes.join(", ")}
+                                </p>
+                              )}
+                            </div>
+
                           </div>
-                     
-                      </div>
                         </div>
                       )}
                     </div>
@@ -337,38 +332,38 @@ export default function PostCard({ post, postId, username, allPosts }) {
 
                 {/* Bottom section - Stats (fixed position at bottom) */}
                 {post.media.source === "instagram" && (
-  <div className="flex-shrink-0 mt-auto w-full">
-    {/* Fixed separator line */}
-    <div className="w-full border-b-[0.5px] border-gray-300 mb-3"></div>
+                  <div className="flex-shrink-0 mt-auto w-full">
+                    {/* Fixed separator line */}
+                    <div className="w-full border-b-[0.5px] border-gray-300 mb-3"></div>
 
-    {/* Insights section */}
-    <div className="flex justify-between text-graphite w-full min-h-[60px]">
-      {insights ? (
-        [
-          { label: "Views", key: "views" },
-          { label: "Likes", key: "likes" },
-          { label: "Comments", key: "comments" },
-          { label: "Shares", key: "shares" }
-        ].map(({ label, key }) => (
-          <div
-            className="flex flex-col items-center min-w-[40px] text-center"
-            key={key}
-          >
-            <div className="text-[22px] leading-none font-qimano text-graphite">
-              {insights?.[key] ?? 0}
-            </div>
-            <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
-              {label}
-            </div>
-          </div>
-        ))
-      ) : (
-        // keeps spacing same even without insights
-        <div className="h-[40px] w-full"></div>
-      )}
-    </div>
-  </div>
-)}
+                    {/* Insights section */}
+                    <div className="flex justify-between text-graphite w-full min-h-[60px]">
+                      {insights ? (
+                        [
+                          { label: "Views", key: "views" },
+                          { label: "Likes", key: "likes" },
+                          { label: "Comments", key: "comments" },
+                          { label: "Shares", key: "shares" }
+                        ].map(({ label, key }) => (
+                          <div
+                            className="flex flex-col items-center min-w-[40px] text-center"
+                            key={key}
+                          >
+                            <div className="text-[22px] leading-none font-qimano text-graphite">
+                              {insights?.[key] ?? 0}
+                            </div>
+                            <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
+                              {label}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        // keeps spacing same even without insights
+                        <div className="h-[40px] w-full"></div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
 
               </div>
@@ -390,7 +385,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                 height={56}
                 className="w-full h-full object-contain"
               />
-               <p className="text-electric-blue font-apfel-grotezk-regular">Next</p>
+              <p className="text-electric-blue font-apfel-grotezk-regular">Next</p>
             </div>
           </button>
 
@@ -418,7 +413,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile layout: only for mobile screens */}
       <div className="flex md:hidden flex-col w-full">
         {/* Fixed Header for Mobile */}
@@ -446,7 +441,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
           <div className="relative w-full flex-shrink-0 flex items-center justify-center rounded-lg">
             <div className="relative w-full rounded-lg overflow-hidden flex items-center justify-center">
               {post.media?.type === "CAROUSEL" && post.media.files?.length > 0 ? (
-                
+
                 <div className="relative w-full">
                   <div className="w-full overflow-hidden rounded-lg">
                     {post.media.files.map((file, index) => (
@@ -488,7 +483,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                     aria-label="Previous"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </button>
                   <button
@@ -497,7 +492,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                     aria-label="Next"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9 6L15 12L9 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M9 6L15 12L9 18" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </button>
                 </div>
@@ -528,7 +523,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
               {/* Play Icon and Views Overlay */}
               {insights?.impressions != null && (
                 <div className="absolute left-3 bottom-3 flex items-center gap-2 bg-black/60 rounded-lg px-2 py-1">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#fff"/><path d="M7.5 6.5L12 9L7.5 11.5V6.5Z" fill="#212121"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill="#fff" /><path d="M7.5 6.5L12 9L7.5 11.5V6.5Z" fill="#212121" /></svg>
                   <span className="text-white text-base font-semibold">{insights?.impressions ?? 0}</span>
                 </div>
               )}
@@ -603,32 +598,32 @@ export default function PostCard({ post, postId, username, allPosts }) {
                   <p>
                     <span className="text-graphite font-medium">{companyName || 'Name of company'}</span> {companyLocation && `• ${companyLocation}`}
                   </p>
-                   <div className="flex">
-                        {eventYear && (
-                          <span className="px-1 -ml-2 text-sm text-graphite">{eventYear}{" "}<span className="text-gray-500">•</span></span>
-                        )}
-                        <div className="flex gap-2">
-                             {/* Event name */}
-                        {eventName && (
-                          <p>
-                            <span>{eventName}</span>
-                          </p>
-                        )}
+                  <div className="flex">
+                    {eventYear && (
+                      <span className="px-1 -ml-2 text-sm text-graphite">{eventYear}{" "}<span className="text-gray-500">•</span></span>
+                    )}
+                    <div className="flex gap-2">
+                      {/* Event name */}
+                      {eventName && (
+                        <p>
+                          <span>{eventName}</span>
+                        </p>
+                      )}
 
-                        {/* Event types */}
-                        {eventTypes?.length > 0 && (
-                          <p>
-                            {eventTypes.map((eventType, index) => (
-                              <span key={index} className="px-1 -ml-2 text-sm">
-                                {index > 0 ? " | " : " • "}
-                                {eventType}
-                              </span>
-                            ))}
-                          </p>
-                        )}
-                          </div>
-                     
-                      </div>
+                      {/* Event types */}
+                      {eventTypes?.length > 0 && (
+                        <p>
+                          {eventTypes.map((eventType, index) => (
+                            <span key={index} className="px-1 -ml-2 text-sm">
+                              {index > 0 ? " | " : " • "}
+                              {eventType}
+                            </span>
+                          ))}
+                        </p>
+                      )}
+                    </div>
+
+                  </div>
                 </div>
               </div>
             </div>
@@ -658,7 +653,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
           </div>
         )}
       </div>
-      
+
     </div>
   );
 }

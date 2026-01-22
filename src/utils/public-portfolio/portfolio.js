@@ -10,7 +10,7 @@ const extractUsernameFromPath = (pathname) => {
   // For public view URL: ['snatchsocial', 'media-kit']
 
   // Always return the first segment as it's the username in both cases
-  return parts[0] || null;``                      
+  return parts[0] || null;
 };
 
 export const useFetchPortfolio = (ownerId) => {
@@ -110,6 +110,24 @@ export const useCheckScreenSize = () => {
   }, []);
 
   return isMobile;
+};
+
+
+export const useCheckScreenSizeForTab = () => {
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsTablet(window.innerWidth <= 960);
+    };
+
+    checkScreenSize(); // Check on initial load
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  return isTablet;
 };
 
 // 3️⃣ Loader Component

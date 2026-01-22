@@ -32,37 +32,37 @@ const PortfolioPublic = () => {
   const username = pathname.split("/")[1] || "";
 
   const {
-  data: statsMap = {},
-  isLoading: loadingStats,
-  isFetching,
-} = useQuery({
-  queryKey: ["instagram-media-stats", username],
-  queryFn: async () => {
-    const res = await fetch(
-      `/api/public-portfolio/all-media-insights?username=${username}`
-    );
-    const data = await res.json();
+    data: statsMap = {},
+    isLoading: loadingStats,
+    isFetching,
+  } = useQuery({
+    queryKey: ["instagram-media-stats", username],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/public-portfolio/all-media-insights?username=${username}`
+      );
+      const data = await res.json();
 
-    if (!data?.success) {
-      throw new Error("Failed to fetch stats");
-    }
+      if (!data?.success) {
+        throw new Error("Failed to fetch stats");
+      }
 
-    // Convert array → map (cached result)
-    const map = {};
-    data.stats.forEach((s) => {
-      map[s.mediaId] = s;
-    });
+      // Convert array → map (cached result)
+      const map = {};
+      data.stats.forEach((s) => {
+        map[s.mediaId] = s;
+      });
 
-    return map;
-  },
+      return map;
+    },
 
-  // 🔥 CACHE BEHAVIOR
-  staleTime: 1000 * 60 * 30, // 30 minutes → no refetch
-  cacheTime: 1000 * 60 * 60, // 1 hour in memory
-  refetchOnWindowFocus: false,
-  refetchOnReconnect: false,
-  enabled: !!username,
-});
+    // 🔥 CACHE BEHAVIOR
+    staleTime: 1000 * 60 * 30, // 30 minutes → no refetch
+    cacheTime: 1000 * 60 * 60, // 1 hour in memory
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    enabled: !!username,
+  });
 
   // 📦 Fetch public projects
   const {
@@ -117,8 +117,8 @@ const PortfolioPublic = () => {
         direction === "next"
           ? (currentIndex + 1) % totalSlides
           : currentIndex === 0
-          ? totalSlides - 1
-          : currentIndex - 1;
+            ? totalSlides - 1
+            : currentIndex - 1;
       return { ...prev, [mediaId]: newIndex };
     });
   };
@@ -156,9 +156,9 @@ const PortfolioPublic = () => {
   // 🧱 Grid Skeleton while loading
   if (isLoading) {
     return (
-      <div className="w-full mx-auto max-w-[1600px] p-4 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-4">
+      <div className=" grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className="aspect-[5/8] lg:aspect-[5/7] w-full relative">
+          <div key={i} className="aspect-[3/4] w-full relative">
             <MediaSkeleton />
           </div>
         ))}
@@ -170,80 +170,80 @@ const PortfolioPublic = () => {
     return <p className="text-center text-red-500">Error: {error.message}</p>;
 
   const renderMedia = (project, index) => {
-  const mediaId = project.mediaId;
-  const isLoaded = loadedMedia[mediaId];
-  const stat = statsMap[mediaId];
-  const isUploaded = project.source === "uploaded";
+    const mediaId = project.mediaId;
+    const isLoaded = loadedMedia[mediaId];
+    const stat = statsMap[mediaId];
+    const isUploaded = project.source === "uploaded";
 
-  return (
-    <div
-      key={index}
-      className="relative w-full h-full rounded-md overflow-hidden group"
-      onMouseEnter={() => handleMouseEnter(mediaId)}
-      onMouseLeave={() => handleMouseLeave(mediaId)}
-    >
-      {!isLoaded && <MediaSkeleton />}
+    return (
+      <div
+        key={index}
+        className="relative w-full h-full rounded-xl overflow-hidden group"
+        onMouseEnter={() => handleMouseEnter(mediaId)}
+        onMouseLeave={() => handleMouseLeave(mediaId)}
+      >
+        {!isLoaded && <MediaSkeleton />}
 
-      {/* MEDIA */}
-      {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
-        project.children.map((child, idx) => (
+        {/* MEDIA */}
+        {project.mediaType === "CAROUSEL_ALBUM" && project.children ? (
+          project.children.map((child, idx) => (
+            <div
+              key={child.mediaId}
+              className={`absolute inset-0 transition-all duration-500 ${(carouselIndexes[mediaId] || 0) === idx
+                  ? "opacity-100 z-10"
+                  : "opacity-0 z-0"
+                }`}
+            >
+              {child.mediaType === "IMAGE" ? (
+                <Image
+                  src={child.mediaUrl}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  onLoadingComplete={() =>
+                    setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
+                  }
+                />
+              ) : (
+                <video
+                  className="w-full h-full object-cover"
+                  src={child.mediaUrl}
+                  muted
+                  playsInline
+                  onLoadedData={() =>
+                    setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
+                  }
+                />
+              )}
+            </div>
+          ))
+        ) : project.mediaType.includes("VIDEO") ? (
+          <video
+            className="w-full h-full object-cover"
+            src={project.mediaUrl}
+            muted
+            playsInline
+            onLoadedData={() =>
+              setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
+
+            }
+          />
+        ) : (
+          <Image
+            src={project.mediaUrl}
+            alt=""
+            fill
+            className="object-cover"
+            onLoadingComplete={() =>
+              setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
+            }
+          />
+        )}
+
+        {/* 📱 MOBILE — Views only */}
+        {stat?.views >= 0 && (
           <div
-            key={child.mediaId}
-            className={`absolute inset-0 transition-all duration-500 ${
-              (carouselIndexes[mediaId] || 0) === idx
-                ? "opacity-100 z-10"
-                : "opacity-0 z-0"
-            }`}
-          >
-            {child.mediaType === "IMAGE" ? (
-              <Image
-                src={child.mediaUrl}
-                alt=""
-                fill
-                className="object-cover"
-                onLoadingComplete={() =>
-                  setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
-                }
-              />
-            ) : (
-              <video
-                className="w-full h-full object-cover"
-                src={child.mediaUrl}
-                muted
-                playsInline
-                onLoadedData={() =>
-                  setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
-                }
-              />
-            )}
-          </div>
-        ))
-      ) : project.mediaType.includes("VIDEO") ? (
-        <video
-          className="w-full h-full object-cover"
-          src={project.mediaUrl}
-          muted
-          playsInline
-          onLoadedData={() =>
-            setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
-          }
-        />
-      ) : (
-        <Image
-          src={project.mediaUrl}
-          alt=""
-          fill
-          className="object-cover"
-          onLoadingComplete={() =>
-            setLoadedMedia((p) => ({ ...p, [mediaId]: true }))
-          }
-        />
-      )}
-
-      {/* 📱 MOBILE — Views only */}
-      {stat?.views >= 0 && (
-        <div
-          className="
+            className="
             md:hidden
             absolute bottom-2 left-1
             z-20
@@ -252,20 +252,20 @@ const PortfolioPublic = () => {
             rounded-md
             text-white text-xs
           "
-        >
-          <Image
-            src="/assets/images/views.svg"
-            alt="Views"
-            width={14}
-            height={14}
-          />
-          <span>{format(stat.views)}</span>
-        </div>
-      )}
+          >
+            <Image
+              src="/assets/images/views.svg"
+              alt="Views"
+              width={14}
+              height={14}
+            />
+            <span>{format(stat.views)}</span>
+          </div>
+        )}
 
-      {/* 💻 DESKTOP HOVER OVERLAY */}
-      <div
-        className="
+        {/* 💻 DESKTOP HOVER OVERLAY */}
+        <div
+          className="
           hidden md:flex
           absolute inset-0
           items-center justify-center
@@ -274,85 +274,92 @@ const PortfolioPublic = () => {
           transition-opacity duration-300
           z-10 cursor-pointer
         "
-        onClick={(e) =>
-          handlePostClick(
-            e,
-            mediaId,
-            isAdminView
-              ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
-              : `/${username}/media-kit/post/?postId=${mediaId}`
-          )
-        }
-      >
-        <div className="flex flex-wrap justify-center gap-4 text-white text-lg max-w-[90%]">
-          {!isUploaded && (
-            <>
-            {/* Likes */}
-              <div className="flex items-center gap-1.5">
-                <Image src="/assets/images/like.svg" alt="Like" width={16} height={16} />
-                <span>{format(stat?.likes ?? 0)}</span>
-              </div>
-
-              {/* Comments */}
-              <div className="flex items-center gap-1.5">
-                <Image src="/assets/images/comment.svg" alt="Comment" width={16} height={16} />
-                <span>{format(stat?.comments ?? 0)}</span>
-              </div>
-
-              {/* Views */}
-              {stat?.views >= 0 && (
+          onClick={(e) =>
+            handlePostClick(
+              e,
+              mediaId,
+              isAdminView
+                ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
+                : `/${username}/media-kit/post/?postId=${mediaId}`
+            )
+          }
+        >
+          <div className="flex flex-wrap justify-center gap-4 text-white text-lg max-w-[90%]">
+            {!isUploaded && (
+              <>
+                {/* Likes */}
                 <div className="flex items-center gap-1.5">
-                  <Image src="/assets/images/views.svg" alt="Views" width={16} height={16} />
-                  <span>{format(stat.views)}</span>
+                  <Image src="/assets/images/like.svg" alt="Like" width={16} height={16} />
+                  <span>{format(stat?.likes ?? 0)}</span>
                 </div>
-              )}
 
-              {/* Shares */}
-              {stat?.shares >= 0 && (
+                {/* Comments */}
                 <div className="flex items-center gap-1.5">
-                  <Image src="/assets/images/shares.svg" alt="Shares" width={16} height={16} />
-                  <span>{format(stat.shares)}</span>
+                  <Image src="/assets/images/comment.svg" alt="Comment" width={16} height={16} />
+                  <span>{format(stat?.comments ?? 0)}</span>
                 </div>
-              )}
+
+                {/* Views */}
+                {stat?.views >= 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <Image src="/assets/images/views.svg" alt="Views" width={16} height={16} />
+                    <span>{format(stat.views)}</span>
+                  </div>
+                )}
+
+                {/* Shares */}
+                {stat?.shares >= 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <Image src="/assets/images/shares.svg" alt="Shares" width={16} height={16} />
+                    <span>{format(stat.shares)}</span>
+                  </div>
+                )}
 
               </>
             )}
 
-          {loadingPostId === mediaId ? (
-            <DotLottieReact
-              src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
-              loop
-              autoplay
-              style={{ width: 80, height: 80 }}
-            />
-          ) : (
-            <span className="hidden lg:block text-yellow-300 font-apfel-grotezk-regular underline text-[20px] ">
-              Post Info & Insights ↗
-            </span>
-          )}
+            {loadingPostId === mediaId ? (
+              <DotLottieReact
+                src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+                loop
+                autoplay
+                style={{ width: 80, height: 80 }}
+              />
+            ) : (
+              <span className="hidden lg:block text-yellow-300 font-apfel-grotezk-regular underline text-[20px] ">
+                Post Info & Insights ↗
+              </span>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   return (
-    <div className="w-full mx-auto max-w-[1600px] p-2 sm:p-4">
+    <div className="w-full justify-center items-center max-sm:mb-10">
+      {/* border-2 border-red */}
+      {/* <div className="container mx-auto max-w-[1400px] w-full justify-center items-center max-sm:mb-10 border-2 border-red">// if want some margin LF then  */}
       {projects.length > 0 ? (
         <>
           {/* 📱 Mobile / Tablet */}
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 sm:gap-4 lg:hidden">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 lg:hidden">
+            {/* border-2 border-green  */}
             {projects.map((project, index) => (
-              <div key={index} className="relative aspect-[5/8] sm:aspect-[5/7]">
+              <div
+                key={index}
+                className="relative aspect-[3/4] rounded-md"
+              >
                 {renderMedia(project, index)}
               </div>
             ))}
           </div>
 
           {/* 💻 Desktop */}
-          <div className="hidden lg:grid lg:grid-cols-4 lg:gap-8">
+          <div className="hidden lg:grid lg:grid-cols-4 gap-6">
             {projects.map((project, index) => (
-              <div key={index} className="relative aspect-[5/7]">
+              <div key={index} className="relative aspect-[3/4] rounded-xl ">
+                {/* border-2 border-green */}
                 {renderMedia(project, index)}
               </div>
             ))}
