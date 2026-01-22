@@ -26,16 +26,16 @@ export default function SocialLinks({ formData }) {
     formData.links.forEach((link) => {
       let platform = "";
       if (link.url?.toLowerCase().includes("facebook")) {
-      platform = "facebook";
-    } else if (
-      link.url?.toLowerCase().includes("twitter") ||
-      link.url?.toLowerCase().includes("x.com") ||
-      link.icon?.toLowerCase().includes("x_logo")
-    ) {
-      platform = "twitter";
-    } else if (link.url?.toLowerCase().includes("linkedin")) {
-      platform = "linkedin";
-    }
+        platform = "facebook";
+      } else if (
+        link.url?.toLowerCase().includes("twitter") ||
+        link.url?.toLowerCase().includes("x.com") ||
+        link.icon?.toLowerCase().includes("x_logo")
+      ) {
+        platform = "twitter";
+      } else if (link.url?.toLowerCase().includes("linkedin")) {
+        platform = "linkedin";
+      }
 
       if (platform && link.url) {
         links.push({ platform, url: link.url });
@@ -44,7 +44,7 @@ export default function SocialLinks({ formData }) {
   }
 
   return (
-    <div className="text-graphite mt-4 text-nowrap text-sm lg:text-xl flex justify-center lg:justify-center items-center lg:px-4">
+    <div className="text-graphite my-6 text-nowrap text-sm lg:text-xl flex justify-center lg:justify-center items-center lg:px-4">
       {/* Visible only on lg screens */}
       <span className="hidden lg:inline font-apfel-grotezk-regular ">
         My social media
@@ -55,7 +55,7 @@ export default function SocialLinks({ formData }) {
       </span>
 
       {/* Icons */}
-      <span className="flex max-w-[320px] justify-between gap-4  lg:gap-3 lg:justify-center">
+      <span className="flex justify-between lg:gap-4 gap-8 lg:justify-center">
         {links.length > 0 ? (
           links.map((link, index) => {
             const Icon = iconComponents[link.platform];
@@ -71,7 +71,7 @@ export default function SocialLinks({ formData }) {
                              hover:bg-electric-blue hover:text-white 
                              transition-colors duration-200 hover:scale-105"
                 >
-                  <Icon className="w-7 h-6" />
+                  <Icon className="w-8 h-7" />
                 </a>
               )
             );

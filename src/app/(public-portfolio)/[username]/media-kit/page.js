@@ -58,7 +58,7 @@ export default function PublicPortfolioPage() {
 
   return (
     <FormProvider>
-      <div className="h-[200vh] py-[1%] px-[1%] relative">
+      <div className="py-[1%]">
         <ProfileOverview ownerId={portfolio.id} portfolio={portfolio} />
       </div>
     </FormProvider>
