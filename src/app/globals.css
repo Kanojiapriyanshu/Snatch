@@ -162,6 +162,14 @@ body {
   scrollbar-color: #CBCBCB transparent; /* Firefox */
 }
 
+.input-box {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: white;
+}
+
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px; /* vertical scrollbar width */
   height: 8px; /* horizontal scrollbar height */

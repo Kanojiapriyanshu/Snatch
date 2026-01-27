@@ -18,15 +18,21 @@ export default function MorePosts({ userPosts, username, isAdmin }) {
       <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 justify-center items-center lg:justify-start lg:items-start w-full lg:group">
         {userPosts.length > 0 ? (
           userPosts.map((post, index) => {
-            const isSelected = String(post.mediaId) === String(selectedPostId);
+            const isSelected = String(post.postId) === String(selectedPostId);
 
-            // build href dynamically
+            // Build href dynamically
             const href = isAdmin
-              ? `/${username}/media-kit/adminview/post?postId=${post.mediaId}`
-              : `/${username}/media-kit/post?postId=${post.mediaId}`;
+              ? `/${username}/media-kit/adminview/post?postId=${post.postId}`
+              : `/${username}/media-kit/post?postId=${post.postId}`;
+
+            // Extract media info
+            const mediaSource = post.media?.source; // "instagram" or "uploaded"
+            const mediaType = post.media?.type; // "CAROUSEL", "VIDEO", or "IMAGE"
+            const mediaUrl = post.media?.files?.[0]?.url;
+            const children = post.media?.files; // For carousel
 
             return (
-              <Link key={index} href={href} className="block lg:relative">
+              <Link key={post.postId || index} href={href} className="block lg:relative">
                 <div
                   className={`transition-all duration-300 ease-in-out lg:rounded-md mt-3
                     ${isSelected
@@ -34,29 +40,38 @@ export default function MorePosts({ userPosts, username, isAdmin }) {
                       : "lg:opacity-60 lg:hover:opacity-100"
                     }`}
                 >
-                  {post.mediaType === "CAROUSEL_ALBUM" && post.children ? (
+                  {/* Handle Instagram Carousel */}
+                  {mediaSource === "instagram" && mediaType === "CAROUSEL" && children ? (
                     <CarouselThumbnail
-                      post={post}
+                      post={{ children }}
                       index={index}
                       className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px]"
                     />
-                  ) : post.mediaType?.includes("VIDEO") ||
-                    post.mediaUrl?.endsWith(".mp4") ? (
+                  ) : 
+                  /* Handle any VIDEO (Instagram or Uploaded) */
+                  mediaType === "VIDEO" ? (
                     <VideoThumbnail
-                      src={post.mediaUrl}
-                      thumbnailUrl={post.thumbnailUrl}
+                      src={mediaUrl}
+                      thumbnailUrl={null}
                       alt={`Video ${index}`}
                       className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] rounded-md"
                       showPlayIcon={true}
                     />
-                  ) : (
+                  ) : 
+                  /* Handle any IMAGE (Instagram or Uploaded) */
+                  mediaType === "IMAGE" && mediaUrl ? (
                     <Image
                       width={180}
                       height={180}
-                      src={post.mediaUrl}
-                      alt={`Project ${index}`}
+                      src={mediaUrl}
+                      alt={post.formData?.titleName || `Project ${index}`}
                       className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] object-cover rounded-md"
                     />
+                  ) : (
+                    /* Fallback for missing media */
+                    <div className="w-[120px] h-[120px] lg:w-[60px] lg:h-[60px] bg-gray-300 rounded-md flex items-center justify-center">
+                      <span className="text-xs text-gray-500">No media</span>
+                    </div>
                   )}
                 </div>
               </Link>

@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Script from "next/script";
 import AnalyticsProvider from "./analytics-provider";
 import { Suspense } from "react";
+
 // ✅ Font setup
 const apfelGrotezkMittel = localFont({
   src: [{ path: "./fonts/ApfelGrotezk-Mittel.otf", weight: "400", style: "normal" }],
@@ -35,7 +36,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+    signInUrl="/login"
+    signUpUrl="/"
+  >
     <html lang="en">
       <body
         className={`
@@ -50,6 +54,9 @@ export default function RootLayout({ children }) {
               <AnalyticsProvider />
             </Suspense>
            <Toaster position="top-center" />
+             {/* 🌟 GLOBAL UPGRADE BUTTON */}
+          {/* <UpgradeFloatingButton /> */}
+
           {children}
         </Providers>
 

@@ -5,8 +5,6 @@ import UploadImageModal from "../UploadImageModal";
 const Profilecustomfile = ({
   onFileChange,
   placeholder,
-  iconSrc,
-  label,
   type,
   currentQuestionIndex,
   coverImage, // Passed from parent (About component)
@@ -19,13 +17,16 @@ const Profilecustomfile = ({
     name: coverImageName || null,
   });
 
-  // Update selectedImage when coverImage or coverImageName props change
+
+
   useEffect(() => {
+  if (coverImage || coverImageName) {
     setSelectedImage({
-      url: coverImage || null,
-      name: coverImageName || null,
+      url: coverImage,
+      name: coverImageName,
     });
-  }, [coverImage, coverImageName]);
+  }
+}, [coverImage, coverImageName]);
 
   const imageNameMapping = {
     "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396552/7_r6djcr.jpg": "Sunlit Studio",

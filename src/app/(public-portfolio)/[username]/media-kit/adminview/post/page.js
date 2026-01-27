@@ -3,7 +3,7 @@
 import { useSearchParams, useParams } from "next/navigation";
 import PostCard from "@/components/public-portfolio/PostCard";
 import { usePostsContext } from "@/context/PostContext";
-import { usePostPreview } from "@/utils/public-portfolio/portfolio";
+import { usePostFromCache } from "@/utils/public-portfolio/portfolio";
 
 export default function PostDetailsPage() {
   const { allPosts } = usePostsContext();
@@ -13,16 +13,11 @@ export default function PostDetailsPage() {
   const postId = searchParams.get("postId");
   const username = params.username;
 
-  const {
-    data: post,
-    isLoading,
-    isError,
-    error,
-  } = usePostPreview({
-    postId,
-    username,
-    allPosts,
-  });
+  const { post, media, isLoading, isError } = usePostFromCache({
+  postId,
+  username,
+});
+
 
   if (isLoading) {
     return (
@@ -44,6 +39,7 @@ export default function PostDetailsPage() {
     <PostCard
       key={postId}
       post={post}
+      media={media}
       username={username}
       postId={postId}
       allPosts={allPosts}

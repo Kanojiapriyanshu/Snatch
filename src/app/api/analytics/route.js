@@ -1,3 +1,4 @@
+//src/app/api/analytics/route.js
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
@@ -14,6 +15,9 @@ export async function GET(req) {
   if (!username) {
     return NextResponse.json({ error: "Username is required" }, { status: 400 });
   }
+
+  //await new Promise((resolve) => setTimeout(resolve, 15000)); // 15 seconds delay
+
 
   try {
     // Get events from last 30 days only

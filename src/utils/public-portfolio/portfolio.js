@@ -140,59 +140,114 @@ export const Loader = () => {
 };
 
 
-async function fetchPostPreview({ postId, username }) {
+// async function fetchPostPreview({ postId, username }) {
+//   const res = await fetch(
+//     `/api/public-portfolio/preview?postId=${postId}&username=${username}`
+//   );
+
+//   if (!res.ok) {
+//     throw new Error("Failed to fetch post preview");
+//   }
+
+//   return res.json();
+// }
+
+// export function usePostPreview({ postId, username, allPosts }) {
+//   return useQuery({
+//     queryKey: ["post-preview", username, postId],
+//     queryFn: async () => {
+//       const data = await fetchPostPreview({ postId, username });
+
+//       const matchingPost = allPosts?.find(
+//         (p) => String(p.mediaId) === String(postId)
+//       );
+
+//       const defaultInsights = {
+//         engagement: 0,
+//         impressions: 0,
+//         reach: 0,
+//         saved: 0,
+//         likes: 0,
+//         comments: 0,
+//       };
+
+//       return {
+//         post: data.post,
+//         media: data.media,
+//         mediaType: matchingPost?.mediaType || data.media.type,
+//         mediaUrl:
+//           matchingPost?.mediaUrl ||
+//           data.media?.files?.[0]?.url ||
+//           "",
+//         children: matchingPost?.children || data.media?.files || [],
+//         insights: matchingPost?.insights || defaultInsights,
+//       };
+//     },
+
+//     enabled: !!postId && !!username,
+
+//     // ✅ CACHE SETTINGS
+//     staleTime: 5 * 60 * 1000, // 5 minutes (no refetch)
+//     gcTime: 5 * 60 * 1000,    // keep in cache for 5 minutes
+//     retry: 1,
+//     refetchOnWindowFocus: false,
+//   });
+// }
+
+async function fetchAllPostPreviews(username) {
   const res = await fetch(
-    `/api/public-portfolio/preview?postId=${postId}&username=${username}`
+    `/api/public-portfolio/preview?username=${username}`
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch post preview");
+    throw new Error("Failed to fetch portfolio posts");
   }
 
   return res.json();
 }
 
-export function usePostPreview({ postId, username, allPosts }) {
+export function useAllPostPreviews(username) {
   return useQuery({
-    queryKey: ["post-preview", username, postId],
-    queryFn: async () => {
-      const data = await fetchPostPreview({ postId, username });
+    queryKey: ["portfolio-posts", username],
+    queryFn: () => fetchAllPostPreviews(username),
+    enabled: !!username,
 
-      const matchingPost = allPosts?.find(
-        (p) => String(p.mediaId) === String(postId)
-      );
-
-      const defaultInsights = {
-        engagement: 0,
-        impressions: 0,
-        reach: 0,
-        saved: 0,
-        likes: 0,
-        comments: 0,
-      };
-
-      return {
-        post: data.post,
-        media: data.media,
-        mediaType: matchingPost?.mediaType || data.media.type,
-        mediaUrl:
-          matchingPost?.mediaUrl ||
-          data.media?.files?.[0]?.url ||
-          "",
-        children: matchingPost?.children || data.media?.files || [],
-        insights: matchingPost?.insights || defaultInsights,
-      };
-    },
-
-    enabled: !!postId && !!username,
-
-    // ✅ CACHE SETTINGS
-    staleTime: 5 * 60 * 1000, // 5 minutes (no refetch)
-    gcTime: 5 * 60 * 1000,    // keep in cache for 5 minutes
-    retry: 1,
+    // ✅ Cache strategy
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000,   // keep longer in memory
     refetchOnWindowFocus: false,
+    retry: 1,
   });
 }
+
+export function usePostFromCache({ postId, username }) {
+  const { data, isLoading, error } = useAllPostPreviews(username);
+
+  const post = data?.posts?.find(
+    (p) => String(p.postId) === String(postId)
+  );
+
+  const defaultInsights = {
+    engagement: 0,
+    impressions: 0,
+    reach: 0,
+    saved: 0,
+    likes: 0,
+    comments: 0,
+  };
+
+  return {
+    isLoading,
+    error,
+    post: post || null,
+    media: post?.media || null,
+    mediaType: post?.media?.type || null,
+    mediaUrl: post?.media?.files?.[0]?.url || "",
+    children: post?.media?.files || [],
+    insights: post?.insights || defaultInsights,
+  };
+}
+
 
 async function fetchMediaInsights({ username, postId }) {
   const res = await fetch(

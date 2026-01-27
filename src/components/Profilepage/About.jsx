@@ -107,8 +107,6 @@ const getSectionState = (sectionKey) => {
   return [];
 };
 
-
-
 const handleQuestionChange = (newQuestion, index, sectionKey) => {
   const newQuestions = [...getSectionState(sectionKey)];
   newQuestions[index].question = newQuestion.trim();
@@ -126,17 +124,27 @@ const handleAnswerChange = (e, index, sectionKey) => {
 };
 
 const handleCoverChange = (imageData, index, sectionKey) => {
-  const newQuestions = [...getSectionState(sectionKey)];
-  newQuestions[index].coverImage = imageData.url;
-  newQuestions[index].coverImageName = imageData.name;
+  const section = getSectionState(sectionKey);
+
+  const newQuestions = section.map((q, i) =>
+    i === index
+      ? {
+          ...q,
+          coverImage: imageData.url,
+          coverImageName: imageData.name,
+        }
+      : q
+  );
+
   updateSectionState(sectionKey, newQuestions);
 
   debouncedSave(sectionKey, index, newQuestions[index]);
 };
 
+
 const handleBlur = (sectionKey, index) => {
   debouncedSave.flush();
-};
+}
 
 
   const addQuestion = (sectionKey) => {
@@ -283,6 +291,8 @@ const handleBlur = (sectionKey, index) => {
                   type="audience"
                   currentQuestionIndex={index}
                   currentQuestion={item}
+                  coverImage={item.coverImage}
+                  coverImageName={item.coverImageName}
                 />
 
               
@@ -363,6 +373,8 @@ const handleBlur = (sectionKey, index) => {
                   type="brand"
                   currentQuestionIndex={index}
                   currentQuestion={item}
+                  coverImage={item.coverImage}
+                  coverImageName={item.coverImageName}
                 />
 
               </div>

@@ -15,13 +15,18 @@ export const fetchProfileData = async () => {
       const audienceSection = data.questionnaires[0].sections.find(section => section.section === "audience");
       const brandSection = data.questionnaires[0].sections.find(section => section.section === "brand");
 
-      // Process questions to include coverImageName
+
       const processQuestions = (questions) => {
         return questions.map(q => ({
           ...q,
-          coverImageName: q.coverImageName || imageNameMapping[q.coverImage] || 'Default Image',
+          coverImage: q.coverImage ?? null,
+          coverImageName:
+            q.coverImageName ??
+            imageNameMapping[q.coverImage] ??
+            null, // ❗ DO NOT FORCE DEFAULT STRING
         }));
       };
+
 
       return {
         aboutQuestions: processQuestions(aboutSection?.questions || []),

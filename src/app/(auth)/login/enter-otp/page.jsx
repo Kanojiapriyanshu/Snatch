@@ -70,8 +70,6 @@ export default function EnterOtp() {
   }
 };
 
-
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter") verifyOtp();
   };
@@ -154,7 +152,7 @@ export default function EnterOtp() {
           {/* Subheading */}
           {email && (
             <p className="text-gray-400 text-sm mb-8 font-apfel-grotezk-regular">
-              Enter the 6 digit code sent to <span className="font-medium font-graphite">{email}</span>
+              Enter the 6 digit code sent to <span className="font-medium text-graphite">{email}</span>
             </p>
           )}
 
@@ -164,7 +162,7 @@ export default function EnterOtp() {
           {/* Resend Section */}
           <div className="mt-4 font-apfel-grotezk-regular text-sm">
             {resendTimer > 0 ? (
-              <p className="text-gray-500">
+              <p className="text-gray-400">
                 Didn’t receive the code? <span className="font-medium text-gray-700">Resend OTP</span> in {resendTimer}s
               </p>
             ) : (
@@ -217,7 +215,7 @@ export default function EnterOtp() {
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
 
-          <p className="text-md lg:relative lg:left-1/2 lg:-bottom-5 lg:mt-10 max-w-80 text-center font-apfel-grotezk-regular font-semibold h-14 bg-[#FAFAFA]">Tip: Can't find the OTP email? Check the <span className="text-electric-blue">Promotions section</span></p>
+          <p className="text-md lg:relative lg:left-1/2 lg:-bottom-5 lg:mt-10 max-w-80 text-center font-apfel-grotezk-regular font-semibold h-14 bg-[#FAFAFA]/40">Tip: Can't find the OTP email? Check the <span className="text-electric-blue">Promotions tab</span></p>
       
       </div>
 

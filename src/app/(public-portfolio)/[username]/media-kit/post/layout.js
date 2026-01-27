@@ -12,49 +12,20 @@ export default async function PostLayout({ children, params, searchParams }) {
     process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/+$/, "") ||
     "http://localhost:3000";
 
-  try {
-    const res = await fetch(
-      `${baseUrl}/api/public-portfolio/posts?username=${username}`,
-      { cache: "no-store" }
-    );
-    const data = await res.json();
+    try {
+      const res = await fetch(
+        `${baseUrl}/api/public-portfolio/preview?username=${username}`, // Changed endpoint
+        { cache: "no-store" }
+      );
+      const data = await res.json();
 
-    if (data.success && data.instagram && data.uploaded) {
-      userPosts = [
-        ...data.instagram.map((item) => {
-          if (item.name === "CAROUSEL_ALBUM" && item.children?.length > 0) {
-            return {
-              mediaType: "CAROUSEL_ALBUM",
-              children: item.children.map((child) => ({
-                mediaType: child.media_type,
-                mediaUrl: child.media_url,
-                mediaId: child.id,
-              })),
-              mediaId: item.mediaId,
-              title: item.name,
-            };
-          }
-
-          return {
-            mediaType: item.name || item.fileName,
-            mediaUrl: item.mediaLink || item.fileUrl,
-            mediaId: item.mediaId,
-            title: item.name,
-          };
-        }),
-        ...data.uploaded.map((item) => ({
-          mediaType: item.mediaType || item.fileName,
-          mediaUrl: item.mediaUrl || item.fileUrl,
-          mediaId: item.mediaId,
-          title: item.name,
-          thumbnailUrl: item.thumbnailUrl || null,
-        })),
-      ];
+      if (data.success && data.posts) {
+        userPosts = data.posts; // Use posts directly from new API
+      }
+    } catch (error) {
+      console.error("Failed to load user posts:", error);
     }
-  } catch (error) {
-    console.error("Failed to load user posts:", error);
-  }
-
+    
   return (
     <div className="w-full min-h-screen bg-[#D9D9D9] flex flex-col items-center justify-center">
       {/* Desktop Layout */}

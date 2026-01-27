@@ -104,7 +104,7 @@ export default function Otp({ otp, setOtp, onKeyDown }) {
               onFocus={handleFocus}
               onPaste={handlePaste}
               ref={(el) => (inputRefs.current[index] = el)}
-              className="shadow-xs flex w-[64px] h-[64px] items-center justify-center rounded-md border border-gray-300 text-center text-2xl font-medium text-electric-blue outline-none focus:border-electric-blue focus:ring-1 focus:ring-electric-blue sm:text-4xl"
+              className="shadow-xs flex w-[54px] h-[64px] items-center justify-center rounded-md border border-gray-300 text-center text-2xl font-medium text-electric-blue outline-none focus:border-electric-blue focus:ring-1 focus:ring-electric-blue sm:text-4xl bg-smoke"
             />
           ))}
         </form>
