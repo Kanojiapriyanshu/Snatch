@@ -27,9 +27,9 @@ export default async function PostLayout({ children, params, searchParams }) {
     }
     
   return (
-    <div className="w-full min-h-screen bg-[#D9D9D9] flex flex-col items-center justify-center">
+    <div className="w-full min-h-screen bg-white lg:bg-[#D9D9D9] flex flex-col items-center justify-center">
       {/* Desktop Layout */}
-      <div className="hidden md:flex w-full max-w-[1100px] max-h-[660px] bg-[#F2F2F2] rounded-2xl shadow-lg flex-col items-center justify-center mx-auto my-2 p-0">
+      <div className="hidden md:flex w-full max-w-[1100px] max-h-[660px] flex-col items-center justify-center mx-auto my-2 p-0 bg-[#F2F2F2] rounded-2xl shadow-lg ">
         <PostsProvider value={{ allPosts: userPosts, username }}>
           <div className="posts-container">{children}</div>
 
@@ -41,7 +41,7 @@ export default async function PostLayout({ children, params, searchParams }) {
       </div>
 
       {/* Mobile Layout */}
-      <div className="md:hidden w-full bg-[#F2F2F2] flex flex-col items-center justify-start lg:justify-center">
+      <div className="md:hidden ">
         <PostsProvider value={{ allPosts: userPosts, username }}>
           <div className="posts-container">{children}</div>
         </PostsProvider>

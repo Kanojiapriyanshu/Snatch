@@ -157,7 +157,7 @@ const PortfolioPublic = () => {
   if (isLoading) {
     return (
       <div className=" grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 12 }).map((_, i) => (
+        {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="aspect-[3/4] w-full relative">
             <MediaSkeleton />
           </div>
@@ -193,6 +193,15 @@ const PortfolioPublic = () => {
                   ? "opacity-100 z-10"
                   : "opacity-0 z-0"
                 }`}
+               onClick={(e) =>
+              handlePostClick(
+                e,
+                mediaId,
+                isAdminView
+                  ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
+                  : `/${username}/media-kit/post/?postId=${mediaId}`
+              )
+            }
             >
               {child.mediaType === "IMAGE" ? (
                 <Image
@@ -248,8 +257,8 @@ const PortfolioPublic = () => {
             absolute bottom-0
             z-20 w-full
             flex justify-between items-center gap-1.5
-            px-2 py-1
-            rounded-t-lg bg-[#212121]/50
+            px-2 py-3.5
+            rounded-b-lg bg-[#212121]/50
             text-white text-xs font-medium
           "
           onClick={(e) =>
@@ -266,17 +275,17 @@ const PortfolioPublic = () => {
           <Image
             src="/assets/images/play.svg"
             alt="Views"
-            width={9}
-            height={9}
+            width={12}
+            height={12}
           />
-          <span className="">{format(stat.views)}</span>
+          <span className="text-sm">{format(stat.views)}</span>
           </div>
 
           <Image
             src="/assets/images/yellow-arrow.svg"
             alt="Views"
-            width={10}
-            height={10}
+            width={14}
+            height={14}
           />
         </div>
       )}

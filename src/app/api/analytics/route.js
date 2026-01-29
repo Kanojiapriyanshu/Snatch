@@ -2,8 +2,8 @@
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
-  const POSTHOG_PROJECT_ID = 56106;
-  const POSTHOG_API_KEY = "phx_LkVB5sPexsjvftPb6pmpSKtHSBr5jnTILr1oPpSeCr4c6Ll";
+  const POSTHOG_PROJECT_ID = process.env.POSTHOG_PROJECT_ID;
+  const POSTHOG_API_KEY = process.env.POSTHOG_API_KEY;
 
   if (!POSTHOG_API_KEY) {
     return NextResponse.json({ error: "Missing API key" }, { status: 500 });

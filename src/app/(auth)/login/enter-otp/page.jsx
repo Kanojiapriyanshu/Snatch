@@ -101,48 +101,47 @@ export default function EnterOtp() {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center lg:flex-row overflow-hidden bg-smoke">
+    <div className="h-screen flex flex-col justify-center lg:flex-row overflow-hidden bg-smoke relative w-screen">
       {/* Left Section */}
-      <div className="lg:px-10 lg:py-9 xl:px-10 xl:py-9 2xl:px-10 lg:absolute lg:right-1/2 lg:w-1/2 h-screen">
-        <Image
-          src="/assets/images/signup_background.png"
-          alt="Signup Background"
-          width={557}
-          height={764}
-          className="w-full max-h-[50vh] aspect-auto lg:max-h-full rounded-sm object-fill"
-          priority
-        />
-        <div className="absolute h-[300px] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 2xl:max-lg:left-10 z-10 flex flex-col items-center justify-center">
+      <div className="lg:px-10 lg:py-9 xl:px-10 xl:py-9 2xl:px-10 lg:w-1/2 h-screen">
+        
+        {/* NEW: height limited wrapper */}
+        <div className="relative h-full">
           <Image
-            src="/assets/images/signup_frame.svg"
-            alt="Signup Frame"
-            width={304}
-            height={40}
-            className="hidden lg:block mx-auto"
+            src="/assets/images/signup_background.png"
+            alt="Signup Background"
+            width={557}
+            height={764}
+            className="w-full h-full object-fill rounded-sm"
             priority
           />
-          <Image
-            src="/assets/logo/snatch_white.svg"
-            alt="Logo"
-            width={220}
-            height={50}
-            className="absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-            priority
-          />
+
+          {/* overlay stays unchanged */}
+          <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <div className="relative flex flex-col items-center">
+              <Image
+                src="/assets/images/signup_frame.svg"
+                alt="Signup Frame"
+                width={304}
+                height={40}
+                className="hidden lg:block"
+              />
+              <Image
+                src="/assets/logo/snatch_white.svg"
+                alt="Logo"
+                width={220}
+                height={50}
+                className="absolute -top-4 left-1/2 -translate-x-1/2 -translate-y-1/2"
+              />
+            </div>
+          </div>
         </div>
-        <Image
-          src="/assets/logo/snatch_white.svg"
-          alt="Mobile Logo"
-          width={189}
-          height={20}
-          className="w-[120px] block lg:hidden mx-auto absolute top-10 left-1/2 transform -translate-x-1/2 z-20"
-          priority
-        />
       </div>
 
+
       {/* Right Section */}
-      <div className="lg:absolute flex flex-col h-screen w-full lg:w-1/2 justify-center items-center">
-        <div className=" lg:relative lg:left-1/2 lg:mt-32 flex  flex-col justify-center items-center text-center w-full px-6 sm:px-10">
+      <div className="relative flex flex-col h-screen w-full lg:w-1/2  justify-center items-center">
+        <div className="  lg:mt-32 flex  flex-col justify-center items-center text-center w-full px-6 sm:px-10">
           
           {/* Heading */}
           <h1 className="text-4xl sm:text-5xl font-qimano mb-2">
@@ -188,7 +187,7 @@ export default function EnterOtp() {
           <button
             onClick={verifyOtp}
             disabled={isLoading || hasSubmitted}
-            className={`w-full sm:w-[356px] h-12 rounded-lg mt-6 flex items-center justify-center text-white text-base font-medium ${
+            className={`w-full sm:w-[356px] h-12 rounded-lg mt-6 flex items-center justify-center text-white text-base font-apfel-grotezk-regular ${
               isLoading || hasSubmitted
                 ? "bg-[#BFCFFF] cursor-not-allowed"
                 : "bg-electric-blue hover:bg-[#002ACC]"
@@ -207,7 +206,7 @@ export default function EnterOtp() {
           {/* Change email link */}
           <button
             onClick={handleChangeEmail}
-            className="mt-4 text-electric-blue text-sm underline"
+            className="mt-4 text-electric-blue text-md underline font-apfel-grotezk-regular"
           >
             Change the email address
           </button>
@@ -215,11 +214,9 @@ export default function EnterOtp() {
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </div>
 
-          <p className="text-md lg:relative lg:left-1/2 lg:-bottom-5 lg:mt-10 max-w-80 text-center font-apfel-grotezk-regular font-semibold h-14 bg-[#FAFAFA]/40">Tip: Can't find the OTP email? Check the <span className="text-electric-blue">Promotions tab</span></p>
+          <p className="hidden text-md lg:block absolute bottom-10 max-w-96 text-center font-apfel-grotezk-regular bg-[#FAFAFA]/10">Tip: Can't find the OTP email? Check the <span className="text-electric-blue">Promotions tab</span></p>
       
-      </div>
-
-    
+      </div> 
 
     </div>
   );

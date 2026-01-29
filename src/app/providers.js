@@ -16,9 +16,9 @@ function PostHogProvider({ children }) {
     // Only initialize PostHog if we're on a public portfolio path
     if (typeof window !== "undefined" && pathname.includes('/media-kit')) {
       posthog.init(
-        process.env.NEXT_PUBLIC_POSTHOG_KEY || "phc_j5chnS7H8Lbghn45GojA3yDiYxxbJi4VjnxQW1SEHtn",
+        process.env.NEXT_PUBLIC_POSTHOG_KEY,
         {
-          api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com",
+          api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
           capture_pageview: false,
           debug: true,
           person_profiles: "identified_only",

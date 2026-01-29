@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useMediaInsights } from "@/utils/public-portfolio/portfolio";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function PostCard({ post, postId, username, allPosts }) {
   const pathname = usePathname();
@@ -410,10 +411,13 @@ function VideoPlayer({ src, isPortrait, isActive }) {
       className="relative w-full overflow-hidden rounded-lg cursor-pointer"
       style={containerStyle}
     >
-      {/* Skeleton */}
+      {/* Loading Spinner */}
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+        <div className="absolute inset-0 flex items-center justify-center z-10 h-full">
+          <div className="h-8 w-8 rounded-full border-2 border-electric-blue/30 border-t-electric-blue animate-spin" />
+        </div>
       )}
+
 
       {/* Video */}
       <video
@@ -488,22 +492,72 @@ function MobileLayout(props) {
   const { media, title, description, industries, hasCompanyInfo, companyLogo, companyName, companyLocation, eventYear, eventName, eventTypes, isPortrait, setIsPortrait, carouselIndex, setCarouselIndex, currentIndex, totalPosts, allPosts, handleNavigation, username, router, insights } = props;
 
   const checkOrientation = (width, height) => height > width;
+  const SWIPE_CONFIDENCE_THRESHOLD = 80;
 
   return (
     <div className="flex md:hidden flex-col w-full">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white p-4 flex justify-between items-center shadow-sm">
-        <div className="text-graphite font-apfel-grotezk-regular text-sm font-medium">
-          {totalPosts > 0 ? `${currentIndex + 1} / ${totalPosts}` : ''}
-        </div>
-        <button
-          className="bg-[#F2F2F2] rounded-full shadow-lg border border-gray-200 items-center justify-center flex w-7 h-7"
-          onClick={() => router.push(`/${username}/media-kit?scrollTo=presskit`)}
-        >
-          <Image src="/assets/icons/cross-mark.svg" alt="Close" width={20} height={20} />
-        </button>
+    <div className="fixed top-0 left-0 right-0 z-50 bg-white p-4 shadow-sm">
+    <div className="grid grid-cols-[1fr_auto_1fr_auto] items-center">
+      
+      {/* Left Arrow */}
+      <button
+        onClick={() => handleNavigation("prev")}
+        className="justify-self-end mr-6 text-graphite "
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+
+      {/* Center Count */}
+      <div className="text-graphite font-apfel-grotezk-regular text-sm font-medium">
+        {totalPosts > 0 ? `${currentIndex + 1} / ${totalPosts}` : ""}
       </div>
 
-      <div className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[16px] overflow-y-auto rounded-lg bg-white">
+      {/* Right Arrow */}
+      <button
+        onClick={() => handleNavigation("next")}
+        className="justify-self-start ml-6 text-graphite"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+
+      {/* Close Button */}
+      <button
+        className="ml-auto bg-[#F2F2F2] rounded-full shadow-lg border border-gray-200 flex items-center justify-center w-7 h-7"
+        onClick={() => router.push(`/${username}/media-kit?scrollTo=presskit`)}
+      >
+        <Image src="/assets/icons/cross-mark.svg" alt="Close" width={20} height={20} />
+      </button>
+
+    </div>
+  </div>
+
+
+      {/* <div className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[16px] overflow-y-auto rounded-lg bg-white"> */}
+      <motion.div
+      className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[16px] overflow-y-auto rounded-lg bg-white"
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.10}
+      onDragEnd={(event, info) => {
+        const offsetX = info.offset.x;
+        const offsetY = info.offset.y;
+
+        // ✅ Ignore swipe if user is scrolling vertically
+        if (Math.abs(offsetY) > Math.abs(offsetX)) return;
+
+        if (offsetX < -SWIPE_CONFIDENCE_THRESHOLD) {
+          handleNavigation("next");
+        } else if (offsetX > SWIPE_CONFIDENCE_THRESHOLD) {
+          handleNavigation("prev");
+        }
+      }}
+    >
         <div className="relative w-full flex-shrink-0 flex items-center justify-center rounded-lg">
           <div className="relative w-full rounded-lg overflow-hidden flex items-center justify-center">
             {media?.type === "CAROUSEL" && media.files?.length > 0 ? (
@@ -540,7 +594,7 @@ function MobileLayout(props) {
 
            {/* Engagement Metrics Section (moved just below media for mobile) */}
            <div className="w-full">
-             <div className="w-full h-px bg-[#e5e5e5] mb-4"></div>
+             <div className="w-full mb-4"></div>
              <div className="mt-2 flex justify-between text-black w-full px-1">
                {[
                  { label: "Views", key: "views" },
@@ -560,15 +614,21 @@ function MobileLayout(props) {
              </div>
            </div>
 
+           <div className="w-full mt-4 mb-2 h-[0.5px] bg-[#212121]/20"></div>
+
         <div className="flex items-start justify-between mt-4 mb-1 px-1">
           <h2 className="text-lg font-qimano text-[#212121] leading-tight max-w-[85%]">{title}</h2>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-2 mt-1 px-1">
           {industries.length > 0 ? industries.map((tag, idx) => (
-            <span key={idx} className="px-2 py-0.5 bg-[#0037EB]/5 text-graphite text-[0.85rem] font-medium rounded-lg">{tag}</span>
+            <span key={idx} className="px-2 py-0.5 bg-[#0037EB]/5 text-graphite text-[0.85rem] font-apfel-grotezk-regular rounded-lg">{tag}</span>
           )) : <span className="text-gray-400 text-[0.85rem]">No industries</span>}
         </div>
+
+        <div
+        className={`w-full mt-4 ${hasCompanyInfo ? "mb-4" : "mb-2"} h-[0.5px] bg-[#212121]/20`}
+      ></div>
 
         {hasCompanyInfo && (
           <div className="flex items-center gap-3 mb-2 px-1">
@@ -577,26 +637,41 @@ function MobileLayout(props) {
             </div>
             <div className="border-l border-[#cbcbcb] pl-2">
               <p className="text-graphite text-sm">
-                <span className="font-medium">{companyName}</span> {companyLocation && `• ${companyLocation}`}
-              </p>
-              <div className="flex gap-2 text-sm">
-                {eventYear && <span>{eventYear} •</span>}
-                {eventName && <span>{eventName}</span>}
-                {eventTypes?.length > 0 && <span>• {eventTypes.join(", ")}</span>}
-              </div>
+              <span className="font-medium">{companyName}</span>
+              {companyLocation && (
+                <>
+                  <span className="mx-1 text-light-grey">•</span>
+                  <span className="text-graphite font-medium">{companyLocation}</span>
+                </>
+              )}
+            </p>
+              <div className="flex gap-2 text-sm text-graphite font-medium">
+              {eventYear && (
+                <>
+                  <span>{eventYear}</span>
+                  <span className="text-light-grey">•</span>
+                </>
+              )}
+
+              {eventName && <span>{eventName}</span>}
+
+              {eventTypes?.length > 0 && (
+                <>
+                  <span className="text-light-grey">•</span>
+                  <span>{eventTypes.join(", ")}</span>
+                </>
+              )}
+            </div>
             </div>
           </div>
         )}
+         {/* 📝 Description */}
+        <p className="text-graphite font-apfel-grotezk-regular mt-3 mb-2 text-[0.95rem] px-1">
+        {description}
+        </p>
 
-        <p className="text-graphite font-apfel-grotezk-regular mt-3 mb-2 text-[0.95rem] px-1">{description}</p>
-      </div>
-
-      {allPosts && allPosts.length > 1 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t flex justify-between px-6 py-3 md:hidden">
-          <button className="flex-1 mr-2 py-2 rounded-lg bg-gray-100 text-graphite font-medium" onClick={() => handleNavigation('prev')}>Prev</button>
-          <button className="flex-1 ml-2 py-2 rounded-lg bg-[#0037EB] text-white font-medium" onClick={() => handleNavigation('next')}>Next</button>
-        </div>
-      )}
+      </motion.div>
     </div>
   );
 }
+

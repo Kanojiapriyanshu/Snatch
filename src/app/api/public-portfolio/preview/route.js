@@ -80,10 +80,7 @@ export async function GET(req) {
                 input: "$uploadedFiles",
                 as: "up",
                 cond: {
-                  $eq: [
-                    { $toString: "$$up.mediaId" },
-                    "$formData.key",
-                  ],
+                  $eq: [{ $toString: "$$up.mediaId" }, "$formData.key"],
                 },
               },
             },
@@ -101,7 +98,7 @@ export async function GET(req) {
         },
       },
 
-      // 7️⃣ Normalize response
+      // 7️⃣ Normalize response (🔥 FIX HERE)
       {
         $project: {
           postId: "$formData.key",
@@ -109,7 +106,14 @@ export async function GET(req) {
 
           media: {
             $cond: {
-              if: { $ne: ["$instagramMatch", null] },
+              // ✅ Instagram ONLY if mediaId matches formData.key
+              if: {
+                $and: [
+                  { $ne: ["$instagramMatch", null] },
+                  { $eq: ["$instagramMatch.mediaId", "$formData.key"] },
+                ],
+              },
+
               then: {
                 source: "instagram",
                 type: {
@@ -153,6 +157,8 @@ export async function GET(req) {
                   ],
                 },
               },
+
+              // 🔵 Uploaded fallback
               else: {
                 source: "uploaded",
                 type: {
@@ -188,7 +194,7 @@ export async function GET(req) {
             },
           },
         },
-      },
+      }
     ]);
 
     const response = NextResponse.json({
