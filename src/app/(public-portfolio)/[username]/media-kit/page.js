@@ -81,7 +81,7 @@ export default function PublicPortfolioPage() {
 
   return (
     <FormProvider>
-      <div className="py-[1%]">
+      <div className=" ">
         <ProfileOverview ownerId={portfolio.id} portfolio={portfolio} />
       </div>
     </FormProvider>

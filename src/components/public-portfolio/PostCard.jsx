@@ -15,27 +15,27 @@ export default function PostCard({ post, postId, username, allPosts }) {
   // Extract data from the new nested structure
   const formData = post?.formData || {};
   const media = post?.media || {};
-  
+
   const isInstagram = media?.source === "instagram";
   const isAdminView = pathname?.includes("/adminview");
 
   const checkOrientation = (width, height) => {
     return height > width;
   };
-      const {
-      data: insights,
-      isLoading: insightsLoading,
-      isError: insightsError,
-    } = useMediaInsights({
-      username,
-      postId,
-      isInstagram,
-    });
+  const {
+    data: insights,
+    isLoading: insightsLoading,
+    isError: insightsError,
+  } = useMediaInsights({
+    username,
+    postId,
+    isInstagram,
+  });
 
   const currentIndex = allPosts ? allPosts.findIndex((p) => p.postId === postId) : -1;
   const totalPosts = allPosts ? allPosts.length : 0;
 
-  const baseUrl = isAdminView 
+  const baseUrl = isAdminView
     ? `/${username}/media-kit/adminview/post`
     : `/${username}/media-kit/post`;
 
@@ -93,7 +93,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
   return (
     <div className="w-full flex flex-col items-center justify-start mt-10">
       <div className="hidden md:flex fixed inset-0 w-full h-full bg-black/2 z-10 pointer-events-none" aria-hidden="true"></div>
-      
+
       <div className="hidden lg:flex flex-col items-center justify-center w-full relative z-20">
         <div className="flex items-center justify-center w-full relative" style={{ minHeight: '430px', overflowY: 'visible' }}>
           <button
@@ -169,40 +169,40 @@ export default function PostCard({ post, postId, username, allPosts }) {
                   <p className="text-graphite font-apfel-grotezk-regular mr-3">{description}</p>
                 </div>
 
-                 {/* Bottom section - Stats (fixed position at bottom) */}
+                {/* Bottom section - Stats (fixed position at bottom) */}
                 {post?.media?.source === "instagram" && (
-                   <div className="flex-shrink-0 mt-auto w-full">
-                     {/* Fixed separator line */}
-                     <div className="w-full border-b-[0.5px] border-gray-300 mb-3"></div>
+                  <div className="flex-shrink-0 mt-auto w-full">
+                    {/* Fixed separator line */}
+                    <div className="w-full border-b-[0.5px] border-gray-300 mb-3"></div>
 
-                     {/* Insights section */}
-                     <div className="flex justify-between text-graphite w-full min-h-[60px]">
-                       {insights ? (
-                         [
-                           { label: "Views", key: "views" },
-                           { label: "Likes", key: "likes" },
-                           { label: "Comments", key: "comments" },
-                           { label: "Shares", key: "shares" }
-                         ].map(({ label, key }) => (
-                           <div
-                             className="flex flex-col items-center min-w-[40px] text-center"
-                             key={key}
-                           >
-                             <div className="text-[22px] leading-none font-qimano text-graphite">
-                               {insights?.[key] ?? 0}
-                             </div>
-                             <div className="text-[12px] text-[#000000]/70 font-apfel-grotezk-regular mt-1">
-                               {label}
-                             </div>
-                           </div>
-                         ))
-                       ) : (
-                         
-                         <div className="h-[40px] w-full"></div>
-                       )}
-                     </div>
-                   </div>
-                 )}
+                    {/* Insights section */}
+                    <div className="flex justify-between text-graphite w-full min-h-[60px]">
+                      {insights ? (
+                        [
+                          { label: "Views", key: "views" },
+                          { label: "Likes", key: "likes" },
+                          { label: "Comments", key: "comments" },
+                          { label: "Shares", key: "shares" }
+                        ].map(({ label, key }) => (
+                          <div
+                            className="flex flex-col items-center min-w-[40px] text-center"
+                            key={key}
+                          >
+                            <div className="text-[22px] leading-none font-qimano text-graphite">
+                              {insights?.[key] ?? 0}
+                            </div>
+                            <div className="text-[12px] text-[#000000]/70 font-apfel-grotezk-regular mt-1">
+                              {label}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+
+                        <div className="h-[40px] w-full"></div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -236,9 +236,9 @@ export default function PostCard({ post, postId, username, allPosts }) {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile layout */}
-      <MobileLayout 
+      <MobileLayout
         post={post}
         media={media}
         formData={formData}
@@ -283,9 +283,9 @@ function MediaDisplay({ media, isPortrait, setIsPortrait, carouselIndex, setCaro
     return (
       <Wrapper>
         <ImagePlayer
-              src={media.files[0].url}
-              isPortrait={isPortrait}
-            />
+          src={media.files[0].url}
+          isPortrait={isPortrait}
+        />
       </Wrapper>
     );
   }
@@ -309,12 +309,12 @@ function MediaDisplay({ media, isPortrait, setIsPortrait, carouselIndex, setCaro
           >
             {file.type === "IMAGE" ? (
               <ImagePlayer
-              src={file.url}
-              isPortrait={isPortrait}
-            />
+                src={file.url}
+                isPortrait={isPortrait}
+              />
 
             ) : file.type === "VIDEO" ? (
-               <VideoPlayer src={file.url} isPortrait={isPortrait} isActive={carouselIndex === index} />
+              <VideoPlayer src={file.url} isPortrait={isPortrait} isActive={carouselIndex === index} />
             ) : null}
           </div>
         ))}
@@ -428,9 +428,8 @@ function VideoPlayer({ src, isPortrait, isActive }) {
         disablePictureInPicture
         onLoadedMetadata={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
-        className={`absolute w-full h-full ${
-          isPortrait ? "object-cover" : "object-contain object-top"
-        } ${isLoading ? "opacity-0" : "opacity-100"}`}
+        className={`absolute w-full h-full ${isPortrait ? "object-cover" : "object-contain object-top"
+          } ${isLoading ? "opacity-0" : "opacity-100"}`}
       >
         <source src={src} type="video/mp4" />
       </video>
@@ -467,8 +466,8 @@ function ImagePlayer({ src, isPortrait }) {
         isPortrait
           ? { aspectRatio: "4 / 6" } // reels-style portrait
           : aspectRatio
-          ? { aspectRatio } // landscape → exact image height
-          : undefined
+            ? { aspectRatio } // landscape → exact image height
+            : undefined
       }
     >
       <Image
@@ -496,62 +495,62 @@ function MobileLayout(props) {
 
   return (
     <div className="flex lg:hidden flex-col w-full">
-   <div className="fixed top-0 left-0 right-0 z-50 bg-white p-4 shadow-sm">
-  <div className="relative flex items-center justify-center">
-    
-    {/* Center controls */}
-    <div className="flex items-center gap-6 text-graphite">
-      <button onClick={() => handleNavigation("prev")}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-      </button>
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white p-4 shadow-sm">
+        <div className="relative flex items-center justify-center">
 
-      <div className="font-apfel-grotezk-regular text-sm font-medium">
-        {totalPosts > 0 ? `${currentIndex + 1} / ${totalPosts}` : ""}
+          {/* Center controls */}
+          <div className="flex items-center gap-6 text-graphite">
+            <button onClick={() => handleNavigation("prev")}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            <div className="font-apfel-grotezk-regular text-sm font-medium">
+              {totalPosts > 0 ? `${currentIndex + 1} / ${totalPosts}` : ""}
+            </div>
+
+            <button onClick={() => handleNavigation("next")}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Close button pinned right */}
+          <button
+            className="absolute right-0 flex items-center justify-center "
+            onClick={() => router.push(`/${username}/media-kit?scrollTo=presskit`)}
+          >
+            <Image src="/assets/icons/cross-mark.svg" alt="Close" width={20} height={20} />
+          </button>
+
+        </div>
       </div>
-
-      <button onClick={() => handleNavigation("next")}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-      </button>
-    </div>
-
-    {/* Close button pinned right */}
-    <button
-      className="absolute right-0 flex items-center justify-center "
-      onClick={() => router.push(`/${username}/media-kit?scrollTo=presskit`)}
-    >
-      <Image src="/assets/icons/cross-mark.svg" alt="Close" width={20} height={20} />
-    </button>
-
-  </div>
-</div>
 
 
       {/* <div className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[16px] overflow-y-auto rounded-lg bg-white"> */}
       <motion.div
-      className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[16px] overflow-y-auto rounded-lg bg-white"
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.10}
-      onDragEnd={(event, info) => {
-        const offsetX = info.offset.x;
-        const offsetY = info.offset.y;
+        className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[16px] overflow-y-auto rounded-lg bg-white"
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.10}
+        onDragEnd={(event, info) => {
+          const offsetX = info.offset.x;
+          const offsetY = info.offset.y;
 
-        // ✅ Ignore swipe if user is scrolling vertically
-        if (Math.abs(offsetY) > Math.abs(offsetX)) return;
+          // ✅ Ignore swipe if user is scrolling vertically
+          if (Math.abs(offsetY) > Math.abs(offsetX)) return;
 
-        if (offsetX < -SWIPE_CONFIDENCE_THRESHOLD) {
-          handleNavigation("next");
-        } else if (offsetX > SWIPE_CONFIDENCE_THRESHOLD) {
-          handleNavigation("prev");
-        }
-      }}
-    >
+          if (offsetX < -SWIPE_CONFIDENCE_THRESHOLD) {
+            handleNavigation("next");
+          } else if (offsetX > SWIPE_CONFIDENCE_THRESHOLD) {
+            handleNavigation("prev");
+          }
+        }}
+      >
         <div className="relative w-full flex-shrink-0 flex items-center justify-center rounded-lg">
           <div className="relative w-full rounded-lg overflow-hidden flex items-center justify-center">
             {media?.type === "CAROUSEL" && media.files?.length > 0 ? (
@@ -560,13 +559,13 @@ function MobileLayout(props) {
                   {media.files.map((file, index) => (
                     <div key={index} className={`transition-opacity duration-500 w-full ${carouselIndex === index ? "opacity-100 pointer-events-auto" : "opacity-0 absolute inset-0 pointer-events-none"}`}>
                       {file.type === "IMAGE" ? (
-                         <ImagePlayer
+                        <ImagePlayer
                           src={file.url}
                           isPortrait={isPortrait}
                         />
                       ) : file.type === "VIDEO" ? (
                         <>
-                           <VideoPlayer src={file.url} isPortrait={isPortrait} isActive={carouselIndex === index} />
+                          <VideoPlayer src={file.url} isPortrait={isPortrait} isActive={carouselIndex === index} />
                         </>
                       ) : null}
                     </div>
@@ -576,39 +575,39 @@ function MobileLayout(props) {
                 <button onClick={() => setCarouselIndex(carouselIndex === media.files.length - 1 ? 0 : carouselIndex + 1)} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black/50 text-white rounded-full w-8 h-8">❯</button>
               </div>
             ) : media?.type === "VIDEO" ? (
-                <VideoPlayer src={media.files[0].url} thumbnailUrl={media.thumbnailUrl} isPortrait={isPortrait} />
+              <VideoPlayer src={media.files[0].url} thumbnailUrl={media.thumbnailUrl} isPortrait={isPortrait} />
             ) : media?.type === "IMAGE" ? (
-               <ImagePlayer
-              src={media.files[0].url}
-              isPortrait={isPortrait}
-            />
+              <ImagePlayer
+                src={media.files[0].url}
+                isPortrait={isPortrait}
+              />
             ) : null}
           </div>
         </div>
 
-           {/* Engagement Metrics Section (moved just below media for mobile) */}
-           <div className="w-full">
-             <div className="w-full mb-4"></div>
-             <div className="mt-2 flex justify-between text-black w-full px-1">
-               {[
-                 { label: "Views", key: "views" },
-                 { label: "Likes", key: "likes" },
-                 { label: "Comments", key: "comments" },
-                 { label: "Shares", key: "shares" }
-               ].map(({ label, key }) => (
-                 <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
-                   <div className="text-[19px] leading-none font-qimano text-graphite">
-                     {insights?.[key] ?? 0}
-                   </div>
-                   <div className="text-[12px] text-[#000000]/70 font-apfel-grotezk-regular mt-1">
-                     {label}
-                   </div>
-                 </div>
-               ))}
-             </div>
-           </div>
+        {/* Engagement Metrics Section (moved just below media for mobile) */}
+        <div className="w-full">
+          <div className="w-full mb-4"></div>
+          <div className="mt-2 flex justify-between text-black w-full px-1">
+            {[
+              { label: "Views", key: "views" },
+              { label: "Likes", key: "likes" },
+              { label: "Comments", key: "comments" },
+              { label: "Shares", key: "shares" }
+            ].map(({ label, key }) => (
+              <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
+                <div className="text-[19px] leading-none font-qimano text-graphite">
+                  {insights?.[key] ?? 0}
+                </div>
+                <div className="text-[12px] text-[#000000]/70 font-apfel-grotezk-regular mt-1">
+                  {label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-           <div className="w-full mt-4 mb-2 h-[0.5px] bg-[#212121]/20"></div>
+        <div className="w-full mt-4 mb-2 h-[0.5px] bg-[#212121]/20"></div>
 
         <div className="flex items-start justify-between mt-4 mb-1 px-1">
           <h2 className="text-xl font-qimano text-[#212121] leading-tight max-w-[85%]">{title}</h2>
@@ -621,8 +620,8 @@ function MobileLayout(props) {
         </div>
 
         <div
-        className={`w-full mt-4 ${hasCompanyInfo ? "mb-4" : "mb-2"} h-[0.5px] bg-[#212121]/20`}
-      ></div>
+          className={`w-full mt-4 ${hasCompanyInfo ? "mb-4" : "mb-2"} h-[0.5px] bg-[#212121]/20`}
+        ></div>
 
         {hasCompanyInfo && (
           <div className="flex items-center gap-3 mb-2 px-1">
@@ -631,37 +630,37 @@ function MobileLayout(props) {
             </div>
             <div className="border-l border-[#cbcbcb] pl-2">
               <p className="text-graphite text-sm">
-              <span className="text-graphite font-normal">{companyName}</span>
-              {companyLocation && (
-                <>
-                  <span className="mx-1 text-light-grey">•</span>
-                  <span className="text-graphite font-normal">{companyLocation}</span>
-                </>
-              )}
-            </p>
+                <span className="text-graphite font-normal">{companyName}</span>
+                {companyLocation && (
+                  <>
+                    <span className="mx-1 text-light-grey">•</span>
+                    <span className="text-graphite font-normal">{companyLocation}</span>
+                  </>
+                )}
+              </p>
               <div className="flex gap-2 text-sm text-graphite font-normal">
-              {eventYear && (
-                <>
-                  <span>{eventYear}</span>
-                  <span className="text-light-grey">•</span>
-                </>
-              )}
+                {eventYear && (
+                  <>
+                    <span>{eventYear}</span>
+                    <span className="text-light-grey">•</span>
+                  </>
+                )}
 
-              {eventName && <span>{eventName}</span>}
+                {eventName && <span>{eventName}</span>}
 
-              {eventTypes?.length > 0 && (
-                <>
-                  <span className="text-light-grey">•</span>
-                  <span>{eventTypes.join(", ")}</span>
-                </>
-              )}
-            </div>
+                {eventTypes?.length > 0 && (
+                  <>
+                    <span className="text-light-grey">•</span>
+                    <span>{eventTypes.join(", ")}</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}
-         {/* 📝 Description */}
+        {/* 📝 Description */}
         <p className="text-graphite font-apfel-grotezk-regular mt-3 mb-2 text-[0.95rem] px-1">
-        {description}
+          {description}
         </p>
 
       </motion.div>

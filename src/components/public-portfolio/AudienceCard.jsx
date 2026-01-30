@@ -25,6 +25,7 @@ const fetchDemographics = async (username) => {
     countryRes.json(),
   ]);
 
+
   return {
     genderData: genderData.demographics,
     ageData: ageData.ageDistribution,
@@ -98,15 +99,15 @@ const AudienceCard = () => {
   return (
     <div className="lg:mt-10 w-full flex flex-col justify-center items-center mb-10 ">
       {/* border-2 border-red-dark */}
-      <h3 className="lg:text-7xl text-4xl  font-qimano text-electric-blue text-center px-4 py-2 rounded-xl">
+      <h3 className="lg:text-6xl text-4xl  font-qimano text-electric-blue text-center px-4 py-2 rounded-xl">
         Audience
       </h3>
 
-      <div className="flex flex-col lg:flex-row gap-6 mt-6 w-full  justify-center items-stretch">
+      <div className="flex flex-col lg:flex-row gap-8 mt-6 w-full  justify-center items-stretch">
 
         {/* Gender */}
         {genderEndpoint && (
-          <div className="bg-gray-100 shadow-md rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center min-h-[550px]">
+          <div className="bg-gray-100 shadow-lg rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center min-h-[550px]">
             <h3 className="text-2xl font-qimano text-gray-700 mb-2">Gender</h3>
 
             {/* Skeleton */}
@@ -192,7 +193,7 @@ const AudienceCard = () => {
 
         {/* Age Range */}
         {ageEndpoint && (
-          <div className="bg-gray-100 shadow-md rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center justify-between min-h-[550px]">
+          <div className="bg-gray-100 shadow-lg rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center justify-between min-h-[550px]">
             <h3 className="text-2xl font-qimano text-gray-700 mb-2">Age Range</h3>
 
             {isDemographicsLoading && (
@@ -275,7 +276,7 @@ const AudienceCard = () => {
 
         {/* Location */}
         {locationEndpoint && (
-          <div className="bg-gray-100 shadow-md rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center justify-between min-h-[550px]">
+          <div className="bg-gray-100 shadow-lg rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center justify-between min-h-[550px]">
             <h3 className="text-2xl font-qimano text-gray-700 mb-2">Top Locations</h3>
 
             {isDemographicsLoading && (

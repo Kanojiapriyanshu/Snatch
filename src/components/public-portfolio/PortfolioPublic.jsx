@@ -199,18 +199,18 @@ const PortfolioPublic = () => {
             <div
               key={child.mediaId}
               className={`absolute inset-0 transition-all duration-500 ${(carouselIndexes[mediaId] || 0) === idx
-                  ? "opacity-100 z-10"
-                  : "opacity-0 z-0"
+                ? "opacity-100 z-10"
+                : "opacity-0 z-0"
                 }`}
-               onClick={(e) =>
-              handlePostClick(
-                e,
-                mediaId,
-                isAdminView
-                  ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
-                  : `/${username}/media-kit/post/?postId=${mediaId}`
-              )
-            }
+              onClick={(e) =>
+                handlePostClick(
+                  e,
+                  mediaId,
+                  isAdminView
+                    ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
+                    : `/${username}/media-kit/post/?postId=${mediaId}`
+                )
+              }
             >
               {child.mediaType === "IMAGE" ? (
                 <Image
@@ -285,7 +285,7 @@ const PortfolioPublic = () => {
             className="
               lg:hidden
               absolute bottom-0
-              z-20 w-full
+              z-10 w-full
               flex justify-between items-center gap-1.5
               px-4 py-3
               rounded-b-lg bg-[#212121]/50
@@ -321,9 +321,9 @@ const PortfolioPublic = () => {
         )}
 
 
-      {/* 💻 DESKTOP HOVER OVERLAY */}
-      <div
-        className="
+        {/* 💻 DESKTOP HOVER OVERLAY */}
+        <div
+          className="
           hidden lg:flex
           absolute inset-0
           items-center justify-center
@@ -332,78 +332,80 @@ const PortfolioPublic = () => {
           transition-opacity duration-300
           z-10 cursor-pointer
         "
-        onClick={(e) =>
-          handlePostClick(
-            e,
-            mediaId,
-            isAdminView
-              ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
-              : `/${username}/media-kit/post/?postId=${mediaId}`
-          )
-        }
-      >
-        <div className="flex flex-col flex-wrap justify-center gap-4 text-white text-lg ">
-          <div className="flex justify-center flex-wrap gap-4">
-          {!isUploaded && (
-                    <>
-                    {/* Likes */}
-                      <div className="flex items-center gap-1.5">
-                        <Image src="/assets/images/like.svg" alt="Like" width={16} height={16} />
-                        <span>{format(stat?.likes ?? 0)}</span>
-                      </div>
+        // onClick={(e) =>
+        //   handlePostClick(
+        //     e,
+        //     mediaId,
+        //     isAdminView
+        //       ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
+        //       : `/${username}/media-kit/post/?postId=${mediaId}`
+        //   )
+        // }
+        >
+          <div className="flex flex-col justify-center items-center gap-3  border-yellow-400">
+            {!isUploaded && (
+              <div className="flex max-[1000px]:flex-wrap justify-center items-center max-[1200px]:gap-4 gap-6 text-white max-[1200px]:text-xs text-md max-w-[90%]  border-green">
+                {/* Likes */}
+                <div className="flex items-center gap-1">
+                  <Image src="/assets/images/like.svg" alt="Like" width={16} height={16} />
+                  <span>{format(stat?.likes ?? 0)}</span>
+                </div>
 
-                      {/* Comments */}
-                      <div className="flex items-center gap-1.5">
-                        <Image src="/assets/images/comment.svg" alt="Comment" width={16} height={16} />
-                        <span>{format(stat?.comments ?? 0)}</span>
-                      </div>
+                {/* Comments */}
+                <div className="flex items-center gap-1">
+                  <Image src="/assets/images/comment.svg" alt="Comment" width={16} height={16} />
+                  <span>{format(stat?.comments ?? 0)}</span>
+                </div>
 
-                      {/* Views */}
-                      {stat?.views >= 0 && (
-                        <div className="flex items-center gap-1.5">
-                          <Image src="/assets/images/views.svg" alt="Views" width={16} height={16} />
-                          <span>{format(stat.views)}</span>
-                        </div>
-                      )}
+                {/* Views */}
+                {stat?.views >= 0 && (
+                  <div className="flex items-center gap-1">
+                    <Image src="/assets/images/views.svg" alt="Views" width={16} height={16} />
+                    <span>{format(stat.views)}</span>
+                  </div>
+                )}
 
-                      {/* Shares */}
-                      {stat?.shares >= 0 && (
-                        <div className="flex items-center gap-1.5">
-                          <Image src="/assets/images/shares.svg" alt="Shares" width={16} height={16} />
-                          <span>{format(stat.shares)}</span>
-                        </div>
-                      )}
+                {/* Shares */}
+                {stat?.shares >= 0 && (
+                  <div className="flex items-center gap-1">
+                    <Image src="/assets/images/shares.svg" alt="Shares" width={16} height={16} />
+                    <span>{format(stat.shares)}</span>
+                  </div>
+                )}
 
-                      </>
-                    )}
-          </div>
-        
-                <div
-                className="
+              </div>
+            )}
+
+            <div
+              className="
                   hidden lg:flex
                   items-center justify-center
                   w-[240px]
                   h-[32px]
                 "
-              >
-                {loadingPostId === mediaId ? (
-                  <DotLottieReact
-                    src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
-                    loop
-                    autoplay
-                    className="w-[50px] h-[50px]"
-                  />
-                ) : (
-                  <span className="text-yellow-300 font-apfel-grotezk-regular underline text-[20px] leading-none text-center">
-                    Post Info & Insights ↗
-                  </span>
-                )}
-              </div>
+            >
+              {loadingPostId === mediaId ? (
+                <DotLottieReact
+                  src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+                  loop
+                  autoplay
+                  className="w-[50px] h-[50px]"
+                />
+              ) : (
+                <span className="text-yellow-300 font-apfel-grotezk-regular underline text-[20px] leading-none text-center">
+                  Post Info & Insights ↗
+                </span>
+              )}
+            </div>
+
+          </div>
+
+
 
         </div>
       </div>
 
-      </div>
+
     );
   };
 
@@ -427,7 +429,7 @@ const PortfolioPublic = () => {
           </div>
 
           {/* 💻 Desktop */}
-          <div className="hidden lg:grid lg:grid-cols-4 gap-6">
+          <div className="hidden lg:grid lg:grid-cols-4 gap-8">
             {projects.map((project, index) => (
               <div key={index} className="relative aspect-[3/4] rounded-xl ">
                 {/* border-2 border-green */}

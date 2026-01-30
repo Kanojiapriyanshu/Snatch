@@ -29,7 +29,7 @@ const useAnimatedNumber = (target) => {
 
 // Updated Skeleton component with exact same dimensions and positioning as image
 const ProfileImageSkeleton = () => (
-  <div className="object-cover lg:w-[320px] lg:h-[355px] w-66 h-80 relative z-[9999] rounded-xl right-6 bg-gray-300 animate-pulse" />
+  <div className="object-cover lg:w-[320px] lg:h-[355px] w-66 h-80 relative z-[99999] rounded-xl right-6 bg-gray-300 animate-pulse" />
 );
 
 // Add isAdminView prop
@@ -195,7 +195,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const defaultBg = "rgb(75, 75, 75)";
   const defaultHeight = "560px";
 
-  const headerBg = useTransform(scrollY, [0, 200], ["rgb( 30,30,30)", "rgb(80, 80, 80)"]);
+  const headerBg = useTransform(scrollY, [0, 200], ["rgb( 30,30,30)", "rgb(0, 0, 0)"]);
   const headerHeight = useTransform(scrollY, [0, 200], ["530px", "80px"]);
 
   // If on mobile, override motion values with static values
@@ -205,9 +205,10 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const nameSize = useTransform(
     scrollY,
     [0, 9],
-    isTablet ? [36, 36] : [86, 36] // Fixed size for mobile, animated for desktop
+    isTablet ? [32, 32] : [86, 37] // Fixed size for mobile, animated for desktop
   );
 
+  // const userNameLocation = useTransform(scrollY, [0, 20], isTablet ? [14, 14] : [18, 12]);
   const userNameLocation = useTransform(scrollY, [0, 20], isTablet ? [14, 12] : [18, 12]);
 
   // const contentOpacity = useTransform(scrollY, [0, 1], [1, 50]);
@@ -215,7 +216,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   const contentOpacity = useTransform(scrollY, [0, 1], [1, 0]);
 
   // FIXED: Use same scroll trigger for all header elements to prevent glitching
-  const headerOpacity = useTransform(scrollY, [0, 75], [0, 1]);
+  const headerOpacity = useTransform(scrollY, [0, 40], [0, 1]);
   const headerOpacityPrimary = useTransform(scrollY, [0, 1], [0, 1]);
   const headerOpacitySecondary = useTransform(scrollY, [0, 1], [0, 1]);
 
@@ -402,37 +403,38 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
   }, [searchParams]);
 
   return (
-    <div className="container mx-auto  max-w-[1400px] rounded-xl" ref={containerRef}>
+    <div className="" ref={containerRef}>
       {/*  border-purple-dark */}
       {/* Sticky Header (appears on scroll) */}
-      {isTablet ? <HeaderForMobile
-        formData={formData}
-        headerOpacityPrimary={headerOpacityPrimary}
-        headerOpacitySecondary={headerOpacitySecondary}
-        isAdminView={isAdminView}
-        showGoBackButton={!isScrolled && isAdminView} // Only show when not scrolled and is admin view
-        showHeaderButton={!isContainerVisible} // Only show when container is not visible
-      />
-        :
-        <Header
+
+
+      {/* Main Content Container - Now using normal flow */}
+      <div className="container mx-auto  max-w-[1620px] rounded-xl  border-purple-dark">
+        {isTablet ? <HeaderForMobile
           formData={formData}
-          data={igData}
-          headerOpacity={headerOpacity}
+          headerOpacityPrimary={headerOpacityPrimary}
+          headerOpacitySecondary={headerOpacitySecondary}
           isAdminView={isAdminView}
           showGoBackButton={!isScrolled && isAdminView} // Only show when not scrolled and is admin view
           showHeaderButton={!isContainerVisible} // Only show when container is not visible
-          reach={reach}
-          followers={followers}
-          posts={posts}
-          formatNumber={formatNumber}
-        />}
-
-      {/* Main Content Container - Now using normal flow */}
-      <div className="">
+        />
+          :
+          <Header
+            formData={formData}
+            data={igData}
+            headerOpacity={headerOpacity}
+            isAdminView={isAdminView}
+            showGoBackButton={!isScrolled && isAdminView} // Only show when not scrolled and is admin view
+            showHeaderButton={!isContainerVisible} // Only show when container is not visible
+            reach={reach}
+            followers={followers}
+            posts={posts}
+            formatNumber={formatNumber}
+          />}
         {/* Main Hero Section */}
         <motion.div
           ref={mainContainerRef}
-          className={`w-[100%] lg:w-[99%] relative lg:left-[6px] top-3 sm:left-0  text-white  rounded-2xl shadow-2xl overflow-visible  border-green z-10 ${isTablet ? "h-[560px] bg-neutral-800" : " "
+          className={`container mx-auto w-[100%] lg:w-[97.4%] right-0  max-w-[1620px] relative top-3 sm:left-0  text-white  rounded-2xl shadow-xl overflow-visible  border-green z-10  ${isTablet ? "h-[560px] bg-neutral-800" : " "
             }`}
           // className={`md:w-[99%]  text-white relative md:right-1 lg:left-2 rounded-3xl overflow-visible z-10 ${isTablet ? "h-[560px] bg-neutral-800" : ""
           //   }`}
@@ -443,7 +445,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                 backgroundColor: finalBg,
                 height: finalHeight,
                 position: "fixed",
-                top: 6,
+                top: 18,
                 zIndex: 10,
                 visibility: isTablet ? "visible" : visibility,
                 opacity: isTablet ? 1 : opacity,
@@ -475,7 +477,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
           )}
 
           <motion.div
-            className="container mx-auto max-w-[1400px] flex flex-col items-center  pt-8 rounded-3xl "
+            className="container mx-auto max-w-[1400px] flex flex-col items-center  pt-6 rounded-3xl "
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -533,12 +535,12 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
             </motion.div>
           </motion.div>
 
-          <div className="container px-5 mx-auto max-w-[1400px] overflow-visible lg:mt-4  border-yellow-300 ">
+          <div className="container mx-auto lg:px-16 overflow-visible lg:mt-20  max-w-[1620px]  border-yellow-300 ">
             <motion.div className=" w-full flex flex-col-reverse lg:flex-row justify-between lg:relative z-10 overflow-visible" style={{ opacity: isTablet ? "1" : contentOpacity }}>
-
+              {/* max-[1024px]:max-w-[1024px] max-[1280px]:max-w-[1200px] max-w-[1300px] */}
               {/*1 Left Side - Pricing and Services */}
               <motion.div
-                className="w-1/2 hidden lg:flex justify-end flex-col   border-cyan-300"
+                className="w-1/2 hidden lg:flex justify-end flex-col  border-cyan-300"
                 // className="min-[960px]:max-[1280px]:w-[270px] min-[1280px]:w-[370px] min-[960px]:max-[1280px]:pt-24 pt-20 hidden lg:block"
                 variants={leftSectionVariants}
                 initial="hidden"
@@ -551,7 +553,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                 animate="visible"
               > */}
                 <motion.div
-                  className="flex items-center w-full whitespace-nowrap   border-orange-300"
+                  className="flex items-center w-full whitespace-nowrap  border-orange-300"
                   variants={itemVariants}
                 >
                   {/* <h2 className="font-qimano lg:text-3xl text-2xl font-medium whitespace-nowrap" >
@@ -580,7 +582,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
 
                 {/* Services */}
                 <motion.div
-                  className="flex flex-wrap h-1/4  mt-2 mb-3  border-red-700 "
+                  className="flex flex-wrap h-1/4  mt-2 mb-3   border-red-700 "
                   variants={itemVariants}
                 >
                   {/* <motion.div
@@ -591,7 +593,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                     formData.compensation.map((item, index) => (
                       <motion.div
                         key={index}
-                        className="inline-flex  tracking-tighter items-center font-qimano min-[960px]:max-[1299px]:text-base min-[1300px]:text-lg relative  border-sky-500"
+                        className="inline-flex  tracking-tighter items-center font-qimano min-[960px]:max-[1299px]:text-base min-[1300px]:text-lg relative   border-sky-500"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 1.2 + index * 0.1, duration: 0.4 }}
@@ -627,7 +629,9 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                           /> */}
 
                           {/* Tooltip */}
-                          <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-lime-yellow text-black text-sm px-3 py-2 rounded-md shadow-md max-w-[200px] w-max whitespace-normal text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none">
+                          <div className="absolute bottom-full w-[250px] lg:max-[1200px]:w-[200px] -left-5 h-auto -translate-x-10 bg-lime-yellow text-black text-lg px-4 py-4 rounded-md shadow-md  whitespace-normal text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none "
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                          >
                             {item === "Sponsorships"
                               ? "Influencers are paid a fixed amount for each piece of content they create."
                               : item === "Gifting"
@@ -639,7 +643,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                                     : item === "Collaboration"
                                       ? "Influencers sometimes collaborate with brands to create a product."
                                       : "More info coming soon."}
-                          </span>
+                          </div>
                         </div>
 
                         {/* Separator */}
@@ -678,19 +682,18 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
               {/*2 Center - Profile Image desktop - FIXED VERSION */}
 
               <motion.div
-                className="w-full flex justify-center rounded-xl overflow-visible z-20    border-red"
+                className="w-full flex justify-center rounded-xl overflow-visible z-20  border-red"
                 // min-[960px]:max-[1050px]:mr-32 min-[1051px]:max-[1300px]:mr-14
                 // max-[960px]:top-20 min-[340px]:max-[385px]:right-7 min-[390px]:max-[412px]:right-3 min-[430px]:left-1
                 // max-[960px]:top-20 min-[340px]:max-[400px]:right-4 min-[431px]:max-[530px]:left-8 min-[531px]:max-[630px]:left-14  min-[960px]:max-[1024px]:right-24
                 style={{
                   scale: isTablet ? "0" : profileImageScale,
                   opacity: isTablet ? "1" : profileImageOpacity,
-                  zIndex: 100,
-                  bottom: isTablet ? "-10px" : '0px'
+                  zIndex: 100
                 }}
               >
                 {/* <div className="lg:absolute overflow-visible z-[9999]  border-yellow-500"> */}
-                <div className="absolute rounded-xl shadow-2xl -bottom-16 lg:top-10 lg:mx-auto w-60 h-[320px] overflow-visible items-center">
+                <div className="absolute rounded-xl -bottom-10 lg:-top-4 lg:mx-auto w-60 h-[320px] overflow-visible items-center   border-sky-40">
                   {/* <div className="absolute lg:translate-x-1/2 lg:translate-y-10 rounded-xl w-64 h-2/3 overflow-visible  border-sky-400"> */}
                   {/* Container for both skeleton and image - ensures same positioning */}
                   <div className="relative h-full">
@@ -721,7 +724,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                         alt={`${formData?.firstName} ${formData?.lastName}`}
                         width={300}
                         height={400}
-                        className="object-cover w-full h-full relative z-[9999] rounded-xl"
+                        className="object-cover w-full h-full relative z-[9999] shadow-2xl rounded-xl"
                         onLoad={() => setImageLoaded(true)}
                         onError={() => setImageLoaded(true)}
                       />
@@ -732,7 +735,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
               </motion.div>
               {/* 3 Right Side - Stats */}
               <motion.div
-                className="w-full lg:w-1/2 mr-0 lg:items-end justify-center flex flex-row lg:flex-col items-center gap-8 lg:gap-4 pt-8 z-20  border-cyan-300"
+                className="w-full lg:w-1/2 lg:items-end justify-center flex flex-row lg:flex-col items-center gap-8 lg:gap-0 pt-4 lg:pt-0 z-20  border-cyan-300"
                 variants={rightSectionVariants}
                 initial="hidden"
                 animate="visible"
@@ -740,31 +743,31 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
               >
                 <motion.div
 
-                  className="text-center "
+                  className="flex flex-col justify-end   border-red"
                   variants={statsVariants}
                 >
-                  <h2 className="text-3xl lg:text-5xl font-medium font-qimano" >
-                    <motion.span>{reach ? formatNumber(reach.get()) : "0"}</motion.span>
-                  </h2>
-                  <p className="text-sm  text-white font-apfel-grotezk-regular text-right" >avg reach</p>
+
+                  <motion.span className="h-1/2 text-[28px] lg:text-5xl font-qimano text-center">{reach ? formatNumber(reach.get()) : "0"}</motion.span>
+
+                  <p className="text-sm pt-1 text-white font-apfel-grotezk-regular text-right " >avg reach</p>
                 </motion.div>
                 <motion.div
-                  className="text-center "
+                  className="flex flex-col justify-end pt-1  border-red"
                   variants={statsVariants}
                 >
-                  <h2 className="text-3xl lg:text-5xl font-medium font-qimano">
-                    <motion.span>{followers ? formatNumber(followers.get()) : "0"}</motion.span>
-                  </h2>
-                  <p className="text-sm text-white font-apfel-grotezk-regular text-right">followers</p>
+
+                  <motion.span className="h-1/2 text-[28px] lg:text-5xl font-qimano text-center">{followers ? formatNumber(followers.get()) : "0"}</motion.span>
+
+                  <p className="text-sm pt-1 text-white font-apfel-grotezk-regular text-right">followers</p>
                 </motion.div>
                 <motion.div
-                  className="text-center"
+                  className="flex flex-col justify-end  pt-1  border-red"
                   variants={statsVariants}
                 >
-                  <h2 className="text-3xl lg:text-5xl font-medium font-qimano">
-                    <motion.span>{posts ? formatNumber(posts.get()) : "0"}</motion.span>
-                  </h2>
-                  <p className="text-sm text-white font-apfel-grotezk-regular text-right">posts</p>
+
+                  <motion.span className="h-1/2 text-[28px] lg:text-5xl font-qimano text-center">{posts ? formatNumber(posts.get()) : "0"}</motion.span>
+
+                  <p className="text-sm pt-1 lg:pt-[6px] lg:leading-none text-white font-apfel-grotezk-regular text-right">posts</p>
                 </motion.div>
               </motion.div>
 
@@ -785,7 +788,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
             variants={itemVariants}
           >
             <div className="flex items-baseline">
-              <span className="font-qimano text-[28px] font-normal text-black leading-tight">
+              <span className="font-qimano text-[28px] max-sm:text-[26px] font-normal text-black leading-tight">
                 {priceRange}
               </span>
               <span className="text-gray-500 text-[16px] font-apfel-grotezk-regular font-normal ml-1">Value per content piece</span>
@@ -846,12 +849,12 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
           </motion.div> */}
 
           <motion.div
-            className="flex flex-wrap items-center justify-center w-full text-black font-qimano text-[20px] gap-x-2 gap-y-1 mb-2 "
+            className="flex flex-wrap items-center justify-center w-full text-black font-qimano text-[16px] sm:gap-x-2 gap-x-1 gap-y-1 mb-2  "
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             {formData?.compensation?.length > 0 ? (
 
-              formData.compensation.slice(0, 3).map((item, index) => (
+              formData.compensation.slice(0, 5).map((item, index) => (
                 <motion.div
                   key={index}
                   className="inline-flex items-center relative"
@@ -866,7 +869,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                       alt='info'
                       width={10}
                       height={10}
-                      className='w-4 h-4 mx-1 invert cursor-pointer'
+                      className='w-4 h-4 mx-1 mb-1 invert cursor-pointer'
                       style={{ filter: 'invert(1)' }}
                       onClick={() => setActiveMobileTooltip(
                         activeMobileTooltip === index ? null : index
@@ -876,17 +879,19 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
 
                   {/* Responsive Tooltip */}
                   {activeMobileTooltip === index && (
-                    <span
+                    <div
                       ref={tooltipRef}
-                      className="absolute block md:hidden left-1/2 -translate-x-1/2 bottom-full mb-2 bg-lime-yellow text-black text-sm p-4 rounded-md shadow-md max-w-[calc(44vw-5px)] w-max whitespace-normal break-words text-left z-[99999]"
+                      className="absolute block lg:hidden max-[400px]:left-3 max-[375px]:text-[10px] max-[375px]:w-[100px] max-[400px]:-translate-x-5 max-sm:w-[120px] sm:w-[120px] md:w-[180px] h-auto left-1 -translate-x-4 bottom-full mb-2 bg-lime-yellow text-black text-[10px] md:text-sm md:py-3 md:px-3 py-2 px-2 items-center rounded-md shadow-xl whitespace-normal break-words text-left z-[99999] "
+                      // absolute bottom-full w-[250px] lg:max-[1200px]:w-[200px] -left-5 h-auto -translate-x-10
+                      // className="absolute block md:hidden w-[300px] h-auto translate-x-0 bottom-full mb-2 bg-lime-yellow text-black text-sm p-4 rounded-md shadow-md max-w-[calc(44vw-5px)] whitespace-normal break-words text-left z-[99999]"
                       style={position}
                     >
                       {getCompensationTooltip(item)}
-                    </span>
+                    </div>
                   )}
 
                   {/* Separator */}
-                  {index !== formData.compensation.slice(0, 3).length - 1 && (
+                  {index !== formData.compensation.slice(0, 5).length - 1 && (
                     <span className="mx-1">|</span>
                   )}
                 </motion.div>))
@@ -898,7 +903,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
           </motion.div>
 
           {/* CTA Button */}
-          <motion.button
+          {/* <motion.button
             className="w-full bg-yellow-shade-600 text-black font-apfel-grotezk-regular text-[22px] font-normal py-3 rounded mt-4 mb-2 text-center"
             onClick={handleRequest}
             variants={itemVariants}
@@ -906,21 +911,21 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
             whileTap={{ scale: 0.98 }}
           >
             {isAdminView ? "Copy Portfolio Link" : "Get in touch"}
-          </motion.button>
+          </motion.button> */}
         </motion.div>
 
         {/* Spacer for fixed content on desktop */}
-        {!isTablet && <div className="" style={{ height: '560px' }} />}
+        {!isTablet && <div className="  border-red" style={{ height: '580px' }} />}
 
         {isOpen && <SharePopup portfolioUrl={portfolioUrl} onClose={() => setIsOpen(false)} />}
 
         {/* Press Kit Section - Now in normal document flow */}
         <motion.div
-          className="w-full bg-white relative z-5 mb-10"
+          className="w-full bg-white relative mb-10"
           ref={pressKitRef}
         >
           <div className="w-full">
-            <h2 className="text-4xl lg:text-7xl font-qimano text-[#0044FF] text-center max-lg:mt-5 max-lg:mb-4 mt-2 mb-6">
+            <h2 className="text-4xl lg:text-6xl font-qimano text-[#0044FF] text-center max-lg:mt-5 max-lg:mb-4 mt-2 mb-6">
               Press Kit
             </h2>
 
