@@ -181,6 +181,15 @@ const PortfolioPublic = () => {
         className="relative w-full h-full rounded-xl overflow-hidden group"
         onMouseEnter={() => handleMouseEnter(mediaId)}
         onMouseLeave={() => handleMouseLeave(mediaId)}
+        onClick={(e) =>
+          handlePostClick(
+            e,
+            mediaId,
+            isAdminView
+              ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
+              : `/${username}/media-kit/post/?postId=${mediaId}`
+          )
+        }
       >
         {!isLoaded && <MediaSkeleton />}
 
@@ -249,46 +258,67 @@ const PortfolioPublic = () => {
           />
         )}
 
-      {/* 📱 MOBILE — Views badge */}
-      {stat?.views >= 0 && (
-        <div
-          className="
-            lg:hidden
-            absolute bottom-0
-            z-20 w-full
-            flex justify-between items-center gap-1.5
-            px-2 py-3.5
-            rounded-b-lg bg-[#212121]/50
-            text-white text-xs font-medium
-          "
-          onClick={(e) =>
-          handlePostClick(
-            e,
-            mediaId,
-            isAdminView
-              ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
-              : `/${username}/media-kit/post/?postId=${mediaId}`
-          )
-        }
-        >
-          <div className="flex items-center gap-1">
-          <Image
-            src="/assets/images/play.svg"
-            alt="Views"
-            width={12}
-            height={12}
-          />
-          <span className="text-sm">{format(stat.views)}</span>
+        {/* 📱 MOBILE — Loading overlay (CENTER of post) */}
+        {loadingPostId === mediaId && (
+          <div
+            className="
+              lg:hidden
+              absolute inset-0
+              z-30
+              flex items-center justify-center
+              bg-black/40
+              rounded-lg
+            "
+          >
+            <DotLottieReact
+              src="https://lottie.host/81cc983b-b9c4-4f8a-a81b-f507e58770c5/xO16vOSRiQ.lottie"
+              loop
+              autoplay
+              className="w-[50px] h-[50px]"
+            />
           </div>
+        )}
 
-          <Image
-            src="/assets/images/yellow-arrow.svg"
-            alt="Views"
-            width={14}
-            height={14}
-          />
-        </div>
-      )}
+        {/* 📱 MOBILE — Views badge */}
+        {stat?.views >= 0 && (
+          <div
+            className="
+              lg:hidden
+              absolute bottom-0
+              z-20 w-full
+              flex justify-between items-center gap-1.5
+              px-2 py-3
+              rounded-b-lg bg-[#212121]/50
+              text-white 
+            "
+            onClick={(e) =>
+              handlePostClick(
+                e,
+                mediaId,
+                isAdminView
+                  ? `/${username}/media-kit/adminview/post?postId=${mediaId}`
+                  : `/${username}/media-kit/post/?postId=${mediaId}`
+              )
+            }
+          >
+            <div className="flex items-center gap-1">
+              <Image
+                src="/assets/images/play.svg"
+                alt="Views"
+                width={14}
+                height={14}
+              />
+              <span className="text-[18px]">{format(stat.views)}</span>
+            </div>
+
+            <Image
+              src="/assets/images/yellow-arrow.svg"
+              alt="Views"
+              width={16}
+              height={16}
+            />
+          </div>
+        )}
 
 
       {/* 💻 DESKTOP HOVER OVERLAY */}
@@ -372,6 +402,7 @@ const PortfolioPublic = () => {
 
         </div>
       </div>
+
       </div>
     );
   };

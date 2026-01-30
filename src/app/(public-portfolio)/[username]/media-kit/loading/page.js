@@ -8,7 +8,7 @@ import LoadingTransition from "@/components/public-portfolio/LoadingTransition";
 export default function LoadingPage() {
   const router = useRouter();
   const params = useSearchParams();
-
+  const displayName = params.get("displayName");
   const username = params.get("username");
   const isAdmin = params.get("isAdmin") === "true";
 
@@ -24,10 +24,8 @@ export default function LoadingPage() {
            if (portfolioRes.status === 404 || portfolioResult?.error === "No portfolio found") {
           // ✅ Trigger your global 404
             router.replace(`/${username}/media-kit/not-found`);
-
-          return;
+            return;
         }
-
 
         // 2️⃣ Fetch instagram stats
         const igRes = await fetch(`/api/public-portfolio/instagram-stats?username=${encodeURIComponent(username)}`);
@@ -54,5 +52,5 @@ export default function LoadingPage() {
     fetchAll();
   }, [username, isAdmin, router]);
 
-  return <LoadingTransition isAdmin={isAdmin} username={username}/>;
+  return <LoadingTransition isAdmin={isAdmin} displayName={displayName}/>;
 }

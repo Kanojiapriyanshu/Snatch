@@ -1,3 +1,4 @@
+// /app/(public-portfolio)/[username]/media-kit/page.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -20,18 +21,40 @@ export default function PublicPortfolioPage() {
     }
     setCheckedStorage(true); // now we know whether storage had data or not
   }, []);
-
+  
   useEffect(() => {
-    if (!checkedStorage) return; // don’t redirect until we checked storage
+  if (!checkedStorage) return;
 
-    if (!portfolio && pathname) {
-      // No portfolio in storage → redirect back to loading
-      const username = pathname.split("/")[1];
-      if (username) {
-        router.replace(`/${username}/media-kit/loading?username=${username}&isAdmin=false`);
+  if (!portfolio && pathname) {
+    const username = pathname.split("/")[1];
+    if (!username) return;
+
+    const prefetchAndRedirect = async () => {
+      try {
+        const res = await fetch(
+          `/api/public-portfolio/userinfo?username=${username}`
+        );
+        const result = await res.json();
+
+        if (!result?.success) {
+          router.replace(`/${username}/media-kit/not-found`);
+          return;
+        }
+
+        const { firstName, lastName } = result.data;
+        const displayName = `${firstName} ${lastName ?? ""}`.trim();
+
+        router.replace(
+          `/${username}/media-kit/loading?username=${username}&displayName=${encodeURIComponent(displayName)}`
+        );
+      } catch (e) {
+        router.replace(`/${username}/media-kit/not-found`);
       }
-    }
-  }, [checkedStorage, portfolio, pathname, router]);
+    };
+
+    prefetchAndRedirect();
+  }
+}, [checkedStorage, portfolio, pathname, router]);
 
   useEffect(() => {
     if (!portfolio) return;
