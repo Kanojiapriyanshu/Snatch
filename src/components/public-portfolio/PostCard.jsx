@@ -191,7 +191,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
                              <div className="text-[22px] leading-none font-qimano text-graphite">
                                {insights?.[key] ?? 0}
                              </div>
-                             <div className="text-[12px] text-gray-500 font-apfel-grotezk-regular mt-1">
+                             <div className="text-[12px] text-[#000000]/70 font-apfel-grotezk-regular mt-1">
                                {label}
                              </div>
                            </div>
@@ -603,10 +603,10 @@ function MobileLayout(props) {
                  { label: "Shares", key: "shares" }
                ].map(({ label, key }) => (
                  <div className="flex flex-col items-center min-w-[40px] text-center" key={key}>
-                   <div className="text-[19px] leading-none font-qimano text-[#212121]">
+                   <div className="text-[19px] leading-none font-qimano text-graphite">
                      {insights?.[key] ?? 0}
                    </div>
-                   <div className="text-[12px] text-graphite font-apfel-grotezk-regular mt-1">
+                   <div className="text-[12px] text-[#000000]/70 font-apfel-grotezk-regular mt-1">
                      {label}
                    </div>
                  </div>
@@ -637,15 +637,15 @@ function MobileLayout(props) {
             </div>
             <div className="border-l border-[#cbcbcb] pl-2">
               <p className="text-graphite text-sm">
-              <span className="font-medium">{companyName}</span>
+              <span className="text-graphite font-normal">{companyName}</span>
               {companyLocation && (
                 <>
                   <span className="mx-1 text-light-grey">•</span>
-                  <span className="text-graphite font-medium">{companyLocation}</span>
+                  <span className="text-graphite font-normal">{companyLocation}</span>
                 </>
               )}
             </p>
-              <div className="flex gap-2 text-sm text-graphite font-medium">
+              <div className="flex gap-2 text-sm text-graphite font-normal">
               {eventYear && (
                 <>
                   <span>{eventYear}</span>
