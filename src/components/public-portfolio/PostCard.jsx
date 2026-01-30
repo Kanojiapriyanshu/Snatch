@@ -496,46 +496,40 @@ function MobileLayout(props) {
 
   return (
     <div className="flex lg:hidden flex-col w-full">
-    <div className="fixed top-0 left-0 right-0 z-50 bg-white p-4 shadow-sm">
-    <div className="grid grid-cols-[1fr_auto_1fr_auto] items-center">
-      
-      {/* Left Arrow */}
-      <button
-        onClick={() => handleNavigation("prev")}
-        className="justify-self-end mr-6 text-graphite "
-      >
+   <div className="fixed top-0 left-0 right-0 z-50 bg-white p-4 shadow-sm">
+  <div className="relative flex items-center justify-center">
+    
+    {/* Center controls */}
+    <div className="flex items-center gap-6 text-graphite">
+      <button onClick={() => handleNavigation("prev")}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
       </button>
 
-      {/* Center Count */}
-      <div className="text-graphite font-apfel-grotezk-regular text-sm font-medium">
+      <div className="font-apfel-grotezk-regular text-sm font-medium">
         {totalPosts > 0 ? `${currentIndex + 1} / ${totalPosts}` : ""}
       </div>
 
-      {/* Right Arrow */}
-      <button
-        onClick={() => handleNavigation("next")}
-        className="justify-self-start ml-6 text-graphite"
-      >
+      <button onClick={() => handleNavigation("next")}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="9 18 15 12 9 6" />
         </svg>
       </button>
-
-      {/* Close Button */}
-      <button
-        className="ml-auto bg-[#F2F2F2] rounded-full shadow-lg border border-gray-200 flex items-center justify-center w-7 h-7"
-        onClick={() => router.push(`/${username}/media-kit?scrollTo=presskit`)}
-      >
-        <Image src="/assets/icons/cross-mark.svg" alt="Close" width={20} height={20} />
-      </button>
-
     </div>
+
+    {/* Close button pinned right */}
+    <button
+      className="absolute right-0 flex items-center justify-center "
+      onClick={() => router.push(`/${username}/media-kit?scrollTo=presskit`)}
+    >
+      <Image src="/assets/icons/cross-mark.svg" alt="Close" width={20} height={20} />
+    </button>
+
   </div>
+</div>
 
 
       {/* <div className="flex-grow flex flex-col w-full px-4 pt-4 pb-24 mt-[16px] overflow-y-auto rounded-lg bg-white"> */}
