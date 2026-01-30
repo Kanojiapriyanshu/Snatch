@@ -75,7 +75,7 @@ const AgeRangeChart = ({ apiEndpoint }) => {
         {ageData.map(({ age, percentage }, idx) => (
           <div key={idx} className="flex flex-col gap-1">
             {/* Age label */}
-            <span className="text-xs sm:text-sm text-[#0037EB] mb-[2px]">{age}</span>
+            <span className="text-sm text-[#0037EB] mb-[2px]">{age}</span>
 
             {/* Bar + Percentage */}
             <div className="flex items-center gap-2">
@@ -85,7 +85,7 @@ const AgeRangeChart = ({ apiEndpoint }) => {
                   style={{ width: `${parseFloat(percentage)}%` }}
                 />
               </div>
-              <span className="text-xs sm:text-sm text-[#0037EB] w-[30px] sm:w-[38px] font-apfel-grotezk-regular text-right">
+              <span className="text-sm text-[#0037EB] w-[30px] sm:w-[38px] font-apfel-grotezk-regular text-right">
                 {parseFloat(percentage).toFixed(1)}%
               </span>
             </div>

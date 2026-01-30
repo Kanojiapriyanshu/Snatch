@@ -34,7 +34,7 @@ export default async function PostLayout({ children, params, searchParams }) {
           <div className="posts-container">{children}</div>
 
           {/* More posts */}
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
           <MorePosts userPosts={userPosts} username={username} isAdmin={false}/>
           </div>
         </PostsProvider>

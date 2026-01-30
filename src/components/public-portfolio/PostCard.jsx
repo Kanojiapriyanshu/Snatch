@@ -94,7 +94,7 @@ export default function PostCard({ post, postId, username, allPosts }) {
     <div className="w-full flex flex-col items-center justify-start mt-10">
       <div className="hidden md:flex fixed inset-0 w-full h-full bg-black/2 z-10 pointer-events-none" aria-hidden="true"></div>
       
-      <div className="hidden md:flex flex-col items-center justify-center w-full relative z-20">
+      <div className="hidden lg:flex flex-col items-center justify-center w-full relative z-20">
         <div className="flex items-center justify-center w-full relative" style={{ minHeight: '430px', overflowY: 'visible' }}>
           <button
             onClick={() => handleNavigation('prev')}
@@ -495,7 +495,7 @@ function MobileLayout(props) {
   const SWIPE_CONFIDENCE_THRESHOLD = 80;
 
   return (
-    <div className="flex md:hidden flex-col w-full">
+    <div className="flex lg:hidden flex-col w-full">
     <div className="fixed top-0 left-0 right-0 z-50 bg-white p-4 shadow-sm">
     <div className="grid grid-cols-[1fr_auto_1fr_auto] items-center">
       
@@ -617,7 +617,7 @@ function MobileLayout(props) {
            <div className="w-full mt-4 mb-2 h-[0.5px] bg-[#212121]/20"></div>
 
         <div className="flex items-start justify-between mt-4 mb-1 px-1">
-          <h2 className="text-lg font-qimano text-[#212121] leading-tight max-w-[85%]">{title}</h2>
+          <h2 className="text-xl font-qimano text-[#212121] leading-tight max-w-[85%]">{title}</h2>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-2 mt-1 px-1">

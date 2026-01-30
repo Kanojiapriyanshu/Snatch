@@ -287,9 +287,9 @@ const PortfolioPublic = () => {
               absolute bottom-0
               z-20 w-full
               flex justify-between items-center gap-1.5
-              px-2 py-3
+              px-4 py-3
               rounded-b-lg bg-[#212121]/50
-              text-white 
+              text-white
             "
             onClick={(e) =>
               handlePostClick(
@@ -305,17 +305,17 @@ const PortfolioPublic = () => {
               <Image
                 src="/assets/images/play.svg"
                 alt="Views"
-                width={14}
-                height={14}
+                width={12}
+                height={12}
               />
-              <span className="text-[18px]">{format(stat.views)}</span>
+              <span className="text-[10px]">{format(stat.views)}</span>
             </div>
 
             <Image
               src="/assets/images/yellow-arrow.svg"
               alt="Views"
-              width={16}
-              height={16}
+              width={14}
+              height={14}
             />
           </div>
         )}

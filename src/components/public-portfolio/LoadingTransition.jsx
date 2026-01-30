@@ -15,7 +15,7 @@ const LoadingTransition = ({isAdmin = false, displayName }) => {
       <p className="text-electric-blue font-qimano text-md lg:text-2xl animate-pulse mx-auto">
         {isAdmin
           ? "You're going live... This one’s worth the wait ✨"
-          :`We’re loading ${displayName} press kit ✨`} 
+          :`We’re loading ${displayName}'s press kit ✨`} 
       </p>
     </div>
   );

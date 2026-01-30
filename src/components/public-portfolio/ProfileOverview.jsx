@@ -208,7 +208,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
     isTablet ? [36, 36] : [86, 36] // Fixed size for mobile, animated for desktop
   );
 
-  const userNameLocation = useTransform(scrollY, [0, 20], isTablet ? [12, 12] : [18, 12]);
+  const userNameLocation = useTransform(scrollY, [0, 20], isTablet ? [14, 12] : [18, 12]);
 
   // const contentOpacity = useTransform(scrollY, [0, 1], [1, 50]);
 
@@ -519,7 +519,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8 + index * 0.1, duration: 0.3 }}
                   >
-                    <span className="bg-brown text-gray-200 px-3 py-1.5 rounded-md text-xs font-apfel-grotezk-regular">
+                    <span className="bg-brown text-gray-200 px-3 py-1.5 rounded-md text-sm font-apfel-grotezk-regular">
                       {item}
                     </span>
                   </motion.div>
