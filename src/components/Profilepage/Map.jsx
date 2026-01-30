@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ComposableMap, Geographies, Geography} from "react-simple-maps";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import countries from "i18n-iso-countries";
 import en from "i18n-iso-countries/langs/en.json";
 
@@ -7,7 +7,7 @@ countries.registerLocale(en); // Register English locale
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-const SimpleWorldMap = ({apiEndpoint}) => {
+const SimpleWorldMap = ({ apiEndpoint }) => {
   const [highlightedCountries, setHighlightedCountries] = useState([]);
   const [topCountries, setTopCountries] = useState([]);
   useEffect(() => {
@@ -23,16 +23,15 @@ const SimpleWorldMap = ({apiEndpoint}) => {
               percentage: entry.percentage,
             }))
             .filter(entry => entry.name); // Remove invalid entries
-        
+
           // Sort by percentage and take the top 4
           const sortedTop = formattedCountries
             .sort((a, b) => parseFloat(b.percentage) - parseFloat(a.percentage))
             .slice(0, 4);
-        
-          setHighlightedCountries(formattedCountries.map(c => c.name)); // Only names for map
+          setHighlightedCountries(sortedTop.map(c => c.name)); // Only names for map
           setTopCountries(sortedTop);
         }
-        
+
       } catch (error) {
         console.error("Error fetching country data:", error);
       }
@@ -41,50 +40,81 @@ const SimpleWorldMap = ({apiEndpoint}) => {
     fetchCountryData();
   }, []);
 
+
+  const blueShades = [
+    "rgba(0, 55, 235, 1)", // 65%
+    "rgba(0, 55, 235, 0.85)", // 55%
+    "rgba(0, 55, 235, 0.65)", // 45%
+    "rgba(0, 55, 235, 0.45)", // 35%
+  ];
+
+
+  const countryDataMap = Object.fromEntries(
+    topCountries.map((c, index) => [
+      c.name,
+      { percentage: c.percentage, rank: index }
+    ])
+  );
+
+
+  const getCountryFill = (countryName) => {
+    const country = countryDataMap[countryName];
+
+    if (!country) {
+      return "#E3E3E3"; // default gray
+    }
+
+    return blueShades[
+      country.rank % blueShades.length
+    ];
+  };
+
+
+
+
   return (
-    <div className="mt-10">
-    <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={700} height={400} style={{ width: "100%", height: "auto" }} >
-      <Geographies geography={geoUrl}>
-        {({ geographies }) =>
-          geographies.map((geo) => {
-            const countryName = geo.properties.name;
-            const isHighlighted = highlightedCountries.includes(countryName);
+    <div className="mt-6">
+      <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={700} height={400} style={{ width: "100%", height: "auto" }} >
+        <Geographies geography={geoUrl}>
+          {({ geographies }) =>
+            geographies.map((geo) => {
+              const countryName = geo.properties.name;
+              const isHighlighted = highlightedCountries.includes(countryName);
 
-            return (
-              <Geography
-                key={geo.rsmKey}
-                geography={geo}
-                fill={isHighlighted ? "rgba(0, 0, 139, 1)" : "rgba(227, 227, 227, 1)"}
-                stroke="#D6D6DA"
-                style={{
-                  default: { outline: "none" },
-                  hover: { outline: "none" },
-                  pressed: { outline: "none" },
-                }}
-              />
-            );
-          })
-        }
-      </Geographies>
-    </ComposableMap>
+              return (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  fill={getCountryFill(countryName)}
+                  stroke="#D6D6DA"
+                  style={{
+                    default: { outline: "none" },
+                    hover: { outline: "none" },
+                    pressed: { outline: "none" },
+                  }}
+                />
+              );
+            })
+          }
+        </Geographies>
+      </ComposableMap>
 
-<div className="mt-[50px]">
-{topCountries.map((country, index) => (
-  <div key={index} className="flex justify-between items-center border-b border-gray-300       last:border-b-0 py-3 font-apfel-grotezk-regular ml-3 mr-2">
-    <span className="flex gap-5">
-    <span className="text-gray-500 text-sm flex items-center">0{index + 1}</span>
-    <span className=" font-medium text-md  font-apfel-grotezk-regular"
-     style={{ color: '#444A6D' }}
-    >{country.name}</span>
-      </span>
-    
-    <span className="text-electric-blue text-sm ">{country.percentage}%</span>
-  </div>
-))}
-</div>
+      <div className="w-full max-w-[300px] mx-auto mt-14 font-apfel-grotezk-regular">
+        {topCountries.map((country, index) => (
+          <div key={index} className="flex justify-between items-center border-b border-gray-300 last:border-b-0 py-3 font-apfel-grotezk-regular">
+            <span className="flex gap-5">
+              <span className="text-gray-500 text-sm flex items-center">0{index + 1}</span>
+              <span className=" font-medium text-base  font-apfel-grotezk-regular"
+                style={{ color: '#444A6D' }}
+              >{country.name}</span>
+            </span>
+            <span className="text-electric-blue text-sm ">{country.percentage}%</span>
+          </div>
+        ))}
+      </div>
 
 
-</div>
+    </div>
   );
 };
 

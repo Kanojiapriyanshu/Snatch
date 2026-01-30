@@ -46,10 +46,9 @@ export default function SocialLinks({ formData }) {
   return (
     <div className="text-graphite my-6 text-nowrap text-sm lg:text-xl flex justify-center lg:justify-center items-center lg:px-4">
       {/* Visible only on lg screens */}
-      <span className="hidden lg:inline font-apfel-grotezk-regular ">
+      <span className="hidden lg:inline font-apfel-grotezk-regular">
         My social media
       </span>
-
       <span className="hidden lg:flex items-center w-full  7xl:w-[1250px] lg:px-3  ">
         <span className="border-b-[0.5px] border-gray-400 w-full"></span>
       </span>

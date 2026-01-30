@@ -37,7 +37,7 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
 
   return (
     <motion.div
-      className="w-[100%] lg:w-[99%] fixed hidden top-1 left-[6px] z-20 py-2 px-6 mt-2 justify-between lg:flex items-center rounded-3xl backdrop-blur-3xl bg-[#7f7f7f]/80"
+      className="w-[97.8%] max-w-[1620px]  fixed hidden top-3  z-20 py-2 px-6 mt-2 justify-between lg:flex items-center rounded-2xl shadow-xl backdrop-blur-3xl bg-[#7f7f7f]/80  border-pink-600"
       // className="container mx-auto max-w-[1280px] fixed hidden top-1 w-[99%] z-20 left-2 py-2 px-6 mt-2 justify-between lg:flex items-center rounded-3xl backdrop-blur-3xl bg-[#7f7f7f]/80"
       style={{
         opacity: headerOpacity,
@@ -52,7 +52,7 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
         {/* Show go back button only when not scrolled and is admin view */}
         {!isScrolled && isAdminView && (
           <motion.button
-            className="p-2 rounded-full bg-gray-500 text-white flex items-center justify-center hover:bg-gray-600 transition-colors"
+            className="p-2 rounded-full  bg-gray-500 text-white flex items-center justify-center hover:bg-gray-600 transition-colors"
             onClick={handleGoBack}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -76,7 +76,7 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
 
         {/* Always show the CTA button */}
         <motion.button
-          className="bg-yellow-shade-600 text-graphite font-outline py-2 px-6 w-[300px] max-w-[300px] rounded font-apfel-grotezk-regular"
+          className="bg-yellow-shade-600 text-graphite font-outline py-2 px-6 w-[300px] max-w-[300px] rounded font-apfel-grotezk-regular   border-green-500"
           onClick={handleRequest}
         >
           {isAdminViewRoute ? "Copy Portfolio link" : "Get in touch"}
@@ -85,9 +85,9 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
 
       {/* Center - Name - Always show */}
       <motion.div
-        className="flex  mr-24"
+        className="flex  mr-24 border-red"
       >
-        <h1 className="text-4xl font-qimano pl-2 text-white flex items-center gap-1">
+        <h1 className="text-4xl font-qimano  pl-1 text-white flex items-center gap-1">
           {formData?.firstName
             ? formData.firstName.charAt(0).toUpperCase() + formData.firstName.slice(1)
             : ""}
@@ -100,24 +100,18 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
 
       {/* Right side - Stats - Always show */}
       <motion.div
-        className="hidden lg:flex items-center gap-6 text-white"
+        className="hidden lg:flex justify-center gap-6 text-white   border-violet-600"
       >
-        <div className="text-center">
-          <h2 className="text-3xl font-medium font-qimano">
-            <motion.span>{reach ? formatNumber(reach.get()) : "0"}</motion.span>
-          </h2>
+        <div className="flex flex-col text-center pt-2   border-red-600">
+          <motion.span className="h-1/2 text-3xl font-medium font-qimano">{reach ? formatNumber(reach.get()) : "0"}</motion.span>
           <p className="text-md text-white font-apfel-grotezk-regular">avg reach</p>
         </div>
-        <div className="text-center">
-          <h2 className="text-3xl font-medium font-qimano">
-            <motion.span>{followers ? formatNumber(followers.get()) : "0"}</motion.span>
-          </h2>
+        <div className=" flex flex-col text-center pt-2  border-red-600">
+          <motion.span className="h-1/2 text-3xl font-medium font-qimano">{followers ? formatNumber(followers.get()) : "0"}</motion.span>
           <p className="text-md text-white font-apfel-grotezk-regular">followers</p>
         </div>
-        <div className="text-center">
-          <h2 className="text-3xl font-medium font-qimano">
-            <motion.span>{posts ? formatNumber(posts.get()) : "0"}</motion.span>
-          </h2>
+        <div className="flex flex-col text-center pt-2  border-red-600">
+          <motion.span className="h-1/2 text-3xl font-medium font-qimano">{posts ? formatNumber(posts.get()) : "0"}</motion.span>
           <p className="text-md text-white font-apfel-grotezk-regular">posts</p>
         </div>
       </motion.div>

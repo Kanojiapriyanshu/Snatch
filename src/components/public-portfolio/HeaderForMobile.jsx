@@ -35,7 +35,7 @@ const HeaderForMobile = ({ formData, headerOpacityPrimary, headerOpacitySecondar
   };
 
   return (
-    <motion.div className="container flex md:w-[98%] top-0 sm:w-[97.5%] w-[96.5%] left-2 max-w-[960px] z-20 bg-white fixed h-[80px] lg:hidden rounded-xl"
+    <motion.div className="container flex md:w-[98%] top-0 sm:w-[97.5%] w-[96.5%] left-2 max-w-[960px] z-20 bg-white fixed h-[84px] rounded-b-xl lg:hidden shadow-xl"
       style={{
         opacity: headerOpacityPrimary
       }}
@@ -83,7 +83,7 @@ const HeaderForMobile = ({ formData, headerOpacityPrimary, headerOpacitySecondar
 
           {/* Always show the CTA button */}
           <motion.button
-            className="w-full bg-yellow-shade-600 text-graphite font-outline py-4   rounded-lg font-apfel-grotezk-regular text-sm md:text-base font-medium  text-center"
+            className="w-full bg-yellow-shade-600 text-graphite font-outline py-3 rounded-lg font-apfel-grotezk-regular text-base md:text-2xl font-medium  text-center"
             onClick={handleRequest}
           >
             {isAdminViewRoute ? "Copy Portfolio link" : "Get in touch"}
@@ -91,7 +91,7 @@ const HeaderForMobile = ({ formData, headerOpacityPrimary, headerOpacitySecondar
         </motion.div>
 
         {/* Center - Name - Always show */}
-        <motion.div className="w-1/2 flex flex-wrap">
+        <motion.div className="w-1/2 flex flex-wrap pt-[6px]  border-red">
           <h1 className="text-3xl md:text-4xl leading-none font-qimano text-white flex items-center gap-1">
             {formData?.firstName
               ? formData.firstName.charAt(0).toUpperCase() + formData.firstName.slice(1)

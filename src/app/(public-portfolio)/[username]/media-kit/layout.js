@@ -82,12 +82,12 @@ export default async function MediaKitLayout({ children, params }) {
             href="https://snatchsocial.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="fixed bottom-9 right-6 z-50"
+            className="fixed bottom-0 right-0 z-50 shadow-lg"
           >
-            <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-md shadow-lg
+            <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-md
                             flex gap-2 items-center justify-center
-                            hover:scale-[1.03] transition-transform cursor-pointer">
-              <div className="text-graphite font-apfel-grotezk-mittel font-medium text-[15px] flex gap-1 items-center">
+                            hover:scale-[1.03] transition-transform cursor-pointer  ">
+              <div className="text-graphite font-apfel-grotezk-mittel font-medium max-md:text-[14px] lg:text-[16px] flex gap-1 items-center">
                 Built on
                 <Image
                   src="/assets/images/snatch-white.svg"

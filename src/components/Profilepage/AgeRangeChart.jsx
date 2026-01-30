@@ -26,8 +26,8 @@ const AgeRangeChart = ({ apiEndpoint }) => {
           selectedGender === 'all'
             ? 'ageDistribution'
             : selectedGender === 'men'
-            ? 'maleAgeData'
-            : 'femaleAgeData';
+              ? 'maleAgeData'
+              : 'femaleAgeData';
 
         const receivedData = data[key] || [];
 
@@ -54,16 +54,15 @@ const AgeRangeChart = ({ apiEndpoint }) => {
   }
 
   return (
-    <div className="w-full max-w-[360px] mx-auto px-3 mt-10 font-apfel-grotezk-regular">
+    <div className="w-full max-w-[360px] mx-auto px-8 mt-10 font-apfel-grotezk-regular">
       {/* Gender Buttons */}
       <div className="flex justify-center gap-2 mb-12 sm:mb-14">
         {['all', 'men', 'women'].map((gender) => (
           <button
             key={gender}
             onClick={() => setSelectedGender(gender)}
-            className={`px-3 sm:px-4 py-[6px] rounded-md text-xs sm:text-sm font-medium transition ${
-              selectedGender === gender ? 'bg-[#0037EB] text-white' : 'bg-[#E5E7EB] text-[#333]'
-            }`}
+            className={`px-3 sm:px-4 py-[6px] rounded-md text-xs sm:text-sm font-medium transition ${selectedGender === gender ? 'bg-[#0037EB] text-white' : 'bg-[#E5E7EB] text-[#333]'
+              }`}
           >
             {gender.charAt(0).toUpperCase() + gender.slice(1)}
           </button>
@@ -75,13 +74,13 @@ const AgeRangeChart = ({ apiEndpoint }) => {
         {ageData.map(({ age, percentage }, idx) => (
           <div key={idx} className="flex flex-col gap-1">
             {/* Age label */}
-            <span className="text-sm text-[#0037EB] mb-[2px]">{age}</span>
+            <span className="text-base text-[#0037EB] mb-[2px]">{age}</span>
 
             {/* Bar + Percentage */}
             <div className="flex items-center gap-2">
               <div className="relative flex-1 h-[5px] bg-[#e5e7f0] rounded-full overflow-hidden">
                 <div
-                  className="absolute top-0 left-0 h-full bg-[#0037EB] rounded-full transition-all duration-300"
+                  className="absolute text-sm top-0 left-0 h-full bg-[#0037EB] rounded-full transition-all duration-300"
                   style={{ width: `${parseFloat(percentage)}%` }}
                 />
               </div>

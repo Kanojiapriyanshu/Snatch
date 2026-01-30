@@ -25,9 +25,29 @@ const Questionnaire = ({ name }) => {
 
   // Refs and scroll state
   const desktopScrollRef = useRef(null);
+  const [currentCard, setCurrentCard] = useState(0);
   const mobileScrollRef = useRef(null);
   const [scrollResetTrigger, setScrollResetTrigger] = useState(0);
   const [currentScrollIndex, setCurrentScrollIndex] = useState(0);
+
+
+  const handleScrollMobile = () => {
+    setScrollResetTrigger(prev => prev + 1);
+
+    //gap-7 = 28px
+    requestAnimationFrame(() => {
+
+
+      requestAnimationFrame(() => {
+        const container = mobileScrollRef.current;
+        if (!container) return;
+        const cardWidth = container.children[0].offsetWidth + 28;
+        setCurrentCard(Math.round(container.scrollLeft / cardWidth));
+      });
+
+    })
+  }
+
 
   // Build flat cards safely
   const allCards = (data || []).flatMap((item) =>
@@ -106,21 +126,24 @@ const Questionnaire = ({ name }) => {
       "flex flex-col w-full "
       //  border-yellow-900
     )}>
-      <h3 className="text-center lg:text-7xl text-4xl font-qimano text-electric-blue mt-2">About {name}</h3>
+      <h3 className="text-center lg:text-6xl text-4xl font-qimano text-electric-blue mt-2 mb-2">About {name}</h3>
+
       {/* Mobile view: horizontal scroll with snap and partial next card visibility */}
-      <div className="lg:hidden relative flex-grow flex w-full mt-7 ">
+      <div className="lg:hidden relative flex-grow flex flex-col justify-between w-full mt-7 border-green">
+
         {/*  border-orange */}
         {allCards.length > 0 && (
           <div
             ref={mobileScrollRef}
-            className="flex overflow-x-scroll scrollbar-hide gap-7"
+            className="flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory gap-7  border-black"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            onScroll={() => setScrollResetTrigger(prev => prev + 1)}
+            onScroll={handleScrollMobile}
           >
+
             {allCards.map((card, index) => (
               <div
                 key={card.key}
-                className="flex-shrink-0 snap-center"
+                className="flex-shrink-0 snap-center snap-always"
               // style={{
               //   marginRight: (index < allCards.length - 1) ? '3vw' : '0',
               //   marginLeft: 0
@@ -138,6 +161,16 @@ const Questionnaire = ({ name }) => {
             ))}
           </div>
         )}
+        <div className="flex items-center justify-center lg:hidden text-graphite font-apfel-grotezk-regular md:text-lg text-sm font-medium mt-6 border-red">
+          {/* {currentCard + 1} / {allCards.length} */}
+          {allCards.map((_, i) => (
+            <span
+              key={i}
+              className={`h-2 w-2 mx-1 rounded-full ${i === currentCard ? "bg-blue-shade-600" : "bg-gray-300"
+                }`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Desktop view: controlled horizontal scroll showing 3.5 cards with centered alignment */}
@@ -283,7 +316,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
         // border-4 border-yellow
         isMobile ? "w-[300px]   h-[530px]" : "w-[340px] h-[530px]",
         // isMobile ? "max-sm:w-[80vw] sm:w-[75vw] md:w-[40vw] h-full" : "w-[370px] h-[530px]",
-        isMobile && touched ? "-translate-y-4" : ""
+        // isMobile && touched ? "-translate-y-4" : ""
       )}
       onMouseEnter={() => !isMobile && setHovered(true)}
       onMouseLeave={() => !isMobile && setHovered(false)}
@@ -291,17 +324,16 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
       onTouchEnd={handleTouchEnd}
       onClick={handleClick}
     >
-      {/* <div className="h-[360px] w-[320px]"> */}
-      <Image
-        src={coverImage || "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396552/7_r6djcr.jpg"}
-        alt="Preview"
-        className="w-screen h-4/5 object-cover  border-green-700"
-        //  border-green-700
-        width={165}
-        height={228}
-      />
-      {/* </div> */}
-
+      <div className="h-[450px]">
+        <Image
+          src={coverImage || "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396552/7_r6djcr.jpg"}
+          alt="Preview"
+          className="w-screen h-4/5 object-cover border-green-700"
+          //  border-green-700
+          width={165}
+          height={228}
+        />
+      </div>
 
       {/* Overlay for 'Click to reveal' on mobile when not revealed */}
       {isMobile && !isRevealed && (
@@ -322,7 +354,7 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
         )}
         style={{ minHeight: isMobile ? 0 : 240 }}
       >
-        <p className="font-apfel-grotezk-regular text-sm text-[#7A7A7A] font-semibold text-center pt-6">
+        <p className="font-apfel-grotezk-regular text-sm font-semibold text-center pt-6">
           {/*  border-dark */}
           {cardType.bg === "bg-lime-yellow"
             ? "About"
@@ -367,7 +399,7 @@ function getCardType(section) {
     case "about":
       return {
         bg: "bg-lime-yellow",
-        text: "text-black",
+        text: "text-[#2121217e]",
         icon: "/assets/images/aboutIcon.svg",
       };
     case "brand":
@@ -379,7 +411,7 @@ function getCardType(section) {
     case "audience":
       return {
         bg: "bg-graphite",
-        text: "text-white",
+        text: "text-[#7A7A7A]",
         icon: "/assets/images/audienceIcon.svg",
       };
     default:
