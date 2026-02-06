@@ -330,7 +330,7 @@ const PortfolioPublic = () => {
           bg-black/40 backdrop-blur-sm
           opacity-0 group-hover:opacity-100
           transition-opacity duration-300
-          z-10 cursor-pointer
+          z-10 cursor-pointer  border-red
         "
         // onClick={(e) =>
         //   handlePostClick(
@@ -344,7 +344,7 @@ const PortfolioPublic = () => {
         >
           <div className="flex flex-col justify-center items-center gap-3  border-yellow-400">
             {!isUploaded && (
-              <div className="flex max-[1000px]:flex-wrap justify-center items-center max-[1200px]:gap-4 gap-6 text-white max-[1200px]:text-xs text-md max-w-[90%]  border-green">
+              <div className="flex max-[1000px]:flex-wrap justify-center items-center gap-4 min-[1300px]:gap-6 text-white text-xs min-[1300px]:text-base max-w-[90%]  border-green">
                 {/* Likes */}
                 <div className="flex items-center gap-1">
                   <Image src="/assets/images/like.svg" alt="Like" width={16} height={16} />
@@ -392,7 +392,7 @@ const PortfolioPublic = () => {
                   className="w-[50px] h-[50px]"
                 />
               ) : (
-                <span className="text-yellow-300 font-apfel-grotezk-regular underline text-[20px] leading-none text-center">
+                <span className="text-yellow-300 font-apfel-grotezk-regular underline text-sm min-[1300px]:text-base leading-none text-center">
                   Post Info & Insights ↗
                 </span>
               )}
@@ -411,13 +411,13 @@ const PortfolioPublic = () => {
 
   return (
     <div className="w-full justify-center items-center max-sm:mb-10">
-      {/* border-2 border-red */}
-      {/* <div className="container mx-auto max-w-[1400px] w-full justify-center items-center max-sm:mb-10 border-2 border-red">// if want some margin LF then  */}
+      {/*  border-red */}
+      {/* <div className="container mx-auto max-w-[1400px] w-full justify-center items-center max-sm:mb-10  border-red">// if want some margin LF then  */}
       {projects.length > 0 ? (
         <>
           {/* 📱 Mobile / Tablet */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 lg:hidden">
-            {/* border-2 border-green  */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 lg:hidden">
+            {/*  border-green  */}
             {projects.map((project, index) => (
               <div
                 key={index}
@@ -429,10 +429,10 @@ const PortfolioPublic = () => {
           </div>
 
           {/* 💻 Desktop */}
-          <div className="hidden lg:grid lg:grid-cols-4 gap-8">
+          <div className="hidden px-10 lg:grid lg:grid-cols-4 gap-6  border-orange">
             {projects.map((project, index) => (
               <div key={index} className="relative aspect-[3/4] rounded-xl ">
-                {/* border-2 border-green */}
+                {/*  border-green */}
                 {renderMedia(project, index)}
               </div>
             ))}

@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { PLAN_TOOLTIPS } from "@/data/planTooltips";
 import Tooltip from "@/components/ui/Tooltip";
 import Image from "next/image";
+import useFontSize from "@/hooks/useFontSize";
 
 // Fetch function for demographics
 const fetchDemographics = async (username) => {
@@ -44,6 +45,11 @@ const AudienceCard = () => {
   const isProPlan = plan === "pro" || plan === "trial" || plan === "early_bird";
   const canSeeInsights = isProPlan || isAdminView;
   const tooltip = PLAN_TOOLTIPS.audience_insights[plan] ?? PLAN_TOOLTIPS.number_of_projects.free;
+
+
+
+  const labelSize = useFontSize(22, 28, 1100, 1920); // label scales from 16px → 24px
+
 
   useEffect(() => {
     async function load() {
@@ -97,18 +103,18 @@ const AudienceCard = () => {
     : "";
 
   return (
-    <div className="lg:mt-10 w-full flex flex-col justify-center items-center mb-10 ">
-      {/* border-2 border-red-dark */}
-      <h3 className="lg:text-6xl text-4xl  font-qimano text-electric-blue text-center px-4 py-2 rounded-xl">
+    <div className=" w-full flex flex-col justify-center items-center  border-green ">
+      {/*  border-red-dark */}
+      <h3 className="text-4xl min-[960px]:max-[1280px]:text-5xl min-[1300px]:text-7xl  font-qimano text-electric-blue text-center px-4  rounded-xl">
         Audience
       </h3>
 
-      <div className="flex flex-col lg:flex-row gap-8 mt-6 w-full  justify-center items-stretch">
+      <div className="mx-auto w-full  flex flex-col px-2 lg:px-10 lg:flex-row gap-6  mt-6 justify-center  border-red">
 
         {/* Gender */}
         {genderEndpoint && (
-          <div className="bg-gray-100 shadow-lg rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center min-h-[550px]">
-            <h3 className="text-2xl font-qimano text-gray-700 mb-2">Gender</h3>
+          <div className="bg-gray-100 shadow-sm rounded-xl py-3 w-full max-[960px]:w-full max-[960px]:h-[512px] max-[1280px]:h-[500px] max-[1280px]:w-[390px] min-[1300px]:w-[422px] min-[1300px]:h-[640px]  flex flex-col items-center">
+            <h3 className="text-lg min-[1300px]:text-xl font-qimano text-gray-700 mb-2">Gender</h3>
 
             {/* Skeleton */}
             {isDemographicsLoading && (
@@ -185,7 +191,7 @@ const AudienceCard = () => {
             )}
 
             {/* Chart */}
-            <div className="mt-6 w-full flex justify-center">
+            <div className="mt-6 w-full h-full flex border-red">
               <PieChart apiEndpoint={genderEndpoint} />
             </div>
           </div>
@@ -193,12 +199,12 @@ const AudienceCard = () => {
 
         {/* Age Range */}
         {ageEndpoint && (
-          <div className="bg-gray-100 shadow-lg rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center justify-between min-h-[550px]">
-            <h3 className="text-2xl font-qimano text-gray-700 mb-2">Age Range</h3>
+          <div className="bg-gray-100 shadow-sm rounded-xl py-3  w-full max-[960px]:w-full max-[960px]:h-[512px] max-[1280px]:h-[500px] max-[1280px]:w-[390px] min-[1300px]:w-[422px] min-[1300px]:h-[640px]   flex flex-col items-center  border-green">
+            <h3 className="text-lg min-[1300px]:text-xl font-qimano text-gray-700 mb-2">Age Range</h3>
 
-            {isDemographicsLoading && (
+            {/* {isDemographicsLoading && (
               <div className="h-4 w-4/6 animate-pulse rounded bg-gray-200 mb-3" />
-            )}
+            )} */}
 
             {/* Insights Section */}
             {canSeeInsights && !isInsightsLoading && insights?.age && (
@@ -276,8 +282,8 @@ const AudienceCard = () => {
 
         {/* Location */}
         {locationEndpoint && (
-          <div className="bg-gray-100 shadow-lg rounded-xl p-6 w-full lg:w-[450px] flex flex-col items-center justify-between min-h-[550px]">
-            <h3 className="text-2xl font-qimano text-gray-700 mb-2">Top Locations</h3>
+          <div className="bg-gray-100 shadow-sm rounded-xl py-3 w-full min-[450px]:max-[960px]:h-[625px] max-[960px]:w-full max-[960px]:h-[512px] max-[1280px]:h-[500px] max-[1280px]:w-[390px] min-[1300px]:w-[422px] min-[1300px]:h-[640px]  flex flex-col items-center justify-between">
+            <h3 className="text-lg min-[1300px]:text-xl font-qimano text-gray-700 mb-2">Top Locations</h3>
 
             {isDemographicsLoading && (
               <div className="h-4 w-4/6 animate-pulse rounded bg-gray-200 mb-3" />

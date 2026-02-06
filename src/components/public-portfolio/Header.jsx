@@ -37,7 +37,7 @@ const Header = ({ formData, data, headerOpacity, isAdminView, showGoBackButton =
 
   return (
     <motion.div
-      className="w-[97.8%] max-w-[1620px]  fixed hidden top-3  z-20 py-2 px-6 mt-2 justify-between lg:flex items-center rounded-2xl shadow-xl backdrop-blur-3xl bg-[#7f7f7f]/80  border-pink-600"
+      className="lg:flex mx-auto w-[95%] md:w-[97%] lg:w-[97.5%] left-4 fixed hidden top-2  z-20 py-2 px-6 mt-2 justify-between items-center rounded-2xl shadow-xl backdrop-blur-3xl bg-[#7f7f7f]/80  border-pink-600"
       // className="container mx-auto max-w-[1280px] fixed hidden top-1 w-[99%] z-20 left-2 py-2 px-6 mt-2 justify-between lg:flex items-center rounded-3xl backdrop-blur-3xl bg-[#7f7f7f]/80"
       style={{
         opacity: headerOpacity,

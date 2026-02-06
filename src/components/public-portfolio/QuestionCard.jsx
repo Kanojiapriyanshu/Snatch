@@ -5,6 +5,7 @@ import Image from "next/image";
 import { clsx } from "clsx";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import useFontSize from "@/hooks/useFontSize";
 
 const Questionnaire = ({ name }) => {
   const pathname = usePathname();
@@ -41,7 +42,7 @@ const Questionnaire = ({ name }) => {
       requestAnimationFrame(() => {
         const container = mobileScrollRef.current;
         if (!container) return;
-        const cardWidth = container.children[0].offsetWidth + 28;
+        const cardWidth = container.children[0].offsetWidth;
         setCurrentCard(Math.round(container.scrollLeft / cardWidth));
       });
 
@@ -63,23 +64,28 @@ const Questionnaire = ({ name }) => {
   );
 
 
-  //scroll responsiveness
-  // const [isMidScreen, setIsMidScreen] = useState(false);
-  // const [isLargeScreen, setIsLargeScreen] = useState(false);
-  // const [isLargerScreen, setIsLargerScreen] = useState(false);
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     const width = window.innerWidth;
-  //     setIsMidScreen(width >= 960 && width <= 1024);
-  //     setIsLargeScreen(width >= 1025 && width <= 1280);
-  //     setIsLargerScreen(width >= 960);
-  //   };
 
-  //   handleResize();
-  //   window.addEventListener("resize", handleResize);
-  //   return () => window.removeEventListener("resize", handleResize);
-  // }, []);
+
+  // scroll responsiveness
+  const [isMidScreen, setIsMidScreen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [isLargerScreen, setIsLargerScreen] = useState(false);
+  const [isLargestScreen, setIsLargestScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsMidScreen(width >= 960 && width <= 1024);
+      setIsLargeScreen(width >= 1025 && width <= 1280);
+      setIsLargerScreen(width >= 1281 && width <= 1620);
+      setIsLargestScreen(width > 1620);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
 
 
@@ -122,20 +128,20 @@ const Questionnaire = ({ name }) => {
   return (
     <div className={clsx(
       "relative pb-4",
-      "lg:mt-12",
-      "flex flex-col w-full "
-      //  border-yellow-900
+      "lg:mt-6",
+      "flex flex-col w-full  border-yellow-900 "
+
     )}>
-      <h3 className="text-center lg:text-6xl text-4xl font-qimano text-electric-blue mt-2 mb-2">About {name}</h3>
+      <h3 className="text-center text-4xl min-[960px]:max-[1280px]:text-5xl min-[1300px]:text-7xl font-qimano text-electric-blue mt-2 mb-2">About {name}</h3>
 
       {/* Mobile view: horizontal scroll with snap and partial next card visibility */}
-      <div className="lg:hidden relative flex-grow flex flex-col justify-between w-full mt-7 border-green">
+      <div className="lg:hidden relative flex-grow flex flex-col justify-between w-full mt-7  border-green">
 
         {/*  border-orange */}
         {allCards.length > 0 && (
           <div
             ref={mobileScrollRef}
-            className="flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory gap-7  border-black"
+            className="flex gap-4 overflow-x-scroll scrollbar-hide snap-x snap-mandatory  border-black"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             onScroll={handleScrollMobile}
           >
@@ -146,7 +152,6 @@ const Questionnaire = ({ name }) => {
                 className="flex-shrink-0 snap-center snap-always"
               // style={{
               //   marginRight: (index < allCards.length - 1) ? '3vw' : '0',
-              //   marginLeft: 0
               // }}
               >
                 <QuestionCard
@@ -174,7 +179,7 @@ const Questionnaire = ({ name }) => {
       </div>
 
       {/* Desktop view: controlled horizontal scroll showing 3.5 cards with centered alignment */}
-      <div className="hidden lg:flex relative w-full mt-7">
+      <div className="hidden lg:flex relative w-full mt-4  border-purple-600">
         {/*  border-sky-500 mt-7 */}
         {/* Left Scroll Button */}
         {showNavButtons && showLeftButton && (
@@ -215,30 +220,36 @@ const Questionnaire = ({ name }) => {
             }}
           >
             <div
-              className='flex  gap-7'
-            //   style={{
-            //     transition: 'margin-left 0.3s ease',
-            //     marginLeft:
-            //       currentScrollIndex === 0
-            //         ? isLargerScreen
-            //           ? "calc(63% - 600px)"
-            //           : "0px"
-            //         : "0px",
-            //   }}
-            // // style={{
-            //   transition: 'margin-left 0.3s ease',
-            //   marginLeft:
-            //     currentScrollIndex === 0
-            //       ? isMidScreen
-            //         ? "calc(63% - 600px)"
-            //         : isLargeScreen
-            //           ? "calc(50% - 600px)"
-            //           : isLargerScreen
-            //             ? "calc(45% - 600px)"
-            //             : "0px"
-            //       : "0px",
-            // }}
+              className='flex  gap-6'
+              // style={{
+              //   transition: 'margin-left 0.3s ease',
+              //   marginLeft:
+              //     currentScrollIndex === 0
+              //       ? allCards.length === 3 ?
+              //         "calc(55% - 600px)"
+              //         : "0px"
+              //       : "0px",
+              // }}
+              style={{
+                transition: 'margin-left 0.3s ease',
+                marginLeft:
+                  currentScrollIndex === 0
+                    ? isMidScreen ? allCards.length === 3
+                      ? "calc(65% - 600px)" : "calc(65% - 600px)"
+                      : isLargeScreen ? allCards.length === 3
+                        ? "calc(52% - 600px)" : "calc(52% - 600px)"
+                        : isLargerScreen ? allCards.length === 3
+                          ? "calc(46% - 600px)" : "calc(46% - 600px)"
+                          : isLargestScreen ? allCards.length === 3
+                            ? "calc(46% - 600px)" : "calc(40% - 600px)"
+                            : "0px"
+                    : "0px",
+              }}
             >
+              {/* const width = window.innerWidth;
+      setIsMidScreen(width >= 960 && width <= 1024);
+      setIsLargeScreen(width >= 1025 && width <= 1280);
+      setIsLargerScreen(width >= 960); */}
 
               {allCards.map((card) => (
                 <QuestionCard
@@ -286,6 +297,8 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
   const [touched, setTouched] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
 
+  const aboutCardFontSizeFront = useFontSize(12, 28, 1024, 1100); // count scales from 28px → 56px
+
   const handleTouchStart = () => {
     if (isMobile) {
       setTouched(true);
@@ -309,86 +322,101 @@ const QuestionCard = ({ question, answer, coverImage, cardType, isMobile = false
     setIsRevealed(false);
   }, [question, scrollResetTrigger]);
 
+
+  const textColorMap = {
+    "bg-lime-yellow": "text-[#21212180]",
+    "bg-graphite": "text-[#E4EA0080]",
+    "bg-electric-blue": "text-[#CBCBCB]",
+  };
+
+
+
   return (
-    <div
-      className={clsx(
-        "relative flex rounded-3xl overflow-hidden cursor-pointer shrink-0 transition-transform duration-300 border-yellow",
-        // border-4 border-yellow
-        isMobile ? "w-[300px]   h-[530px]" : "w-[340px] h-[530px]",
-        // isMobile ? "max-sm:w-[80vw] sm:w-[75vw] md:w-[40vw] h-full" : "w-[370px] h-[530px]",
-        // isMobile && touched ? "-translate-y-4" : ""
-      )}
-      onMouseEnter={() => !isMobile && setHovered(true)}
-      onMouseLeave={() => !isMobile && setHovered(false)}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onClick={handleClick}
-    >
-      <div className="h-[450px]">
-        <Image
-          src={coverImage || "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396552/7_r6djcr.jpg"}
-          alt="Preview"
-          className="w-screen h-4/5 object-cover border-green-700"
-          //  border-green-700
-          width={165}
-          height={228}
-        />
-      </div>
-
-      {/* Overlay for 'Click to reveal' on mobile when not revealed */}
-      {isMobile && !isRevealed && (
-        <div className="absolute inset-0 flex flex-col justify-center items-center bottom-20 font-qimano bg-black/40 text-white text-3xl lg:text-[38px]">
-          <p>Click to reveal</p>
-        </div>
-      )}
-
+    <div className=" border-violet-600">
       <div
         className={clsx(
-          `absolute px-6 bottom-0 w-full flex flex-col items-center transition-all duration-300 rounded-t-xl `,
-          //  border-dark
-          cardType.bg,
-          cardType.text,
-          isMobile
-            ? (isRevealed ? "h-[100%]" : "h-[50%]")
-            : (hovered ? "h-[100%]" : "h-[45%]")
+          "relative flex rounded-2xl overflow-hidden cursor-pointer shrink-0 transition-transform duration-300  border-red",
+          // border-4 border-yellow
+          isMobile ? "w-[300px] h-[512px]" : "max-[1280px]:w-[370px] max-[1280px]:h-[500px] min-[1300px]:w-[422px] min-[1300px]:h-[670px]",
+          // isMobile ? "max-sm:w-[80vw] sm:w-[75vw] md:w-[40vw] h-full" : "w-[370px] h-[530px]",
+          // isMobile && touched ? "-translate-y-4" : ""
         )}
-        style={{ minHeight: isMobile ? 0 : 240 }}
+        onMouseEnter={() => !isMobile && setHovered(true)}
+        onMouseLeave={() => !isMobile && setHovered(false)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onClick={handleClick}
       >
-        <p className="font-apfel-grotezk-regular text-sm font-semibold text-center pt-6">
-          {/*  border-dark */}
-          {cardType.bg === "bg-lime-yellow"
-            ? "About"
-            : cardType.bg === "bg-graphite"
-              ? "Audience"
-              : cardType.bg === "bg-electric-blue"
-                ? "Brand"
-                : ""}
-        </p>
-        <Image
-          src={cardType.icon}
-          alt="icon"
-          height={10}
-          width={10}
-          className="w-20 h-17 "
-        //  border-dark
-        />
+        <div className="h-[410px] w-full  border-green">
+          <Image
+            src={coverImage || "https://res.cloudinary.com/dgk9ok5fx/image/upload/v1740396552/7_r6djcr.jpg"}
+            alt="Preview"
+            className="w-full h-full object-cover border-green-700"
+            //  border-green-700
+            width={165}
+            height={228}
+          />
+        </div>
 
-        <p className={clsx("h-1/5 text-center pt-2 text-xl font-qimano line-clamp-3 ", cardType.text, "lg:mb-0 lg:mt-0")}
-          //  border-dark
-          style={{ minHeight: '4.5em' }}>
-          {question}
-        </p>
-        {(isMobile ? isRevealed : hovered) && (
-          <p
-            className={clsx(
-              "text-sm max-sm:pt-2 text-center sm:pt-2 h-1/2  md:px-1 lg:px-4 lg:text-[15px]  font-apfel-grotezk-regular",
-              //  border-dark
-              cardType.text
-            )}
-          >
-            {answer}
-          </p>
+        {/* Overlay for 'Click to reveal' on mobile when not revealed */}
+        {isMobile && !isRevealed && (
+          <div className="absolute inset-0 flex flex-col justify-center items-center bottom-20 font-qimano bg-black/40 text-white text-3xl lg:text-4xl">
+            <p>Click to reveal</p>
+          </div>
         )}
+
+        <div
+          className={clsx(
+            `absolute px-6 bottom-0 w-full flex flex-col items-center  transition-all duration-300 rounded-t-xl `,
+
+            cardType.bg,
+            cardType.text,
+            isMobile
+              ? (isRevealed ? "h-[100%]" : "h-[50%]")
+              : (hovered ? "h-[100%]" : "h-[45%]")
+          )}
+          style={{ minHeight: isMobile ? 0 : 240 }}
+        >
+          <p className={`font-apfel-grotezk-regular min-[1300px]:text-sm text-xs font-semibold text-center pt-6 ${textColorMap[cardType.bg] || "text-white"
+            }`}>
+
+            {cardType.bg === "bg-lime-yellow"
+              ? "About"
+              : cardType.bg === "bg-graphite"
+                ? "Brand"
+                : cardType.bg === "bg-electric-blue"
+                  ? "Audience"
+                  : ""}
+          </p>
+          <Image
+            src={cardType.icon}
+            alt="icon"
+            height={10}
+            width={10}
+            className="max-[1280px]:w-20 max-[1280px]:h-16 min-[1300px]:w-24 min-[1300px]:h-18 "
+
+          />
+
+          <p className={clsx("h-1/5 text-center pt-2  text-lg min-[1300px]:text-3xl font-qimano line-clamp-3 ", cardType.text, "lg:mb-0 lg:mt-0")}
+
+            style={{ minHeight: '4.5em' }}
+
+          >
+            {question}
+          </p>
+          {(isMobile ? isRevealed : hovered) && (
+            <p
+              className={clsx(
+                "min-[1300px]:text-lg text-sm max-sm:pt-2 text-center sm:pt-2 h-1/2  md:px-1 lg:px-4  font-apfel-grotezk-regular",
+
+                cardType.text
+              )}
+
+            >
+              {answer}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -399,19 +427,19 @@ function getCardType(section) {
     case "about":
       return {
         bg: "bg-lime-yellow",
-        text: "text-[#2121217e]",
+        text: "text-[#212121]",
         icon: "/assets/images/aboutIcon.svg",
       };
     case "brand":
       return {
-        bg: "bg-electric-blue",
-        text: "text-white",
-        icon: "/assets/images/brandicon1.svg",
+        bg: "bg-graphite",
+        text: "text-[#E4EA00]",
+        icon: "/assets/images/brandicon.svg",
       };
     case "audience":
       return {
-        bg: "bg-graphite",
-        text: "text-[#7A7A7A]",
+        bg: "bg-electric-blue",
+        text: "text-[#F2F2F2]",
         icon: "/assets/images/audienceIcon.svg",
       };
     default:
@@ -422,5 +450,5 @@ function getCardType(section) {
       };
   }
 }
-
+// text-[#2121217e]
 export default Questionnaire;

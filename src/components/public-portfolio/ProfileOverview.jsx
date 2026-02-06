@@ -193,19 +193,19 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
 
   // Always define motion values, but assign static values for mobile
   const defaultBg = "rgb(75, 75, 75)";
-  const defaultHeight = "560px";
+  const defaultHeight = "85vh";
 
   const headerBg = useTransform(scrollY, [0, 200], ["rgb( 30,30,30)", "rgb(0, 0, 0)"]);
-  const headerHeight = useTransform(scrollY, [0, 200], ["530px", "80px"]);
+  const headerHeight = useTransform(scrollY, [0, 200], ["560px", "80px"]);
 
   // If on mobile, override motion values with static values
   const finalBg = isTablet ? defaultBg : headerBg;
-  const finalHeight = isTablet ? defaultHeight : headerHeight;
+  const finalHeight = isTablet ? headerHeight : defaultHeight;
 
   const nameSize = useTransform(
     scrollY,
     [0, 9],
-    isTablet ? [32, 32] : [86, 37] // Fixed size for mobile, animated for desktop
+    isTablet ? [32, 32] : [75, 37] // Fixed size for mobile, animated for desktop
   );
 
   // const userNameLocation = useTransform(scrollY, [0, 20], isTablet ? [14, 14] : [18, 12]);
@@ -409,7 +409,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
 
 
       {/* Main Content Container - Now using normal flow */}
-      <div className="container mx-auto  max-w-[1620px] rounded-xl  border-purple-dark">
+      <div className=" mx-auto w-full rounded-xl  border-purple-dark">
         {isTablet ? <HeaderForMobile
           formData={formData}
           headerOpacityPrimary={headerOpacityPrimary}
@@ -434,7 +434,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
         {/* Main Hero Section */}
         <motion.div
           ref={mainContainerRef}
-          className={`container mx-auto w-[100%] lg:w-[97.4%] right-0  max-w-[1620px] relative top-3 sm:left-0  text-white  rounded-2xl shadow-xl overflow-visible  border-green z-10  ${isTablet ? "h-[560px] bg-neutral-800" : " "
+          className={`lg:flex lg:flex-col mx-auto w-[95%] md:w-[97%] lg:w-[97.5%] right-0 lg:justify-between relative  sm:left-0  text-white min-h-[1000px]:h-[560px] rounded-2xl shadow-xl overflow-visible  border-green z-10  ${isTablet ? "h-[560px] bg-neutral-800" : " "
             }`}
           // className={`md:w-[99%]  text-white relative md:right-1 lg:left-2 rounded-3xl overflow-visible z-10 ${isTablet ? "h-[560px] bg-neutral-800" : ""
           //   }`}
@@ -477,7 +477,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
           )}
 
           <motion.div
-            className="container mx-auto max-w-[1400px] flex flex-col items-center  pt-6 rounded-3xl "
+            className="w-full mx-auto  flex flex-col items-center  pt-6 rounded-3xl "
             variants={containerVariants}
             initial="hidden"
             animate="visible"
@@ -535,8 +535,8 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
             </motion.div>
           </motion.div>
 
-          <div className="container mx-auto lg:px-16 overflow-visible lg:mt-20  max-w-[1620px]  border-yellow-300 ">
-            <motion.div className=" w-full flex flex-col-reverse lg:flex-row justify-between lg:relative z-10 overflow-visible" style={{ opacity: isTablet ? "1" : contentOpacity }}>
+          <div className="w-full mx-auto py-12 lg:px-12 overflow-visible   border-yellow-300 ">
+            <motion.div className=" w-full flex flex-col-reverse lg:flex-row justify-between lg:relative z-10 overflow-visible border-violet-400" style={{ opacity: isTablet ? "1" : contentOpacity }}>
               {/* max-[1024px]:max-w-[1024px] max-[1280px]:max-w-[1200px] max-w-[1300px] */}
               {/*1 Left Side - Pricing and Services */}
               <motion.div
@@ -559,10 +559,10 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                   {/* <h2 className="font-qimano lg:text-3xl text-2xl font-medium whitespace-nowrap" >
                     {priceRange}
                   </h2> */}
-                  <h2 className="font-qimano  min-[960px]:max-[1299px]:text-xl min-[1300px]:text-3xl font-light whitespace-nowrap  border-red-300" >
+                  <h2 className="font-qimano  min-[960px]:max-[1299px]:text-xl min-[1300px]:text-3xl font-light whitespace-nowrap   border-red-300" >
                     {priceRange}
                   </h2>
-                  <p className="text-gray-500  font-apfel-grotezk-regular text-xs min-[1300px]:text-sm pt-1 pl-1 whitespace-nowrap  border-cyan-50">Value per content piece</p>
+                  <p className="text-gray-500  font-apfel-grotezk-regular text-xs min-[1300px]:text-sm pt-1 pl-1 whitespace-nowrap   border-cyan-50">Value per content piece</p>
                   {/* <p className="text-gray-500 font-apfel-grotezk-regular text-lg whitespace-nowrap">Value per content piece</p> */}
 
                 </motion.div>
@@ -629,7 +629,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                           /> */}
 
                           {/* Tooltip */}
-                          <div className="absolute bottom-full w-[250px] lg:max-[1200px]:w-[200px] -left-5 h-auto -translate-x-10 bg-lime-yellow text-black text-lg px-4 py-4 rounded-md shadow-md  whitespace-normal text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none "
+                          <div className="absolute bottom-full w-[250px] lg:max-[1200px]:w-[200px] -left-5 h-auto -translate-x-10 bg-lime-yellow text-black text-xs px-3 py-2 rounded-md shadow-md  whitespace-normal text-left opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none font-apfel-grotezk-regular"
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
                           >
                             {item === "Sponsorships"
@@ -693,7 +693,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                 }}
               >
                 {/* <div className="lg:absolute overflow-visible z-[9999]  border-yellow-500"> */}
-                <div className="absolute rounded-xl -bottom-10 lg:-top-4 lg:mx-auto w-60 h-[320px] overflow-visible items-center   border-sky-40">
+                <div className="absolute rounded-xl min-[960px]:max-[1099px]:-bottom-16 -bottom-10 min-[1100px]:-top-10 min-[1300px]:-top-16 lg:mx-auto w-[230px] h-[320px] min-[960px]:max-[1099px]:h-[340px] min-[1100px]:w-[260px] min-[1100px]:h-[350px] min-[1300px]:w-[270px] min-[1300px]:h-[380px] overflow-visible items-center   border-sky-40">
                   {/* <div className="absolute lg:translate-x-1/2 lg:translate-y-10 rounded-xl w-64 h-2/3 overflow-visible  border-sky-400"> */}
                   {/* Container for both skeleton and image - ensures same positioning */}
                   <div className="relative h-full">
@@ -735,7 +735,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
               </motion.div>
               {/* 3 Right Side - Stats */}
               <motion.div
-                className="w-full lg:w-1/2 lg:items-end justify-center flex flex-row lg:flex-col items-center gap-8 lg:gap-0 pt-4 lg:pt-0 z-20  border-cyan-300"
+                className="w-full lg:w-1/2 lg:items-end justify-center flex flex-row lg:flex-col items-center gap-8 lg:gap-2 pt-4 lg:pt-0 z-20  border-cyan-300"
                 variants={rightSectionVariants}
                 initial="hidden"
                 animate="visible"
@@ -881,7 +881,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                   {activeMobileTooltip === index && (
                     <div
                       ref={tooltipRef}
-                      className="absolute block lg:hidden max-[400px]:left-3 max-[375px]:text-[10px] max-[375px]:w-[100px] max-[400px]:-translate-x-5 max-sm:w-[120px] sm:w-[120px] md:w-[180px] h-auto left-1 -translate-x-4 bottom-full mb-2 bg-lime-yellow text-black text-[10px] md:text-sm md:py-3 md:px-3 py-2 px-2 items-center rounded-md shadow-xl whitespace-normal break-words text-left z-[99999] "
+                      className="absolute block lg:hidden max-[400px]:left-3 max-[375px]:text-[10px] max-[375px]:w-[100px] max-[400px]:-translate-x-5 max-sm:w-[120px] sm:w-[120px] md:w-[180px] h-auto left-1 -translate-x-4 bottom-full mb-2 bg-lime-yellow text-black text-[10px] md:text-sm md:py-3 md:px-3 py-2 px-2 items-center rounded-md shadow-xl whitespace-normal break-words text-left z-[99999] font-apfel-grotezk-regular "
                       // absolute bottom-full w-[250px] lg:max-[1200px]:w-[200px] -left-5 h-auto -translate-x-10
                       // className="absolute block md:hidden w-[300px] h-auto translate-x-0 bottom-full mb-2 bg-lime-yellow text-black text-sm p-4 rounded-md shadow-md max-w-[calc(44vw-5px)] whitespace-normal break-words text-left z-[99999]"
                       style={position}
@@ -915,33 +915,39 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
         </motion.div>
 
         {/* Spacer for fixed content on desktop */}
-        {!isTablet && <div className="  border-red" style={{ height: '580px' }} />}
+        {!isTablet && <div className="  border-red" style={{ height: '94vh' }} />}
 
         {isOpen && <SharePopup portfolioUrl={portfolioUrl} onClose={() => setIsOpen(false)} />}
 
         {/* Press Kit Section - Now in normal document flow */}
         <motion.div
-          className="w-full bg-white relative mb-10"
+          className="w-full bg-white relative mb-10 snap-y snap-mandatory"
           ref={pressKitRef}
         >
-          <div className="w-full">
-            <h2 className="text-4xl lg:text-6xl font-qimano text-[#0044FF] text-center max-lg:mt-5 max-lg:mb-4 mt-2 mb-6">
-              Press Kit
-            </h2>
+          <div className="w-full snap-center">
+            <div className="w-[91vw] min-[960px]:w-[97vw] min-[1600px]:w-[92.5vw] mx-auto  border-red ">
+              <h2 className="text-4xl min-[960px]:max-[1280px]:text-5xl min-[1300px]:text-7xl font-qimano text-[#0044FF] text-center mt-2 mb-8">
+                Press Kit
+              </h2>
 
-            {/* Content Grid */}
-            <PortfolioPublic />
+              {/* Content Grid */}
+              <PortfolioPublic />
+            </div>
 
-            <div className="w-full max-lg:mt-5 max-lg:mb-4">
+
+            <div className="w-[91vw] min-[960px]:w-[97vw] min-[1600px]:w-[92.5vw]  mx-auto  border-green ">
               <Questionnaire name={formData?.firstName
                 ? formData.firstName.charAt(0).toUpperCase() + formData.firstName.slice(1)
                 : ""} />
             </div>
 
-            {/* social links */}
-            <SocialLinks formData={formData} />
+            <div className="  border-orange ">
+              {/* social links */}
+              <SocialLinks formData={formData} />
+            </div>
 
-            <div className="w-full max-lg:mt-5 max-lg:mb-4">
+            <div className="w-[91vw] min-[960px]:w-[97vw] min-[1600px]:w-[92.5vw] mx-auto  border-yellow ">
+              {/* max-lg:mt-5 max-lg:mb-4 */}
               <AudienceCard />
             </div>
           </div>

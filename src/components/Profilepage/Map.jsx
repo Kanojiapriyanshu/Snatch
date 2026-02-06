@@ -73,8 +73,9 @@ const SimpleWorldMap = ({ apiEndpoint }) => {
 
 
   return (
-    <div className="mt-6">
-      <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={700} height={400} style={{ width: "100%", height: "auto" }} >
+    <div className="flex flex-col items-center justify-between w-full h-full mt-6  border-red">
+      <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={700} height={400} style={{ width: "100%", height: "auto" }}>
+        {/* borderWidth: "2px", borderColor: "violet" */}
         <Geographies geography={geoUrl}>
           {({ geographies }) =>
             geographies.map((geo) => {
@@ -99,16 +100,16 @@ const SimpleWorldMap = ({ apiEndpoint }) => {
         </Geographies>
       </ComposableMap>
 
-      <div className="w-full max-w-[300px] mx-auto mt-14 font-apfel-grotezk-regular">
+      <div className="w-full mx-auto max-w-[360px] mt-8 font-apfel-grotezk-regular   border-green">
         {topCountries.map((country, index) => (
-          <div key={index} className="flex justify-between items-center border-b border-gray-300 last:border-b-0 py-3 font-apfel-grotezk-regular">
-            <span className="flex gap-5">
-              <span className="text-gray-500 text-sm flex items-center">0{index + 1}</span>
-              <span className=" font-medium text-base  font-apfel-grotezk-regular"
+          <div key={index} className="flex justify-between items-center text-xs min-[1300px]:text-base border-b border-gray-300 last:border-b-0 max-[1280px]:px-2 py-3 min-[1300px]:py-5 font-apfel-grotezk-regular ">
+            <span className="flex gap-5 ">
+              <span className="text-gray-500 flex items-center">0{index + 1}</span>
+              <span className=" font-medium  font-apfel-grotezk-regular"
                 style={{ color: '#444A6D' }}
               >{country.name}</span>
             </span>
-            <span className="text-electric-blue text-sm ">{country.percentage}%</span>
+            <span className="text-electric-blue">{country.percentage}%</span>
           </div>
         ))}
       </div>

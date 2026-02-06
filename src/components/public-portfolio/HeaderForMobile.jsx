@@ -53,7 +53,7 @@ const HeaderForMobile = ({ formData, headerOpacityPrimary, headerOpacitySecondar
         {/* <div className="container mx-auto flex items-center justify-between"> */}
         {/* Left side - CTA button only when scrolled, both buttons when not scrolled */}
         <motion.div
-          className="flex w-1/3 sm:w-1/4 "
+          className="flex w-[116px] "
         >
           {/* Show go back button only when not scrolled and is admin view */}
           {/* {!isScrolled && isAdminView && (
@@ -83,7 +83,7 @@ const HeaderForMobile = ({ formData, headerOpacityPrimary, headerOpacitySecondar
 
           {/* Always show the CTA button */}
           <motion.button
-            className="w-full bg-yellow-shade-600 text-graphite font-outline py-3 rounded-lg font-apfel-grotezk-regular text-base md:text-2xl font-medium  text-center"
+            className="w-full bg-yellow-shade-600 text-graphite font-outline py-3 rounded-lg font-apfel-grotezk-regular text-base font-medium  text-center"
             onClick={handleRequest}
           >
             {isAdminViewRoute ? "Copy Portfolio link" : "Get in touch"}
