@@ -35,7 +35,7 @@ const HeaderForMobile = ({ formData, headerOpacityPrimary, headerOpacitySecondar
   };
 
   return (
-    <motion.div className="container flex md:w-[98%] top-0 sm:w-[97.5%] w-[96.5%] left-2 max-w-[960px] z-20 bg-white fixed h-[84px] rounded-b-xl lg:hidden shadow-xl"
+    <motion.div className="container flex md:w-[98%] top-0 sm:w-[97.5%] w-[96%] left-2 max-w-[960px] z-20 bg-white fixed h-[84px] rounded-b-xl lg:hidden shadow-xl"
       style={{
         opacity: headerOpacityPrimary
       }}
@@ -43,7 +43,7 @@ const HeaderForMobile = ({ formData, headerOpacityPrimary, headerOpacitySecondar
 
 
       <motion.div
-        className="md:w-[98%] sm:w-[97.5%] w-[96.5%] left-2 top-1 px-4 fixed flex flex-row-reverse items-center justify-between z-20 lg:hidden rounded-xl  bg-[#7f7f7f]/80 h-[80px] "
+        className="md:w-[98%] sm:w-[97.5%] w-[96%] left-2 top-1 px-4 fixed flex flex-row-reverse items-center justify-between z-20 lg:hidden rounded-xl  bg-[#7f7f7f]/80 h-[80px] "
         // className="container mx-auto max-w-[1280px] fixed hidden top-1 w-[99%] z-20 left-2 py-2 px-6 mt-2 justify-between lg:flex items-center rounded-3xl backdrop-blur-3xl bg-[#7f7f7f]/80"
         style={{
           opacity: headerOpacitySecondary

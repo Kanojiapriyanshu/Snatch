@@ -74,7 +74,7 @@ const SimpleWorldMap = ({ apiEndpoint }) => {
 
   return (
     <div className="flex flex-col items-center justify-between w-full h-full mt-6  border-red">
-      <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={700} height={400} style={{ width: "100%", height: "auto" }}>
+      <ComposableMap projection="geoMercator" projectionConfig={{ scale: 100 }} width={700} height={400} className="w-[100%] min-[1300px]:h-auto max-md:h-48 max-lg:h-64">
         {/* borderWidth: "2px", borderColor: "violet" */}
         <Geographies geography={geoUrl}>
           {({ geographies }) =>

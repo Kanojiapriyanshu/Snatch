@@ -434,7 +434,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
         {/* Main Hero Section */}
         <motion.div
           ref={mainContainerRef}
-          className={`lg:flex lg:flex-col mx-auto w-[95%] md:w-[97%] lg:w-[97.5%] right-0 lg:justify-between relative  sm:left-0  text-white min-h-[1000px]:h-[560px] rounded-2xl shadow-xl overflow-visible  border-green z-10  ${isTablet ? "h-[560px] bg-neutral-800" : " "
+          className={`lg:flex lg:flex-col mx-auto w-[95%] md:w-[97%] lg:w-[98%] max-[960px]:top-2 right-0 lg:justify-between relative  sm:left-0  text-white rounded-2xl shadow-xl overflow-visible  border-green z-10  ${isTablet ? "h-[560px] bg-neutral-800" : " "
             }`}
           // className={`md:w-[99%]  text-white relative md:right-1 lg:left-2 rounded-3xl overflow-visible z-10 ${isTablet ? "h-[560px] bg-neutral-800" : ""
           //   }`}
@@ -445,7 +445,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                 backgroundColor: finalBg,
                 height: finalHeight,
                 position: "fixed",
-                top: 18,
+                top: 14,
                 zIndex: 10,
                 visibility: isTablet ? "visible" : visibility,
                 opacity: isTablet ? 1 : opacity,
@@ -540,7 +540,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
               {/* max-[1024px]:max-w-[1024px] max-[1280px]:max-w-[1200px] max-w-[1300px] */}
               {/*1 Left Side - Pricing and Services */}
               <motion.div
-                className="w-1/2 hidden lg:flex justify-end flex-col  border-cyan-300"
+                className="w-1/2 hidden lg:flex justify-end flex-col border-cyan-300"
                 // className="min-[960px]:max-[1280px]:w-[270px] min-[1280px]:w-[370px] min-[960px]:max-[1280px]:pt-24 pt-20 hidden lg:block"
                 variants={leftSectionVariants}
                 initial="hidden"
@@ -553,13 +553,13 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                 animate="visible"
               > */}
                 <motion.div
-                  className="flex items-center w-full whitespace-nowrap  border-orange-300"
+                  className="flex items-center w-full whitespace-nowrap border-orange-300"
                   variants={itemVariants}
                 >
                   {/* <h2 className="font-qimano lg:text-3xl text-2xl font-medium whitespace-nowrap" >
                     {priceRange}
                   </h2> */}
-                  <h2 className="font-qimano  min-[960px]:max-[1299px]:text-xl min-[1300px]:text-3xl font-light whitespace-nowrap   border-red-300" >
+                  <h2 className="font-qimano text-xl min-[1300px]:text-3xl font-light whitespace-nowrap   border-red-300" >
                     {priceRange}
                   </h2>
                   <p className="text-gray-500  font-apfel-grotezk-regular text-xs min-[1300px]:text-sm pt-1 pl-1 whitespace-nowrap   border-cyan-50">Value per content piece</p>
@@ -593,7 +593,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                     formData.compensation.map((item, index) => (
                       <motion.div
                         key={index}
-                        className="inline-flex  tracking-tighter items-center font-qimano min-[960px]:max-[1299px]:text-base min-[1300px]:text-lg relative   border-sky-500"
+                        className="inline-flex  tracking-normal items-center font-qimano text-sm min-[1300px]:text-lg relative   border-sky-500"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 1.2 + index * 0.1, duration: 0.4 }}
@@ -661,7 +661,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
 
                 {/* CTA Button */}
                 <motion.button
-                  className="bg-yellow-shade-600 mb-0 rounded text-graphite font-outline text-semibold py-2 w-full font-apfel-grotezk-regular"
+                  className="bg-yellow-shade-600 mb-0 rounded text-graphite font-outline text-semibold py-2 w-full font-apfel-grotezk-regular text-sm min-[1300px]:text-lg"
                   // className="bg-yellow-shade-600 text-graphite font-outline text-semibold py-2 min-[960px]:max-[1280px]:px-3 rounded mt-6 min-[960px]:max-[1280px]:w-[250px] w-[370px] max-w-[370px] font-apfel-grotezk-regular"
                   onClick={handleRequest}
                   variants={itemVariants}
@@ -693,7 +693,9 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                 }}
               >
                 {/* <div className="lg:absolute overflow-visible z-[9999]  border-yellow-500"> */}
-                <div className="absolute rounded-xl min-[960px]:max-[1099px]:-bottom-16 -bottom-10 min-[1100px]:-top-10 min-[1300px]:-top-16 lg:mx-auto w-[230px] h-[320px] min-[960px]:max-[1099px]:h-[340px] min-[1100px]:w-[260px] min-[1100px]:h-[350px] min-[1300px]:w-[270px] min-[1300px]:h-[380px] overflow-visible items-center   border-sky-40">
+                <div className="absolute rounded-xl min-[960px]:max-[1024px]:-bottom-20 -bottom-10  min-[1024px]:-top-8 min-[1300px]:-top-32 w-[230px] h-[320px] lg:mx-auto  min-[1300px]:w-[330px] min-[1300px]:h-[450px] overflow-visible items-center   border-sky-40">
+
+                  {/* min-[960px]:max-[1099px]:h-[340px] lg:w-[260px] lg:h-[350px]  */}
                   {/* <div className="absolute lg:translate-x-1/2 lg:translate-y-10 rounded-xl w-64 h-2/3 overflow-visible  border-sky-400"> */}
                   {/* Container for both skeleton and image - ensures same positioning */}
                   <div className="relative h-full">
@@ -747,27 +749,27 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
                   variants={statsVariants}
                 >
 
-                  <motion.span className="h-1/2 text-[28px] lg:text-5xl font-qimano text-center">{reach ? formatNumber(reach.get()) : "0"}</motion.span>
+                  <motion.span className="h-1/2 text-[28px] lg:text-4xl min-[1300px]:text-5xl font-qimano text-center">{reach ? formatNumber(reach.get()) : "0"}</motion.span>
 
-                  <p className="text-sm pt-1 text-white font-apfel-grotezk-regular text-right " >avg reach</p>
+                  <p className="text-sm min-[1300px]:text-16px pt-1 text-white font-apfel-grotezk-regular text-right " >avg reach</p>
                 </motion.div>
                 <motion.div
                   className="flex flex-col justify-end pt-1  border-red"
                   variants={statsVariants}
                 >
 
-                  <motion.span className="h-1/2 text-[28px] lg:text-5xl font-qimano text-center">{followers ? formatNumber(followers.get()) : "0"}</motion.span>
+                  <motion.span className="h-1/2 text-[28px] lg:text-4xl min-[1300px]:text-5xl font-qimano text-center">{followers ? formatNumber(followers.get()) : "0"}</motion.span>
 
-                  <p className="text-sm pt-1 text-white font-apfel-grotezk-regular text-right">followers</p>
+                  <p className="text-sm min-[1300px]:text-16px pt-1 text-white font-apfel-grotezk-regular text-right">followers</p>
                 </motion.div>
                 <motion.div
                   className="flex flex-col justify-end  pt-1  border-red"
                   variants={statsVariants}
                 >
 
-                  <motion.span className="h-1/2 text-[28px] lg:text-5xl font-qimano text-center">{posts ? formatNumber(posts.get()) : "0"}</motion.span>
+                  <motion.span className="h-1/2 text-[28px] lg:text-4xl min-[1300px]:text-5xl font-qimano text-center">{posts ? formatNumber(posts.get()) : "0"}</motion.span>
 
-                  <p className="text-sm pt-1 lg:pt-[6px] lg:leading-none text-white font-apfel-grotezk-regular text-right">posts</p>
+                  <p className="text-sm min-[1300px]:text-16px pt-1 lg:pt-[6px] lg:leading-none text-white font-apfel-grotezk-regular text-right">posts</p>
                 </motion.div>
               </motion.div>
 
@@ -849,7 +851,7 @@ const ProfileOverview = ({ ownerId, isAdminView, portfolio }) => {
           </motion.div> */}
 
           <motion.div
-            className="flex flex-wrap items-center justify-center w-full text-black font-qimano text-[16px] sm:gap-x-2 gap-x-1 gap-y-1 mb-2  "
+            className="flex flex-wrap items-center justify-center w-full text-black font-qimano text-sm sm:gap-x-2 gap-x-1 gap-y-1 mb-2  "
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             {formData?.compensation?.length > 0 ? (
